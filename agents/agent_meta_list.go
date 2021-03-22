@@ -1,11 +1,11 @@
 package agents
 
 type AgentMetaList struct {
-	Agents []Agent
+	AgentMetas []AgentMeta
 }
 
 func NewAgentMetaList() AgentMetaList {
 	return AgentMetaList{
-		Agents: make([]Agent, 128),
+		AgentMetas: make([]AgentMeta, 128),
 	}
 }
