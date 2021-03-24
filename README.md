@@ -10,7 +10,7 @@ CX game is a new 2D console game.
       * [Compiling on Linux](#compiling-on-linux)
       * [Compiling on MacOS](#compiling-on-macos)
       * [Compiling on Windows](#compiling-on-windows)
-   * [Resources and libraries](#libraries used)
+   * [Resources and libraries](#libraries-used)
 
 ---
 ## Installation
