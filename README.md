@@ -4,21 +4,141 @@ Game Prototype
 
 CX game is a new 2D console game.
 
-## Usage
+## Table of Contents
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+   * [Installation](#installation) 
+      * [Compiling on Linux](#compiling-on-linux)
+      * [Compiling on MacOS](#compiling-on-macos)
+      * [Compiling on Windows](#compiling-on-windows)
+   * [Resources and libraries](#libraries used)
 
+---
+## Installation
+cx-game requires Golang version of `1.4+`
+
+## Compiling on Linux
+Install dependencies with 
+```
+sudo apt-get update
+sudo apt-get install -y glade xvfb libxinerama-dev libxcursor-dev libxrandr-dev libgl1-mesa-dev libxi-dev libperl-dev libcairo2-dev libpango1.0-dev libglib2.0-dev libopenal-dev libxxf86vm-dev make
+
+```
+#### Install Go
+* Go to [Go Downloads](https://golang.org/dl/) and download from the featured downloads for linux, something like `go1.16.2.linux-amd64.tar.gz` 
+* Extract the archive and install \
+For example: \
+   ```rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.2.linux-amd64.tar.gz```
+* Add /usr/local/go/bin to the PATH environment variable. \
+Or just use this for a quick check `export PATH=$PATH:/usr/local/go/bin`
+* Verify that you've installed Go by opening a command prompt and typing the following command: `go version`\
+\
+Following [this](https://golang.org/doc/install) for more.
+
+#### Install `git` using apt-get
+
+```!bash
+apt-get update
+apt-get install git
+```
+
+#### Install `sublime` using apt-get
+```!bash
+sudo apt-get update
+sudo apt-get install sublime-text
+```
+
+#### Usage
+Run the program.
 ```bash
 git clone https://github.com/skycoin/cx-game.git
 cd cx-game
+go mod download 
 go run main.go
 ```
-A window should appear, currently drawing nothing
+A window should appear, with a cat use `a`, `s`, `d`, `w` to move the cat around.\
+\
+Open source code in editor
+```!bash
+cd cx-game
+subl ./
+```
 
-## libraries used
+## Compiling on MacOS
+#### Install Go
+* Go to [Go Downloads](https://golang.org/dl/) and download from the featured downloads for Apple macOS, something like `go1.16.2.darwin-amd64.pkg` 
+* Open the package file you downloaded and follow the prompts to install Go. 
+* Verify that you've installed Go by opening a command prompt and typing the following command: `go version`\
+Following [this](https://golang.org/doc/install) for more.
+
+#### Install `git` with brew
+
+```!bash
+brew insall git
+```
+
+#### Install `sublime` with brew
+```!bash
+brew install --cask sublime-text
+```
+
+#### Usage
+Run the program.
+```bash
+git clone https://github.com/skycoin/cx-game.git
+cd cx-game
+go mod download 
+go run main.go
+```
+A window should appear, with a cat use `a`, `s`, `d`, `w` to move the cat around.\
+\
+Open source code in editor
+```!bash
+cd cx-game
+subl ./
+```
+
+## Compiling on Windows
+#### Install Go
+* Go to [Go Downloads](https://golang.org/dl/) and download from the featured downloads for Microsoft Windows, something like `go1.16.2.windows-amd64.msi` 
+* Open the package file you downloaded and follow the prompts to install Go. 
+* Verify that you've installed Go by opening a command prompt and typing the following command: `go version`\
+Following [this](https://golang.org/doc/install) for more.
+
+#### Install `git` from executable
+* Download git from [git-scm.com](https://git-scm.com/download/win)
+* Open the executable and follow the prompt to install git.
+
+#### Install `sublime` from executable
+* Go to sublime [downloads page](https://www.sublimetext.com/3)
+* Download the executable for windows 
+* Open the executable and follow the prompts to install sublime.
+
+#### Usage
+Opening terminal
+1. click the Start menu.
+2. In the menu's search box, type cmd, then press the Enter key.
+3. In the Command Prompt window that appears, type the following command: 
+
+Run the program from terminal
+```bash
+git clone https://github.com/skycoin/cx-game.git
+cd cx-game
+go mod download 
+go run main.go
+```
+A window should appear, with a cat use `a`, `s`, `d`, `w` to move the cat around.\
+\
+Open source code in editor
+* Open sublime text editor
+* Drag and drop cx-game folder into sublime text editor
+
+---
+
+## Libraries Used
 
 - glfw (github.com/go-gl/glfw/v3.3/glfw)
 - gl (github.com/go-gl/gl/v2.1/gl)
+
 	
 
 ## Contributing
