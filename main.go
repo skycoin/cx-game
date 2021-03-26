@@ -120,7 +120,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	gl.UseProgram(program)
 
-	imgFile, err := os.Open("./assets/Daco_3555790.png")
+	imgFile, err := os.Open("./assets/cat.png")
 	if err != nil {
 		log.Fatalln(err)
 	}
