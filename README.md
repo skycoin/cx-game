@@ -117,7 +117,7 @@ Following [this](https://golang.org/doc/install) for more.
 #### Install `MinGW`
 * Download MinGW installer from [here][mingw_online]
 * Open the executable and follow the instructions.
-* Select **Architecture = x86_64** as show in the picture. ![Alt Text](.github\images\mingw.png)
+* Select **Architecture = x86_64** as show in the picture. ![Alt Text](.github/images/mingw.png)
 * Now go to the installed directory and run **mingw-w64.bat** to add mingw to PATH.
 
 ### Usage
