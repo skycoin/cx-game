@@ -87,7 +87,7 @@ func main() {
 	gl.BindFragDataLocation(program, 0, gl.Str("outputColor\x00"))
 
 	// Load the texture
-	texture, err := newTexture("../../assets/cat.png")
+	texture, err := newTexture("cat.png")
 	if err != nil {
 		log.Fatalln(err)
 	}
