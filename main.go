@@ -12,7 +12,10 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+<<<<<<< HEAD
 	cv "github.com/skycoin/cx-game/cmd/spritetool"
+=======
+>>>>>>> a66ce216799eee537b912a388443f9a2304830b4
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
 )
@@ -96,10 +99,13 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 }
 
 func main() {
+<<<<<<< HEAD
 	var SS cv.SpriteSet
 	SS.LoadFile("./assets/sprite.png", 250, false)
 	SS.ProcessContours()
 	SS.DrawSprite()
+=======
+>>>>>>> a66ce216799eee537b912a388443f9a2304830b4
 	wx = 0
 	wy = 0
 	wz = -10
