@@ -9,6 +9,7 @@ CX game is a new 2D console game.
    * [Installation](#installation)
       * [Compiling on Linux](#compiling-on-linux)
       * [Compiling on MacOS](#compiling-on-macos)
+      * [Simple Windows Install](#simple-windows-install)
       * [Compiling on Windows](#compiling-on-windows)
    * [Resources and libraries](#libraries-used)
 
@@ -97,6 +98,13 @@ Open source code in editor
 cd cx-game
 subl ./
 ```
+
+## Simple Windows Install
+* Go to [Go Downloads][golang] and download from the featured downloads for Microsoft Windows, current version is `go1.16.3.windows-amd64.msi`
+* Clone the repository using `git clone https://github.com/skycoin/cx-game.git`
+* Go to the root directory and open your terminal (Powershell / cmd)
+* Run `go mod download` to get all dependencies
+* Run `go run main.go` to run the program, a window should appear with a cat, use `a`, `s`, `d`, `w` to move the cat around
 
 ## Compiling on Windows
 ### Install Go
