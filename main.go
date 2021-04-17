@@ -77,16 +77,16 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			w.SetShouldClose(true)
 		}
 		if k == glfw.KeyW {
-			wy -= 0.5
-		}
-		if k == glfw.KeyS {
 			wy += 0.5
 		}
+		if k == glfw.KeyS {
+			wy -= 0.5
+		}
 		if k == glfw.KeyA {
-			wx += 0.5
+			wx -= 0.5
 		}
 		if k == glfw.KeyD {
-			wx -= 0.5
+			wx += 0.5
 		}
 		if k == glfw.KeyQ {
 			wz += 0.5
@@ -99,12 +99,12 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 
 func main() {
 
-/*
-	var SS cv.SpriteSet
-	SS.LoadFile("./assets/sprite.png", 250, false)
-	SS.ProcessContours()
-	SS.DrawSprite()
-*/
+	/*
+		var SS cv.SpriteSet
+		SS.LoadFile("./assets/sprite.png", 250, false)
+		SS.ProcessContours()
+		SS.DrawSprite()
+	*/
 
 	wx = 0
 	wy = 0
