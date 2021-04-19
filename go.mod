@@ -7,4 +7,6 @@ require (
 	github.com/go-gl/glfw v0.0.0-20210311203641-62640a716d48
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20210311203641-62640a716d48
 	github.com/go-gl/mathgl v1.0.0
+	github.com/seehuhn/mt19937 v1.0.0
+	github.com/urfave/cli/v2 v2.3.0
 )
