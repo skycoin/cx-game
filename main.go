@@ -12,6 +12,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+	model "github.com/skycoin/cx-game/models"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
@@ -35,6 +36,8 @@ var CurrentPlanet *world.Planet
 const (
 	width  = 800
 	height = 480
+
+	gravity = 0.01
 )
 
 var (
@@ -50,6 +53,14 @@ var (
 )
 
 var wx, wy, wz float32
+var upPressed bool
+var downPressed bool
+var leftPressed bool
+var rightPressed bool
+var spacePressed bool
+
+var cat *model.Cat
+
 var Cam camera.Camera
 var tex uint32
 
@@ -77,22 +88,46 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			w.SetShouldClose(true)
 		}
 		if k == glfw.KeyW {
-			wy += 0.5
+			//wy += 0.5
+			upPressed = true
 		}
 		if k == glfw.KeyS {
-			wy -= 0.5
+			// wy -= 0.5
+			downPressed = true
 		}
 		if k == glfw.KeyA {
-			wx -= 0.5
+			// wx -= 0.5
+			leftPressed = true
 		}
 		if k == glfw.KeyD {
-			wx += 0.5
+			// wx += 0.5
+			rightPressed = true
+		}
+		if k == glfw.KeySpace {
+			spacePressed = true
 		}
 		if k == glfw.KeyQ {
 			wz += 0.5
 		}
 		if k == glfw.KeyZ {
 			wz -= 0.5
+		}
+	} else if a == glfw.Release {
+		if k == glfw.KeyW {
+			//wy += 0.5
+			upPressed = false
+		}
+		if k == glfw.KeyS {
+			// wy -= 0.5
+			downPressed = false
+		}
+		if k == glfw.KeyA {
+			// wx -= 0.5
+			leftPressed = false
+		}
+		if k == glfw.KeyD {
+			// wx += 0.5
+			rightPressed = false
 		}
 	}
 }
@@ -105,6 +140,8 @@ func main() {
 		SS.ProcessContours()
 		SS.DrawSprite()
 	*/
+
+	cat = model.NewCat()
 
 	wx = 0
 	wy = 0
@@ -124,6 +161,32 @@ func main() {
 
 func Tick() {
 
+	if wy > -3 {
+		cat.YVelocity -= gravity
+	} else {
+		cat.YVelocity = 0
+
+		if spacePressed {
+			cat.YVelocity = 0.2
+		}
+	}
+
+	if !rightPressed || !leftPressed {
+		cat.XVelocity = 0
+	}
+
+	if rightPressed {
+		cat.XVelocity = 0.05
+	}
+
+	if leftPressed {
+		cat.XVelocity = -0.05
+	}
+
+	wx += cat.XVelocity
+	wy += cat.YVelocity
+
+	spacePressed = false
 }
 
 func redraw(window *glfw.Window, program uint32, VAO uint32) {
