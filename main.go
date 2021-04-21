@@ -99,12 +99,12 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 
 func main() {
 
-/*
-	var SS cv.SpriteSet
-	SS.LoadFile("./assets/sprite.png", 250, false)
-	SS.ProcessContours()
-	SS.DrawSprite()
-*/
+	/*
+		var SS cv.SpriteSet
+		SS.LoadFile("./assets/sprite.png", 250, false)
+		SS.ProcessContours()
+		SS.DrawSprite()
+	*/
 
 	wx = 0
 	wy = 0
@@ -147,6 +147,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	size := img.Rect.Size()
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.ActiveTexture(gl.TEXTURE0)
