@@ -101,8 +101,11 @@ subl ./
 
 ## Simple Windows Install
 * Go to [Go Downloads][golang] and download from the featured downloads for Microsoft Windows, current version is `go1.16.3.windows-amd64.msi`
+* Open the package file you downloaded and follow the prompts to install Go.
+* Verify that you've installed Go by opening a command prompt / Powershell and run the following command: `go version`\
+Following [this](https://golang.org/doc/install) for more.
 * Clone the repository using `git clone https://github.com/skycoin/cx-game.git`
-* Go to the root directory and open your terminal (Powershell / cmd)
+* Go to the root directory of your cloned repository of cx-game and open your terminal (Shift + Right click, then choose `Open Powershell window here`)
 * Run `go mod download` to get all dependencies
 * Run `go run main.go` to run the program, a window should appear with a cat, use `a`, `s`, `d`, `w` to move the cat around
 
