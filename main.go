@@ -147,6 +147,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	size := img.Rect.Size()
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.ActiveTexture(gl.TEXTURE0)
