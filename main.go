@@ -3,9 +3,6 @@ package main
 import (
 	"image"
 	"image/draw"
-	"image/png"
-	"log"
-	"os"
 	"runtime"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -108,7 +105,7 @@ func main() {
 
 	wx = 0
 	wy = 0
-	wz = -10
+	wz = -25
 	win := render.NewWindow(height, width, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
@@ -131,18 +128,20 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	gl.UseProgram(program)
 
-	imgFile, err := os.Open("./assets/cat.png")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer imgFile.Close()
+	// imgFile, err := os.Open("./assets/cat.png")
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// defer imgFile.Close()
 
 	// Decode detexts the type of image as long as its image/<type> is imported
-	im, err := png.Decode(imgFile)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	// im, err := png.Decode(imgFile)
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	cat := cat.NewCat()
 	img := image.NewRGBA(im.Bounds())
+
 	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
 	size := img.Rect.Size()
 	gl.Enable(gl.TEXTURE_2D)
