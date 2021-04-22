@@ -17,7 +17,15 @@ type Spritesheet struct {
 	spriteHeight int
 }
 
+type Sprite struct {
+	spriteSheetId int
+	x int
+	y int
+}
+
 var spritesheets = []Spritesheet{};
+var sprites = []Sprite{};
+var spriteIdsByName = make(map[string]int);
 
 func LoadSpriteSheet(fname string) int {
 	log.Print("loading sprite sheet from "+fname)
@@ -31,6 +39,11 @@ func LoadSpriteSheet(fname string) int {
 	})
 
 	return len(spritesheets)-1
+}
+
+func LoadSprite(spriteSheetId int, name string, x,y int) {
+	sprites = append(sprites,Sprite{spriteSheetId,x,y})
+	spriteIdsByName[name] = len(sprites)-1
 }
 
 func LoadPng(fname string) image.Image {
