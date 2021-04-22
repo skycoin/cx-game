@@ -77,10 +77,12 @@ func initOpenGL() uint32 {
 	out vec2 tCoord;
 	uniform mat4 projection;
 	uniform mat4 world;
+	uniform vec2 texScale;
+	uniform vec2 texOffset;
     void main() {
 		
         gl_Position = projection * world * vec4(position, 1.0);
-		tCoord = texcoord;
+		tCoord = (texcoord+texOffset) * texScale;
     }
 ` + "\x00"
 	//gl_Position = vec4(position, 10.0, 1.0) * camera * projection;
@@ -109,6 +111,11 @@ func initOpenGL() uint32 {
 	gl.AttachShader(prog, vertexShader)
 	gl.AttachShader(prog, fragmentShader)
 	gl.LinkProgram(prog)
+	gl.UseProgram(prog)
+	gl.Uniform2f(
+		gl.GetUniformLocation(prog,gl.Str("texScale\x00")),
+		1.0,1.0,
+	)
 	return prog
 }
 
