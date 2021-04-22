@@ -13,9 +13,9 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
-var window render.Window
+var window *render.Window
 // call this before loading any spritesheets
-func InitSpriteloader(_window render.Window) {
+func InitSpriteloader(_window *render.Window) {
 	window = _window
 	quadVao = makeQuadVao()
 }
@@ -74,13 +74,16 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")), tex,
 	)
 
-	worldTranslate := mgl32.Translate3D(float32(xpos), float32(ypos), -10)
+	worldTranslate := mgl32.Mat4.Mul4(
+		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
+		mgl32.Scale3D(float32(xwidth),float32(yheight),1),
+	)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(window.Program,gl.Str("world\x00")),
 		1,false,&worldTranslate[0],
 	)
 
-	aspect := float32(800)/float32(480)
+	aspect := float32(window.Width)/float32(window.Height)
 	projectTransform := mgl32.Perspective(
 		mgl32.DegToRad(45), aspect, 0.1, 100.0,
 	)
