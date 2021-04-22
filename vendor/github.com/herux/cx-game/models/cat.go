@@ -8,30 +8,30 @@ import (
 )
 
 type Cat struct {
-	Image        *image.RGBA
-	ImageDecoded *image.Image
-	width        int
-	height       int
+	RGBA   *image.RGBA
+	Image  image.Image
+	width  int
+	height int
 }
 
 func NewCat() *Cat {
-	imgFile, err := os.Open("./assets/cat.png")
+	imageFile, err := os.Open("./assets/cat.png")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer imgFile.Close()
+	defer imageFile.Close()
 
-	imageDecoded, err := png.Decode(imgFile)
+	imageDecoded, err := png.Decode(imageFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	image := image.NewRGBA(imageDecoded.Bounds())
+	rgba := image.NewRGBA(imageDecoded.Bounds())
 
 	cat := Cat{
-		Image:        image,
-		ImageDecoded: &imageDecoded,
-		width:        2,
-		height:       2,
+		RGBA:   rgba,
+		Image:  imageDecoded,
+		width:  2,
+		height: 2,
 	}
 
 	return &cat
