@@ -1,15 +1,12 @@
 package spriteloader
 
-type Sprite struct{
-	name string
-	xpos int
-	ypos int
-}
+import "image"
 
-func NewSprite(name string, xpos,ypos int)*Sprite{
-	return &Sprite{
-		name: name,
-		xpos: xpos,
-		ypos: ypos,
-	}
+//Sprite is
+type Sprite struct {
+	name      string
+	id        uint32
+	xpos      int
+	ypos      int
+	imageInfo *image.RGBA
 }
