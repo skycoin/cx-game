@@ -61,7 +61,7 @@ func GetSpriteIdByName(name string) int {
 }
 
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
-
+	// TODO
 }
 
 func LoadPng(fname string) image.Image {

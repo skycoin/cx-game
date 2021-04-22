@@ -1,11 +1,20 @@
 package main
 
 import (
+	"log"
+	"runtime"
+
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/render"
+	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"log"
 )
+
+func init() {
+	// This is needed to arrange that main() runs on main thread.
+	// See documentation for functions that are only allowed to be called from the main thread.
+	runtime.LockOSThread()
+}
 
 func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
 	if a == glfw.Press && k == glfw.KeyEscape {
@@ -27,7 +36,9 @@ func main() {
 		GetSpriteIdByName("star")
 	log.Print(spriteId)
 	for !window.ShouldClose() {
-		//DrawSpriteQuad(
+		gl.ClearColor(1,1,1,1)
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		spriteloader.DrawSpriteQuad(0,0,100,100,spriteId)
 		glfw.PollEvents()
 	}
 }
