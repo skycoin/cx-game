@@ -11,17 +11,26 @@ import (
 	"log"
 )
 
-var nextSpriteSheetId=1
+type Spritesheet struct {
+	img image.Image
+	spriteWidth int
+	spriteHeight int
+}
+
+var spritesheets = []Spritesheet{};
 
 func LoadSpriteSheet(fname string) int {
 	log.Print("loading sprite sheet from "+fname)
 
 	img := LoadPng(fname)
-	_=img
 
-	var spriteSheetId = nextSpriteSheetId
-	nextSpriteSheetId++
-	return spriteSheetId
+	spritesheets = append(spritesheets, Spritesheet{
+		img: img,
+		spriteWidth: img.Bounds().Dx() / 32,
+		spriteHeight: img.Bounds().Dx() / 32,
+	})
+
+	return len(spritesheets)-1
 }
 
 func LoadPng(fname string) image.Image {
