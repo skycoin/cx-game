@@ -15,7 +15,7 @@ import (
 
 var window render.Window
 // call this before loading any spritesheets
-func initSpriteloader(_window render.Window) {
+func InitSpriteloader(_window render.Window) {
 	window = _window
 	quadVao = makeQuadVao()
 }
@@ -63,9 +63,11 @@ func GetSpriteIdByName(name string) int {
 	return spriteId
 }
 
+const width=800
+const height=480
+
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 	// this method assumes:
-	// - perspective is already set correctly
 	tex := spritesheets[sprites[spriteId].spriteSheetId].tex
 	gl.UseProgram(window.Program)
 	gl.Uniform1ui(
@@ -78,7 +80,7 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 		1,false,&worldTranslate[0],
 	)
 
-	aspect := float32(window.Width)/float32(window.Height)
+	aspect := float32(800)/float32(480)
 	projectTransform := mgl32.Perspective(
 		mgl32.DegToRad(45), aspect, 0.1, 100.0,
 	)
