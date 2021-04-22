@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image"
 	"image/draw"
 	"runtime"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/skycoin/cx-game/camera"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
-
+	"github.com/herux/cx-game/models"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
 )
@@ -139,11 +138,13 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	// if err != nil {
 	// 	log.Fatalln(err)
 	// }
-	cat := cat.NewCat()
-	img := image.NewRGBA(im.Bounds())
+	cat := models.NewCat()
+	image := cat.Image
+	imageDecoded := *cat.ImageDecoded
+	// img := image.NewRGBA(im.Bounds())
 
-	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
-	size := img.Rect.Size()
+	draw.Draw(image, image.Bounds(), imageDecoded, imageDecoded.Pt(0, 0), draw.Src)
+	size := image.Rect.Size()
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
@@ -155,7 +156,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(size.X), int32(size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(size.X), int32(size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(image.Pix))
 	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("ourTexture\x00")), 0)
 	worldTranslate := mgl32.Translate3D(wx, wy, wz)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &worldTranslate[0])
