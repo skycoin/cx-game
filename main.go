@@ -17,6 +17,7 @@ import (
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
 	"github.com/skycoin/cx-game/render"
+	sl "github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -64,6 +65,8 @@ var fps *model.Fps
 
 var Cam camera.Camera
 var tex uint32
+
+var lightSpriteId uint32
 
 func makeVao() uint32 {
 	var vbo uint32
@@ -155,6 +158,11 @@ func main() {
 	VAO := makeVao()
 	program := win.Program
 	gl.GenTextures(1, &tex)
+
+	// DEBUG: spriteloader test
+	ssId := sl.LoadSpriteSheet("./assets/projectile/light_00.png")
+	lightSpriteId = sl.LoadSprite(ssId, "light", 0, 0)
+
 	for !window.ShouldClose() {
 		Tick()
 		redraw(window, program, VAO)
@@ -211,11 +219,13 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	img := image.NewRGBA(im.Bounds())
 	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
 	size := img.Rect.Size()
+
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
+
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, tex)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
@@ -223,13 +233,18 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(size.X), int32(size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+
 	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("ourTexture\x00")), 0)
 	worldTranslate := mgl32.Translate3D(wx, wy, wz)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &worldTranslate[0])
 	projectTransform := mgl32.Perspective(mgl32.DegToRad(45), float32(width)/float32(height), 0.1, 100.0)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectTransform[0])
+
 	gl.BindVertexArray(VAO)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+
+	sl.DrawQuad(1, 2, 1, 1, lightSpriteId)
+
 	glfw.PollEvents()
 	window.SwapBuffers()
 }
