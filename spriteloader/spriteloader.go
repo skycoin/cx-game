@@ -63,9 +63,6 @@ func GetSpriteIdByName(name string) int {
 	return spriteId
 }
 
-const width=800
-const height=480
-
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 	// this method assumes:
 	tex := spritesheets[sprites[spriteId].spriteSheetId].tex
@@ -127,8 +124,10 @@ func makeTexture(img *image.RGBA) uint32 {
 	gl.BindTexture(gl.TEXTURE_2D, tex)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	// sample nearest pixel such that we see nice pixel art
+	// and not a blurry mess
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 	gl.TexImage2D(
 		gl.TEXTURE_2D, 0, gl.RGBA,
 		int32(img.Rect.Dx()), int32(img.Rect.Dy()), 0,
