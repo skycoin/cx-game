@@ -60,6 +60,7 @@ var rightPressed bool
 var spacePressed bool
 
 var cat *model.Cat
+var fps *model.Fps
 
 var Cam camera.Camera
 var tex uint32
@@ -142,6 +143,7 @@ func main() {
 	*/
 
 	cat = model.NewCat()
+	fps = model.NewFps()
 
 	wx = 0
 	wy = 0
@@ -156,6 +158,7 @@ func main() {
 	for !window.ShouldClose() {
 		Tick()
 		redraw(window, program, VAO)
+		fps.Tick()
 	}
 }
 
