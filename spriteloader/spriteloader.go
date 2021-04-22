@@ -21,9 +21,9 @@ func InitSpriteloader(_window *render.Window) {
 }
 
 type Spritesheet struct {
-	spriteWidth int
-	spriteHeight int
 	tex uint32
+	xScale float32
+	yScale float32
 }
 
 type Sprite struct {
@@ -42,8 +42,8 @@ func LoadSpriteSheet(fname string) int {
 	img := LoadPng(fname)
 
 	spritesheets = append(spritesheets, Spritesheet{
-		spriteWidth: img.Bounds().Dx() / 32,
-		spriteHeight: img.Bounds().Dx() / 32,
+		xScale: float32(32) / float32(img.Bounds().Dx()),
+		yScale: float32(32) / float32(img.Bounds().Dy()),
 		tex: makeTexture(img),
 	})
 
@@ -65,10 +65,20 @@ func GetSpriteIdByName(name string) int {
 
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 	// this method assumes:
-	tex := spritesheets[sprites[spriteId].spriteSheetId].tex
+	sprite := sprites[spriteId]
+	spritesheet := spritesheets[sprite.spriteSheetId]
 	gl.UseProgram(window.Program)
 	gl.Uniform1ui(
-		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")), tex,
+		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")),
+		spritesheet.tex,
+	)
+	gl.Uniform2f(
+		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
+		spritesheet.xScale,spritesheet.yScale,
+	)
+	gl.Uniform2f(
+		gl.GetUniformLocation(window.Program,gl.Str("texOffset\x00")),
+		float32(sprite.x),float32(sprite.y),
 	)
 
 	worldTranslate := mgl32.Mat4.Mul4(

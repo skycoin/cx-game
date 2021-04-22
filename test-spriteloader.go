@@ -30,9 +30,9 @@ func main() {
 	defer glfw.Terminate()
 	spriteloader.InitSpriteloader(&win)
 	spriteSheetId := spriteloader.
-		LoadSpriteSheet("./assets/starfield/stars/Starsheet1.png")
+		LoadSpriteSheet("./assets/starfield/stars/planets.png")
 	spriteloader.
-		LoadSprite(spriteSheetId, "star", 0,0)
+		LoadSprite(spriteSheetId, "star", 2,1)
 	spriteId := spriteloader.
 		GetSpriteIdByName("star")
 	log.Print(spriteId)
