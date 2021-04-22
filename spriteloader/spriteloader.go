@@ -37,8 +37,6 @@ var sprites = []Sprite{};
 var spriteIdsByName = make(map[string]int);
 
 func LoadSpriteSheet(fname string) int {
-	log.Print("loading sprite sheet from "+fname)
-
 	img := LoadPng(fname)
 
 	spritesheets = append(spritesheets, Spritesheet{
