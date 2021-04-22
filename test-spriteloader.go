@@ -2,17 +2,18 @@ package main
 
 import (
 	"github.com/skycoin/cx-game/spriteloader"
+	//"github.com/skycoin/cx-game/render"
 	"log"
 )
 
 
 func main() {
 	log.Print("running test")
-	var id int
-	id = spriteloader.
+	spriteSheetId := spriteloader.
 		LoadSpriteSheet("./assets/starfield/stars/Starsheet1.png")
-	log.Print(id)
-	id = spriteloader.
-		LoadSpriteSheet("./assets/starfield/stars/Starsheet2.png")
-	log.Print(id)
+	spriteloader.
+		LoadSprite(spriteSheetId, "star", 0,0)
+	spriteId := spriteloader.
+		GetSpriteIdByName("star")
+	log.Print(spriteId)
 }

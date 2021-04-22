@@ -46,6 +46,18 @@ func LoadSprite(spriteSheetId int, name string, x,y int) {
 	spriteIdsByName[name] = len(sprites)-1
 }
 
+func GetSpriteIdByName(name string) int {
+	spriteId, ok := spriteIdsByName[name]
+	if (!ok) {
+		log.Fatalf("sprite with name [%v] does not exist",name)
+	}
+	return spriteId
+}
+
+func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
+
+}
+
 func LoadPng(fname string) image.Image {
 	imgFile, err := os.Open(fname)
 
