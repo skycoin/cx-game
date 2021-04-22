@@ -1,26 +1,29 @@
 package spriteloader
 
 import (
+	"log"
 	"os"
 	"image/png"
 	"image"
+	//"image/draw"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
-	/*
-	"image/draw"
-	"image/png"
-	*/
-	"log"
+	"github.com/go-gl/mathgl/mgl32"
+
+	"github.com/skycoin/cx-game/render"
 )
 
+var window render.Window
 // call this before loading any spritesheets
-func initSpriteloader() {
-	quadVao = makeQuadVao();
+func initSpriteloader(_window render.Window) {
+	window = _window
+	quadVao = makeQuadVao()
 }
 
 type Spritesheet struct {
-	img image.Image
 	spriteWidth int
 	spriteHeight int
+	tex uint32
 }
 
 type Sprite struct {
@@ -39,9 +42,9 @@ func LoadSpriteSheet(fname string) int {
 	img := LoadPng(fname)
 
 	spritesheets = append(spritesheets, Spritesheet{
-		img: img,
 		spriteWidth: img.Bounds().Dx() / 32,
 		spriteHeight: img.Bounds().Dx() / 32,
+		tex: makeTexture(img),
 	})
 
 	return len(spritesheets)-1
@@ -61,10 +64,21 @@ func GetSpriteIdByName(name string) int {
 }
 
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
-	// TODO
+	// this method assumes:
+	// - perspective is already set correctly
+	gl.Uniform1i(
+		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")), 0,
+	)
+	worldTranslate := mgl32.Translate3D(float32(xpos), float32(ypos), 0)
+	gl.UniformMatrix4fv(
+		gl.GetUniformLocation(window.Program,gl.Str("world\x00")),
+		1,false,&worldTranslate[0],
+	)
+	gl.BindVertexArray(quadVao)
+	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
 
-func LoadPng(fname string) image.Image {
+func LoadPng(fname string) *image.RGBA {
 	imgFile, err := os.Open(fname)
 
 	if err != nil {
@@ -78,6 +92,30 @@ func LoadPng(fname string) image.Image {
 	}
 
 	return image.NewRGBA(im.Bounds())
+}
+
+func makeTexture(img *image.RGBA) uint32 {
+	var tex uint32
+	gl.GenTextures(1,&tex);
+
+	gl.Enable(gl.TEXTURE_2D)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	gl.Enable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, tex)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	gl.TexImage2D(
+		gl.TEXTURE_2D, 0, gl.RGBA,
+		int32(img.Rect.Dx()), int32(img.Rect.Dy()), 0,
+		gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix),
+	)
+
+	return tex;
 }
 
 // x,y,z,u,v
