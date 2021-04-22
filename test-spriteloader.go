@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/skycoin/cx-game/spritesheet"
+	"github.com/skycoin/cx-game/spriteloader"
 	"log"
 )
 
@@ -9,10 +9,10 @@ import (
 func main() {
 	log.Print("running test")
 	var id int
-	id = spritesheet.
+	id = spriteloader.
 		LoadSpriteSheet("./assets/starfield/stars/Starsheet1.png")
 	log.Print(id)
-	id = spritesheet.
+	id = spriteloader.
 		LoadSpriteSheet("./assets/starfield/stars/Starsheet2.png")
 	log.Print(id)
 }

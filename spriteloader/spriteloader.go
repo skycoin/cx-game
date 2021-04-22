@@ -1,4 +1,4 @@
-package spritesheet
+package spriteloader
 
 import (
 	"os"
