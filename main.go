@@ -143,7 +143,7 @@ func main() {
 	*/
 
 	cat = model.NewCat()
-	fps = model.NewFps()
+	fps = model.NewFps(false)
 
 	wx = 0
 	wy = 0
