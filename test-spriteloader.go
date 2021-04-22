@@ -40,5 +40,6 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		spriteloader.DrawSpriteQuad(0,0,100,100,spriteId)
 		glfw.PollEvents()
+		window.SwapBuffers()
 	}
 }

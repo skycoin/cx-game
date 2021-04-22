@@ -5,7 +5,7 @@ import (
 	"os"
 	"image/png"
 	"image"
-	//"image/draw"
+	"image/draw"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -66,14 +66,27 @@ func GetSpriteIdByName(name string) int {
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 	// this method assumes:
 	// - perspective is already set correctly
-	gl.Uniform1i(
-		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")), 0,
+	tex := spritesheets[sprites[spriteId].spriteSheetId].tex
+	gl.UseProgram(window.Program)
+	gl.Uniform1ui(
+		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")), tex,
 	)
-	worldTranslate := mgl32.Translate3D(float32(xpos), float32(ypos), 0)
+
+	worldTranslate := mgl32.Translate3D(float32(xpos), float32(ypos), -10)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(window.Program,gl.Str("world\x00")),
 		1,false,&worldTranslate[0],
 	)
+
+	aspect := float32(window.Width)/float32(window.Height)
+	projectTransform := mgl32.Perspective(
+		mgl32.DegToRad(45), aspect, 0.1, 100.0,
+	)
+	gl.UniformMatrix4fv(
+		gl.GetUniformLocation(window.Program, gl.Str("projection\x00")),
+		1, false, &projectTransform[0],
+	)
+
 	gl.BindVertexArray(quadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
@@ -91,7 +104,9 @@ func LoadPng(fname string) *image.RGBA {
 		log.Fatalln(err)
 	}
 
-	return image.NewRGBA(im.Bounds())
+	img := image.NewRGBA(im.Bounds())
+	draw.Draw(img,img.Bounds(),im,image.Pt(0,0),draw.Src)
+	return img
 }
 
 func makeTexture(img *image.RGBA) uint32 {
