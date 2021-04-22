@@ -2,6 +2,7 @@ package models
 
 import (
 	"image"
+	"image/draw"
 	"image/png"
 	"log"
 	"os"
@@ -9,7 +10,7 @@ import (
 
 type Cat struct {
 	RGBA   *image.RGBA
-	Image  image.Image
+	Size   image.Point
 	width  int
 	height int
 }
@@ -26,10 +27,10 @@ func NewCat() *Cat {
 		log.Fatalln(err)
 	}
 	rgba := image.NewRGBA(imageDecoded.Bounds())
-
+	draw.Draw(rgba, rgba.Bounds(), imageDecoded, image.Pt(0, 0), draw.Src)
 	cat := Cat{
 		RGBA:   rgba,
-		Image:  imageDecoded,
+		Size:   rgba.Rect.Size(),
 		width:  2,
 		height: 2,
 	}
