@@ -35,10 +35,11 @@ func (f *Fps) Tick() {
 		f.CurFps = f.CurFrameCount
 		f.CurFrameCount = 0
 		f.LastTime = curTime
+		//console log to screen
 		fmt.Println(f.CurFps)
-		fmt.Println(f.GetAverageFps())
-		fmt.Println(time.Unix(0, int64(f.GetStartTime()*1000000)))
-		fmt.Println(f.GetPlayTime())
+		// fmt.Println(f.GetAverageFps())
+		// fmt.Println(time.Unix(0, int64(f.GetStartTime()*1000000)))
+		// fmt.Println(f.GetPlayTime())
 	}
 }
 
