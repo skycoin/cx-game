@@ -28,6 +28,7 @@ func main() {
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
+	spriteloader.InitSpriteloader(win)
 	spriteSheetId := spriteloader.
 		LoadSpriteSheet("./assets/starfield/stars/Starsheet1.png")
 	spriteloader.
