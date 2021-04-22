@@ -37,7 +37,6 @@ func main() {
 		LoadSprite(spriteSheetId, "star", 2,1)
 	spriteId := spriteloader.
 		GetSpriteIdByName("star")
-	log.Print(spriteId)
 	for !window.ShouldClose() {
 		gl.ClearColor(1,1,1,1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)

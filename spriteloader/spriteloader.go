@@ -22,14 +22,12 @@ func InitSpriteloader(_window *render.Window) {
 
 type Spritesheet struct {
 	tex uint32
-	xScale float32
-	yScale float32
+	xScale, yScale float32
 }
 
 type Sprite struct {
 	spriteSheetId int
-	x int
-	y int
+	x, y int
 }
 
 var spritesheets = []Spritesheet{};
@@ -37,7 +35,7 @@ var sprites = []Sprite{};
 var spriteIdsByName = make(map[string]int);
 
 func LoadSpriteSheet(fname string) int {
-	img := LoadPng(fname)
+	img := loadPng(fname)
 
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(32) / float32(img.Bounds().Dx()),
@@ -101,7 +99,8 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
 
-func LoadPng(fname string) *image.RGBA {
+// load a PNG image from disk into memory as RGBA
+func loadPng(fname string) *image.RGBA {
 	imgFile, err := os.Open(fname)
 
 	if err != nil {
@@ -119,6 +118,7 @@ func LoadPng(fname string) *image.RGBA {
 	return img
 }
 
+// upload an in-memory RGBA image to the GPU
 func makeTexture(img *image.RGBA) uint32 {
 	var tex uint32
 	gl.GenTextures(1,&tex);
