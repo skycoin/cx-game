@@ -28,7 +28,7 @@ func main() {
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
-	spriteloader.InitSpriteloader(win)
+	spriteloader.InitSpriteloader(&win)
 	spriteSheetId := spriteloader.
 		LoadSpriteSheet("./assets/starfield/stars/Starsheet1.png")
 	spriteloader.
@@ -39,7 +39,7 @@ func main() {
 	for !window.ShouldClose() {
 		gl.ClearColor(1,1,1,1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-		spriteloader.DrawSpriteQuad(0,0,100,100,spriteId)
+		spriteloader.DrawSpriteQuad(0,0,2,2,spriteId)
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
