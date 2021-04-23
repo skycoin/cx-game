@@ -1,21 +1,16 @@
 package main
 
 import (
-	"image"
-	"image/draw"
-	"image/png"
-	"log"
-	"os"
 	"runtime"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
-	model "github.com/skycoin/cx-game/models"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
+	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
 )
@@ -59,8 +54,8 @@ var leftPressed bool
 var rightPressed bool
 var spacePressed bool
 
-var cat *model.Cat
-var fps *model.Fps
+var cat *models.Cat
+var fps *models.Fps
 
 var Cam camera.Camera
 var tex uint32
@@ -142,8 +137,8 @@ func main() {
 		SS.DrawSprite()
 	*/
 
-	cat = model.NewCat()
-	fps = model.NewFps(false)
+	cat = models.NewCat()
+	fps = models.NewFps(false)
 
 	wx = 0
 	wy = 0
@@ -163,33 +158,38 @@ func main() {
 }
 
 func Tick() {
-
 	if wy > -3 {
 		cat.YVelocity -= gravity
 	} else {
 		cat.YVelocity = 0
 
-		if spacePressed {
-			cat.YVelocity = 0.2
+		if wy > -3 {
+			cat.YVelocity -= gravity
+		} else {
+			cat.YVelocity = 0
+
+			if spacePressed {
+				cat.YVelocity = 0.2
+			}
 		}
+
+		if !rightPressed || !leftPressed {
+			cat.XVelocity = 0
+		}
+
+		if rightPressed {
+			cat.XVelocity = 0.05
+		}
+
+		if leftPressed {
+			cat.XVelocity = -0.05
+		}
+
+		wx += cat.XVelocity
+		wy += cat.YVelocity
+
+		spacePressed = false
 	}
-
-	if !rightPressed || !leftPressed {
-		cat.XVelocity = 0
-	}
-
-	if rightPressed {
-		cat.XVelocity = 0.05
-	}
-
-	if leftPressed {
-		cat.XVelocity = -0.05
-	}
-
-	wx += cat.XVelocity
-	wy += cat.YVelocity
-
-	spacePressed = false
 }
 
 func redraw(window *glfw.Window, program uint32, VAO uint32) {
@@ -197,20 +197,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	gl.UseProgram(program)
 
-	imgFile, err := os.Open("./assets/cat.png")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer imgFile.Close()
-
-	// Decode detexts the type of image as long as its image/<type> is imported
-	im, err := png.Decode(imgFile)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	img := image.NewRGBA(im.Bounds())
-	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
-	size := img.Rect.Size()
+	// cat := models.NewCat()
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
@@ -222,7 +209,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(size.X), int32(size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(cat.Size.X), int32(cat.Size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(cat.RGBA.Pix))
 	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("ourTexture\x00")), 0)
 	worldTranslate := mgl32.Translate3D(wx, wy, wz)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &worldTranslate[0])

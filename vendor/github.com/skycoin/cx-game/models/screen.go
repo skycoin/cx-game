@@ -1,4 +1,4 @@
-package model
+package models
 
 type Screen struct {
 	x      int
