@@ -68,28 +68,44 @@ func makeVao() uint32 {
 }
 
 func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
-	if a == glfw.Press {
+	switch a {
+	case glfw.Press:
 		if k == glfw.KeyEscape {
 			w.SetShouldClose(true)
 		}
 		if k == glfw.KeyW {
-			wy += 0.5
+			wy += 0.3
 		}
 		if k == glfw.KeyS {
-			wy -= 0.5
+			wy -= 0.3
 		}
 		if k == glfw.KeyA {
-			wx -= 0.5
+			wx -= 0.3
 		}
 		if k == glfw.KeyD {
-			wx += 0.5
+			wx += 0.3
 		}
 		if k == glfw.KeyQ {
-			wz += 0.5
+			wz += 0.3
 		}
 		if k == glfw.KeyZ {
-			wz -= 0.5
+			wz -= 0.3
 		}
+	case glfw.Repeat:
+		if k == glfw.KeyW {
+			wy += 0.7
+		}
+		if k == glfw.KeyS {
+			wy -= 0.7
+		}
+		if k == glfw.KeyA {
+			wx -= 0.7
+		}
+		if k == glfw.KeyD {
+			wx += 0.7
+		}
+	case glfw.Release:
+
 	}
 }
 
