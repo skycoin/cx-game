@@ -29,8 +29,9 @@ var (
 var CurrentPlanet *world.Planet
 
 const (
-	width   = 800
-	height  = 480
+	width  = 800
+	height = 480
+
 	gravity = 0.01
 )
 
