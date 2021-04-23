@@ -60,7 +60,9 @@ func GetSpriteIdByName(name string) int {
 }
 
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
-	// this method assumes:
+	// TODO this method probably shouldn't be responsible 
+	// for setting up the projection matrix.
+	// clarify responsibilities later
 	sprite := sprites[spriteId]
 	spritesheet := spritesheets[sprite.spriteSheetId]
 	gl.UseProgram(window.Program)
