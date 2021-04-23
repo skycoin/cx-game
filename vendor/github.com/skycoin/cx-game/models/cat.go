@@ -9,10 +9,12 @@ import (
 )
 
 type Cat struct {
-	RGBA   *image.RGBA
-	Size   image.Point
-	width  int
-	height int
+	RGBA      *image.RGBA
+	Size      image.Point
+	width     int
+	height    int
+	XVelocity float32
+	YVelocity float32
 }
 
 func NewCat() *Cat {
