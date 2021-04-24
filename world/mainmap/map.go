@@ -40,44 +40,25 @@ func InitMap(window *render.Window) {
 
 	spriteloader.InitSpriteloader(window)
 
-	spriteSheetId := spriteloader.LoadSpriteSheet("./assets/stars")
-	spriteloader.LoadSprite(spriteSheetId, "blue", 0, 0)
-	spriteloader.LoadSprite(spriteSheetId, "gray", 1, 0)
-	spriteloader.LoadSprite(spriteSheetId, "sand", 2, 0)
-
-	bspriteId := spriteloader.GetSpriteIdByName("blue")
-	mspriteId := spriteloader.GetSpriteIdByName("gray")
-	fSpriteId := spriteloader.GetSpriteIdByName("sand")
-
-	var randomBackgroundId int
-	randValue := rand.Float32() > 0.5
-	switch randValue {
-	case true:
-		randomBackgroundId = bspriteId
-	default:
-		randomBackgroundId = fSpriteId
+	spriteSheetId := spriteloader.LoadSpriteSheet("./assets/8x8/test-tile-stone-02.png")
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			spriteloader.LoadSprite(spriteSheetId, fmt.Sprintf("tile%d", i*8+j), j, i)
+		}
 	}
+
 	for y := 0; y < size; y++ {
 		for x := 0; x < size; x++ {
 			show := 1
 			if rand.Float32() < 0.15 {
 				show = 0
 			}
-			switch y*size + x {
-			case 0:
-				randomBackgroundId = bspriteId
-			case 1:
-				randomBackgroundId = mspriteId
-			case 5:
-				randomBackgroundId = bspriteId
-			default:
-				randomBackgroundId = fSpriteId
-			}
+			spriteId := spriteloader.GetSpriteIdByName(fmt.Sprintf("tile%d", (size*y)%8*8+x%8))
+
 			m.tiles[x][y] = &MapTile{
-				spriteId:         y*size + x,
-				tileIdBackground: randomBackgroundId,
-				tileIdMid:        randomBackgroundId,
-				tileIdFront:      fSpriteId,
+				tileIdBackground: spriteId,
+				tileIdMid:        spriteId,
+				tileIdFront:      spriteId,
 				x:                x,
 				y:                y,
 				show:             show,
@@ -85,6 +66,8 @@ func InitMap(window *render.Window) {
 		}
 	}
 }
+
+//CreateMapTile creates map tile
 
 //DrawMap draws map with data provided. It somehow draws from bottom right to top left need to figuree out why
 func DrawMap() {

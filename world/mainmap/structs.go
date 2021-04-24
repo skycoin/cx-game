@@ -6,13 +6,12 @@ type Map struct {
 }
 
 type MapTile struct {
-	spriteId         int
-	tileIdBackground int
-	tileIdMid        int
-	tileIdFront      int
 	x                int
 	y                int
 	show             int
+	tileIdBackground int
+	tileIdMid        int
+	tileIdFront      int
 }
 
 type Fullstrum struct {
