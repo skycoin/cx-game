@@ -229,7 +229,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.BindVertexArray(VAO)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
-	sl.DrawQuad(1, 2, 1, 1, lightSpriteId)
+	sl.DrawSpriteQuad(1, 2, 1, 1, lightSpriteId)
 
 	glfw.PollEvents()
 	window.SwapBuffers()

@@ -176,7 +176,7 @@ func GetSpriteByName(name string) uint32 {
 }
 
 // DrawQuad draws a sprite providing it's position, size and it's id
-func DrawQuad(xpos float32, ypos float32, width float32, height float32, spriteId uint32) {
+func DrawSpriteQuad(xpos float32, ypos float32, width float32, height float32, spriteId uint32) {
 	sprite := sprites[spriteId]
 
 	hw := width / 2.0
