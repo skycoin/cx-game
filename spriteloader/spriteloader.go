@@ -1,11 +1,12 @@
 package spriteloader
 
 import (
-	"log"
-	"os"
-	"image/png"
 	"image"
 	"image/draw"
+	"image/png"
+	"log"
+	"math"
+	"os"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -14,6 +15,7 @@ import (
 )
 
 var window *render.Window
+
 // call this before loading any spritesheets
 func InitSpriteloader(_window *render.Window) {
 	window = _window
@@ -21,18 +23,18 @@ func InitSpriteloader(_window *render.Window) {
 }
 
 type Spritesheet struct {
-	tex uint32
+	tex            uint32
 	xScale, yScale float32
 }
 
 type Sprite struct {
 	spriteSheetId int
-	x, y int
+	x, y          int
 }
 
-var spritesheets = []Spritesheet{};
-var sprites = []Sprite{};
-var spriteIdsByName = make(map[string]int);
+var spritesheets = []Spritesheet{}
+var sprites = []Sprite{}
+var spriteIdsByName = make(map[string]int)
 
 func LoadSpriteSheet(fname string) int {
 	_, img := LoadPng(fname)
@@ -40,27 +42,27 @@ func LoadSpriteSheet(fname string) int {
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(32) / float32(img.Bounds().Dx()),
 		yScale: float32(32) / float32(img.Bounds().Dy()),
-		tex: makeTexture(img),
+		tex:    makeTexture(img),
 	})
 
-	return len(spritesheets)-1
+	return len(spritesheets) - 1
 }
 
-func LoadSprite(spriteSheetId int, name string, x,y int) {
-	sprites = append(sprites,Sprite{spriteSheetId,x,y})
-	spriteIdsByName[name] = len(sprites)-1
+func LoadSprite(spriteSheetId int, name string, x, y int) {
+	sprites = append(sprites, Sprite{spriteSheetId, x, y})
+	spriteIdsByName[name] = len(sprites) - 1
 }
 
 func GetSpriteIdByName(name string) int {
 	spriteId, ok := spriteIdsByName[name]
-	if (!ok) {
-		log.Fatalf("sprite with name [%v] does not exist",name)
+	if !ok {
+		log.Fatalf("sprite with name [%v] does not exist", name)
 	}
 	return spriteId
 }
 
-func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
-	// TODO this method probably shouldn't be responsible 
+func DrawSpriteQuad(xpos, ypos, xwidth, yheight int, spriteId int) {
+	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
 	// clarify responsibilities later
 	sprite := sprites[spriteId]
@@ -72,23 +74,23 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 	)
 	gl.Uniform2f(
 		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
-		spritesheet.xScale,spritesheet.yScale,
+		spritesheet.xScale, spritesheet.yScale,
 	)
 	gl.Uniform2f(
-		gl.GetUniformLocation(window.Program,gl.Str("texOffset\x00")),
-		float32(sprite.x),float32(sprite.y),
+		gl.GetUniformLocation(window.Program, gl.Str("texOffset\x00")),
+		float32(sprite.x), float32(sprite.y),
 	)
 
 	worldTranslate := mgl32.Mat4.Mul4(
-		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
-		mgl32.Scale3D(float32(xwidth),float32(yheight),1),
+		mgl32.Translate3D(3.7-float32(xpos)/2, float32(ypos)/2-3.7, -10),
+		mgl32.Scale3D(float32(xwidth)/4, float32(yheight)/4, 1),
 	)
 	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(window.Program,gl.Str("world\x00")),
-		1,false,&worldTranslate[0],
+		gl.GetUniformLocation(window.Program, gl.Str("world\x00")),
+		1, false, &worldTranslate[0],
 	)
 
-	aspect := float32(window.Width)/float32(window.Height)
+	aspect := float32(window.Width) / float32(window.Height)
 	projectTransform := mgl32.Perspective(
 		mgl32.DegToRad(45), aspect, 0.1, 100.0,
 	)
@@ -116,14 +118,14 @@ func loadPng(fname string) *image.RGBA {
 	}
 
 	img := image.NewRGBA(im.Bounds())
-	draw.Draw(img,img.Bounds(),im,image.Pt(0,0),draw.Src)
+	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
 	return img
 }
 
 // upload an in-memory RGBA image to the GPU
 func makeTexture(img *image.RGBA) uint32 {
 	var tex uint32
-	gl.GenTextures(1,&tex);
+	gl.GenTextures(1, &tex)
 
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
@@ -143,8 +145,8 @@ func makeTexture(img *image.RGBA) uint32 {
 		int32(img.Rect.Dx()), int32(img.Rect.Dy()), 0,
 		gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix),
 	)
-	
-	return tex;
+
+	return tex
 }
 
 // x,y,z,u,v
@@ -159,9 +161,10 @@ var quadVertexAttributes = []float32{
 }
 
 var quadVao uint32
+
 func makeQuadVao() uint32 {
 	var vbo uint32
-	gl.GenBuffers(1,&vbo);
+	gl.GenBuffers(1, &vbo)
 
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)
@@ -182,4 +185,12 @@ func makeQuadVao() uint32 {
 	return vao
 }
 
+func round(num float64) int {
+	return int(num + math.Copysign(0.5, num))
+}
 
+func toFixed(num float32, precision int) float32 {
+	output := math.Pow(10, float64(precision))
+	ret := float64(round(float64(num)*output)) / output
+	return float32(ret)
+}
