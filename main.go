@@ -40,10 +40,11 @@ var (
 		1, 1, 0, 1, 0,
 		1, -1, 0, 1, 1,
 		-1, 1, 0, 0, 0,
-
-		1, -1, 0, 1, 1,
 		-1, -1, 0, 0, 1,
-		-1, 1, 0, 0, 0,
+	}
+	indices = []int32{
+		1, 0, 2,
+		1, 2, 3,
 	}
 )
 
@@ -64,12 +65,17 @@ func makeVao() uint32 {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 
+	var ebo uint32
+	gl.GenBuffers(1, &ebo)
+
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
 	gl.EnableVertexAttribArray(0)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 	gl.BufferData(gl.ARRAY_BUFFER, 4*len(sprite), gl.Ptr(sprite), gl.STATIC_DRAW)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(indices)*4, gl.Ptr(indices), gl.STATIC_DRAW)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
 	gl.EnableVertexAttribArray(0)
 	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
@@ -216,7 +222,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	projectTransform := mgl32.Perspective(mgl32.DegToRad(45), float32(width)/float32(height), 0.1, 100.0)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectTransform[0])
 	gl.BindVertexArray(VAO)
-	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+	gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, nil)
 	glfw.PollEvents()
 	window.SwapBuffers()
 }
