@@ -163,33 +163,27 @@ func Tick() {
 	} else {
 		cat.YVelocity = 0
 
-		if wy > -3 {
-			cat.YVelocity -= gravity
-		} else {
-			cat.YVelocity = 0
-
-			if spacePressed {
-				cat.YVelocity = 0.2
-			}
+		if spacePressed {
+			cat.YVelocity = 0.2
 		}
-
-		if !rightPressed || !leftPressed {
-			cat.XVelocity = 0
-		}
-
-		if rightPressed {
-			cat.XVelocity = 0.05
-		}
-
-		if leftPressed {
-			cat.XVelocity = -0.05
-		}
-
-		wx += cat.XVelocity
-		wy += cat.YVelocity
-
-		spacePressed = false
 	}
+
+	if !rightPressed || !leftPressed {
+		cat.XVelocity = 0
+	}
+
+	if rightPressed {
+		cat.XVelocity = 0.05
+	}
+
+	if leftPressed {
+		cat.XVelocity = -0.05
+	}
+
+	wx += cat.XVelocity
+	wy += cat.YVelocity
+
+	spacePressed = false
 }
 
 func redraw(window *glfw.Window, program uint32, VAO uint32) {
