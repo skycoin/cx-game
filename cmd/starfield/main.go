@@ -1,7 +1,9 @@
 package main
 
 import (
+	// "github.com/skycoin/cx-game/starfield"
 	"fmt"
+	"image"
 	"image/png"
 	"log"
 	"os"
@@ -9,6 +11,8 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+
+	// "github.com/go-gl/mathgl/f32"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/render"
 )
@@ -37,14 +41,14 @@ func main() {
 
 	wx = 0
 	wy = 0
-	wz = -3
+	wz = -4
 	win := render.NewWindow(height, width, true)
 	window := win.Window
 	defer glfw.Terminate()
 	program := win.Program
 
 	vao := makeVao(square)
-	gl.GenTextures(1, &tex)
+	gl.GenTextures(2, &tex)
 	for !window.ShouldClose() {
 		drawStarField(vao, window, program)
 	}
@@ -60,14 +64,18 @@ func newTexture(file string) (uint32, error) {
 		return 0, err
 	}
 
-	w := img.Bounds().Max.X
-	h := img.Bounds().Max.Y
+	im := img.(*image.NRGBA)
+	sim := im.SubImage(image.Rect(18, 9, 32, 22))
+	// w := img.Bounds().Max.X
+	// h := img.Bounds().Max.Y
+	spriteH := 32
+	spriteW := 32
 
-	pixels := make([]byte, w*h*4)
+	pixels := make([]byte, spriteW*spriteH*4)
 	bIndex := 0
-	for y := 0; y < h; y++ {
-		for x := 0; x < w; x++ {
-			r, g, b, a := img.At(x, y).RGBA()
+	for y := 0; y < spriteH; y++ {
+		for x := 0; x < spriteW; x++ {
+			r, g, b, a := sim.At(x, y).RGBA()
 			pixels[bIndex] = byte(r / 256)
 			bIndex++
 			pixels[bIndex] = byte(g / 256)
@@ -91,8 +99,63 @@ func newTexture(file string) (uint32, error) {
 		gl.TEXTURE_2D,
 		0,
 		gl.RGBA,
-		int32(w),
-		int32(h),
+		int32(spriteW),
+		int32(spriteH),
+		0,
+		gl.RGBA,
+		gl.UNSIGNED_BYTE,
+		gl.Ptr(pixels))
+	gl.GenerateMipmap(gl.TEXTURE_2D)
+	return texture, nil
+}
+
+func newTexture1(file string) (uint32, error) {
+	imgFile, err := os.Open(file)
+	if err != nil {
+		return 0, fmt.Errorf("texture %q not found on disk: %v", file, err)
+	}
+	img, err := png.Decode(imgFile)
+	if err != nil {
+		return 0, err
+	}
+
+	im := img.(*image.NRGBA)
+	sim := im.SubImage(image.Rect(0, 9, 32, 32))
+	// w := img.Bounds().Max.X
+	// h := img.Bounds().Max.Y
+	spriteH := 32
+	spriteW := 32
+
+	pixels := make([]byte, spriteW*spriteH*4)
+	bIndex := 0
+	for y := 0; y < spriteH; y++ {
+		for x := 0; x < spriteW; x++ {
+			r, g, b, a := sim.At(x, y).RGBA()
+			pixels[bIndex] = byte(r / 256)
+			bIndex++
+			pixels[bIndex] = byte(g / 256)
+			bIndex++
+			pixels[bIndex] = byte(b / 256)
+			bIndex++
+			pixels[bIndex] = byte(a / 256)
+			bIndex++
+		}
+	}
+
+	var texture uint32
+	gl.GenTextures(1, &texture)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, texture)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
+	gl.TexImage2D(
+		gl.TEXTURE_2D,
+		0,
+		gl.RGBA,
+		int32(spriteW),
+		int32(spriteH),
 		0,
 		gl.RGBA,
 		gl.UNSIGNED_BYTE,
@@ -112,9 +175,17 @@ func drawStarField(vao uint32, window *glfw.Window, program uint32) {
 		log.Fatalln(err)
 	}
 
-	gl.ActiveTexture(gl.TEXTURE0)
+	texture1, err := newTexture1("./../../assets/starfield/stars/Starsheet1.png")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	gl.ActiveTexture(gl.TEXTURE0 + 0)
 	gl.BindTexture(gl.TEXTURE_2D, texture)
-	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("ourTexture\x00")), 0)
+	gl.ActiveTexture(gl.TEXTURE0 + 1)
+	gl.BindTexture(gl.TEXTURE_2D, texture1)
+	slots:= []int32{0,1}
+	gl.Uniform1iv(gl.GetUniformLocation(program, gl.Str("textures\x00")), 2, (*int32)(gl.Ptr(slots)))
 	worldTranslate := mgl32.Translate3D(wx, wy, wz)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &worldTranslate[0])
 	projectTransform := mgl32.Perspective(mgl32.DegToRad(45), float32(width)/float32(height), 0.1, 100.0)

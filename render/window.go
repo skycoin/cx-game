@@ -88,10 +88,10 @@ func initOpenGL() uint32 {
 	fragmentShaderSource = `
     #version 410
 	in vec2 tCoord;
-    out vec4 frag_colour;
-	uniform sampler2D ourTexture;
+    out vec4 frag_colour1;
+	uniform sampler2D textures[8];
     void main() {
-		frag_colour = texture(ourTexture, tCoord);
+		 frag_colour1 = texture(textures[1], tCoord);
     }
 ` + "\x00"
 

@@ -1,8 +1,10 @@
-package main
+package starfield
 
-type star struct {
-	drawable uint32
-	x int
-	y int
-	z int
+import "golang.org/x/image/math/f32"
+
+type Star struct {
+	TexCoords []f32.Vec2
+	X         int
+	y         int
+	z         int
 }
