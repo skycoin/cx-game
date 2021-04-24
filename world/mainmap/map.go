@@ -3,35 +3,9 @@ package mainmap
 import (
 	"math/rand"
 
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 )
-
-var size int = 125
-var shownSize int = 16
-
-var m *Map = NewMap()
-
-type Map struct {
-	bounds Fullstrum
-	tiles  []*MapTile
-}
-
-type MapTile struct {
-	spriteId         int
-	tileIdBackground int
-	tileIdMid        int
-	tileIdFront      int
-	x                int
-	y                int
-	show             int
-}
-
-type Fullstrum struct {
-	Left   int
-	Right  int
-	Top    int
-	Bottom int
-}
 
 func NewMap() *Map {
 
@@ -74,8 +48,11 @@ func (m *Map) isInBounds(tile *MapTile) bool {
 	return false
 }
 
-func InitMap() {
+func InitMap(window *render.Window) {
 
+	m := NewMap()
+
+	spriteloader.InitSpriteloader(window)
 	spriteSheetId := spriteloader.LoadSpriteSheet("./second_assets/32x32-test-tiles-01.png")
 	spriteloader.LoadSprite(spriteSheetId, "blue_star", 0, 1)
 	spriteloader.LoadSprite(spriteSheetId, "brown_square", 1, 1)
