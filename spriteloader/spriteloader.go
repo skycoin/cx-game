@@ -143,7 +143,7 @@ func makeTexture(img *image.RGBA) uint32 {
 		int32(img.Rect.Dx()), int32(img.Rect.Dy()), 0,
 		gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix),
 	)
-
+	
 	return tex;
 }
 
