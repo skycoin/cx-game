@@ -26,7 +26,7 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 
 func main() {
 	log.Print("running test")
-	log.Print("You should see an orange square rock.")
+	log.Print("You should see black's cat animation")
 	win := render.NewWindow(400, 400, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
