@@ -1,6 +1,7 @@
 package mainmap
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/skycoin/cx-game/render"
@@ -21,23 +22,7 @@ func NewMap() *Map {
 	return &newMap
 }
 
-func GoTop() {
-	m.bounds.Top += 1
-	m.bounds.Bottom += 1
-}
-func GoBottom() {
-	m.bounds.Top -= 1
-	m.bounds.Bottom -= 1
-}
-func GoLeft() {
-	m.bounds.Left += 1
-	m.bounds.Right += 1
-}
-func GoRight() {
-	m.bounds.Left -= 1
-	m.bounds.Right -= 1
-}
-
+//checks if tile in the fullstrum
 func (m *Map) isInBounds(tile *MapTile) bool {
 	if tile.x > m.bounds.Left &&
 		tile.x < m.bounds.Right &&
@@ -48,19 +33,21 @@ func (m *Map) isInBounds(tile *MapTile) bool {
 	return false
 }
 
+//InitMap inits map with some data
 func InitMap(window *render.Window) {
 
-	m := NewMap()
+	m = NewMap()
 
 	spriteloader.InitSpriteloader(window)
-	spriteSheetId := spriteloader.LoadSpriteSheet("./second_assets/32x32-test-tiles-01.png")
-	spriteloader.LoadSprite(spriteSheetId, "blue_star", 0, 1)
-	spriteloader.LoadSprite(spriteSheetId, "brown_square", 1, 1)
-	spriteloader.LoadSprite(spriteSheetId, "green_star", 2, 1)
 
-	bspriteId := spriteloader.GetSpriteIdByName("blue_star")
-	// mspriteId := spriteloader.GetSpriteIdByName("brown_square")
-	fSpriteId := spriteloader.GetSpriteIdByName("green_star")
+	spriteSheetId := spriteloader.LoadSpriteSheet("./second_assets/32x32-test-tiles-01.png")
+	spriteloader.LoadSprite(spriteSheetId, "blue", 0, 0)
+	spriteloader.LoadSprite(spriteSheetId, "gray", 1, 0)
+	spriteloader.LoadSprite(spriteSheetId, "sand", 2, 0)
+
+	bspriteId := spriteloader.GetSpriteIdByName("blue")
+	mspriteId := spriteloader.GetSpriteIdByName("gray")
+	fSpriteId := spriteloader.GetSpriteIdByName("sand")
 
 	var randomBackgroundId int
 	randValue := rand.Float32() > 0.5
@@ -70,39 +57,101 @@ func InitMap(window *render.Window) {
 	default:
 		randomBackgroundId = fSpriteId
 	}
-	for i := 0; i < size*size; i++ {
-		show := 1
-		if rand.Float32() < 0.15 {
-			show = 0
+	for y := 0; y < size; y++ {
+		for x := 0; x < size; x++ {
+			show := 1
+			if rand.Float32() < 0.15 {
+				show = 0
+			}
+			switch y*size + x {
+			case 0:
+				randomBackgroundId = bspriteId
+			case 1:
+				randomBackgroundId = mspriteId
+			case 5:
+				randomBackgroundId = bspriteId
+			default:
+				randomBackgroundId = fSpriteId
+			}
+			m.tiles[x][y] = &MapTile{
+				spriteId:         y*size + x,
+				tileIdBackground: randomBackgroundId,
+				tileIdMid:        randomBackgroundId,
+				tileIdFront:      fSpriteId,
+				x:                x,
+				y:                y,
+				show:             show,
+			}
 		}
-		m.tiles = append(m.tiles, &MapTile{
-			spriteId:         i,
-			tileIdBackground: bspriteId,
-			tileIdMid:        randomBackgroundId,
-			tileIdFront:      fSpriteId,
-			x:                i % size,
-			y:                i / size,
-			show:             show,
-		})
 	}
 }
 
+//DrawMap draws map with data provided. It somehow draws from bottom right to top left need to figuree out why
 func DrawMap() {
 
 	tiles := make([]*MapTile, 0)
-	for _, tile := range m.tiles {
-		if !m.isInBounds(tile) {
-			continue
+	for _, row := range m.tiles {
+		for _, tile := range row {
+			if !m.isInBounds(tile) {
+				continue
+			}
+
+			// spriteloader.DrawSpriteQuad(tile.x, tile.y, 1, 1, tile.tileIdBackground)
+			tiles = append(tiles, tile)
+		}
+	}
+	firstTile := tiles[0]
+	for i, tile := range tiles {
+		if i == 0 {
+			fmt.Printf("%v    %v\n", tile.x, tile.y)
+
 		}
 
-		tiles = append(tiles, tile)
-	}
-
-	for i, tile := range tiles {
+		xpos, ypos := convertCoordinates(tile.x, tile.y, firstTile)
 		if tile.show == 0 {
 			continue
 		}
-		spriteloader.DrawSpriteQuad(i%shownSize, i/size, 1, 1, tile.tileIdMid)
-	}
 
+		spriteloader.DrawSpriteQuad(xpos, ypos, 1, 1, tile.tileIdMid)
+	}
+}
+
+func convertCoordinates(x, y int, tile *MapTile) (int, int) {
+	return x - tile.x, y - tile.y
+}
+
+//GoTop moves map one row up
+func GoTop() {
+	if m.bounds.Top == size {
+		return
+	}
+	m.bounds.Top += 1
+	m.bounds.Bottom += 1
+}
+
+//GoBottom moves map one row down
+func GoBottom() {
+	if m.bounds.Bottom == -1 {
+		return
+	}
+	m.bounds.Top -= 1
+	m.bounds.Bottom -= 1
+}
+
+//GoLeft moves map one column left
+func GoLeft() {
+	if m.bounds.Left == size-shownSize {
+		return
+	}
+	m.bounds.Left += 1
+	m.bounds.Right += 1
+}
+
+//GoRight moves map one column right
+func GoRight() {
+	if m.bounds.Right == shownSize-1 {
+		return
+	}
+	m.bounds.Left -= 1
+	m.bounds.Right -= 1
 }

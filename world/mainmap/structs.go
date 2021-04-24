@@ -2,7 +2,7 @@ package mainmap
 
 type Map struct {
 	bounds Fullstrum
-	tiles  []*MapTile
+	tiles  [size][size]*MapTile
 }
 
 type MapTile struct {
