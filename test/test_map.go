@@ -15,7 +15,7 @@ func init() {
 }
 
 func main() {
-	window := render.NewWindow(500, 500, false)
+	window := render.NewWindow(800, 800, false)
 
 	window.Window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
