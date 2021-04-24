@@ -94,10 +94,15 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 		gl.GetUniformLocation(window.Program, gl.Str("texOffset\x00")),
 		float32(sprite.x), float32(sprite.y),
 	)
-
+	scale := float32(3)
 	worldTranslate := mgl32.Mat4.Mul4(
+<<<<<<< HEAD
 		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
+=======
+		mgl32.Translate3D(3.7-float32(xpos)/(2*scale), float32(ypos)/(2*scale)-3.8, -10),
+		mgl32.Scale3D(float32(xwidth)/4/scale, float32(yheight)/4/scale, 1),
+>>>>>>> 03ee91a... saved
 	)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(window.Program, gl.Str("world\x00")),

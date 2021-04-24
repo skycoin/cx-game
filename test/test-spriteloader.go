@@ -40,7 +40,12 @@ func main() {
 	for !window.ShouldClose() {
 		gl.ClearColor(1,1,1,1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+<<<<<<< HEAD
 		spriteloader.DrawSpriteQuad(0,0,2,2,spriteId)
+=======
+		spriteloader.DrawSpriteQuad(0, 0, 1, 1, blueStarId)
+		spriteloader.DrawSpriteQuad(2, 2, 1, 1, purpleStarId)
+>>>>>>> 03ee91a... saved
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
