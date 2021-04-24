@@ -2,12 +2,18 @@ package main
 
 import (
 	"math/rand"
+	"runtime"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 )
+
+func init() {
+	// will crash without this
+	runtime.LockOSThread()
+}
 
 type Map struct {
 	tiles []*MapTile
@@ -31,15 +37,16 @@ func InitMap() {
 	// spriteloader.LoadSprite(spriteSheetId, "purple_star", 2, 0)
 	// spriteloader.LoadSprite(spriteSheetId, "green_star", 2, 3)
 
-	for i := 0; i < 16; i++ {
+	spriteId := spriteloader.GetSpriteIdByName("blue_star")
+	for i := 0; i < 16*16; i++ {
 		show := 1
 		if rand.Float32() < 0.15 {
 			show = 0
 		}
 		myMap.tiles = append(myMap.tiles, &MapTile{
-			spriteId: spriteloader.GetSpriteIdByName("blue_star"),
-			x:        i % 4,
-			y:        i / 4,
+			spriteId: spriteId,
+			x:        i % 16,
+			y:        i / 16,
 			show:     show,
 		})
 	}
@@ -74,11 +81,18 @@ func DrawMap() {
 }
 
 func convertCoords(x int, y int) (int, int) {
-	return -3 + (x * 2), 3 - (y * 2)
+	return x, y
 }
 
 func main() {
 	window := render.NewWindow(500, 500, false)
+
+	window.Window.SetKeyCallback(
+		func(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
+			if a == glfw.Press && k == glfw.KeyEscape {
+				w.SetShouldClose(true)
+			}
+		})
 	defer glfw.Terminate()
 	spriteloader.InitSpriteloader(&window)
 
@@ -99,6 +113,7 @@ func main() {
 		// spriteloader.DrawSpriteQuad(1, -1, 1, 1, spriteId)
 
 		DrawMap()
+
 		glfw.PollEvents()
 		window.Window.SwapBuffers()
 
