@@ -6,7 +6,6 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/world/mainmap"
 )
 
@@ -20,10 +19,9 @@ func main() {
 
 	window.Window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
-	spriteloader.InitSpriteloader(&window)
 
 	//init with data
-	mainmap.InitMap()
+	mainmap.InitMap(&window)
 
 	for !window.Window.ShouldClose() {
 		// gl.ClearColor(1, 1, 1, 1)
