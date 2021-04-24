@@ -40,7 +40,7 @@ func InitMap(window *render.Window) {
 
 	spriteloader.InitSpriteloader(window)
 
-	spriteSheetId := spriteloader.LoadSpriteSheet("./second_assets/32x32-test-tiles-01.png")
+	spriteSheetId := spriteloader.LoadSpriteSheet("./assets/stars")
 	spriteloader.LoadSprite(spriteSheetId, "blue", 0, 0)
 	spriteloader.LoadSprite(spriteSheetId, "gray", 1, 0)
 	spriteloader.LoadSprite(spriteSheetId, "sand", 2, 0)
