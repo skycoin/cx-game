@@ -1,8 +1,7 @@
 package mainmap
 
 var (
-	m *Map
-
+	m         *Map
 	shownSize int = 16
 )
 
