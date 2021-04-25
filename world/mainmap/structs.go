@@ -1,7 +1,7 @@
 package mainmap
 
 type Map struct {
-	bounds Fullstrum
+	bounds Fulstrum
 	tiles  [size][size]*MapTile
 }
 
@@ -14,7 +14,7 @@ type MapTile struct {
 	tileIdFront      int
 }
 
-type Fullstrum struct {
+type Fulstrum struct {
 	Left   int
 	Right  int
 	Top    int

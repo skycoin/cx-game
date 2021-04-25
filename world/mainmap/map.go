@@ -11,7 +11,7 @@ import (
 func NewMap() *Map {
 
 	newMap := Map{
-		bounds: Fullstrum{
+		bounds: Fulstrum{
 			Left:   0,
 			Right:  shownSize,
 			Top:    shownSize,
@@ -72,31 +72,25 @@ func InitMap(window *render.Window) {
 //DrawMap draws map with data provided. It somehow draws from bottom right to top left need to figuree out why
 func DrawMap() {
 
-	tiles := make([]*MapTile, 0)
+	var firstTile *MapTile
 	for _, row := range m.tiles {
 		for _, tile := range row {
 			if !m.isInBounds(tile) {
 				continue
 			}
+			if firstTile == nil {
+				firstTile = tile
+			}
 
-			// spriteloader.DrawSpriteQuad(tile.x, tile.y, 1, 1, tile.tileIdBackground)
-			tiles = append(tiles, tile)
+			xpos, ypos := convertCoordinates(tile.x, tile.y, firstTile)
+			if tile.show == 0 {
+				continue
+			}
+
+			spriteloader.DrawSpriteQuad(xpos, ypos, 1, 1, tile.tileIdMid)
 		}
 	}
-	firstTile := tiles[0]
-	for i, tile := range tiles {
-		if i == 0 {
-			fmt.Printf("%v    %v\n", tile.x, tile.y)
 
-		}
-
-		xpos, ypos := convertCoordinates(tile.x, tile.y, firstTile)
-		if tile.show == 0 {
-			continue
-		}
-
-		spriteloader.DrawSpriteQuad(xpos, ypos, 1, 1, tile.tileIdMid)
-	}
 }
 
 func convertCoordinates(x, y int, tile *MapTile) (int, int) {
