@@ -38,8 +38,6 @@ var wx, wy, wz float32
 
 func main() {
 
-	app := &cli.App{}
-	app.Run(os.Args)
 	wx = 0
 	wy = 0
 	wz = -3
