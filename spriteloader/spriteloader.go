@@ -35,7 +35,7 @@ var sprites = []Sprite{};
 var spriteIdsByName = make(map[string]int);
 
 func LoadSpriteSheet(fname string) int {
-	img := loadPng(fname)
+	_, img := LoadPng(fname)
 
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(32) / float32(img.Bounds().Dx()),
