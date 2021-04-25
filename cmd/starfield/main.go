@@ -13,6 +13,10 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
+func init() {
+	runtime.LockOSThread()
+}
+
 const (
 	width  = 800
 	height = 480
@@ -33,8 +37,9 @@ var tex uint32
 var wx, wy, wz float32
 
 func main() {
-	runtime.LockOSThread()
 
+	app := &cli.App{}
+	app.Run(os.Args)
 	wx = 0
 	wy = 0
 	wz = -3
@@ -107,7 +112,7 @@ func drawStarField(vao uint32, window *glfw.Window, program uint32) {
 	gl.UseProgram(program)
 
 	// Load the texture
-	texture, err := newTexture("./../../assets/starfield/stars/Starsheet1.png")
+	texture, err := newTexture("./assets/starfield/stars/Starsheet1.png")
 	if err != nil {
 		log.Fatalln(err)
 	}
