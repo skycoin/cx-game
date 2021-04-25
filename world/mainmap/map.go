@@ -22,7 +22,7 @@ func NewMap() *Map {
 	return &newMap
 }
 
-//checks if tile in the fullstrum
+//isInBounds checks if tile in the fullstrum
 func (m *Map) isInBounds(tile *MapTile) bool {
 	if tile.x > m.bounds.Left &&
 		tile.x < m.bounds.Right &&
