@@ -40,7 +40,7 @@ func InitMap(window *render.Window) {
 
 	spriteloader.InitSpriteloader(window)
 
-	spriteSheetId := spriteloader.LoadSpriteSheet("./assets/8x8/test-tile-stone-02.png")
+	spriteSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/planets.png")
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
 			spriteloader.LoadSprite(spriteSheetId, fmt.Sprintf("tile%d", i*8+j), j, i)
