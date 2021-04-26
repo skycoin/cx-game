@@ -1,7 +1,5 @@
 github.com/go-gl/gl v0.0.0-20210315015930-ae072cafe09d h1:o81yRlBATU4PRn97lydmsq8hTRNXI4wlR/VvUQhFRVY=
 github.com/go-gl/gl v0.0.0-20210315015930-ae072cafe09d/go.mod h1:482civXOzJJCPzJ4ZOX/pwvXBWSnzD4OKMdH4ClKGbk=
-github.com/go-gl/glfw v0.0.0-20210311203641-62640a716d48 h1:2Ql7UigDMdlF+Ii12kdox7RKw3J1+uGhXn9FyYbbd20=
-github.com/go-gl/glfw v0.0.0-20210311203641-62640a716d48/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20210311203641-62640a716d48 h1:QrUfZrT8n72FUuiABt4tbu8PwDnOPAbnj3Mql1UhdRI=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20210311203641-62640a716d48/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-gl/mathgl v1.0.0 h1:t9DznWJlXxxjeeKLIdovCOVJQk/GzDEL7h/h+Ro2B68=
@@ -10,5 +8,4 @@ github.com/seehuhn/mt19937 v1.0.0 h1:r02DuVkQXfohssWZO8L/TeAlYOah7aNNubEHB/7Vtfs
 github.com/seehuhn/mt19937 v1.0.0/go.mod h1:RikyXajNu+1Gqxm4hOacc3ckyWRd0usF6IkE3gnEcAM=
 golang.org/x/image v0.0.0-20190321063152-3fc05d484e9f h1:FO4MZ3N56GnxbqxGKqh+YTzUWQ2sDwtFQEZgLOxh9Jc=
 golang.org/x/image v0.0.0-20190321063152-3fc05d484e9f/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
-golang.org/x/text v0.3.0 h1:g61tztE5qeGQ89tm6NTjjM9VPIm088od1l6aSorWRWg=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
