@@ -81,6 +81,18 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	// clarify responsibilities later
 	sprite := sprites[spriteId]
 	spritesheet := spritesheets[sprite.spriteSheetId]
+
+	// bind texture
+	gl.Enable(gl.TEXTURE_2D)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	// NOTE depth test is disabled for now,
+	// as we assume that objects are drawn in the correct order
+	gl.Disable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, spritesheet.tex)
+
 	gl.UseProgram(window.Program)
 	gl.Uniform1ui(
 		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")),
