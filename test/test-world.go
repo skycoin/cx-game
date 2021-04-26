@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -19,6 +20,7 @@ func init() {
 }
 
 var earth *world.Planet
+var cam *camera.Camera
 
 func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
 	if a == glfw.Press && k == glfw.KeyEscape {
@@ -33,6 +35,7 @@ func main() {
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
+	cam = camera.NewCamera()
 	earth = world.NewPlanet(4,4)
 	spriteloader.InitSpriteloader(&win)
 	spriteSheetId := spriteloader.
