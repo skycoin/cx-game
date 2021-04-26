@@ -21,7 +21,7 @@ type SpriteStat struct {
 	//how long to read file from disc
 	readTime time.Duration
 	//how long to convert the .png to internal format
-	converTime time.Duration
+	convertTime time.Duration
 	//is loaded
 	loaded bool
 	//file size
@@ -34,8 +34,8 @@ func (ss *SpriteStat) FileSize() int64 {
 	return ss.fileSize
 }
 
-func (ss *SpriteStat) ConverTime() time.Duration {
-	return ss.converTime
+func (ss *SpriteStat) ConvertTime() time.Duration {
+	return ss.convertTime
 }
 
 func (ss *SpriteStat) ReadTime() time.Duration {
@@ -69,7 +69,7 @@ func timeCost(s func(time.Duration)) func() {
 
 func decodePng(ss *SpriteStat, imgFile *os.File) (int, *image.RGBA) {
 	defer timeCost(func(end time.Duration) {
-		ss.converTime = end
+		ss.convertTime = end
 		ss.loaded = true
 		fmt.Printf("load png ok \n%v\n", ss)
 	})()
@@ -117,7 +117,7 @@ func LoadPng(path string) (int, *image.RGBA) {
 	ss := SpriteStat{
 		name:       path,
 		readTime:   0,
-		converTime: 0,
+		convertTime: 0,
 		fileSize:   0,
 	}
 	imgFile := openPng(&ss)
