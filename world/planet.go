@@ -1,7 +1,6 @@
 package world
 
 import (
-	"log"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/camera"
 )
@@ -37,12 +36,13 @@ func (planet *Planet) DrawLayer(tiles []Tile, cam *camera.Camera) {
 		y := int32(idx)/planet.Width
 		x := int32(idx)%planet.Width
 
-		log.Print("drawing sprite with ID ",tile.SpriteID)
-		spriteloader.DrawSpriteQuad(
-			float32(x)-cam.X,float32(y)-cam.Y,
-			1,1,
-			int(tile.SpriteID),
-		)
+		if (tile.TileType != TileTypeNone) {
+			spriteloader.DrawSpriteQuad(
+				float32(x)-cam.X,float32(y)-cam.Y,
+				1,1,
+				int(tile.SpriteID),
+			)
+		}
 	}
 }
 

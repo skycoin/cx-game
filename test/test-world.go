@@ -59,9 +59,18 @@ func main() {
 
 	log.Print(smallSpriteId,midSpriteId,bigSpriteId)
 
-	earth.Layers.Top[0].SpriteID = uint32(smallSpriteId)
-	earth.Layers.Mid[0].SpriteID = uint32(midSpriteId)
-	earth.Layers.Background[0].SpriteID = uint32(bigSpriteId)
+	earth.Layers.Top[0] = world.Tile{
+		SpriteID: uint32(smallSpriteId),
+		TileType: world.TileTypeNormal,
+	}
+	earth.Layers.Mid[0]= world.Tile{
+		SpriteID: uint32(midSpriteId),
+		TileType: world.TileTypeNormal,
+	}
+	earth.Layers.Background[0] = world.Tile{
+		SpriteID: uint32(bigSpriteId),
+		TileType: world.TileTypeNormal,
+	}
 
 	for !window.ShouldClose() {
 		gl.ClearColor(1,1,1,1)
