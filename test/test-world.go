@@ -36,6 +36,8 @@ func main() {
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
 	cam = camera.NewCamera()
+	cam.X = 2
+	cam.Y = 2
 	earth = world.NewPlanet(4,4)
 	spriteloader.InitSpriteloader(&win)
 	spriteSheetId := spriteloader.
@@ -48,7 +50,7 @@ func main() {
 	for !window.ShouldClose() {
 		gl.ClearColor(1,1,1,1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-		earth.Draw()
+		earth.Draw(cam)
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
