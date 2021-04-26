@@ -122,7 +122,7 @@ func (p *Perlin2D) Noise(x, y float32) float32 {
 	return p.Base(x, y)
 }
 
-func (p *Perlin2D) one_over_f(x, y float32) float32 {
+func (p *Perlin2D) One_over_f(x, y float32) float32 {
 	var tmp float32 = 0
 	tmp += p.Base(x, y)
 	tmp += 0.50 * p.Base(2*x, 2*y)
@@ -132,11 +132,12 @@ func (p *Perlin2D) one_over_f(x, y float32) float32 {
 	return tmp
 }
 
-func (p *Perlin2D) one_over_f_pers(x, y, persistence float32) float32 {
-	var tmp float32 = 0
-	var m float32 = 0
+func (p *Perlin2D) One_over_f_pers(x, y, persistence float32) float32 {
+	var tmp float32 = 0.0
+	var m float32 = 1.0
 
-	tmp += p.Base(x, y)
+	tmp = p.Base(x, y)
+
 	m *= persistence
 
 	tmp += m * p.Base(2*x, 2*y)
@@ -156,7 +157,7 @@ func (p *Perlin2D) one_over_f_pers(x, y, persistence float32) float32 {
 func (p *Perlin2D) order(x, y, persistence float32, order int) float32 {
 	var tmp float32 = 0.0
 	var m float32 = 1.0
-	var b float32 = 1
+	var b float32 = 1.0
 
 	for i := 0; i <= order; i++ {
 		tmp += p.Base(b*x, b*y)
