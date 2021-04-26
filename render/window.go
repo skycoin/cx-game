@@ -89,9 +89,9 @@ func initOpenGL() uint32 {
     #version 410
 	in vec2 tCoord;
     out vec4 frag_colour1;
-	uniform sampler2D textures[8];
+	uniform sampler2D ourTexture;
     void main() {
-		 frag_colour1 = texture(textures[1], tCoord);
+		 frag_colour1 = texture(ourTexture, tCoord);
     }
 ` + "\x00"
 

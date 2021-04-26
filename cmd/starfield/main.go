@@ -1,14 +1,15 @@
 package main
 
 import (
-	// "github.com/skycoin/cx-game/starfield"
 	"fmt"
 	"image"
 	"image/png"
 	"log"
+	"math/rand"
 	"os"
 	"runtime"
 
+	"github.com/skycoin/cx-game/world"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 
@@ -35,13 +36,14 @@ var (
 )
 var tex uint32
 var wx, wy, wz float32
+var numOfStars int
 
 func main() {
 	runtime.LockOSThread()
 
 	wx = 0
 	wy = 0
-	wz = -4
+	wz = -10
 	win := render.NewWindow(height, width, true)
 	window := win.Window
 	defer glfw.Terminate()
@@ -49,8 +51,9 @@ func main() {
 
 	vao := makeVao(square)
 	gl.GenTextures(2, &tex)
+	stars := prepareStars()
 	for !window.ShouldClose() {
-		drawStarField(vao, window, program)
+		drawStarField(vao, window, program, stars)
 	}
 }
 
@@ -164,8 +167,8 @@ func newTexture1(file string) (uint32, error) {
 	return texture, nil
 }
 
-func drawStarField(vao uint32, window *glfw.Window, program uint32) {
-	gl.ClearColor(1, 1, 1, 1)
+func drawStarField(vao uint32, window *glfw.Window, program uint32, stars []world.Star) {
+	// gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	gl.UseProgram(program)
 
@@ -175,25 +178,36 @@ func drawStarField(vao uint32, window *glfw.Window, program uint32) {
 		log.Fatalln(err)
 	}
 
-	texture1, err := newTexture1("./../../assets/starfield/stars/Starsheet1.png")
-	if err != nil {
-		log.Fatalln(err)
+	for i := 0; i < numOfStars; i++ {
+		gl.ActiveTexture(gl.TEXTURE0 + uint32(i))
+		gl.BindTexture(gl.TEXTURE_2D, texture)
+		gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("ourTexture\x00")), 0)
+		worldTranslate := mgl32.Translate3D(stars[i].X, stars[i].Y, wz)
+		gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &worldTranslate[0])
+		projectTransform := mgl32.Perspective(mgl32.DegToRad(45), float32(width)/float32(height), 0.1, 100.0)
+		gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectTransform[0])
+		gl.BindVertexArray(vao)
+		gl.Enable(gl.BLEND);
+		gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);		
+		gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square)/3))
 	}
 
-	gl.ActiveTexture(gl.TEXTURE0 + 0)
-	gl.BindTexture(gl.TEXTURE_2D, texture)
-	gl.ActiveTexture(gl.TEXTURE0 + 1)
-	gl.BindTexture(gl.TEXTURE_2D, texture1)
-	slots:= []int32{0,1}
-	gl.Uniform1iv(gl.GetUniformLocation(program, gl.Str("textures\x00")), 2, (*int32)(gl.Ptr(slots)))
-	worldTranslate := mgl32.Translate3D(wx, wy, wz)
-	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &worldTranslate[0])
-	projectTransform := mgl32.Perspective(mgl32.DegToRad(45), float32(width)/float32(height), 0.1, 100.0)
-	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectTransform[0])
-	gl.BindVertexArray(vao)
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square)/3))
 	glfw.PollEvents()
 	window.SwapBuffers()
+}
+
+func prepareStars() []world.Star {
+	stars := []world.Star{}
+
+	numOfStars = rand.Intn(51) + 50 // todo get from commandline
+	for i := 0; i < numOfStars; i++ {
+		sx := rand.Float32() * 12 - 6 
+		sy := rand.Float32() * 7 - 3
+		star := world.Star{nil, sx, sy, -10}
+		stars = append(stars, star)
+	}
+
+	return stars
 }
 
 // makeVao initializes and returns a vertex array from the points provided.
