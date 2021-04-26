@@ -2,20 +2,43 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"image/draw"
 	"image/png"
 	"log"
+	"math/rand"
 	"os"
 	"runtime"
+	"time"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/render"
+	"github.com/urfave/cli/v2"
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+type Star struct {
+	// Drawable uint32
+	X     float32
+	Y     float32
+	Size  float32
+	Depth float32
+}
+
+type Bitmap_RGBA struct {
+	Width  int
+	Height int
+	Pixels []byte
+}
 
 const (
 	width  = 800
-	height = 480
+	height = 600
 )
 
 var (
@@ -28,26 +51,59 @@ var (
 		-1, -1, 0, 0, 1,
 		-1, 1, 0, 0, 0,
 	}
+	tex        uint32
+	wx, wy, wz float64 = 0, 0, -10
+	size       float64 = 1
+	star       *Star
 )
-var tex uint32
-var wx, wy, wz float32
 
 func main() {
 	runtime.LockOSThread()
 
-	wx = 0
-	wy = 0
-	wz = -3
+	initArgs()
+
+	star = &Star{
+		X:    float32(wx),
+		Y:    float32(wy),
+		Size: float32(size),
+	}
+
 	win := render.NewWindow(height, width, true)
 	window := win.Window
+	window.SetKeyCallback(keyCallback)
 	defer glfw.Terminate()
 	program := win.Program
 
 	vao := makeVao(square)
 	gl.GenTextures(1, &tex)
 	for !window.ShouldClose() {
-		drawStarField(vao, window, program)
+		gl.ClearColor(0, 0, 0.3, 1)
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		gl.UseProgram(program)
+
+		drawStarField(star, vao, window, program)
+
+		glfw.PollEvents()
+		window.SwapBuffers()
 	}
+}
+func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw.ModifierKey) {
+	if a != glfw.Press {
+		return
+	}
+	if k == glfw.KeyEscape {
+		w.SetShouldClose(true)
+	}
+	// switch k {
+	// case glfw.KeyUp:
+	// 	wy += 1
+	// case glfw.KeyDown:
+	// 	wy -= 1
+	// case glfw.KeyLeft:
+	// 	wx -= 1
+	// case glfw.KeyRight:
+	// 	wx += 1
+	// }
 }
 
 func newTexture(file string) (uint32, error) {
@@ -55,29 +111,31 @@ func newTexture(file string) (uint32, error) {
 	if err != nil {
 		return 0, fmt.Errorf("texture %q not found on disk: %v", file, err)
 	}
-	img, err := png.Decode(imgFile)
+	im, err := png.Decode(imgFile)
 	if err != nil {
 		return 0, err
 	}
 
-	w := img.Bounds().Max.X
-	h := img.Bounds().Max.Y
+	// w := img.Bounds().Max.X
+	// h := img.Bounds().Max.Y
 
-	pixels := make([]byte, w*h*4)
-	bIndex := 0
-	for y := 0; y < h; y++ {
-		for x := 0; x < w; x++ {
-			r, g, b, a := img.At(x, y).RGBA()
-			pixels[bIndex] = byte(r / 256)
-			bIndex++
-			pixels[bIndex] = byte(g / 256)
-			bIndex++
-			pixels[bIndex] = byte(b / 256)
-			bIndex++
-			pixels[bIndex] = byte(a / 256)
-			bIndex++
-		}
-	}
+	// pixels := make([]byte, w*h*4)
+	// bIndex := 0
+	// for y := 0; y < h; y++ {
+	// 	for x := 0; x < w; x++ {
+	// 		r, g, b, a := img.At(x, y).RGBA()
+	// 		pixels[bIndex] = byte(r / 256)
+	// 		bIndex++
+	// 		pixels[bIndex] = byte(g / 256)
+	// 		bIndex++
+	// 		pixels[bIndex] = byte(b / 256)
+	// 		bIndex++
+	// 		pixels[bIndex] = byte(a / 256)
+	// 		bIndex++
+	// 	}
+	// }
+	img := image.NewRGBA(im.Bounds())
+	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
 
 	var texture uint32
 	gl.GenTextures(1, &texture)
@@ -91,23 +149,21 @@ func newTexture(file string) (uint32, error) {
 		gl.TEXTURE_2D,
 		0,
 		gl.RGBA,
-		int32(w),
-		int32(h),
+		int32(img.Rect.Dx()),
+		int32(img.Rect.Dy()),
 		0,
 		gl.RGBA,
 		gl.UNSIGNED_BYTE,
-		gl.Ptr(pixels))
+		gl.Ptr(img.Pix))
 	gl.GenerateMipmap(gl.TEXTURE_2D)
 	return texture, nil
 }
 
-func drawStarField(vao uint32, window *glfw.Window, program uint32) {
-	gl.ClearColor(1, 1, 1, 1)
-	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	gl.UseProgram(program)
+func drawStarField(star *Star, vao uint32, window *glfw.Window, program uint32) {
 
 	// Load the texture
-	texture, err := newTexture("./../../assets/starfield/stars/Starsheet1.png")
+	texture, err := newTexture("./assets/starfield/stars/Starsheet1.png")
+
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -115,14 +171,13 @@ func drawStarField(vao uint32, window *glfw.Window, program uint32) {
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, texture)
 	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("ourTexture\x00")), 0)
-	worldTranslate := mgl32.Translate3D(wx, wy, wz)
+	worldTranslate := mgl32.Translate3D(star.X, star.Y, float32(wz)/star.Size)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &worldTranslate[0])
 	projectTransform := mgl32.Perspective(mgl32.DegToRad(45), float32(width)/float32(height), 0.1, 100.0)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectTransform[0])
 	gl.BindVertexArray(vao)
 	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square)/3))
-	glfw.PollEvents()
-	window.SwapBuffers()
+
 }
 
 // makeVao initializes and returns a vertex array from the points provided.
@@ -143,4 +198,32 @@ func makeVao(points []float32) uint32 {
 	gl.EnableVertexAttribArray(1)
 
 	return vao
+}
+
+func initArgs() {
+
+	app := cli.NewApp()
+	app.Flags = []cli.Flag{
+		&cli.Float64Flag{
+			Name:        "x",
+			Usage:       "x position for a star",
+			Destination: &wx,
+		},
+		&cli.Float64Flag{
+			Name:        "y",
+			Usage:       "y position for a star",
+			Destination: &wy,
+		},
+		&cli.Float64Flag{
+			Name:        "size",
+			Usage:       "size for a star (default = 1)",
+			Value:       1,
+			Destination: &size,
+		},
+	}
+	app.Action = func(c *cli.Context) error {
+		return nil
+	}
+	app.Run(os.Args)
+	fmt.Printf("%f %f %f", wx, wy, wz)
 }
