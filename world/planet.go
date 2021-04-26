@@ -2,6 +2,7 @@ package world
 
 import (
 	"log"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type Layers struct {
@@ -35,6 +36,9 @@ func (planet *Planet) DrawLayer(tiles []Tile) {
 	for idx,tile := range tiles {
 		y := int32(idx)/planet.Width
 		x := int32(idx)%planet.Width
+
+		spriteloader.DrawSpriteQuad(float32(x),float32(y),1,1,int(tile.SpriteID))
+
 		log.Print(x,y)
 		log.Print(tile)
 	}

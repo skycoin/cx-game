@@ -4,7 +4,7 @@ import (
 	"log"
 	"runtime"
 
-	//"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -34,6 +34,14 @@ func main() {
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
 	earth = world.NewPlanet(4,4)
+	spriteloader.InitSpriteloader(&win)
+	spriteSheetId := spriteloader.
+		LoadSpriteSheet("./assets/starfield/stars/planets.png")
+	spriteloader.
+		LoadSprite(spriteSheetId, "star", 2,1)
+	spriteId := spriteloader.
+		GetSpriteIdByName("star")
+	_=spriteId
 	for !window.ShouldClose() {
 		gl.ClearColor(1,1,1,1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)

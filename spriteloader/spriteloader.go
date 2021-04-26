@@ -75,7 +75,7 @@ func GetSpriteIdByName(name string) int {
 	return spriteId
 }
 
-func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
+func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
 	// clarify responsibilities later
