@@ -12,6 +12,7 @@ import (
 func genNoiseMap() {
 	width := 256
 	height := 256
+	levels := uint8(8)
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
 	pNoise := perlin.NewPerlin2D(10, 256, 1, 255)
@@ -19,9 +20,8 @@ func genNoiseMap() {
 	// Set color for each pixel.
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			//val := uint8(math.Abs(float64(pNoise.Noise(float32(x)*0.02, float32(y)*0.02) * 255)
 			normVal := (pNoise.Noise(float32(x)*0.02, float32(y)*0.02) + 1.0) / 2.0
-			val := uint8(normVal * 255)
+			val := uint8(normVal*float32(levels)) * (255 / levels)
 			img.Set(x, y, color.RGBA{val, val, val, 255})
 		}
 	}
