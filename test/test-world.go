@@ -30,7 +30,8 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 
 func main() {
 	log.Print("running test")
-	log.Print("You should see an planet.")
+	log.Print("You should see 3 overlapping tiles from different layers.")
+	log.Print("top-to-bottom: (blue, orange, pink)")
 	win := render.NewWindow(640,480,true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
@@ -39,14 +40,29 @@ func main() {
 	cam.X = 2
 	cam.Y = 2
 	earth = world.NewPlanet(4,4)
+
 	spriteloader.InitSpriteloader(&win)
 	spriteSheetId := spriteloader.
 		LoadSpriteSheet("./assets/starfield/stars/planets.png")
 	spriteloader.
-		LoadSprite(spriteSheetId, "star", 2,1)
-	spriteId := spriteloader.
-		GetSpriteIdByName("star")
-	_=spriteId
+		LoadSprite(spriteSheetId, "big", 2,0)
+	bigSpriteId := spriteloader.
+		GetSpriteIdByName("big")
+	spriteloader.
+		LoadSprite(spriteSheetId, "mid", 1,1)
+	midSpriteId := spriteloader.
+		GetSpriteIdByName("mid")
+	spriteloader.
+		LoadSprite(spriteSheetId, "small", 3,2)
+	smallSpriteId := spriteloader.
+		GetSpriteIdByName("small")
+
+	log.Print(smallSpriteId,midSpriteId,bigSpriteId)
+
+	earth.Layers.Top[0].SpriteID = uint32(smallSpriteId)
+	earth.Layers.Mid[0].SpriteID = uint32(midSpriteId)
+	earth.Layers.Background[0].SpriteID = uint32(bigSpriteId)
+
 	for !window.ShouldClose() {
 		gl.ClearColor(1,1,1,1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)

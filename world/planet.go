@@ -19,14 +19,13 @@ type Planet struct {
 }
 
 func NewPlanet(x, y int32) *Planet {
-	tiles := make([]Tile,x*y)
 	planet := Planet{
 		Width:  x,
 		Height: y,
 		Layers:  Layers{
-			Background: tiles,
-			Mid: tiles,
-			Top: tiles,
+			Background: make([]Tile,x*y),
+			Mid: make([]Tile,x*y),
+			Top: make([]Tile,x*y),
 		},
 	}
 
