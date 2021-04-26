@@ -26,15 +26,15 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 func main() {
 	log.Print("running test")
 	log.Print("You should see an orange square rock.")
-	win := render.NewWindow(1080, 800, true)
+	win := render.NewWindow(800, 800, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
 	spriteloader.InitSpriteloader(&win)
 	spriteSheetId := spriteloader.
-		LoadSpriteSheet("../assets/starfield/stars/planets.png")
+		LoadSpriteSheetByColRow("../assets/blackcat_sprite.png", 13, 4)
 	spriteloader.
-		LoadSprite(spriteSheetId, "star", 1, 3)
+		LoadSprite(spriteSheetId, "star", 2, 1)
 	spriteId := spriteloader.
 		GetSpriteIdByName("star")
 	for !window.ShouldClose() {
