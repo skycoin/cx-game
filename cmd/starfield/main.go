@@ -199,10 +199,12 @@ func drawStarField(vao uint32, window *glfw.Window, program uint32, stars []worl
 func prepareStars() []world.Star {
 	stars := []world.Star{}
 
-	numOfStars = rand.Intn(51) + 50 // todo get from commandline
+	numOfStars = 1 //rand.Intn(51) + 50 // todo get from commandline
 	for i := 0; i < numOfStars; i++ {
 		sx := rand.Float32() * 12 - 6 
 		sy := rand.Float32() * 7 - 3
+		sx= 0
+		sy = 0
 		star := world.Star{nil, sx, sy, -10}
 		stars = append(stars, star)
 	}
