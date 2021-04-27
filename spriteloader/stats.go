@@ -46,18 +46,18 @@ func (ss *SpriteStat) Loaded() bool {
 	return ss.loaded
 }
 
-func LoadingRate() float32 {
-	var allSize, loadingSize int64
-	for _, ss := range spritesStat {
-		sz := ss.FileSize()
-		allSize += sz
-		if ss.Loaded() {
-			loadingSize += sz
-		}
-	}
-
-	return float32(loadingSize / allSize)
-}
+//func LoadingRate() float32 {
+//	var allSize, loadingSize int64
+//	for _, ss := range spritesStat {
+//		sz := ss.FileSize()
+//		allSize += sz
+//		if ss.Loaded() {
+//			loadingSize += sz
+//		}
+//	}
+//
+//	return float32(loadingSize / allSize)
+//}
 
 func timeCost(s func(time.Duration)) func() {
 	start := time.Now()
@@ -71,7 +71,7 @@ func decodePng(ss *SpriteStat, imgFile *os.File) (int, *image.RGBA) {
 	defer timeCost(func(end time.Duration) {
 		ss.convertTime = end
 		ss.loaded = true
-		fmt.Printf("load png ok \n%v\n", ss)
+		fmt.Printf("decode png ok \n%v\n", ss.name)
 	})()
 	defer imgFile.Close()
 
@@ -84,14 +84,14 @@ func decodePng(ss *SpriteStat, imgFile *os.File) (int, *image.RGBA) {
 
 	img := image.NewRGBA(im.Bounds())
 	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
-	spritesStat[ss.name] = ss
+	//spritesStat[ss.name] = ss
 	return LoadOk, img
 }
 
 func openPng(ss *SpriteStat) *os.File {
 	defer timeCost(func(end time.Duration) {
 		ss.readTime = end
-		fmt.Printf("open png ok \n%v\n", ss)
+		fmt.Printf("open png ok \n%v\n", ss.name)
 	})()
 	imgFile, err := os.Open(ss.name)
 
@@ -109,10 +109,10 @@ func openPng(ss *SpriteStat) *os.File {
 
 //please check return value if load failed
 func LoadPng(path string) (int, *image.RGBA) {
-	_, ok := spritesStat[path]
-	if ok {
-		return HadLoaded, nil
-	}
+	//_, ok := spritesStat[path]
+	//if ok {
+	//	return HadLoaded, nil
+	//}
 
 	ss := SpriteStat{
 		name:       path,
@@ -126,4 +126,15 @@ func LoadPng(path string) (int, *image.RGBA) {
 	}
 
 	return decodePng(&ss, imgFile)
+}
+
+func GetCodeString(code int) string {
+	var ret string
+	switch code {
+	case LoadOk: ret = "LoadOk"
+	case HadLoaded: ret = "HadLoaded"
+	case OpenError: ret = "OpenError"
+	case DecodeError: ret = "DecodeError"
+	}
+	return ret
 }
