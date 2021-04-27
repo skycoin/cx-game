@@ -97,12 +97,12 @@ func initOpenGL() uint32 {
     }
 ` + "\x00"
 
-	vertexShader, err := compileShader(vertexShaderSource, gl.VERTEX_SHADER)
+	vertexShader, err := CompileShader(vertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
 		panic(err)
 	}
 
-	fragmentShader, err := compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
+	fragmentShader, err := CompileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
 	if err != nil {
 		panic(err)
 	}
@@ -119,7 +119,7 @@ func initOpenGL() uint32 {
 	return prog
 }
 
-func compileShader(source string, shaderType uint32) (uint32, error) {
+func CompileShader(source string, shaderType uint32) (uint32, error) {
 	shader := gl.CreateShader(shaderType)
 
 	csources, free := gl.Strs(source)
