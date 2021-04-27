@@ -7,6 +7,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/starmap"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
@@ -157,6 +158,9 @@ func main() {
 	program := win.Program
 	gl.GenTextures(1, &tex)
 	lastTime := models.GetTimeStamp()
+
+	starmap.Generate(256, 0.04, 8)
+
 	for !window.ShouldClose() {
 		currTime := models.GetTimeStamp()
 		elapsed := currTime-lastTime
