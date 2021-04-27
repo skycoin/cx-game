@@ -19,7 +19,7 @@ var window *render.Window
 // call this before loading any spritesheets
 func InitSpriteloader(_window *render.Window) {
 	window = _window
-	quadVao = makeQuadVao()
+	quadVao = MakeQuadVao()
 }
 
 type Spritesheet struct {
@@ -203,7 +203,7 @@ var quadVertexAttributes = []float32{
 
 var quadVao uint32
 
-func makeQuadVao() uint32 {
+func MakeQuadVao() uint32 {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 
