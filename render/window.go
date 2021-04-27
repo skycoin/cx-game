@@ -113,8 +113,8 @@ func initOpenGL() uint32 {
 	gl.LinkProgram(prog)
 	gl.UseProgram(prog)
 	gl.Uniform2f(
-		gl.GetUniformLocation(prog,gl.Str("texScale\x00")),
-		1.0,1.0,
+		gl.GetUniformLocation(prog, gl.Str("texScale\x00")),
+		1.0, 1.0,
 	)
 	return prog
 }
