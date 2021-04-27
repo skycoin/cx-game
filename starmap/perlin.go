@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"io/ioutil"
+	"log"
 	"math"
 
 	//"gopkg.in/yaml.v2"
@@ -19,6 +20,16 @@ var texture uint32
 var gradient uint32
 var program uint32
 var vao uint32
+var window *render.Window
+
+var xpos float32 = 0.0
+var ypos float32 = 0.0
+var xwidth float32 = 6
+var yheight float32 = 6
+
+func Init(_window *render.Window) {
+	window = _window
+}
 
 func Generate(size int, scale float32, levels uint8) {
 	img := image.NewRGBA(image.Rect(0, 0, size, size))
@@ -63,42 +74,14 @@ func Generate(size int, scale float32, levels uint8) {
 	gradient = sl.MakeTexture(gradientImg)
 
 	program = gl.CreateProgram()
+
 	gl.AttachShader(program, vertex)
 	gl.AttachShader(program, fragment)
 	gl.LinkProgram(program)
-	gl.UseProgram(program) // use shader
-
 	gl.DeleteShader(vertex)
 	gl.DeleteShader(fragment)
 
-	var quadVertexAttributes = []float32{
-		1, 1, 0, 1, 0,
-		1, -1, 0, 1, 1,
-		-1, 1, 0, 0, 0,
-
-		1, -1, 0, 1, 1,
-		-1, -1, 0, 0, 1,
-		-1, 1, 0, 0, 0,
-	}
-
-	var vbo uint32
-	gl.GenBuffers(1, &vbo)
-
-	//var vao uint32
-	gl.GenVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
-	gl.EnableVertexAttribArray(0)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(
-		gl.ARRAY_BUFFER,
-		4*len(quadVertexAttributes),
-		gl.Ptr(quadVertexAttributes),
-		gl.STATIC_DRAW,
-	)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
-	gl.EnableVertexAttribArray(0)
-	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
-	gl.EnableVertexAttribArray(1)
+	vao = sl.MakeQuadVao()
 }
 
 func Draw() {
@@ -106,11 +89,11 @@ func Draw() {
 
 	textureLocation := gl.GetUniformLocation(program, gl.Str("nebulaText\x00"))
 	if textureLocation == -1 {
-		panic("can't get the texture uniform location")
+		log.Println("[WARNING] can't get the nebule texture uniform location")
 	}
 	gradientLocation := gl.GetUniformLocation(program, gl.Str("gradientText\x00"))
 	if gradientLocation == -1 {
-		panic("can't get the texture uniform location")
+		log.Println("[WARNING] can't get the gradient texture uniform location")
 	}
 
 	gl.Uniform1i(textureLocation, 0)
@@ -125,13 +108,6 @@ func Draw() {
 		float32(0.0), float32(0.0),
 	)
 
-	xpos := 0.0
-	ypos := 0.0
-	xwidth := 6
-	yheight := 6
-	windowWidth := 800
-	windowHeight := 480
-
 	worldTranslate := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
@@ -141,7 +117,7 @@ func Draw() {
 		1, false, &worldTranslate[0],
 	)
 
-	aspect := float32(windowWidth) / float32(windowHeight)
+	aspect := float32(window.Width) / float32(window.Height)
 	projectTransform := mgl32.Perspective(
 		mgl32.DegToRad(45), aspect, 0.1, 100.0,
 	)
