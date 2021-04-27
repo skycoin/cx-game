@@ -15,10 +15,8 @@ import (
 	sl "github.com/skycoin/cx-game/spriteloader"
 )
 
-type config struct {
-}
-
 var texture uint32
+var gradient uint32
 var program uint32
 var vao uint32
 
@@ -61,6 +59,9 @@ func Generate(size int, scale float32, levels uint8) {
 	}
 
 	texture = sl.MakeTexture(img)
+	_, gradientImg := sl.LoadPng("./assets/starfield/gradients/heightmap_gradient_07.png")
+	gradient = sl.MakeTexture(gradientImg)
+
 	program = gl.CreateProgram()
 	gl.AttachShader(program, vertex)
 	gl.AttachShader(program, fragment)
@@ -103,11 +104,18 @@ func Generate(size int, scale float32, levels uint8) {
 func Draw() {
 	gl.UseProgram(program) // use shader
 
-	textLocaion := gl.GetUniformLocation(program, gl.Str("nebulaText\x00"))
-	if textLocaion < 0 {
-		panic("no texture uniform")
+	textureLocation := gl.GetUniformLocation(program, gl.Str("nebulaText\x00"))
+	if textureLocation == -1 {
+		panic("can't get the texture uniform location")
 	}
-	gl.Uniform1ui(textLocaion, texture)
+	gradientLocation := gl.GetUniformLocation(program, gl.Str("gradientText\x00"))
+	if gradientLocation == -1 {
+		panic("can't get the texture uniform location")
+	}
+
+	gl.Uniform1i(textureLocation, 0)
+	gl.Uniform1i(gradientLocation, 1)
+
 	gl.Uniform2f(
 		gl.GetUniformLocation(program, gl.Str("texScale\x00")),
 		1.0, 1.0,
@@ -119,8 +127,11 @@ func Draw() {
 
 	xpos := 0.0
 	ypos := 0.0
-	xwidth := 5
-	yheight := 4.5
+	xwidth := 6
+	yheight := 6
+	windowWidth := 800
+	windowHeight := 480
+
 	worldTranslate := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
@@ -130,7 +141,7 @@ func Draw() {
 		1, false, &worldTranslate[0],
 	)
 
-	aspect := float32(800) / float32(600)
+	aspect := float32(windowWidth) / float32(windowHeight)
 	projectTransform := mgl32.Perspective(
 		mgl32.DegToRad(45), aspect, 0.1, 100.0,
 	)
@@ -141,6 +152,8 @@ func Draw() {
 
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, texture)
+	gl.ActiveTexture(gl.TEXTURE0 + 1)
+	gl.BindTexture(gl.TEXTURE_2D, gradient)
 
 	gl.BindVertexArray(vao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
