@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"runtime"
+	"time"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -25,7 +26,7 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 
 func main() {
 	log.Print("running test")
-	log.Print("You should see an orange square rock.")
+	log.Print("You should see a black cat walking")
 	win := render.NewWindow(800, 800, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
@@ -33,15 +34,23 @@ func main() {
 	spriteloader.InitSpriteloader(&win)
 	spriteSheetId := spriteloader.
 		LoadSpriteSheetByColRow("../assets/blackcat_sprite.png", 13, 4)
-	spriteloader.
-		LoadSprite(spriteSheetId, "star", 2, 1)
-	spriteId := spriteloader.
-		GetSpriteIdByName("star")
-	for !window.ShouldClose() {
+
+	j := 0
+	for {
+		if window.ShouldClose() {
+			break
+		}
+		spriteloader.LoadSprite(spriteSheetId, "blackcat", 0, j)
+		spriteId := spriteloader.GetSpriteIdByName("blackcat")
 		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		time.Sleep(100 * time.Millisecond)
 		spriteloader.DrawSpriteQuad(0, 0, 1, 1, spriteId)
 		glfw.PollEvents()
 		window.SwapBuffers()
+		j++
+		if j == 11 {
+			j = 0
+		}
 	}
 }
