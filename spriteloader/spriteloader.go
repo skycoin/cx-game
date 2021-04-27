@@ -75,12 +75,24 @@ func GetSpriteIdByName(name string) int {
 	return spriteId
 }
 
-func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
+func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
 	// clarify responsibilities later
 	sprite := sprites[spriteId]
 	spritesheet := spritesheets[sprite.spriteSheetId]
+
+	// bind texture
+	gl.Enable(gl.TEXTURE_2D)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	// NOTE depth test is disabled for now,
+	// as we assume that objects are drawn in the correct order
+	gl.Disable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, spritesheet.tex)
+
 	gl.UseProgram(window.Program)
 	gl.Uniform1ui(
 		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")),
@@ -94,15 +106,10 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight, spriteId int) {
 		gl.GetUniformLocation(window.Program, gl.Str("texOffset\x00")),
 		float32(sprite.x), float32(sprite.y),
 	)
-	scale := float32(3)
+
 	worldTranslate := mgl32.Mat4.Mul4(
-<<<<<<< HEAD
 		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
-=======
-		mgl32.Translate3D(3.7-float32(xpos)/(2*scale), float32(ypos)/(2*scale)-3.8, -10),
-		mgl32.Scale3D(float32(xwidth)/4/scale, float32(yheight)/4/scale, 1),
->>>>>>> 03ee91a... saved
 	)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(window.Program, gl.Str("world\x00")),
@@ -170,13 +177,13 @@ func makeTexture(img *image.RGBA) uint32 {
 
 // x,y,z,u,v
 var quadVertexAttributes = []float32{
-	1, 1, 0, 1, 0,
-	1, -1, 0, 1, 1,
-	-1, 1, 0, 0, 0,
+	0.5, 0.5, 0, 1, 0,
+	0.5, -0.5, 0, 1, 1,
+	-0.5, 0.5, 0, 0, 0,
 
-	1, -1, 0, 1, 1,
-	-1, -1, 0, 0, 1,
-	-1, 1, 0, 0, 0,
+	0.5, -0.5, 0, 1, 1,
+	-0.5, -0.5, 0, 0, 1,
+	-0.5, 0.5, 0, 0, 0,
 }
 
 var quadVao uint32
