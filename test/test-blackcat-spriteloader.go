@@ -40,7 +40,6 @@ func main() {
 		if window.ShouldClose() {
 			break
 		}
-
 		spriteloader.LoadSprite(spriteSheetId, "blackcat", 0, j)
 		spriteId := spriteloader.GetSpriteIdByName("blackcat")
 		gl.ClearColor(1, 1, 1, 1)
@@ -49,7 +48,6 @@ func main() {
 		spriteloader.DrawSpriteQuad(0, 0, 1, 1, spriteId)
 		glfw.PollEvents()
 		window.SwapBuffers()
-
 		j++
 		if j == 11 {
 			j = 0
