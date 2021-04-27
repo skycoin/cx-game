@@ -14,7 +14,7 @@ CX game is a new 2D console game.
 
 ---
 ## Installation
-cx-game requires Golang version of `1.4+`
+cx-game requires Golang version of `1.13+`
 
 ## Compiling on Linux
 Install dependencies with
