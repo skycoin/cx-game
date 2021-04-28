@@ -6,15 +6,39 @@ import (
 	"io/ioutil"
 	"log"
 	"math"
-
-	//"gopkg.in/yaml.v2"
+	"os"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/render"
 	sl "github.com/skycoin/cx-game/spriteloader"
+	"gopkg.in/yaml.v2"
 )
+
+type noiseSettings struct {
+	Size     int
+	Scale    float32
+	Levels   uint8
+	Contrast float32
+
+	Seed        int64
+	Gradmax     int
+	X           int
+	Xs          int
+	Persistance float32
+	Lacunarity  float32
+	Octaves     int
+
+	GradFile string
+}
+
+type quadProp struct {
+	xpos    float32
+	ypos    float32
+	xwidth  float32
+	yheight float32
+}
 
 var texture uint32
 var gradient uint32
@@ -22,56 +46,51 @@ var program uint32
 var vao uint32
 var window *render.Window
 
-var xpos float32 = 0.0
-var ypos float32 = 0.0
-var xwidth float32 = 6
-var yheight float32 = 6
+var frameCounter = 0 // reload the texture if yaml has change
+const maxFrames = 60 // every 60 frames
+const settingsFile = "./starmap/config/starmap.yaml"
+const fragShaderFile = "./starmap/gradient.glsl"
+const vertShaderFile = "./starmap/vertex.glsl"
+
+var quad quadProp = quadProp{
+	xpos:    0.0,
+	ypos:    0.0,
+	xwidth:  15.0,
+	yheight: 10.0,
+}
+
+var settingsFileInfo os.FileInfo
+var lastGradFile string
 
 func Init(_window *render.Window) {
 	window = _window
 }
 
 func Generate(size int, scale float32, levels uint8) {
-	img := image.NewRGBA(image.Rect(0, 0, size, size))
-	perlinField := perlin.NewPerlin2D(1, 512, 4, 256)
-	max := float32(math.Sqrt2 / 1.9)
-	min := float32(-math.Sqrt2 / 1.9)
-
-	// Set color for each pixel.
-	for x := 0; x < size; x++ {
-		for y := 0; y < size; y++ {
-			val := perlinField.Noise(float32(x)*scale, float32(y)*scale, 0.5, 2, 8)
-			val = (val - min) / (max - min)                           // normalized aproximation
-			brightness := uint8(val*float32(levels)) * (255 / levels) // map values
-			//brightness := uint8(val * 255)
-			img.Set(x, y, color.RGBA{brightness, brightness, brightness, 255})
-		}
-	}
-
-	//file, _ := os.Create("test_noise.png")
-	//png.Encode(file, img)
-
-	fragSource, err := ioutil.ReadFile("./starmap/gradient.glsl")
+	var err error
+	settingsFileInfo, err = os.Stat(settingsFile)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
-	vertSource, err := ioutil.ReadFile("./starmap/vertex.glsl")
+	loadTextures()
+
+	fragSource, err := ioutil.ReadFile(fragShaderFile)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
+	}
+	vertSource, err := ioutil.ReadFile(vertShaderFile)
+	if err != nil {
+		log.Panic(err)
 	}
 
 	fragment, err := render.CompileShader(string(fragSource), gl.FRAGMENT_SHADER)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	vertex, err := render.CompileShader(string(vertSource), gl.VERTEX_SHADER)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
-
-	texture = sl.MakeTexture(img)
-	_, gradientImg := sl.LoadPng("./assets/starfield/gradients/heightmap_gradient_07.png")
-	gradient = sl.MakeTexture(gradientImg)
 
 	program = gl.CreateProgram()
 
@@ -85,6 +104,19 @@ func Generate(size int, scale float32, levels uint8) {
 }
 
 func Draw() {
+	frameCounter += 1
+	if frameCounter > maxFrames {
+		frameCounter = 0
+		if fileHasChanged(settingsFile, settingsFileInfo) {
+			var err error
+			settingsFileInfo, err = os.Stat(settingsFile)
+			if err != nil {
+				log.Panic(err)
+			}
+			loadTextures()
+		}
+	}
+
 	gl.UseProgram(program) // use shader
 
 	textureLocation := gl.GetUniformLocation(program, gl.Str("nebulaText\x00"))
@@ -109,8 +141,8 @@ func Draw() {
 	)
 
 	worldTranslate := mgl32.Mat4.Mul4(
-		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
-		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
+		mgl32.Translate3D(float32(quad.xpos), float32(quad.ypos), -10),
+		mgl32.Scale3D(float32(quad.xwidth), float32(quad.yheight), 1),
 	)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(program, gl.Str("world\x00")),
@@ -133,4 +165,77 @@ func Draw() {
 
 	gl.BindVertexArray(vao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+}
+
+func loadTextures() {
+	noise := noiseSettings{}
+
+	settingsData, err := ioutil.ReadFile(settingsFile)
+	if err != nil {
+		log.Panic(err)
+	}
+	err = yaml.Unmarshal(settingsData, &noise)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	if lastGradFile != noise.GradFile {
+		lastGradFile = noise.GradFile
+		_, gradImg := sl.LoadPng(noise.GradFile)
+		gradient = sl.MakeTexture(gradImg)
+	}
+
+	img := genImage(noise)
+	texture = sl.MakeTexture(img)
+}
+
+func genImage(noise noiseSettings) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, noise.Size, noise.Size))
+
+	perlinField := perlin.NewPerlin2D(noise.Seed, noise.X, noise.Xs, noise.Gradmax)
+	max := float32(math.Sqrt2 / (1.9 * noise.Contrast))
+	min := float32(-math.Sqrt2 / (1.9 * noise.Contrast))
+
+	// Set color for each pixel.
+	for x := 0; x < noise.Size; x++ {
+		for y := 0; y < noise.Size; y++ {
+			val := perlinField.Noise(
+				float32(x)*noise.Scale,
+				float32(y)*noise.Scale,
+				noise.Persistance,
+				noise.Lacunarity,
+				noise.Octaves,
+			)
+			val = clamp((val-min)/(max-min), 0.0, 1.0)                            // normalized aproximation
+			brightness := uint8(val*float32(noise.Levels)) * (255 / noise.Levels) // map values
+			//brightness := uint8(val * 255)
+			img.Set(x, y, color.RGBA{brightness, brightness, brightness, 255})
+		}
+	}
+
+	return img
+}
+
+func fileHasChanged(filepath string, fileInfo os.FileInfo) bool {
+	stat, err := os.Stat(filepath)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	if stat.Size() != fileInfo.Size() || stat.ModTime() != fileInfo.ModTime() {
+		return true
+	}
+
+	return false
+}
+
+func clamp(number, min, max float32) float32 {
+	if number > max {
+		return max
+	}
+	if number < min {
+		return min
+	}
+	return number
 }

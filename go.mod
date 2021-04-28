@@ -8,4 +8,5 @@ require (
 	github.com/go-gl/mathgl v1.0.0
 	github.com/seehuhn/mt19937 v1.0.0
 	github.com/urfave/cli/v2 v2.3.0
+	gopkg.in/yaml.v2 v2.2.3
 )
