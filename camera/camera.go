@@ -1,21 +1,24 @@
 package camera
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"github.com/go-gl/mathgl/mgl32"
+	"github.com/skycoin/cx-game/render"
+)
 
 type Camera struct {
 	X        float32
 	Y        float32
 	Zoom     float32
 	movSpeed float32
-	window   *Window
+	window   *render.Window
 }
 
-func NewCamera(window *Window) *Camera {
+func NewCamera(window *render.Window) *Camera {
 	cam := Camera{
 		X:        0,
 		Y:        0,
 		Zoom:     1.0,
-		movSpeed: 0,
+		movSpeed: 5,
 		window:   window,
 	}
 
@@ -37,8 +40,8 @@ func (camera *Camera) GetTransform() mgl32.Mat4 {
 }
 
 func (camera *Camera) SetCameraCenter() {
-	camera.X = float32(camera.window.X) / 2
-	camera.Y = float32(camera.window.Y) / 2
+	camera.X = float32(camera.window.Width) / 2
+	camera.Y = float32(camera.window.Height) / 2
 	UpdateFrustrum(camera.X, camera.Y, camera.Zoom)
 }
 
