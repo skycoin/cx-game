@@ -1,0 +1,45 @@
+package main
+
+import (
+	"runtime"
+
+	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/starmap"
+)
+
+func init() {
+	runtime.LockOSThread()
+}
+
+const (
+	width  = 800
+	height = 600
+)
+
+func main() {
+	win := render.NewWindow(height, width, false)
+	window := win.Window
+	window.SetKeyCallback(keyCallback)
+	// program := win.Program
+	defer glfw.Terminate()
+
+	starmap.Init(&win)
+	starmap.Generate(256, 0.04, 8)
+
+	for !window.ShouldClose() {
+		gl.ClearColor(1, 1, 1, 1)
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+		starmap.Draw()
+
+		glfw.PollEvents()
+		window.SwapBuffers()
+	}
+}
+func keyCallback(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
+	if a == glfw.Press && k == glfw.KeyTab {
+		starmap.Generate(256, 0.08, 4)
+	}
+}
