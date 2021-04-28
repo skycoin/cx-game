@@ -42,11 +42,12 @@ var (
 	size       float64 = 1
 	spriteId   int
 	stars      []*Star
+	background = 0 //0 is black, 1 is rgb
 )
 
 func main() {
 	//parse command line arguments and flags
-	// initArgs()
+	initArgs()
 
 	win := render.NewWindow(height, width, true)
 	defer glfw.Terminate()
@@ -87,7 +88,11 @@ func main() {
 	//main loop
 	for !window.ShouldClose() {
 		//clearing buffers
-		gl.ClearColor(0, 0, 0, 1)
+		if background == 0 {
+			gl.ClearColor(0, 0, 0, 1)
+		} else {
+			gl.ClearColor(1, 1, 1, 1)
+		}
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		// drawing stars
@@ -137,28 +142,26 @@ func initArgs() {
 
 	app := cli.NewApp()
 	app.Flags = []cli.Flag{
-		&cli.Float64Flag{
-			Name:        "x",
-			Usage:       "x position for a star",
-			Destination: &wx,
+		&cli.IntFlag{
+			Name:        "background",
+			Aliases:     []string{"bg", "b"},
+			Usage:       "background to use",
+			Value:       0,
+			Destination: &background,
 		},
-		&cli.Float64Flag{
-			Name:        "y",
-			Usage:       "y position for a star",
-			Destination: &wy,
-		},
-		&cli.Float64Flag{
-			Name:        "size",
-			Usage:       "size for a star (default = 1)",
-			Value:       1,
-			Destination: &size,
-		},
+	}
+	app.After = func(c *cli.Context) error {
+		command := c.Args().First()
+		if command == "help" {
+			os.Exit(0)
+		}
+		return nil
 	}
 	app.Action = func(c *cli.Context) error {
 		return nil
 	}
 	app.Run(os.Args)
-	fmt.Printf("%f %f %f\n", wx, wy, wz)
+	// fmt.Printf("%f %f %f\n", wx, wy, wz)
 }
 
 func shuffle() {
