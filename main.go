@@ -58,7 +58,7 @@ var spacePressed bool
 var cat *models.Cat
 var fps *models.Fps
 
-var Cam camera.Camera
+var Cam  = camera.Camera {X:20}
 var tex uint32
 
 func makeVao() uint32 {
