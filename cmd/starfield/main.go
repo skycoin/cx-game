@@ -11,6 +11,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/starmap"
 	"github.com/urfave/cli/v2"
 )
 
@@ -43,6 +44,15 @@ var (
 	spriteId   int
 	stars      []*Star
 	background = 0 //0 is black, 1 is rgb
+	sprite     = []float32{
+		1, 1, 0, 1, 0,
+		1, -1, 0, 1, 1,
+		-1, 1, 0, 0, 0,
+
+		1, -1, 0, 1, 1,
+		-1, -1, 0, 0, 1,
+		-1, 1, 0, 0, 0,
+	}
 )
 
 func main() {
@@ -53,20 +63,29 @@ func main() {
 	defer glfw.Terminate()
 	window := win.Window
 	program := win.Program
+	vao := makeVao()
+	gl.BindVertexArray(vao)
 
+	starmap.Init(&win)
+	starmap.Generate(256, 0.08, 3)
 	window.SetKeyCallback(keyCallback)
 
 	//spriteloader init
 	spriteloader.InitSpriteloader(&win)
-	spriteSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/starfield_test_16x16_tiles_8x8_tile_grid_128x128.png")
+	starsSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/starfield_test_16x16_tiles_8x8_tile_grid_128x128.png")
+	planetsSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/planets.png")
 
 	//load all sprites from spritesheet
-	for x := 0; x < 4; x++ {
-		for y := 0; y < 4; y++ {
+	for y := 0; y < 4; y++ {
+		for x := 0; x < 4; x++ {
 			//load sprites
-			spriteloader.LoadSprite(spriteSheetId,
-				fmt.Sprintf("stars-%d", x*4+y),
+			spriteloader.LoadSprite(starsSheetId,
+				fmt.Sprintf("stars-%d", y*4+x),
 				x, y)
+			spriteloader.LoadSprite(planetsSheetId,
+				fmt.Sprintf("planets-%d", y*4+x),
+				x, y,
+			)
 		}
 	}
 
@@ -83,22 +102,27 @@ func main() {
 			})
 		}
 	}
+	stars = append(stars, &Star{
+		X:        float32(0),
+		Y:        float32(0),
+		Size:     1,
+		SpriteId: spriteloader.GetSpriteIdByName(fmt.Sprintf("planets-%d", rand.Intn(16))),
+	})
 
 	gl.UseProgram(program)
 	//main loop
 	for !window.ShouldClose() {
 		//clearing buffers
-		if background == 0 {
-			gl.ClearColor(0, 0, 0, 1)
-		} else {
-			gl.ClearColor(1, 1, 1, 1)
-		}
+		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		// drawing stars
+
+		starmap.Draw()
 		for _, star := range stars {
 			spriteloader.DrawSpriteQuad(star.X, star.Y, 1, 1, star.SpriteId)
 		}
+
 		// spriteloader.DrawSpriteQuad(float32(wx), float32(wy), 1, 1, 0)
 
 		//polling events and swapping window buffers
@@ -168,4 +192,22 @@ func shuffle() {
 	for _, star := range stars {
 		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(15)))
 	}
+}
+
+func makeVao() uint32 {
+	var vbo uint32
+	gl.GenBuffers(1, &vbo)
+
+	var vao uint32
+	gl.GenVertexArrays(1, &vao)
+	gl.BindVertexArray(vao)
+	gl.EnableVertexAttribArray(0)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, 4*len(sprite), gl.Ptr(sprite), gl.STATIC_DRAW)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
+	gl.EnableVertexAttribArray(1)
+
+	return vao
 }

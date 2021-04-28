@@ -19,7 +19,7 @@ var window *render.Window
 // call this before loading any spritesheets
 func InitSpriteloader(_window *render.Window) {
 	window = _window
-	quadVao = makeQuadVao()
+	quadVao = MakeQuadVao()
 }
 
 type Spritesheet struct {
@@ -36,15 +36,28 @@ var spritesheets = []Spritesheet{}
 var sprites = []Sprite{}
 var spriteIdsByName = make(map[string]int)
 
-
-//Load spritesheet 
-func LoadSpriteSheet(fname string) int {
-	_, img := LoadPng(fname)
+func AddSpriteSheet(path string, il *ImgLoader) int {
+	img := il.GetImg(path)
+	if img == nil {
+		return -1
+	}
 
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(32) / float32(img.Bounds().Dx()),
 		yScale: float32(32) / float32(img.Bounds().Dy()),
-		tex:    makeTexture(img),
+		tex:    MakeTexture(img),
+	})
+
+	return len(spritesheets) - 1
+}
+
+func LoadSpriteSheet(fname string) int {
+	_, img, _ := LoadPng(fname)
+
+	spritesheets = append(spritesheets, Spritesheet{
+		xScale: float32(32) / float32(img.Bounds().Dx()),
+		yScale: float32(32) / float32(img.Bounds().Dy()),
+		tex:    MakeTexture(img),
 	})
 
 	return len(spritesheets) - 1
@@ -52,26 +65,24 @@ func LoadSpriteSheet(fname string) int {
 
 //Load spritesheet with rows and columns specified
 func LoadSpriteSheetByColRow(fname string, row int, col int) int {
-	_, img := LoadPng(fname)
+	_, img, _ := LoadPng(fname)
 
 	fmt.Println("xScale: ", float32(img.Bounds().Dx()/col)/float32(img.Bounds().Dx()))
 	fmt.Println("yScale: ", float32(img.Bounds().Dy()/row)/float32(img.Bounds().Dy()))
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(img.Bounds().Dx()/col) / float32(img.Bounds().Dx()),
 		yScale: float32(img.Bounds().Dy()/row) / float32(img.Bounds().Dy()),
-		tex:    makeTexture(img),
+		tex:    MakeTexture(img),
 	})
 
 	return len(spritesheets) - 1
 }
-
 
 //Load sprite into internal sheet
 func LoadSprite(spriteSheetId int, name string, x, y int) {
 	sprites = append(sprites, Sprite{spriteSheetId, x, y})
 	spriteIdsByName[name] = len(sprites) - 1
 }
-
 
 //Get the id of loaded sprite by its registered name
 func GetSpriteIdByName(name string) int {
@@ -81,7 +92,6 @@ func GetSpriteIdByName(name string) int {
 	}
 	return spriteId
 }
-
 
 //Draw sprite specified with spriteId at x,y position
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
@@ -159,7 +169,7 @@ func loadPng(fname string) *image.RGBA {
 }
 
 // upload an in-memory RGBA image to the GPU
-func makeTexture(img *image.RGBA) uint32 {
+func MakeTexture(img *image.RGBA) uint32 {
 	var tex uint32
 	gl.GenTextures(1, &tex)
 
@@ -198,7 +208,7 @@ var quadVertexAttributes = []float32{
 
 var quadVao uint32
 
-func makeQuadVao() uint32 {
+func MakeQuadVao() uint32 {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 
