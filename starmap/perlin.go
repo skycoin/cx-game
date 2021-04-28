@@ -181,7 +181,7 @@ func loadTextures() {
 
 	if lastGradFile != noise.GradFile {
 		lastGradFile = noise.GradFile
-		_, gradImg := sl.LoadPng(noise.GradFile)
+		_, gradImg, _ := sl.LoadPng(noise.GradFile)
 		gradient = sl.MakeTexture(gradImg)
 	}
 

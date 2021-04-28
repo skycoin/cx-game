@@ -45,7 +45,7 @@ func AddSpriteSheet(path string, il *ImgLoader) int {
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(32) / float32(img.Bounds().Dx()),
 		yScale: float32(32) / float32(img.Bounds().Dy()),
-		tex:    makeTexture(img),
+		tex:    MakeTexture(img),
 	})
 
 	return len(spritesheets) - 1
