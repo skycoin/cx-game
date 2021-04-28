@@ -13,6 +13,7 @@ import (
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 func init() {
@@ -59,6 +60,7 @@ var fps *models.Fps
 
 var Cam camera.Camera
 var tex uint32
+var planet  = world.NewPlanet(20,20)
 
 func makeVao() uint32 {
 	var vbo uint32
@@ -144,6 +146,15 @@ func main() {
 	wy = 0
 	wz = -10
 	win := render.NewWindow(height, width, true)
+	spriteloader.InitSpriteloader(&win)
+	spriteSheetId := spriteloader.
+		LoadSpriteSheet("./assets/tile/mixed-tileset_00.png")
+	spriteloader.
+		LoadSprite(spriteSheetId,"red",0,0)
+	planet.Layers.Background[0] = world.Tile {
+		TileType: world.TileTypeNormal,
+		SpriteID: uint32(spriteloader.GetSpriteIdByName("red")),
+	}
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
@@ -211,6 +222,8 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectTransform[0])
 	gl.BindVertexArray(VAO)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+
+	planet.Draw(&Cam)
 	glfw.PollEvents()
 	window.SwapBuffers()
 }
