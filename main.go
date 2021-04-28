@@ -60,7 +60,6 @@ var fps *models.Fps
 
 var Cam camera.Camera
 var tex uint32
-var planet  = world.NewPlanet(20,20)
 
 func makeVao() uint32 {
 	var vbo uint32
@@ -147,14 +146,7 @@ func main() {
 	wz = -10
 	win := render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
-	spriteSheetId := spriteloader.
-		LoadSpriteSheet("./assets/tile/mixed-tileset_00.png")
-	spriteloader.
-		LoadSprite(spriteSheetId,"red",0,0)
-	planet.Layers.Background[0] = world.Tile {
-		TileType: world.TileTypeNormal,
-		SpriteID: uint32(spriteloader.GetSpriteIdByName("red")),
-	}
+	CurrentPlanet = world.NewDevPlanet()
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
@@ -223,7 +215,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.BindVertexArray(VAO)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
-	planet.Draw(&Cam)
+	CurrentPlanet.Draw(&Cam)
 	glfw.PollEvents()
 	window.SwapBuffers()
 }
