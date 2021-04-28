@@ -28,8 +28,6 @@ type ImgStat struct {
 	fileSize int64
 }
 
-var spritesStat = make(map[string]*ImgStat)
-
 func (imgStat *ImgStat) FileSize() int64 {
 	return imgStat.fileSize
 }
