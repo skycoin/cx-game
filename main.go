@@ -147,13 +147,16 @@ func main() {
 	fps = models.NewFps(false)
 
 	wx = 0
-	wy = 0
+	wy = 5
 	wz = -10
 	win := render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	CurrentPlanet = world.NewDevPlanet()
 	window := win.Window
 	Cam = camera.NewCamera(&win)
+	wx = 20
+	Cam.X = 20
+
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
 	VAO := makeVao()
@@ -179,7 +182,7 @@ func boolToInt(x bool) int {
 }
 
 func Tick(elapsed int) {
-	if wy > -3 {
+	if wy > 1.5 {
 		cat.YVelocity -= gravity
 	} else {
 		cat.YVelocity = 0
@@ -244,7 +247,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.BindVertexArray(VAO)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
-	CurrentPlanet.Draw(&Cam)
+	CurrentPlanet.Draw(Cam)
 	glfw.PollEvents()
 	window.SwapBuffers()
 }
