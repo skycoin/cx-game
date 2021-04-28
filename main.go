@@ -54,6 +54,8 @@ var leftPressed bool
 var rightPressed bool
 var spacePressed bool
 
+var isFreeCam = false
+
 var cat *models.Cat
 var fps *models.Fps
 
@@ -108,6 +110,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyZ {
 			wz -= 0.5
 		}
+		if k == glfw.KeyF2 {
+			isFreeCam = !isFreeCam
+		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
 			//wy += 0.5
@@ -151,13 +156,22 @@ func main() {
 	program := win.Program
 	gl.GenTextures(1, &tex)
 	for !window.ShouldClose() {
-		Tick()
+		elapsed := models.GetTimeStamp() - fps.LastTime
+		Tick(elapsed)
 		redraw(window, program, VAO)
 		fps.Tick()
 	}
 }
 
-func Tick() {
+func boolToInt(x bool) int {
+	if x {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+func Tick(elapsed int) {
 	if wy > -3 {
 		cat.YVelocity -= gravity
 	} else {
@@ -180,8 +194,17 @@ func Tick() {
 		cat.XVelocity = -0.05
 	}
 
-	wx += cat.XVelocity
-	wy += cat.YVelocity
+	if isFreeCam {
+		Cam.MoveCam(
+			float32(boolToInt(rightPressed)-boolToInt(leftPressed)),
+			float32(boolToInt(upPressed)-boolToInt(downPressed)),
+			0,
+			float32(elapsed)/1000,
+		)
+	} else {
+		wx += cat.XVelocity
+		wy += cat.YVelocity
+	}
 
 	spacePressed = false
 }
