@@ -147,7 +147,7 @@ func main() {
 	fps = models.NewFps(false)
 
 	wx = 0
-	wy = 5
+	wy = 10
 	wz = -10
 	win := render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
@@ -156,6 +156,7 @@ func main() {
 	Cam = camera.NewCamera(&win)
 	wx = 20
 	Cam.X = 20
+	Cam.Y = 5
 
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
@@ -182,7 +183,7 @@ func boolToInt(x bool) int {
 }
 
 func Tick(elapsed int) {
-	if wy > 1.5 {
+	if wy > 6.5 {
 		cat.YVelocity -= gravity
 	} else {
 		cat.YVelocity = 0
