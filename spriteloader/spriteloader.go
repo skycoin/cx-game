@@ -19,7 +19,7 @@ var window *render.Window
 // call this before loading any spritesheets
 func InitSpriteloader(_window *render.Window) {
 	window = _window
-	quadVao = makeQuadVao()
+	quadVao = MakeQuadVao()
 }
 
 type Spritesheet struct {
@@ -45,7 +45,7 @@ func AddSpriteSheet(path string, il *ImgLoader) int {
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(32) / float32(img.Bounds().Dx()),
 		yScale: float32(32) / float32(img.Bounds().Dy()),
-		tex:    makeTexture(img),
+		tex:    MakeTexture(img),
 	})
 
 	return len(spritesheets) - 1
@@ -57,7 +57,7 @@ func LoadSpriteSheet(fname string) int {
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(32) / float32(img.Bounds().Dx()),
 		yScale: float32(32) / float32(img.Bounds().Dy()),
-		tex:    makeTexture(img),
+		tex:    MakeTexture(img),
 	})
 
 	return len(spritesheets) - 1
@@ -71,7 +71,7 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) int {
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(img.Bounds().Dx()/col) / float32(img.Bounds().Dx()),
 		yScale: float32(img.Bounds().Dy()/row) / float32(img.Bounds().Dy()),
-		tex:    makeTexture(img),
+		tex:    MakeTexture(img),
 	})
 
 	return len(spritesheets) - 1
@@ -164,7 +164,7 @@ func loadPng(fname string) *image.RGBA {
 }
 
 // upload an in-memory RGBA image to the GPU
-func makeTexture(img *image.RGBA) uint32 {
+func MakeTexture(img *image.RGBA) uint32 {
 	var tex uint32
 	gl.GenTextures(1, &tex)
 
@@ -203,7 +203,7 @@ var quadVertexAttributes = []float32{
 
 var quadVao uint32
 
-func makeQuadVao() uint32 {
+func MakeQuadVao() uint32 {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 
