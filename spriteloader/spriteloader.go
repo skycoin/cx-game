@@ -146,6 +146,17 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 
 	gl.BindVertexArray(quadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+
+	// restore texScale and texOffset to defaults
+	// TODO separate GPU programs such that this becomes unecessary
+	gl.Uniform2f(
+		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
+		1,1,
+	)
+	gl.Uniform2f(
+		gl.GetUniformLocation(window.Program, gl.Str("texOffset\x00")),
+		0,0,
+	)
 }
 
 //this function is unused??
