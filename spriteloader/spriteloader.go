@@ -63,6 +63,7 @@ func LoadSpriteSheet(fname string) int {
 	return len(spritesheets) - 1
 }
 
+//Load spritesheet with rows and columns specified
 func LoadSpriteSheetByColRow(fname string, row int, col int) int {
 	_, img, _ := LoadPng(fname)
 
@@ -77,11 +78,13 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) int {
 	return len(spritesheets) - 1
 }
 
+//Load sprite into internal sheet
 func LoadSprite(spriteSheetId int, name string, x, y int) {
 	sprites = append(sprites, Sprite{spriteSheetId, x, y})
 	spriteIdsByName[name] = len(sprites) - 1
 }
 
+//Get the id of loaded sprite by its registered name
 func GetSpriteIdByName(name string) int {
 	spriteId, ok := spriteIdsByName[name]
 	if !ok {
@@ -90,6 +93,7 @@ func GetSpriteIdByName(name string) int {
 	return spriteId
 }
 
+//Draw sprite specified with spriteId at x,y position
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
@@ -122,13 +126,13 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 		float32(sprite.x), float32(sprite.y),
 	)
 
-	worldTranslate := mgl32.Mat4.Mul4(
+	worldTransform := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
 	)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(window.Program, gl.Str("world\x00")),
-		1, false, &worldTranslate[0],
+		1, false, &worldTransform[0],
 	)
 
 	aspect := float32(window.Width) / float32(window.Height)
@@ -144,6 +148,7 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
 
+//this function is unused??
 // load a PNG image from disk into memory as RGBA
 func loadPng(fname string) *image.RGBA {
 	imgFile, err := os.Open(fname)

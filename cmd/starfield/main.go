@@ -2,10 +2,6 @@ package main
 
 import (
 	"fmt"
-	"image"
-	"image/draw"
-	"image/png"
-	"log"
 	"math/rand"
 	"os"
 	"runtime"
@@ -13,27 +9,28 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/starmap"
 	"github.com/urfave/cli/v2"
 )
 
+//Press TAB to shuffle stars
+
 func init() {
+	// seed rand so stars will be random each program run
 	rand.Seed(time.Now().UnixNano())
+	//lock thread so drawing will be only in main thread, otherwise there will be errors
+	runtime.LockOSThread()
 }
 
 type Star struct {
 	// Drawable uint32
-	X     float32
-	Y     float32
-	Size  float32
-	Depth float32
-}
-
-type Bitmap_RGBA struct {
-	Width  int
-	Height int
-	Pixels []byte
+	X        float32
+	Y        float32
+	Size     float32
+	SpriteId int
+	Depth    float32
 }
 
 const (
@@ -42,7 +39,12 @@ const (
 )
 
 var (
-	square = []float32{
+	wx, wy, wz float64 = 0, 0, -10
+	size       float64 = 1
+	spriteId   int
+	stars      []*Star
+	background = 0 //0 is black, 1 is rgb
+	sprite     = []float32{
 		1, 1, 0, 1, 0,
 		1, -1, 0, 1, 1,
 		-1, 1, 0, 0, 0,
@@ -51,42 +53,84 @@ var (
 		-1, -1, 0, 0, 1,
 		-1, 1, 0, 0, 0,
 	}
-	tex        uint32
-	wx, wy, wz float64 = 0, 0, -10
-	size       float64 = 1
-	star       *Star
 )
 
 func main() {
-	runtime.LockOSThread()
-
+	//parse command line arguments and flags
 	initArgs()
 
-	star = &Star{
-		X:    float32(wx),
-		Y:    float32(wy),
-		Size: float32(size),
+	win := render.NewWindow(height, width, true)
+	defer glfw.Terminate()
+	window := win.Window
+	program := win.Program
+	vao := makeVao()
+	gl.BindVertexArray(vao)
+
+	starmap.Init(&win)
+	starmap.Generate(256, 0.08, 3)
+	window.SetKeyCallback(keyCallback)
+
+	//spriteloader init
+	spriteloader.InitSpriteloader(&win)
+	starsSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/starfield_test_16x16_tiles_8x8_tile_grid_128x128.png")
+	planetsSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/planets.png")
+
+	//load all sprites from spritesheet
+	for y := 0; y < 4; y++ {
+		for x := 0; x < 4; x++ {
+			//load sprites
+			spriteloader.LoadSprite(starsSheetId,
+				fmt.Sprintf("stars-%d", y*4+x),
+				x, y)
+			spriteloader.LoadSprite(planetsSheetId,
+				fmt.Sprintf("planets-%d", y*4+x),
+				x, y,
+			)
+		}
 	}
 
-	win := render.NewWindow(height, width, true)
-	window := win.Window
-	window.SetKeyCallback(keyCallback)
-	defer glfw.Terminate()
-	program := win.Program
+	for x := 0; x < win.Width/50; x++ {
+		for y := 0; y < win.Height/50; y++ {
 
-	vao := makeVao(square)
-	gl.GenTextures(1, &tex)
+			// create star structs
+			stars = append(stars, &Star{
+				X:    float32(x - 5),
+				Y:    float32(y - 4),
+				Size: rand.Float32()/2 + 0.5,
+				// Size:     1,
+				SpriteId: spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(16))),
+			})
+		}
+	}
+	stars = append(stars, &Star{
+		X:        float32(0),
+		Y:        float32(0),
+		Size:     1,
+		SpriteId: spriteloader.GetSpriteIdByName(fmt.Sprintf("planets-%d", rand.Intn(16))),
+	})
+
+	gl.UseProgram(program)
+	//main loop
 	for !window.ShouldClose() {
-		gl.ClearColor(0, 0, 0.3, 1)
+		//clearing buffers
+		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-		gl.UseProgram(program)
 
-		drawStarField(star, vao, window, program)
+		// drawing stars
 
+		starmap.Draw()
+		for _, star := range stars {
+			spriteloader.DrawSpriteQuad(star.X, star.Y, 1, 1, star.SpriteId)
+		}
+
+		// spriteloader.DrawSpriteQuad(float32(wx), float32(wy), 1, 1, 0)
+
+		//polling events and swapping window buffers
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
 }
+
 func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw.ModifierKey) {
 	if a != glfw.Press {
 		return
@@ -96,120 +140,74 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw
 	}
 	switch k {
 	case glfw.KeyUp:
-		star.Y += 1
+		wy += 1
 	case glfw.KeyDown:
-		star.Y -= 1
+		wy -= 1
 	case glfw.KeyLeft:
-		star.X -= 1
+		wx -= 1
 	case glfw.KeyRight:
-		star.X += 1
+		wx += 1
 	case glfw.KeyX:
-		star.Size -= 0.1
+		size -= 0.1
 	case glfw.KeyZ:
-		star.Size += 0.1
+		size += 0.1
+	case glfw.KeyL:
+		spriteId += 1
+	case glfw.KeyJ:
+		spriteId -= 1
+	case glfw.KeyTab:
+		shuffle()
 	}
-}
+	// log.Printf("wx: %f, wy: %f", wx, wy)
 
-func newTexture(file string) (uint32, error) {
-	imgFile, err := os.Open(file)
-	if err != nil {
-		return 0, fmt.Errorf("texture %q not found on disk: %v", file, err)
-	}
-	im, err := png.Decode(imgFile)
-	if err != nil {
-		return 0, err
-	}
-
-	img := image.NewRGBA(im.Bounds())
-	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
-
-	var texture uint32
-	gl.GenTextures(1, &texture)
-	gl.ActiveTexture(gl.TEXTURE0)
-	gl.BindTexture(gl.TEXTURE_2D, texture)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-	gl.TexImage2D(
-		gl.TEXTURE_2D,
-		0,
-		gl.RGBA,
-		int32(img.Rect.Dx()),
-		int32(img.Rect.Dy()),
-		0,
-		gl.RGBA,
-		gl.UNSIGNED_BYTE,
-		gl.Ptr(img.Pix))
-	gl.GenerateMipmap(gl.TEXTURE_2D)
-	return texture, nil
-}
-
-func drawStarField(star *Star, vao uint32, window *glfw.Window, program uint32) {
-
-	// Load the texture
-	texture, err := newTexture("./assets/starfield/stars/Starsheet1.png")
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	gl.ActiveTexture(gl.TEXTURE0)
-	gl.BindTexture(gl.TEXTURE_2D, texture)
-	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("ourTexture\x00")), 0)
-	worldTranslate := mgl32.Translate3D(star.X, star.Y, float32(wz)/star.Size)
-	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &worldTranslate[0])
-	projectTransform := mgl32.Perspective(mgl32.DegToRad(45), float32(width)/float32(height), 0.1, 100.0)
-	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectTransform[0])
-	gl.BindVertexArray(vao)
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square)/3))
-
-}
-
-// makeVao initializes and returns a vertex array from the points provided.
-func makeVao(points []float32) uint32 {
-	var vbo uint32
-	gl.GenBuffers(1, &vbo)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, 4*len(points), gl.Ptr(points), gl.STATIC_DRAW)
-
-	var vao uint32
-	gl.GenVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
-	gl.EnableVertexAttribArray(0)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
-	gl.EnableVertexAttribArray(0)
-	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
-	gl.EnableVertexAttribArray(1)
-
-	return vao
 }
 
 func initArgs() {
 
 	app := cli.NewApp()
 	app.Flags = []cli.Flag{
-		&cli.Float64Flag{
-			Name:        "x",
-			Usage:       "x position for a star",
-			Destination: &wx,
+		&cli.IntFlag{
+			Name:        "background",
+			Aliases:     []string{"bg", "b"},
+			Usage:       "background to use",
+			Value:       0,
+			Destination: &background,
 		},
-		&cli.Float64Flag{
-			Name:        "y",
-			Usage:       "y position for a star",
-			Destination: &wy,
-		},
-		&cli.Float64Flag{
-			Name:        "size",
-			Usage:       "size for a star (default = 1)",
-			Value:       1,
-			Destination: &size,
-		},
+	}
+	app.After = func(c *cli.Context) error {
+		command := c.Args().First()
+		if command == "help" {
+			os.Exit(0)
+		}
+		return nil
 	}
 	app.Action = func(c *cli.Context) error {
 		return nil
 	}
 	app.Run(os.Args)
-	fmt.Printf("%f %f %f\n", wx, wy, wz)
+	// fmt.Printf("%f %f %f\n", wx, wy, wz)
+}
+
+func shuffle() {
+	for _, star := range stars {
+		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(15)))
+	}
+}
+
+func makeVao() uint32 {
+	var vbo uint32
+	gl.GenBuffers(1, &vbo)
+
+	var vao uint32
+	gl.GenVertexArrays(1, &vao)
+	gl.BindVertexArray(vao)
+	gl.EnableVertexAttribArray(0)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, 4*len(sprite), gl.Ptr(sprite), gl.STATIC_DRAW)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
+	gl.EnableVertexAttribArray(1)
+
+	return vao
 }
