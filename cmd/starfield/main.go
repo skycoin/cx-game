@@ -33,13 +33,11 @@ type Star struct {
 	Depth    float32
 }
 
-const ()
-
 var (
-	wx, wy, wz      float64 = 0, 0, -10
-	size            float64 = 1
-	spriteId        int
-	stars           []*Star
+	// wx, wy, wz      float64 = 0, 0, -10
+	// size            float64 = 1
+	// spriteId        int
+	// stars           []*Star
 	backgroundStars []*Star
 
 	sprite = []float32{
@@ -89,12 +87,11 @@ func main() {
 		gl.ClearColor(0, 0, 0, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-		// drawing stars
 		if background == 1 {
 			starmap.Draw()
 		}
 
-		//has to be after starmap, todo rework with depth values
+		//has to be after starmap, otherwise starmap will be drawn over the stars
 		drawStarField(&win)
 
 		//polling events and swapping window buffers
@@ -112,22 +109,22 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw
 		w.SetShouldClose(true)
 	}
 	switch k {
-	case glfw.KeyUp:
-		wy += 1
-	case glfw.KeyDown:
-		wy -= 1
-	case glfw.KeyLeft:
-		wx -= 1
-	case glfw.KeyRight:
-		wx += 1
-	case glfw.KeyX:
-		size -= 0.1
-	case glfw.KeyZ:
-		size += 0.1
-	case glfw.KeyL:
-		spriteId += 1
-	case glfw.KeyJ:
-		spriteId -= 1
+	// case glfw.KeyUp:
+	// 	wy += 1
+	// case glfw.KeyDown:
+	// 	wy -= 1
+	// case glfw.KeyLeft:
+	// 	wx -= 1
+	// case glfw.KeyRight:
+	// 	wx += 1
+	// case glfw.KeyX:
+	// 	size -= 0.1
+	// case glfw.KeyZ:
+	// 	size += 0.1
+	// case glfw.KeyL:
+	// 	spriteId += 1
+	// case glfw.KeyJ:
+	// 	spriteId -= 1
 	case glfw.KeyTab:
 		shuffle()
 	}
@@ -185,8 +182,9 @@ func initArgs() {
 
 //silly function to shuffle stars on the background
 func shuffle() {
-	for _, star := range stars {
-		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(15)))
+	for _, star := range backgroundStars {
+		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("background-stars-%d", rand.Intn(15)))
+		star.Size = getSize()
 	}
 }
 
@@ -214,7 +212,7 @@ func initStarField(win *render.Window) {
 	//spriteloader init
 	spriteloader.InitSpriteloader(win)
 	starSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/starfield_test_16x16_tiles_8x8_tile_grid_128x128.png")
-	galaxySheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/galaxy_256x256.png")
+	// galaxySheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/galaxy_256x256.png")
 
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
@@ -223,38 +221,60 @@ func initStarField(win *render.Window) {
 				x, y)
 		}
 	}
-	//load all sprites from spritesheet
-	for y := 0; y < 8; y++ {
-		for x := 0; x < 8; x++ {
+	// //load all sprites from spritesheet
+	// for y := 0; y < 6; y++ {
+	// 	for x := 0; x < 8; x++ {
 
-			//for stars
-			spriteloader.LoadSprite(galaxySheetId,
-				fmt.Sprintf("galaxy-stars-%d", y*4+x),
-				x, y,
-			)
-		}
-
-		for x := 0; x < win.Width/50; x++ {
-			for y := 0; y < win.Height/50; y++ {
-				backgroundStars = append(backgroundStars, &Star{
-					X: float32(x - 5),
-					Y: float32(y - 4),
-					// Size:     rand.Float32()/2 + 0.5,
-					Size:     1,
-					SpriteId: spriteloader.GetSpriteIdByName(fmt.Sprintf("background-stars-%d", rand.Intn(16))),
-				})
-			}
+	// 		//for stars
+	// 		spriteloader.LoadSprite(galaxySheetId,
+	// 			fmt.Sprintf("galaxy-stars-%d", y*8+x),
+	// 			x, y,
+	// 		)
+	// 	}
+	// }
+	for x := 0; x < win.Width/60; x++ {
+		for y := 0; y < win.Height/60; y++ {
+			backgroundStars = append(backgroundStars, &Star{
+				X:    float32(x - win.Width/120),
+				Y:    float32(y - win.Height/120),
+				Size: getSize(),
+				// Size:     1,
+				SpriteId: spriteloader.GetSpriteIdByName(fmt.Sprintf("background-stars-%d", rand.Intn(16))),
+			})
 		}
 	}
+
+	// for i := 0; i < starAmount; i++ {
+	// 	stars = append(stars, &Star{
+	// 		X:        rand.Float32()*15 - 8,
+	// 		Y:        rand.Float32()*8 - 5,
+	// 		Size:     1,
+	// 		SpriteId: spriteloader.GetSpriteIdByName(fmt.Sprintf("galaxy-stars-%d", rand.Intn(48))),
+	// 	})
+	// }
+
 }
 
 func drawStarField(win *render.Window) {
 
 	//draw star background
+
 	for _, star := range backgroundStars {
 		spriteloader.DrawSpriteQuad(star.X, star.Y, star.Size, star.Size, star.SpriteId)
 	}
+
 	// for _, star := range stars {
 	// 	spriteloader.DrawSpriteQuad(star.X, star.Y, 1, 1, star.SpriteId)
 	// }
+
 }
+
+func getSize() float32 {
+	size := rand.Float32()/2 + 0.75
+	if size > 0.5 && size < 0.75 {
+		size = rand.Float32() / 4
+	}
+	return size
+}
+
+//TODO add shader 1d texture gradient
