@@ -51,3 +51,7 @@ func (planet *Planet) Draw(cam *camera.Camera) {
 	planet.DrawLayer(planet.Layers.Mid, cam)
 	planet.DrawLayer(planet.Layers.Top, cam)
 }
+
+func (planet *Planet) GetTileIndex(x,y int) int {
+	return y*int(planet.Width)+x
+}
