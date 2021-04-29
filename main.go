@@ -54,10 +54,12 @@ var leftPressed bool
 var rightPressed bool
 var spacePressed bool
 
+var isFreeCam = false
+
 var cat *models.Cat
 var fps *models.Fps
 
-var Cam camera.Camera
+var Cam *camera.Camera
 var tex uint32
 
 func makeVao() uint32 {
@@ -108,6 +110,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyZ {
 			wz -= 0.5
 		}
+		if k == glfw.KeyF2 {
+			isFreeCam = !isFreeCam
+		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
 			//wy += 0.5
@@ -145,19 +150,32 @@ func main() {
 	wz = -10
 	win := render.NewWindow(height, width, true)
 	window := win.Window
+	Cam = camera.NewCamera(&win)
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
 	VAO := makeVao()
 	program := win.Program
 	gl.GenTextures(1, &tex)
+	lastTime := models.GetTimeStamp()
 	for !window.ShouldClose() {
-		Tick()
+		currTime := models.GetTimeStamp()
+		elapsed := currTime-lastTime
+		Tick(elapsed)
 		redraw(window, program, VAO)
 		fps.Tick()
+		lastTime = currTime
 	}
 }
 
-func Tick() {
+func boolToInt(x bool) int {
+	if x {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+func Tick(elapsed int) {
 	if wy > -3 {
 		cat.YVelocity -= gravity
 	} else {
@@ -180,8 +198,17 @@ func Tick() {
 		cat.XVelocity = -0.05
 	}
 
-	wx += cat.XVelocity
-	wy += cat.YVelocity
+	if isFreeCam {
+		Cam.MoveCam(
+			float32(boolToInt(rightPressed)-boolToInt(leftPressed)),
+			float32(boolToInt(upPressed)-boolToInt(downPressed)),
+			0,
+			float32(elapsed)/1000,
+		)
+	} else {
+		wx += cat.XVelocity
+		wy += cat.YVelocity
+	}
 
 	spacePressed = false
 }
@@ -206,7 +233,9 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(cat.Size.X), int32(cat.Size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(cat.RGBA.Pix))
 	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("ourTexture\x00")), 0)
 	worldTranslate := mgl32.Translate3D(wx, wy, wz)
-	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &worldTranslate[0])
+	inverseCamTranslate := Cam.GetTransform().Inv()
+	modelViewMatrix := inverseCamTranslate.Mul4(worldTranslate)
+	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &modelViewMatrix[0])
 	projectTransform := mgl32.Perspective(mgl32.DegToRad(45), float32(width)/float32(height), 0.1, 100.0)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectTransform[0])
 	gl.BindVertexArray(VAO)

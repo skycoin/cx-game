@@ -36,8 +36,23 @@ var spritesheets = []Spritesheet{}
 var sprites = []Sprite{}
 var spriteIdsByName = make(map[string]int)
 
+func AddSpriteSheet(path string, il *ImgLoader) int {
+	img := il.GetImg(path)
+	if img == nil {
+		return -1
+	}
+
+	spritesheets = append(spritesheets, Spritesheet{
+		xScale: float32(32) / float32(img.Bounds().Dx()),
+		yScale: float32(32) / float32(img.Bounds().Dy()),
+		tex:    makeTexture(img),
+	})
+
+	return len(spritesheets) - 1
+}
+
 func LoadSpriteSheet(fname string) int {
-	_, img := LoadPng(fname)
+	_, img, _ := LoadPng(fname)
 
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(32) / float32(img.Bounds().Dx()),
@@ -49,7 +64,7 @@ func LoadSpriteSheet(fname string) int {
 }
 
 func LoadSpriteSheetByColRow(fname string, row int, col int) int {
-	_, img := LoadPng(fname)
+	_, img, _ := LoadPng(fname)
 
 	fmt.Println("xScale: ", float32(img.Bounds().Dx()/col)/float32(img.Bounds().Dx()))
 	fmt.Println("yScale: ", float32(img.Bounds().Dy()/row)/float32(img.Bounds().Dy()))

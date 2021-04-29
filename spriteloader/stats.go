@@ -11,53 +11,51 @@ import (
 
 const (
 	LoadOk = iota
-	HadLoaded
+	//HadLoaded
 	OpenError
 	DecodeError
 )
 
-type SpriteStat struct {
+type ImgStat struct {
 	name string
 	//how long to read file from disc
 	readTime time.Duration
 	//how long to convert the .png to internal format
-	converTime time.Duration
+	convertTime time.Duration
 	//is loaded
 	loaded bool
 	//file size
 	fileSize int64
 }
 
-var spritesStat = make(map[string]*SpriteStat)
-
-func (ss *SpriteStat) FileSize() int64 {
-	return ss.fileSize
+func (imgStat *ImgStat) FileSize() int64 {
+	return imgStat.fileSize
 }
 
-func (ss *SpriteStat) ConverTime() time.Duration {
-	return ss.converTime
+func (imgStat *ImgStat) ConvertTime() time.Duration {
+	return imgStat.convertTime
 }
 
-func (ss *SpriteStat) ReadTime() time.Duration {
-	return ss.readTime
+func (imgStat *ImgStat) ReadTime() time.Duration {
+	return imgStat.readTime
 }
 
-func (ss *SpriteStat) Loaded() bool {
-	return ss.loaded
+func (imgStat *ImgStat) Loaded() bool {
+	return imgStat.loaded
 }
 
-func LoadingRate() float32 {
-	var allSize, loadingSize int64
-	for _, ss := range spritesStat {
-		sz := ss.FileSize()
-		allSize += sz
-		if ss.Loaded() {
-			loadingSize += sz
-		}
-	}
-
-	return float32(loadingSize / allSize)
-}
+//func LoadingRate() float32 {
+//	var allSize, loadingSize int64
+//	for _, ss := range spritesStat {
+//		sz := ss.FileSize()
+//		allSize += sz
+//		if ss.Loaded() {
+//			loadingSize += sz
+//		}
+//	}
+//
+//	return float32(loadingSize / allSize)
+//}
 
 func timeCost(s func(time.Duration)) func() {
 	start := time.Now()
@@ -67,63 +65,68 @@ func timeCost(s func(time.Duration)) func() {
 	}
 }
 
-func decodePng(ss *SpriteStat, imgFile *os.File) (int, *image.RGBA) {
+func decodePng(imgStat *ImgStat, imgFile *os.File) (int, *image.RGBA, *ImgStat) {
 	defer timeCost(func(end time.Duration) {
-		ss.converTime = end
-		ss.loaded = true
-		fmt.Printf("load png ok \n%v\n", ss)
+		imgStat.convertTime = end
+		imgStat.loaded = true
+		fmt.Printf("decode png ok \n%v\n", imgStat.name)
 	})()
 	defer imgFile.Close()
 
 	im, err := png.Decode(imgFile)
 	if err != nil {
-		fmt.Printf("error decodePng %v %v\n", ss, err)
+		fmt.Printf("error decodePng %v %v\n", imgStat, err)
 		// log.Fatalln(err)
-		return DecodeError, nil
+		return DecodeError, nil, nil
 	}
 
 	img := image.NewRGBA(im.Bounds())
 	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
-	spritesStat[ss.name] = ss
-	return LoadOk, img
+	return LoadOk, img, imgStat
 }
 
-func openPng(ss *SpriteStat) *os.File {
+func openPng(imgStat *ImgStat) *os.File {
 	defer timeCost(func(end time.Duration) {
-		ss.readTime = end
-		fmt.Printf("open png ok \n%v\n", ss)
+		imgStat.readTime = end
+		fmt.Printf("open png ok \n%v\n", imgStat.name)
 	})()
-	imgFile, err := os.Open(ss.name)
+	imgFile, err := os.Open(imgStat.name)
 
 	if err != nil {
-		fmt.Printf("error openPng %v %v\n", ss, err)
+		fmt.Printf("error openPng %v %v\n", imgStat, err)
 		// log.Fatalln(err)
 		imgFile.Close()
 		return nil
 	}
 
 	fi, _ := imgFile.Stat()
-	ss.fileSize = fi.Size()
+	imgStat.fileSize = fi.Size()
 	return imgFile
 }
 
 //please check return value if load failed
-func LoadPng(path string) (int, *image.RGBA) {
-	_, ok := spritesStat[path]
-	if ok {
-		return HadLoaded, nil
-	}
-
-	ss := SpriteStat{
+func LoadPng(path string) (int, *image.RGBA, *ImgStat) {
+	imgStat := ImgStat{
 		name:       path,
 		readTime:   0,
-		converTime: 0,
+		convertTime: 0,
 		fileSize:   0,
 	}
-	imgFile := openPng(&ss)
+	imgFile := openPng(&imgStat)
 	if imgFile == nil {
-		return OpenError, nil
+		return OpenError, nil, nil
 	}
 
-	return decodePng(&ss, imgFile)
+	return decodePng(&imgStat, imgFile)
+}
+
+func GetCodeString(code int) string {
+	var ret string
+	switch code {
+	case LoadOk: ret = "LoadOk"
+	//case HadLoaded: ret = "HadLoaded"
+	case OpenError: ret = "OpenError"
+	case DecodeError: ret = "DecodeError"
+	}
+	return ret
 }
