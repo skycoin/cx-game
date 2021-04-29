@@ -118,55 +118,23 @@ func (p *Perlin2D) Base(x, y float32) float32 {
 	return nxy //-1 to 1
 }
 
-func (p *Perlin2D) Noise(x, y float32) float32 {
-	return p.Base(x, y)
-}
-
-func (p *Perlin2D) one_over_f(x, y float32) float32 {
-	var tmp float32 = 0
-	tmp += p.Base(x, y)
-	tmp += 0.50 * p.Base(2*x, 2*y)
-	tmp += 0.25 * p.Base(4*x, 4*y)
-	tmp += 0.125 * p.Base(8*x, 8*y)
-	tmp += 0.0625 * p.Base(16*x, 16*y)
-	return tmp
-}
-
-func (p *Perlin2D) one_over_f_pers(x, y, persistence float32) float32 {
-	var tmp float32 = 0
-	var m float32 = 0
-
-	tmp += p.Base(x, y)
-	m *= persistence
-
-	tmp += m * p.Base(2*x, 2*y)
-	m *= persistence
-
-	tmp += m * p.Base(4*x, 4*y)
-	m *= persistence
-
-	tmp += m * p.Base(8*x, 8*y)
-
-	m *= persistence
-	tmp += m * p.Base(16*x, 16*y)
-	return tmp
-}
-
-//order 0 is base
-func (p *Perlin2D) order(x, y, persistence float32, order int) float32 {
+func (p *Perlin2D) Noise(x, y, persistence, lacunarity float32, octaves int) float32 {
 	var tmp float32 = 0.0
 	var m float32 = 1.0
-	var b float32 = 1
+	var b float32 = 1.0
 
-	for i := 0; i <= order; i++ {
-		tmp += p.Base(b*x, b*y)
+	for i := 0; i < octaves; i++ {
+		tmp += (p.Base(b*x, b*y) * m)
 		m *= persistence
-		b *= 2
+		b *= lacunarity
 	}
 	return tmp
 }
 
-func (p *Perlin2D) abs(x, y float32) float32 {
-	tmp := float64(p.Base(x, y))
-	return float32(math.Sqrt(tmp * tmp))
+func (p *Perlin2D) OneOverFPers(x, y, persistance float32) float32 {
+	return p.Noise(x, y, persistance, 2.0, 5)
+}
+
+func (p *Perlin2D) OneOverF(x, y float32) float32 {
+	return p.OneOverFPers(x, y, 0.5)
 }
