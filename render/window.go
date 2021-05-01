@@ -145,24 +145,33 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
-func initOpenGLCustom(shaderDir string) uint32 {
+func InitOpenGLCustom(shaderDir string) uint32 {
 	var vertexShaderSource, fragmentShaderSource []byte
 
 	filepath.WalkDir(shaderDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			log.Panic(err)
 		}
-		vertexShaderSource, err = ioutil.ReadFile("vertex.glsl")
-		if err != nil {
-			log.Panic(err)
+		if d.IsDir() {
+			return nil
 		}
-		fragmentShaderSource, err = ioutil.ReadFile("fragment.glsl")
-		if err != nil {
-			log.Panic(err)
+		if d.Name() == "vertex.glsl" {
+			vertexShaderSource, err = ioutil.ReadFile(path)
+			if err != nil {
+				log.Panic(err)
+			}
+		} else if d.Name() == "fragment.glsl" {
+			fragmentShaderSource, err = ioutil.ReadFile(path)
+			if err != nil {
+				log.Panic(err)
+			}
 		}
 
 		return nil
 	})
+	if len(vertexShaderSource) == 0 || len(fragmentShaderSource) == 0 {
+		log.Panic("NO shaders found")
+	}
 	if err := gl.Init(); err != nil {
 		panic(err)
 	}

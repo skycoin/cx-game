@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"runtime"
 	"time"
 
@@ -33,10 +34,11 @@ type Star struct {
 	Y        float32
 	Size     float32
 	SpriteId int
+	Gradient float32
 	Depth    float32
 }
 type Config struct {
-	PixelSize int
+	PixelSize float32
 }
 
 var (
@@ -74,8 +76,8 @@ func main() {
 	defer glfw.Terminate()
 	window := win.Window
 	window.SetKeyCallback(keyCallback)
-	program := win.Program
-	gl.UseProgram(program)
+	program1 := win.Program
+	program2 := render.InitOpenGLCustom("./cmd/starfield/shaders/")
 
 	if background == 1 {
 		//expects to create and bind vertex array object for some reason, otherwise will fall
@@ -90,6 +92,10 @@ func main() {
 	//randomize stars
 	initStarField(&win)
 
+	//get gradient
+	tex_1d := gen1dTexture(6)
+
+	gl.BindTexture(gl.TEXTURE_1D, tex_1d)
 	//main loop
 	for !window.ShouldClose() {
 		//clearing buffers
@@ -104,7 +110,13 @@ func main() {
 			starmap.Draw()
 		}
 		//has to be after starmap, otherwise starmap will be drawn over the stars
-		drawStarField(&win)
+		gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("texture_1d\x00")), 0)
+		gl.UseProgram(program1)
+		drawBackGroundStars()
+		gl.UseProgram(program2)
+		drawStars(program2)
+
+		// gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("texture1\x00")), 0)
 
 		//polling events and swapping window buffers
 		glfw.PollEvents()
@@ -224,7 +236,7 @@ func initStarField(win *render.Window) {
 	//spriteloader init
 	spriteloader.InitSpriteloader(win)
 	backgroundStarsheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/starfield_test_16x16_tiles_8x8_tile_grid_128x128.png")
-	starSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_1.png")
+	starSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/planets.png")
 	// galaxySheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/galaxy_256x256.png")
 
 	for y := 0; y < 4; y++ {
@@ -262,22 +274,22 @@ func initStarField(win *render.Window) {
 			Y:        rand.Float32()*8 - 5,
 			Size:     1,
 			SpriteId: spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(16))),
+			Gradient: rand.Float32(),
 		})
 	}
 
 }
 
-func drawStarField(win *render.Window) {
-
-	//draw star background
-
+func drawBackGroundStars() {
 	for _, star := range backgroundStars {
 		// spriteloader.DrawSpriteQuad(star.X, star.Y, star.Size, star.Size, star.SpriteId)
-		spriteloader.DrawSpriteQuad(star.X, star.Y, float32(star.Size), float32(star.Size), star.SpriteId)
+		spriteloader.DrawSpriteQuad(star.X, star.Y, star.Size*(1+config.PixelSize/10), star.Size*(1+config.PixelSize/10), star.SpriteId)
 	}
-
+}
+func drawStars(program uint32) {
 	for _, star := range stars {
-		spriteloader.DrawSpriteQuad(star.X, star.Y, 1, 1, star.SpriteId)
+		gl.Uniform1f(gl.GetUniformLocation(program, gl.Str("gradValue\x00")), star.Gradient)
+		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, 1, 1, star.SpriteId, program)
 	}
 
 }
@@ -289,8 +301,6 @@ func getSize() float32 {
 	}
 	return size
 }
-
-//TODO add shader 1d texture gradient
 
 func checkAndReload() {
 	configFilename := "./cmd/starfield/config.yaml"
@@ -316,4 +326,23 @@ func checkAndReload() {
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
+}
+
+func gen1dTexture(gradientNumber uint) uint32 {
+	var tex uint32
+
+	gl.GenTextures(1, &tex)
+	gl.BindTexture(gl.TEXTURE_1D, tex)
+
+	result, img, _ := spriteloader.LoadPng(filepath.Join("./assets/starfield/gradients", fmt.Sprintf("heightmap_gradient_%02d.png", gradientNumber)))
+	if result != 0 {
+		log.Panic("Could not load picture!")
+	}
+
+	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+
+	gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGBA, int32(img.Rect.Size().X), 0, gl.RGBA, gl.UNSIGNED_BYTE, nil)
+
+	return tex
 }
