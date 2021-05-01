@@ -2,7 +2,10 @@ package render
 
 import (
 	"fmt"
+	"io/fs"
+	"io/ioutil"
 	"log"
+	"path/filepath"
 	"strings"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -140,4 +143,46 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 	}
 
 	return shader, nil
+}
+
+func initOpenGLCustom(shaderDir string) uint32 {
+	var vertexShaderSource, fragmentShaderSource []byte
+
+	filepath.WalkDir(shaderDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			log.Panic(err)
+		}
+		vertexShaderSource, err = ioutil.ReadFile("vertex.glsl")
+		if err != nil {
+			log.Panic(err)
+		}
+		fragmentShaderSource, err = ioutil.ReadFile("fragment.glsl")
+		if err != nil {
+			log.Panic(err)
+		}
+
+		return nil
+	})
+	if err := gl.Init(); err != nil {
+		panic(err)
+	}
+	version := gl.GoStr(gl.GetString(gl.VERSION))
+	log.Println("OpenGL version", version)
+
+	vertexShader, err := CompileShader(string(vertexShaderSource), gl.VERTEX_SHADER)
+	if err != nil {
+		panic(err)
+	}
+
+	fragmentShader, err := CompileShader(string(fragmentShaderSource), gl.FRAGMENT_SHADER)
+	if err != nil {
+		panic(err)
+	}
+
+	prog := gl.CreateProgram()
+	gl.AttachShader(prog, vertexShader)
+	gl.AttachShader(prog, fragmentShader)
+	gl.LinkProgram(prog)
+	gl.UseProgram(prog)
+	return prog
 }
