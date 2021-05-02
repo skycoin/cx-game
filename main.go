@@ -5,14 +5,15 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/starmap"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 func init() {
@@ -146,20 +147,30 @@ func main() {
 	fps = models.NewFps(false)
 
 	wx = 0
-	wy = 0
+	wy = 10
 	wz = -10
 	win := render.NewWindow(height, width, true)
+	spriteloader.InitSpriteloader(&win)
+	CurrentPlanet = world.NewDevPlanet()
 	window := win.Window
 	Cam = camera.NewCamera(&win)
+	wx = 20
+	Cam.X = 20
+	Cam.Y = 5
+
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
 	VAO := makeVao()
 	program := win.Program
 	gl.GenTextures(1, &tex)
 	lastTime := models.GetTimeStamp()
+
+	starmap.Init(&win)
+	starmap.Generate(256, 0.04, 8)
+
 	for !window.ShouldClose() {
 		currTime := models.GetTimeStamp()
-		elapsed := currTime-lastTime
+		elapsed := currTime - lastTime
 		Tick(elapsed)
 		redraw(window, program, VAO)
 		fps.Tick()
@@ -176,7 +187,7 @@ func boolToInt(x bool) int {
 }
 
 func Tick(elapsed int) {
-	if wy > -3 {
+	if wy > 6.5 {
 		cat.YVelocity -= gravity
 	} else {
 		cat.YVelocity = 0
@@ -216,14 +227,20 @@ func Tick(elapsed int) {
 func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+	starmap.Draw()
+
 	gl.UseProgram(program)
 
 	// cat := models.NewCat()
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-	gl.Enable(gl.DEPTH_TEST)
-	gl.DepthFunc(gl.LESS)
+
+	//gl.Enable(gl.DEPTH_TEST)
+	//gl.DepthFunc(gl.LESS)
+	gl.Disable(gl.DEPTH_TEST)
+
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, tex)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
@@ -231,15 +248,12 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(cat.Size.X), int32(cat.Size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(cat.RGBA.Pix))
-	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("ourTexture\x00")), 0)
-	worldTranslate := mgl32.Translate3D(wx, wy, wz)
-	inverseCamTranslate := Cam.GetTransform().Inv()
-	modelViewMatrix := inverseCamTranslate.Mul4(worldTranslate)
-	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("world\x00")), 1, false, &modelViewMatrix[0])
-	projectTransform := mgl32.Perspective(mgl32.DegToRad(45), float32(width)/float32(height), 0.1, 100.0)
-	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectTransform[0])
+
 	gl.BindVertexArray(VAO)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+
+	CurrentPlanet.Draw(Cam)
+
 	glfw.PollEvents()
 	window.SwapBuffers()
 }

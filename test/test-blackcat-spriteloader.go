@@ -33,7 +33,7 @@ func main() {
 	defer glfw.Terminate()
 	spriteloader.InitSpriteloader(&win)
 	spriteSheetId := spriteloader.
-		LoadSpriteSheetByColRow("../assets/blackcat_sprite.png", 13, 4)
+		LoadSpriteSheetByColRow("./assets/blackcat_sprite.png", 13, 4)
 
 	j := 0
 	for {
