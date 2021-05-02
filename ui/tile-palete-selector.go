@@ -22,7 +22,7 @@ type TilePaleteSelector struct {
 
 func MakeTilePaleteSelector(tiles []world.Tile) TilePaleteSelector {
 	width := math.Ceil(math.Sqrt(float64(len(tiles))))
-	scale := float32(1.0/width)
+	scale := float32(3/width)
 	return TilePaleteSelector {
 		Tiles: tiles,
 		Transform: mgl32.Scale3D(scale,scale,scale),
@@ -43,11 +43,14 @@ func (selector *TilePaleteSelector) Draw() {
 			)
 			localPos := localTransform.Col(3)
 			scaleX,scaleY,_ := mgl32.Extract3DScale(localTransform)
-			spriteloader.DrawSpriteQuad(
-				localPos.X(),localPos.Y(),
-				scaleX,scaleY,
-				int(tile.SpriteID),
-			)
+            // TODO add a custom texture for drawing air
+			if tile.TileType!=world.TileTypeNone {
+                spriteloader.DrawSpriteQuad(
+                    localPos.X(),localPos.Y(),
+                    scaleX,scaleY,
+                    int(tile.SpriteID),
+                )
+            }
 		}
 	}
 }
