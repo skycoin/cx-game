@@ -47,7 +47,7 @@ var (
 	}
 )
 
-var wx, wy, wz float32
+var wz float32
 var upPressed bool
 var downPressed bool
 var leftPressed bool
@@ -86,19 +86,15 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			w.SetShouldClose(true)
 		}
 		if k == glfw.KeyW {
-			//wy += 0.5
 			upPressed = true
 		}
 		if k == glfw.KeyS {
-			// wy -= 0.5
 			downPressed = true
 		}
 		if k == glfw.KeyA {
-			// wx -= 0.5
 			leftPressed = true
 		}
 		if k == glfw.KeyD {
-			// wx += 0.5
 			rightPressed = true
 		}
 		if k == glfw.KeySpace {
@@ -115,19 +111,15 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
-			//wy += 0.5
 			upPressed = false
 		}
 		if k == glfw.KeyS {
-			// wy -= 0.5
 			downPressed = false
 		}
 		if k == glfw.KeyA {
-			// wx -= 0.5
 			leftPressed = false
 		}
 		if k == glfw.KeyD {
-			// wx += 0.5
 			rightPressed = false
 		}
 	}
@@ -147,13 +139,10 @@ func main() {
 	cat = models.NewCat()
 	fps = models.NewFps(false)
 
-	wx = 0
-	wy = 10
 	wz = -10
 	CurrentPlanet = world.NewDevPlanet()
 	window := win.Window
 	Cam = camera.NewCamera(&win)
-	wx = 20
 	spawnX := int(20)
 	Cam.X = float32(spawnX)
 	cat.X = float32(spawnX)
