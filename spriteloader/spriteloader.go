@@ -93,6 +93,8 @@ func GetSpriteIdByName(name string) int {
 	return spriteId
 }
 
+var SpriteRenderDistance float32 = 10
+
 //Draw sprite specified with spriteId at x,y position
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	// TODO this method probably shouldn't be responsible
@@ -127,7 +129,7 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	)
 
 	worldTransform := mgl32.Mat4.Mul4(
-		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
+		mgl32.Translate3D(float32(xpos), float32(ypos), -SpriteRenderDistance),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
 	)
 	gl.UniformMatrix4fv(

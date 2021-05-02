@@ -14,6 +14,7 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/ui"
 )
 
 func init() {
@@ -56,6 +57,8 @@ var rightPressed bool
 var spacePressed bool
 
 var isFreeCam = false
+var isTileSelectorVisible = false
+var tilePaleteSelector ui.TilePaleteSelector
 
 var cat *models.Cat
 var fps *models.Fps
@@ -114,6 +117,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyF2 {
 			isFreeCam = !isFreeCam
 		}
+		if k == glfw.KeyF2 {
+			isTileSelectorVisible = !isTileSelectorVisible
+		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
 			//wy += 0.5
@@ -152,6 +158,7 @@ func main() {
 	win := render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	CurrentPlanet = world.NewDevPlanet()
+    tilePaleteSelector = ui.MakeTilePaleteSelector(world.GetAllTiles())
 	window := win.Window
 	Cam = camera.NewCamera(&win)
 	wx = 20
@@ -253,6 +260,10 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
 	CurrentPlanet.Draw(Cam)
+
+    if isTileSelectorVisible {
+        tilePaleteSelector.Draw()
+    }
 
 	glfw.PollEvents()
 	window.SwapBuffers()

@@ -1,4 +1,4 @@
-package tile
+package ui
 
 import (
 	//"log"
@@ -7,43 +7,20 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/camera"
+	//"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/world"
 )
-
-type Tile struct {
-	Name string
-	SpriteId int
-}
-
-type TileMap struct {
-	// store all the tiles with names
-	Tiles []Tile
-	// layout the stored tiles in some manner
-	TileIds []int
-	Width, Height int
-}
-
-func MakeEmptyTileMap(tiles []Tile, width,height int) TileMap {
-	tileIds := make([]int,width*height)
-	for idx := range tileIds {
-		tileIds[idx] = -1
-	}
-	return TileMap {
-		Tiles: tiles,
-		TileIds: tileIds,
-		Width: width, Height: height,
-	}
-}
 
 type TilePaleteSelector struct {
 	// store tiles for (1) displaying selector and (2) placing tiles
-	Tiles []Tile
+	Tiles []world.Tile
 	Transform mgl32.Mat4
 	Width int
 	SelectedTileIndex int
+    visible bool
 }
 
-func MakeTilePaleteSelector(tiles []Tile) TilePaleteSelector {
+func MakeTilePaleteSelector(tiles []world.Tile) TilePaleteSelector {
 	width := math.Ceil(math.Sqrt(float64(len(tiles))))
 	scale := float32(1.0/width)
 	return TilePaleteSelector {
@@ -54,17 +31,6 @@ func MakeTilePaleteSelector(tiles []Tile) TilePaleteSelector {
 		),
 		Width: int(width),
 		SelectedTileIndex: -1,
-	}
-}
-
-func (tilemap *TileMap) Draw(cam *camera.Camera) {
-	for idx,tileId := range tilemap.TileIds {
-		y := float32(idx / tilemap.Width)
-		x := float32(idx % tilemap.Width)
-		if tileId>=0 {
-			spriteId := tilemap.Tiles[tileId].SpriteId
-			sprite.DrawSpriteQuad(x-cam.X,y-cam.Y,1,1,spriteId)
-		}
 	}
 }
 
@@ -80,10 +46,10 @@ func (selector *TilePaleteSelector) Draw() {
 			)
 			localPos := localTransform.Col(3)
 			scaleX,scaleY,_ := mgl32.Extract3DScale(localTransform)
-			sprite.DrawSpriteQuad(
+			spriteloader.DrawSpriteQuad(
 				localPos.X(),localPos.Y(),
 				scaleX,scaleY,
-				tile.SpriteId,
+				int(tile.SpriteID),
 			)
 		}
 	}
@@ -93,7 +59,7 @@ func convertScreenCoordsToWorld(x,y float32, projection mgl32.Mat4) mgl32.Vec4 {
 	homogenousClipCoords := mgl32.Vec4 { x,y,-1.0,1.0}
 	cameraCoords := projection.Inv().Mul4x1(homogenousClipCoords)
 	rayEye := mgl32.Vec4 { cameraCoords.X(), cameraCoords.Y(), -1.0, 0 }
-	worldCoords := rayEye.Normalize().Mul(sprite.SpriteRenderDistance)
+	worldCoords := rayEye.Normalize().Mul(spriteloader.SpriteRenderDistance)
 	worldCoords[3]=1
 	return worldCoords
 }
@@ -110,6 +76,7 @@ func (selector *TilePaleteSelector) TrySelectTile(x,y float32, projection mgl32.
 	return false
 }
 
+/*
 func (tilemap *TileMap) TryPlaceTile(
 	x,y float32, projection mgl32.Mat4,
 	tileId int,
@@ -127,3 +94,5 @@ func (tilemap *TileMap) TryPlaceTile(
 		tilemap.TileIds[tileIdx] = tileId
 	}
 }
+*/
+
