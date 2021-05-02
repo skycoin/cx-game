@@ -1,6 +1,7 @@
 package world
 
 import (
+    "math"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/spriteloader"
@@ -82,8 +83,8 @@ func (planet *Planet) TryPlaceTile(
 	// FIXME dirty workaround for broken view matrx
 	worldCoords[0] += cam.X
 	worldCoords[1] += cam.Y
-	tileX := int32(worldCoords.X()+0.5)
-	tileY := int32(worldCoords.Y()+0.5)
+	tileX := int32(math.Floor((float64(worldCoords.X()+0.5))))
+	tileY := int32(math.Floor((float64)(worldCoords.Y()+0.5)))
 	if tileX>=0 && tileX<planet.Width && tileY>=0 && tileY<planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX),int(tileY))
         // TODO allow placing on background and mid layers
