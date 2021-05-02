@@ -55,3 +55,16 @@ func (planet *Planet) Draw(cam *camera.Camera) {
 func (planet *Planet) GetTileIndex(x,y int) int {
 	return y*int(planet.Width)+x
 }
+
+func (planet *Planet) GetAllTilesUnique() []Tile {
+    tiles := []Tile {}
+    seenTiles := map[Tile]bool {}
+    for _,tile := range planet.Layers.Top {
+        _,seen := seenTiles[tile]
+        if !seen {
+            tiles = append(tiles,tile)
+        }
+        seenTiles[tile] = true
+    }
+    return tiles
+}

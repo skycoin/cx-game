@@ -1,6 +1,7 @@
 package main
 
 import (
+    "log"
 	"runtime"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -158,7 +159,10 @@ func main() {
 	win := render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	CurrentPlanet = world.NewDevPlanet()
-    tilePaleteSelector = ui.MakeTilePaleteSelector(world.GetAllTiles())
+    worldTiles := CurrentPlanet.GetAllTilesUnique()
+    log.Printf("Found [%v] unique tiles in the world",len(worldTiles))
+    tilePaleteSelector = ui.
+        MakeTilePaleteSelector(worldTiles)
 	window := win.Window
 	Cam = camera.NewCamera(&win)
 	wx = 20
