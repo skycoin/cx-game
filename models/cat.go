@@ -2,10 +2,7 @@ package models
 
 import (
 	"image"
-	"image/draw"
-	"image/png"
-	"log"
-	"os"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type Cat struct {
@@ -15,27 +12,20 @@ type Cat struct {
 	height    int
 	XVelocity float32
 	YVelocity float32
+	spriteId  int
 }
 
 func NewCat() *Cat {
-	imageFile, err := os.Open("./assets/cat.png")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer imageFile.Close()
-
-	imageDecoded, err := png.Decode(imageFile)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	rgba := image.NewRGBA(imageDecoded.Bounds())
-	draw.Draw(rgba, rgba.Bounds(), imageDecoded, image.Pt(0, 0), draw.Src)
+	spriteId := spriteloader.LoadSingleSprite("./assets/cat.png","cat")
 	cat := Cat{
-		RGBA:   rgba,
-		Size:   rgba.Rect.Size(),
 		width:  2,
 		height: 2,
+		spriteId: spriteId,
 	}
 
 	return &cat
+}
+
+func (cat *Cat) Draw() {
+	spriteloader.DrawSpriteQuad(0,0,1,1,cat.spriteId)
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	//"log"
 	"runtime"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -143,14 +144,14 @@ func main() {
 		SS.DrawSprite()
 	*/
 
+	win := render.NewWindow(height, width, true)
+	spriteloader.InitSpriteloader(&win)
 	cat = models.NewCat()
 	fps = models.NewFps(false)
 
 	wx = 0
 	wy = 10
 	wz = -10
-	win := render.NewWindow(height, width, true)
-	spriteloader.InitSpriteloader(&win)
 	CurrentPlanet = world.NewDevPlanet()
 	window := win.Window
 	Cam = camera.NewCamera(&win)
@@ -229,30 +230,8 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	starmap.Draw()
-
-	gl.UseProgram(program)
-
-	// cat := models.NewCat()
-	gl.Enable(gl.TEXTURE_2D)
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
-	//gl.Enable(gl.DEPTH_TEST)
-	//gl.DepthFunc(gl.LESS)
-	gl.Disable(gl.DEPTH_TEST)
-
-	gl.ActiveTexture(gl.TEXTURE0)
-	gl.BindTexture(gl.TEXTURE_2D, tex)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(cat.Size.X), int32(cat.Size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(cat.RGBA.Pix))
-
-	gl.BindVertexArray(VAO)
-	gl.DrawArrays(gl.TRIANGLES, 0, 6)
-
 	CurrentPlanet.Draw(Cam)
+	cat.Draw()
 
 	glfw.PollEvents()
 	window.SwapBuffers()
