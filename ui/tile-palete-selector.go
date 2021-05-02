@@ -1,7 +1,7 @@
 package ui
 
 import (
-	//"log"
+	"log"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -67,8 +67,9 @@ func convertScreenCoordsToWorld(x,y float32, projection mgl32.Mat4) mgl32.Vec4 {
 func (selector *TilePaleteSelector) TrySelectTile(x,y float32, projection mgl32.Mat4) bool {
 	worldCoords := convertScreenCoordsToWorld(x,y,projection)
 	paleteCoords := selector.Transform.Inv().Mul4x1(worldCoords).Vec2()
-	tileX := int(paleteCoords.X()+0.5)
-	tileY := int(paleteCoords.Y()+0.5)
+	tileX := int(math.Floor(float64(paleteCoords.X()+0.5)))
+	tileY := int(math.Floor(float64(paleteCoords.Y()+0.5)))
+    log.Printf("selecting tile at (%v,%v)",tileX,tileY)
 	if tileX>=0 && tileX<selector.Width && tileY>=0 && tileY<selector.Width {
 		selector.SelectedTileIndex = tileY*selector.Width + tileX
 		return true
