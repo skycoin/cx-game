@@ -4,7 +4,7 @@ import (
 	"image"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/camera"
-	"github.com/skycoin/cx-game/physics"
+	//"github.com/skycoin/cx-game/physics"
 )
 
 type Cat struct {
@@ -48,9 +48,10 @@ func boolToFloat(x bool) float32 {
 	}
 }
 
+
 func (cat *Cat) Tick(leftPressed,rightPressed,spacePressed bool) {
-	// TODO
-	if cat.Y > 6.5 {
+	// TODO enable gravity after collision detection
+	/*if cat.Y > 6.5 {
 		cat.YVelocity -= physics.Gravity
 	} else {
 		cat.YVelocity = 0
@@ -58,12 +59,12 @@ func (cat *Cat) Tick(leftPressed,rightPressed,spacePressed bool) {
 		if spacePressed {
 			cat.YVelocity = 0.2
 		}
-	}
+	}*/
 	// FIXME speeds are currently based on ticks instead of time
 	xDirection := boolToFloat(rightPressed)-boolToFloat(leftPressed)
 	cat.XVelocity = xDirection*cat.movSpeed
 
-	cat.YVelocity = boolToFloat(spacePressed)*cat.jumpSpeed
+	//cat.YVelocity = boolToFloat(spacePressed)*cat.jumpSpeed
 
 	cat.X += cat.XVelocity
 	cat.Y += cat.YVelocity
