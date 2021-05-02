@@ -56,6 +56,39 @@ var downPressed bool
 var leftPressed bool
 var rightPressed bool
 var spacePressed bool
+var mouseX, mouseY float64
+
+func mouseButtonCallback(
+        w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
+) {
+    // we only care about mousedown events for now
+    if a != glfw.Press {return}
+    screenX := float32(2*mouseX/float64(win.Width)-1)
+    screenY := 1-float32(2*mouseY/float64(win.Height))
+    projection := win.GetProjectionMatrix()
+
+    didSelectPaleteTile := tilePaleteSelector.
+        TrySelectTile(screenX,screenY,projection)
+
+    log.Printf("selected paleete tile? %v", didSelectPaleteTile)
+
+    // TODO figure out placement once palete selection is working
+    /*
+    if !selectedPaleteTile {
+        tilemap.TryPlaceTile(
+            screenX,screenY,
+            projection,
+            tilePaleteSelector.SelectedTileIndex,
+            Cam,
+        )
+    }
+    */
+}
+
+func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
+    mouseX = xpos
+    mouseY = ypos
+}
 
 var isFreeCam = false
 var isTileSelectorVisible = false
@@ -65,6 +98,7 @@ var cat *models.Cat
 var fps *models.Fps
 
 var Cam *camera.Camera
+var win render.Window
 var tex uint32
 
 func makeVao() uint32 {
@@ -156,7 +190,7 @@ func main() {
 	wx = 0
 	wy = 10
 	wz = -10
-	win := render.NewWindow(height, width, true)
+	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	CurrentPlanet = world.NewDevPlanet()
     worldTiles := CurrentPlanet.GetAllTilesUnique()
@@ -170,6 +204,8 @@ func main() {
 	Cam.Y = 5
 
 	window.SetKeyCallback(keyCallBack)
+    window.SetCursorPosCallback(cursorPosCallback)
+    window.SetMouseButtonCallback(mouseButtonCallback)
 	defer glfw.Terminate()
 	VAO := makeVao()
 	program := win.Program
