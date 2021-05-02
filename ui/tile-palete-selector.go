@@ -25,10 +25,7 @@ func MakeTilePaleteSelector(tiles []world.Tile) TilePaleteSelector {
 	scale := float32(1.0/width)
 	return TilePaleteSelector {
 		Tiles: tiles,
-		Transform: mgl32.Mat4.Mul4(
-			mgl32.Translate3D(0.0,-3.0,0.0),
-			mgl32.Scale3D(scale,scale,scale),
-		),
+		Transform: mgl32.Scale3D(scale,scale,scale),
 		Width: int(width),
 		SelectedTileIndex: -1,
 	}

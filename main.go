@@ -118,7 +118,7 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyF2 {
 			isFreeCam = !isFreeCam
 		}
-		if k == glfw.KeyF2 {
+		if k == glfw.KeyF3 {
 			isTileSelectorVisible = !isTileSelectorVisible
 		}
 	} else if a == glfw.Release {
