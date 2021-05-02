@@ -115,7 +115,8 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	gl.UseProgram(window.Program)
 	gl.Uniform1ui(
 		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")),
-		spritesheet.tex,
+		// spritesheet.tex,
+		0,
 	)
 	gl.Uniform2f(
 		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
