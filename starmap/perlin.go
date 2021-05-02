@@ -83,11 +83,11 @@ func Generate(size int, scale float32, levels uint8) {
 		log.Panic(err)
 	}
 
-	fragment, err := render.CompileShader(string(fragSource), gl.FRAGMENT_SHADER)
+	fragment, err := render.CompileShader(string(fragSource)+"\x00", gl.FRAGMENT_SHADER)
 	if err != nil {
 		log.Panic(err)
 	}
-	vertex, err := render.CompileShader(string(vertSource), gl.VERTEX_SHADER)
+	vertex, err := render.CompileShader(string(vertSource)+"\x00", gl.VERTEX_SHADER)
 	if err != nil {
 		log.Panic(err)
 	}

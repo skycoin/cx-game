@@ -178,12 +178,12 @@ func InitOpenGLCustom(shaderDir string) uint32 {
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	log.Println("OpenGL version", version)
 
-	vertexShader, err := CompileShader(string(vertexShaderSource), gl.VERTEX_SHADER)
+	vertexShader, err := CompileShader(string(vertexShaderSource)+"\x00", gl.VERTEX_SHADER)
 	if err != nil {
 		panic(err)
 	}
 
-	fragmentShader, err := CompileShader(string(fragmentShaderSource), gl.FRAGMENT_SHADER)
+	fragmentShader, err := CompileShader(string(fragmentShaderSource)+"\x00", gl.FRAGMENT_SHADER)
 	if err != nil {
 		panic(err)
 	}

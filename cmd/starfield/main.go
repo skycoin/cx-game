@@ -58,6 +58,7 @@ var (
 		-1, 1, 0, 0, 0,
 	}
 
+	gradValue = rand.Float32()
 	//cli options
 	background int = 1 //0 is black, 1 is rgb
 	starAmount int = 15
@@ -93,16 +94,22 @@ func main() {
 	initStarField(&win)
 
 	//get gradient
-	tex_1d := gen1dTexture(6)
+	tex_2d := gen2DTexture()
+	tex_1d := gen1DTexture(6)
 
+	gl.ActiveTexture(gl.TEXTURE1)
 	gl.BindTexture(gl.TEXTURE_1D, tex_1d)
+	gl.ActiveTexture(gl.TEXTURE2)
+	gl.BindTexture(gl.TEXTURE_2D, tex_2d)
+	// gl.ActiveTexture(gl.TEXTURE0)
+	// vavao := spriteloader.MakeQuadVao()
 	//main loop
 	for !window.ShouldClose() {
 		//clearing buffers
 		if background == 2 {
 			gl.ClearColor(float32(57/255), float32(58/255), float32(25/255), float32(1))
 		} else {
-			gl.ClearColor(0, 0, 0, 1)
+			gl.ClearColor(0.2, 0.3, 0.4, 1)
 		}
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -110,11 +117,35 @@ func main() {
 			starmap.Draw()
 		}
 		//has to be after starmap, otherwise starmap will be drawn over the stars
-		gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("texture_1d\x00")), 0)
 		gl.UseProgram(program1)
 		drawBackGroundStars()
 		gl.UseProgram(program2)
-		drawStars(program2)
+
+		// drawStars(program2)
+		// world := mgl32.Ident4()
+		// projection := mgl32.Ident4()
+		// gl.UniformMatrix4fv(gl.GetUniformLocation(program2, gl.Str("projection\x00")), 1, false, &projection[0])
+		// gl.UniformMatrix4fv(gl.GetUniformLocation(program2, gl.Str("world\x00")), 1, false, &world[0])
+		gl.ActiveTexture(gl.TEXTURE1)
+		gl.BindTexture(gl.TEXTURE_1D, tex_1d)
+		// gl.ActiveTexture(gl.TEXTURE0)
+		// gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("ourTexture\x00")), 0)
+
+		gl.Uniform1f(gl.GetUniformLocation(program2, gl.Str("gradvalue\x00")), gradValue)
+
+		gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("texture_2d\x00")), 2)
+		gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("texture_1d\x00")), 0)
+
+		for _, star := range stars {
+			// gl.Uniform1f(gl.GetUniformLocation(program, gl.Str("gradValue\x00")), star.Gradient)
+			spriteloader.DrawSpriteQuadCustom(star.X, star.Y, 1, 1, star.SpriteId, program2)
+		}
+
+		gl.DrawArrays(gl.TRIANGLES, 0, 6)
+
+		// // drawStars(program2)
+		// gl.BindVertexArray(vavao)
+		// gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
 		// gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("texture1\x00")), 0)
 
@@ -149,6 +180,8 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw
 	// 	spriteId += 1
 	// case glfw.KeyJ:
 	// 	spriteId -= 1
+	case glfw.KeyJ:
+		gradValue = rand.Float32()
 	case glfw.KeyTab:
 		shuffle()
 	}
@@ -287,8 +320,9 @@ func drawBackGroundStars() {
 	}
 }
 func drawStars(program uint32) {
+	gl.UseProgram(program)
 	for _, star := range stars {
-		gl.Uniform1f(gl.GetUniformLocation(program, gl.Str("gradValue\x00")), star.Gradient)
+		// gl.Uniform1f(gl.GetUniformLocation(program, gl.Str("gradValue\x00")), star.Gradient)
 		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, 1, 1, star.SpriteId, program)
 	}
 
@@ -328,7 +362,7 @@ func checkAndReload() {
 	}
 }
 
-func gen1dTexture(gradientNumber uint) uint32 {
+func gen1DTexture(gradientNumber uint) uint32 {
 	var tex uint32
 
 	gl.GenTextures(1, &tex)
@@ -342,7 +376,28 @@ func gen1dTexture(gradientNumber uint) uint32 {
 	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 
-	gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGBA, int32(img.Rect.Size().X), 0, gl.RGBA, gl.UNSIGNED_BYTE, nil)
+	gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGBA, int32(img.Rect.Size().X), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+
+	return tex
+}
+
+func gen2DTexture() uint32 {
+	var tex uint32
+
+	gl.GenTextures(1, &tex)
+	gl.BindTexture(gl.TEXTURE_2D, tex)
+
+	result, img, _ := spriteloader.LoadPng("./assets/sprite.png")
+	if result != 0 {
+		log.Panic("Could not load picture")
+	}
+
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(img.Rect.Size().X), int32(img.Rect.Size().Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
 
 	return tex
 }
