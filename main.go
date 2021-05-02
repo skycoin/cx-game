@@ -154,9 +154,11 @@ func main() {
 	window := win.Window
 	Cam = camera.NewCamera(&win)
 	wx = 20
-	Cam.X = 20
-	cat.X = Cam.X
+	spawnX := int(20)
+	Cam.X = float32(spawnX)
+	cat.X = float32(spawnX)
 	Cam.Y = 5
+	cat.Y = float32(CurrentPlanet.GetHeight(spawnX)+1)
 
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()

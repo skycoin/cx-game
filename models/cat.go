@@ -23,8 +23,8 @@ type Cat struct {
 func NewCat() *Cat {
 	spriteId := spriteloader.LoadSingleSprite("./assets/cat.png","cat")
 	cat := Cat{
-		width:  2,
-		height: 2,
+		width:  1,
+		height: 1,
 		movSpeed: 0.05,
 		jumpSpeed: 0.2,
 		spriteId: spriteId,
