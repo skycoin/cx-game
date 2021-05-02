@@ -70,7 +70,7 @@ func mouseButtonCallback(
     didSelectPaleteTile := tilePaleteSelector.
         TrySelectTile(screenX,screenY,projection)
 
-    log.Printf("selected paleete tile? %v", didSelectPaleteTile)
+    // only try to place a tile if we didn't select a palete with this click
     if !didSelectPaleteTile {
         CurrentPlanet.TryPlaceTile(
             screenX,screenY,
@@ -149,7 +149,7 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			isFreeCam = !isFreeCam
 		}
 		if k == glfw.KeyF3 {
-			isTileSelectorVisible = !isTileSelectorVisible
+			tilePaleteSelector.Toggle()
 		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
@@ -297,9 +297,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 
 	CurrentPlanet.Draw(Cam)
 
-    if isTileSelectorVisible {
-        tilePaleteSelector.Draw()
-    }
+    tilePaleteSelector.Draw()
 
 	glfw.PollEvents()
 	window.SwapBuffers()

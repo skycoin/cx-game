@@ -32,6 +32,9 @@ func MakeTilePaleteSelector(tiles []world.Tile) TilePaleteSelector {
 }
 
 func (selector *TilePaleteSelector) Draw() {
+    if !selector.visible {
+        return
+    }
 	numTiles := float64(len(selector.Tiles))
 	if numTiles>0 {
 		for idx,tile := range selector.Tiles {
@@ -65,6 +68,10 @@ func convertScreenCoordsToWorld(x,y float32, projection mgl32.Mat4) mgl32.Vec4 {
 }
 
 func (selector *TilePaleteSelector) TrySelectTile(x,y float32, projection mgl32.Mat4) bool {
+    // can't select palete tile when palete is invisible
+    if !selector.visible {
+        return false
+    }
 	worldCoords := convertScreenCoordsToWorld(x,y,projection)
 	paleteCoords := selector.Transform.Inv().Mul4x1(worldCoords).Vec2()
 	tileX := int(math.Floor(float64(paleteCoords.X()+0.5)))
@@ -84,3 +91,7 @@ func (selector *TilePaleteSelector) GetSelectedTile() world.Tile {
     }
 }
 
+
+func (selector *TilePaleteSelector) Toggle() {
+    selector.visible = !selector.visible
+}
