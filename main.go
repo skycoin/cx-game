@@ -1,7 +1,7 @@
 package main
 
 import (
-    "log"
+	"log"
 	"runtime"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -26,7 +26,7 @@ func init() {
 
 var (
 	DrawCollisionBoxes = false
-	FPS                int
+	FPS				   int
 )
 
 var CurrentPlanet *world.Planet
@@ -59,31 +59,31 @@ var spacePressed bool
 var mouseX, mouseY float64
 
 func mouseButtonCallback(
-        w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
+		w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
-    // we only care about mousedown events for now
-    if a != glfw.Press {return}
-    screenX := float32(2*mouseX/float64(win.Width)-1)
-    screenY := 1-float32(2*mouseY/float64(win.Height))
-    projection := win.GetProjectionMatrix()
+	// we only care about mousedown events for now
+	if a != glfw.Press {return}
+	screenX := float32(2*mouseX/float64(win.Width)-1)
+	screenY := 1-float32(2*mouseY/float64(win.Height))
+	projection := win.GetProjectionMatrix()
 
-    didSelectPaleteTile := tilePaleteSelector.
-        TrySelectTile(screenX,screenY,projection)
+	didSelectPaleteTile := tilePaleteSelector.
+		TrySelectTile(screenX,screenY,projection)
 
-    // only try to place a tile if we didn't select a palete with this click
-    if !didSelectPaleteTile {
-        CurrentPlanet.TryPlaceTile(
-            screenX,screenY,
-            projection,
-            tilePaleteSelector.GetSelectedTile(),
-            Cam,
-        )
-    }
+	// only try to place a tile if we didn't select a palete with this click
+	if !didSelectPaleteTile {
+		CurrentPlanet.TryPlaceTile(
+			screenX,screenY,
+			projection,
+			tilePaleteSelector.GetSelectedTile(),
+			Cam,
+		)
+	}
 }
 
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
-    mouseX = xpos
-    mouseY = ypos
+	mouseX = xpos
+	mouseY = ypos
 }
 
 var isFreeCam = false
@@ -189,10 +189,10 @@ func main() {
 	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	CurrentPlanet = world.NewDevPlanet()
-    worldTiles := CurrentPlanet.GetAllTilesUnique()
-    log.Printf("Found [%v] unique tiles in the world",len(worldTiles))
-    tilePaleteSelector = ui.
-        MakeTilePaleteSelector(worldTiles)
+	worldTiles := CurrentPlanet.GetAllTilesUnique()
+	log.Printf("Found [%v] unique tiles in the world",len(worldTiles))
+	tilePaleteSelector = ui.
+		MakeTilePaleteSelector(worldTiles)
 	window := win.Window
 	Cam = camera.NewCamera(&win)
 	wx = 20
@@ -200,8 +200,8 @@ func main() {
 	Cam.Y = 5
 
 	window.SetKeyCallback(keyCallBack)
-    window.SetCursorPosCallback(cursorPosCallback)
-    window.SetMouseButtonCallback(mouseButtonCallback)
+	window.SetCursorPosCallback(cursorPosCallback)
+	window.SetMouseButtonCallback(mouseButtonCallback)
 	defer glfw.Terminate()
 	VAO := makeVao()
 	program := win.Program
@@ -297,7 +297,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 
 	CurrentPlanet.Draw(Cam)
 
-    tilePaleteSelector.Draw()
+	tilePaleteSelector.Draw()
 
 	glfw.PollEvents()
 	window.SwapBuffers()

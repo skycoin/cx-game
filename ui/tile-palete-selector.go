@@ -17,7 +17,7 @@ type TilePaleteSelector struct {
 	Transform mgl32.Mat4
 	Width int
 	SelectedTileIndex int
-    visible bool
+	visible bool
 }
 
 func MakeTilePaleteSelector(tiles []world.Tile) TilePaleteSelector {
@@ -32,9 +32,9 @@ func MakeTilePaleteSelector(tiles []world.Tile) TilePaleteSelector {
 }
 
 func (selector *TilePaleteSelector) Draw() {
-    if !selector.visible {
-        return
-    }
+	if !selector.visible {
+		return
+	}
 	numTiles := float64(len(selector.Tiles))
 	if numTiles>0 {
 		for idx,tile := range selector.Tiles {
@@ -46,14 +46,14 @@ func (selector *TilePaleteSelector) Draw() {
 			)
 			localPos := localTransform.Col(3)
 			scaleX,scaleY,_ := mgl32.Extract3DScale(localTransform)
-            // TODO add a custom texture for drawing air
+			// TODO add a custom texture for drawing air
 			if tile.TileType!=world.TileTypeNone {
-                spriteloader.DrawSpriteQuad(
-                    localPos.X(),localPos.Y(),
-                    scaleX,scaleY,
-                    int(tile.SpriteID),
-                )
-            }
+				spriteloader.DrawSpriteQuad(
+					localPos.X(),localPos.Y(),
+					scaleX,scaleY,
+					int(tile.SpriteID),
+				)
+			}
 		}
 	}
 }
@@ -68,10 +68,10 @@ func convertScreenCoordsToWorld(x,y float32, projection mgl32.Mat4) mgl32.Vec4 {
 }
 
 func (selector *TilePaleteSelector) TrySelectTile(x,y float32, projection mgl32.Mat4) bool {
-    // can't select palete tile when palete is invisible
-    if !selector.visible {
-        return false
-    }
+	// can't select palete tile when palete is invisible
+	if !selector.visible {
+		return false
+	}
 	worldCoords := convertScreenCoordsToWorld(x,y,projection)
 	paleteCoords := selector.Transform.Inv().Mul4x1(worldCoords).Vec2()
 	tileX := int(math.Floor(float64(paleteCoords.X()+0.5)))
@@ -84,14 +84,14 @@ func (selector *TilePaleteSelector) TrySelectTile(x,y float32, projection mgl32.
 }
 
 func (selector *TilePaleteSelector) GetSelectedTile() world.Tile {
-    if selector.SelectedTileIndex>=0 {
-        return selector.Tiles[selector.SelectedTileIndex]
-    } else {
-        return world.Tile {}
-    }
+	if selector.SelectedTileIndex>=0 {
+		return selector.Tiles[selector.SelectedTileIndex]
+	} else {
+		return world.Tile {}
+	}
 }
 
 
 func (selector *TilePaleteSelector) Toggle() {
-    selector.visible = !selector.visible
+	selector.visible = !selector.visible
 }
