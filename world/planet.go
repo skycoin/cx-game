@@ -1,7 +1,7 @@
 package world
 
 import (
-    "math"
+	"math"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/spriteloader"
@@ -23,7 +23,7 @@ type Planet struct {
 
 func NewPlanet(x, y int32) *Planet {
 	planet := Planet{
-		Width:  x,
+		Width:	x,
 		Height: y,
 		Layers:  Layers{
 			Background: make([]Tile,x*y),
@@ -61,16 +61,16 @@ func (planet *Planet) GetTileIndex(x,y int) int {
 }
 
 func (planet *Planet) GetAllTilesUnique() []Tile {
-    tiles := []Tile {}
-    seenTiles := map[Tile]bool {}
-    for _,tile := range planet.Layers.Top {
-        _,seen := seenTiles[tile]
-        if !seen {
-            tiles = append(tiles,tile)
-        }
-        seenTiles[tile] = true
-    }
-    return tiles
+	tiles := []Tile {}
+	seenTiles := map[Tile]bool {}
+	for _,tile := range planet.Layers.Top {
+		_,seen := seenTiles[tile]
+		if !seen {
+			tiles = append(tiles,tile)
+		}
+		seenTiles[tile] = true
+	}
+	return tiles
 }
 
 func (planet *Planet) TryPlaceTile(
@@ -87,7 +87,7 @@ func (planet *Planet) TryPlaceTile(
 	tileY := int32(math.Floor((float64)(worldCoords.Y()+0.5)))
 	if tileX>=0 && tileX<planet.Width && tileY>=0 && tileY<planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX),int(tileY))
-        // TODO allow placing on background and mid layers
+		// TODO allow placing on background and mid layers
 		planet.Layers.Top[tileIdx] = tile
 	}
 }
