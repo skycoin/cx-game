@@ -33,8 +33,6 @@ var CurrentPlanet *world.Planet
 const (
 	width  = 800
 	height = 480
-
-	gravity = 0.01
 )
 
 var (
@@ -157,6 +155,7 @@ func main() {
 	Cam = camera.NewCamera(&win)
 	wx = 20
 	Cam.X = 20
+	cat.X = Cam.X
 	Cam.Y = 5
 
 	window.SetKeyCallback(keyCallBack)
@@ -179,7 +178,7 @@ func main() {
 	}
 }
 
-func boolToInt(x bool) int {
+func boolToFloat(x bool) float32 {
 	if x {
 		return 1
 	} else {
@@ -188,38 +187,16 @@ func boolToInt(x bool) int {
 }
 
 func Tick(elapsed int) {
-	if wy > 6.5 {
-		cat.YVelocity -= gravity
-	} else {
-		cat.YVelocity = 0
-
-		if spacePressed {
-			cat.YVelocity = 0.2
-		}
-	}
-
-	if !rightPressed || !leftPressed {
-		cat.XVelocity = 0
-	}
-
-	if rightPressed {
-		cat.XVelocity = 0.05
-	}
-
-	if leftPressed {
-		cat.XVelocity = -0.05
-	}
-
 	if isFreeCam {
 		Cam.MoveCam(
-			float32(boolToInt(rightPressed)-boolToInt(leftPressed)),
-			float32(boolToInt(upPressed)-boolToInt(downPressed)),
+			boolToFloat(rightPressed)-boolToFloat(leftPressed),
+			boolToFloat(upPressed)-boolToFloat(downPressed),
 			0,
 			float32(elapsed)/1000,
 		)
+		cat.Tick(false,false,false)
 	} else {
-		wx += cat.XVelocity
-		wy += cat.YVelocity
+		cat.Tick(leftPressed,rightPressed,spacePressed)
 	}
 
 	spacePressed = false
@@ -231,7 +208,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
-	cat.Draw()
+	cat.Draw(Cam)
 
 	glfw.PollEvents()
 	window.SwapBuffers()

@@ -103,7 +103,6 @@ func GetSpriteIdByName(name string) int {
 
 //Draw sprite specified with spriteId at x,y position
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
-	log.Printf("drawing sprite [%v] at (%v,%v)",spriteId,xpos,ypos)
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
 	// clarify responsibilities later
