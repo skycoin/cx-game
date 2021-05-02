@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"log"
+	//"log"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -69,7 +69,6 @@ func (selector *TilePaleteSelector) TrySelectTile(x,y float32, projection mgl32.
 	paleteCoords := selector.Transform.Inv().Mul4x1(worldCoords).Vec2()
 	tileX := int(math.Floor(float64(paleteCoords.X()+0.5)))
 	tileY := int(math.Floor(float64(paleteCoords.Y()+0.5)))
-    log.Printf("selecting tile at (%v,%v)",tileX,tileY)
 	if tileX>=0 && tileX<selector.Width && tileY>=0 && tileY<selector.Width {
 		selector.SelectedTileIndex = tileY*selector.Width + tileX
 		return true
@@ -77,23 +76,11 @@ func (selector *TilePaleteSelector) TrySelectTile(x,y float32, projection mgl32.
 	return false
 }
 
-/*
-func (tilemap *TileMap) TryPlaceTile(
-	x,y float32, projection mgl32.Mat4,
-	tileId int,
-	cam *camera.Camera,
-) {
-	// tilemap is drawn directly on the world - no need to convert further
-	worldCoords := convertScreenCoordsToWorld(x,y,projection)
-	// FIXME dirty workaround for broken view matrx
-	worldCoords[0] += cam.X
-	worldCoords[1] += cam.Y
-	tileX := int(worldCoords.X()+0.5)
-	tileY := int(worldCoords.Y()+0.5)
-	if tileX>=0 && tileX<tilemap.Width && tileY>=0 && tileY<tilemap.Width {
-		tileIdx := tileY*tilemap.Width + tileX
-		tilemap.TileIds[tileIdx] = tileId
-	}
+func (selector *TilePaleteSelector) GetSelectedTile() world.Tile {
+    if selector.SelectedTileIndex>=0 {
+        return selector.Tiles[selector.SelectedTileIndex]
+    } else {
+        return world.Tile {}
+    }
 }
-*/
 

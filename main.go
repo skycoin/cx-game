@@ -71,18 +71,14 @@ func mouseButtonCallback(
         TrySelectTile(screenX,screenY,projection)
 
     log.Printf("selected paleete tile? %v", didSelectPaleteTile)
-
-    // TODO figure out placement once palete selection is working
-    /*
-    if !selectedPaleteTile {
-        tilemap.TryPlaceTile(
+    if !didSelectPaleteTile {
+        CurrentPlanet.TryPlaceTile(
             screenX,screenY,
             projection,
-            tilePaleteSelector.SelectedTileIndex,
+            tilePaleteSelector.GetSelectedTile(),
             Cam,
         )
     }
-    */
 }
 
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
