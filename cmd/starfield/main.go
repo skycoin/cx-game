@@ -81,9 +81,8 @@ func main() {
 	program2 := render.InitOpenGLCustom("./cmd/starfield/shaders/")
 
 	if background == 1 {
-		//expects to create and bind vertex array object for some reason, otherwise will fall
-		vao := makeVao()
-		gl.BindVertexArray(vao)
+		// vao := makeVao()
+		// gl.BindVertexArray(vao)
 
 		starmap.Init(&win)
 		starmap.Generate(256, 0.08, 3)
@@ -107,7 +106,7 @@ func main() {
 	for !window.ShouldClose() {
 		//clearing buffers
 		if background == 2 {
-			gl.ClearColor(float32(57/255), float32(58/255), float32(25/255), float32(1))
+			gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
 		} else {
 			gl.ClearColor(0.2, 0.3, 0.4, 1)
 		}
@@ -121,7 +120,7 @@ func main() {
 		drawBackGroundStars()
 		gl.UseProgram(program2)
 
-		// drawStars(program2)
+		drawStars(program2)
 		// world := mgl32.Ident4()
 		// projection := mgl32.Ident4()
 		// gl.UniformMatrix4fv(gl.GetUniformLocation(program2, gl.Str("projection\x00")), 1, false, &projection[0])
@@ -131,13 +130,12 @@ func main() {
 		// gl.ActiveTexture(gl.TEXTURE0)
 		// gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("ourTexture\x00")), 0)
 
-		gl.Uniform1f(gl.GetUniformLocation(program2, gl.Str("gradvalue\x00")), gradValue)
-
 		gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("texture_2d\x00")), 2)
 		gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("texture_1d\x00")), 0)
 
 		for _, star := range stars {
-			// gl.Uniform1f(gl.GetUniformLocation(program, gl.Str("gradValue\x00")), star.Gradient)
+			gl.Uniform1f(gl.GetUniformLocation(program2, gl.Str("mixvalue\x00")), float32(0.3))
+			// gl.ProgramUniform1f(program2, gl.GetUniformLocation(program2, gl.Str("gradvalue\x00")), gradValue)
 			spriteloader.DrawSpriteQuadCustom(star.X, star.Y, 1, 1, star.SpriteId, program2)
 		}
 
@@ -164,28 +162,9 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw
 		w.SetShouldClose(true)
 	}
 	switch k {
-	// case glfw.KeyUp:
-	// 	wy += 1
-	// case glfw.KeyDown:
-	// 	wy -= 1
-	// case glfw.KeyLeft:
-	// 	wx -= 1
-	// case glfw.KeyRight:
-	// 	wx += 1
-	// case glfw.KeyX:
-	// 	size -= 0.1
-	// case glfw.KeyZ:
-	// 	size += 0.1
-	// case glfw.KeyL:
-	// 	spriteId += 1
-	// case glfw.KeyJ:
-	// 	spriteId -= 1
-	case glfw.KeyJ:
-		gradValue = rand.Float32()
 	case glfw.KeyTab:
 		shuffle()
 	}
-	// log.Printf("wx: %f, wy: %f", wx, wy)
 
 }
 
@@ -234,10 +213,9 @@ func initArgs() {
 		return nil
 	}
 	app.Run(os.Args)
-	// fmt.Printf("%f %f %f\n", wx, wy, wz)
 }
 
-//silly function to shuffle stars on the background
+//function to shuffle stars on the background
 func shuffle() {
 	for _, star := range backgroundStars {
 		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("background-stars-%d", rand.Intn(15)))
@@ -245,32 +223,14 @@ func shuffle() {
 	}
 }
 
-//create vertex array object
-func makeVao() uint32 {
-	var vbo uint32
-	gl.GenBuffers(1, &vbo)
-
-	var vao uint32
-	gl.GenVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
-	gl.EnableVertexAttribArray(0)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, 4*len(sprite), gl.Ptr(sprite), gl.STATIC_DRAW)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
-	gl.EnableVertexAttribArray(0)
-	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
-	gl.EnableVertexAttribArray(1)
-
-	return vao
-}
-
 //create random stars
 func initStarField(win *render.Window) {
 	//spriteloader init
 	spriteloader.InitSpriteloader(win)
 	backgroundStarsheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/starfield_test_16x16_tiles_8x8_tile_grid_128x128.png")
-	starSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/planets.png")
-	// galaxySheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/galaxy_256x256.png")
+	// starSheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/planets.png")
+	// starSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_2.png")
+	galaxySheetId := spriteloader.LoadSpriteSheet("./assets/starfield/stars/galaxy_256x256.png")
 
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
@@ -280,11 +240,11 @@ func initStarField(win *render.Window) {
 		}
 	}
 	//load all sprites from spritesheet
-	for y := 0; y < 4; y++ {
-		for x := 0; x < 4; x++ {
+	for y := 0; y < 6; y++ {
+		for x := 0; x < 8; x++ {
 			//for stars
-			spriteloader.LoadSprite(starSheetId,
-				fmt.Sprintf("stars-%d", y*4+x),
+			spriteloader.LoadSprite(galaxySheetId,
+				fmt.Sprintf("stars-%d", y*8+x),
 				x, y,
 			)
 		}
@@ -303,10 +263,12 @@ func initStarField(win *render.Window) {
 
 	for i := 0; i < starAmount; i++ {
 		stars = append(stars, &Star{
-			X:        rand.Float32()*15 - 8,
-			Y:        rand.Float32()*8 - 5,
+			X: rand.Float32()*8 - 4,
+			Y: rand.Float32()*8 - 4,
+			// X:        1,
+			// Y:        1,
 			Size:     1,
-			SpriteId: spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(16))),
+			SpriteId: spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(48))),
 			Gradient: rand.Float32(),
 		})
 	}
