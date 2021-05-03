@@ -76,6 +76,7 @@ func (selector *TilePaleteSelector) TrySelectTile(x,y float32, projection mgl32.
 	paleteCoords := selector.Transform.Inv().Mul4x1(worldCoords).Vec2()
 	tileX := int(math.Floor(float64(paleteCoords.X()+0.5)))
 	tileY := int(math.Floor(float64(paleteCoords.Y()+0.5)))
+
 	if tileX>=0 && tileX<selector.Width && tileY>=0 && tileY<selector.Width {
 		selector.SelectedTileIndex = tileY*selector.Width + tileX
 		return true

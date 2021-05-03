@@ -90,6 +90,7 @@ func (planet *Planet) TryPlaceTile(
 		// TODO allow placing on background and mid layers
 		planet.Layers.Top[tileIdx] = tile
 	}
+}
 
 // gets the y coordinate of the highest solid tile
 // for a given column given by an x coordinate

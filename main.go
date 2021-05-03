@@ -170,7 +170,7 @@ func main() {
 		SS.DrawSprite()
 	*/
 
-	win := render.NewWindow(height, width, true)
+	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	cat = models.NewCat()
 	fps = models.NewFps(false)
