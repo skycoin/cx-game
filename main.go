@@ -144,9 +144,9 @@ func main() {
 	Cam = camera.NewCamera(&win)
 	spawnX := int(20)
 	Cam.X = float32(spawnX)
-	cat.X = float32(spawnX)
 	Cam.Y = 5
-	cat.Y = float32(CurrentPlanet.GetHeight(spawnX)+1)
+	cat.Pos.X = float32(spawnX)
+	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 1)
 
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
@@ -177,16 +177,18 @@ func boolToFloat(x bool) float32 {
 }
 
 func Tick(elapsed int) {
+	dt := float32(elapsed) / 1000
+
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
 			boolToFloat(upPressed)-boolToFloat(downPressed),
 			0,
-			float32(elapsed)/1000,
+			dt,
 		)
-		cat.Tick(false,false,false)
+		cat.Tick(false, false, false, CurrentPlanet, dt)
 	} else {
-		cat.Tick(leftPressed,rightPressed,spacePressed)
+		cat.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
 	}
 
 	spacePressed = false
