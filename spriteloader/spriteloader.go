@@ -14,12 +14,14 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
+var spriteLoaderIsInitialized = false
 var window *render.Window
 
 // call this before loading any spritesheets
 func InitSpriteloader(_window *render.Window) {
 	window = _window
 	quadVao = MakeQuadVao()
+	spriteLoaderIsInitialized = true
 }
 
 type Spritesheet struct {
@@ -78,6 +80,12 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) int {
 	return len(spritesheets) - 1
 }
 
+func LoadSingleSprite(fname string, name string) int {
+	spritesheetId := LoadSpriteSheetByColRow(fname,1,1)
+	LoadSprite(spritesheetId, name, 0,0)
+	return GetSpriteIdByName(name)
+}
+
 //Load sprite into internal sheet
 func LoadSprite(spriteSheetId int, name string, x, y int) {
 	sprites = append(sprites, Sprite{spriteSheetId, x, y})
@@ -115,7 +123,8 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	gl.UseProgram(window.Program)
 	gl.Uniform1ui(
 		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")),
-		spritesheet.tex,
+		// spritesheet.tex,
+		0,
 	)
 	gl.Uniform2f(
 		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
@@ -151,11 +160,11 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	// TODO separate GPU programs such that this becomes unecessary
 	gl.Uniform2f(
 		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
-		1,1,
+		1, 1,
 	)
 	gl.Uniform2f(
 		gl.GetUniformLocation(window.Program, gl.Str("texOffset\x00")),
-		0,0,
+		0, 0,
 	)
 }
 
@@ -181,6 +190,9 @@ func loadPng(fname string) *image.RGBA {
 
 // upload an in-memory RGBA image to the GPU
 func MakeTexture(img *image.RGBA) uint32 {
+	if !spriteLoaderIsInitialized {
+		log.Fatalln("Sprite loader is not initialized")
+	}
 	var tex uint32
 	gl.GenTextures(1, &tex)
 
@@ -240,4 +252,70 @@ func MakeQuadVao() uint32 {
 	gl.EnableVertexAttribArray(1)
 
 	return vao
+}
+
+//temporary overloaded function
+func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, program uint32) {
+	// TODO this method probably shouldn't be responsible
+	// for setting up the projection matrix.
+	// clarify responsibilities later
+	sprite := sprites[spriteId]
+	spritesheet := spritesheets[sprite.spriteSheetId]
+
+	// bind texture
+	gl.Enable(gl.TEXTURE_2D)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	// NOTE depth test is disabled for now,
+	// as we assume that objects are drawn in the correct order
+	gl.Disable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, spritesheet.tex)
+
+	gl.UseProgram(program)
+	gl.Uniform1ui(
+		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")),
+		spritesheet.tex,
+	)
+	gl.Uniform2f(
+		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
+		spritesheet.xScale, spritesheet.yScale,
+	)
+	gl.Uniform2f(
+		gl.GetUniformLocation(window.Program, gl.Str("texOffset\x00")),
+		float32(sprite.x), float32(sprite.y),
+	)
+
+	worldTransform := mgl32.Mat4.Mul4(
+		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
+		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
+	)
+	gl.UniformMatrix4fv(
+		gl.GetUniformLocation(window.Program, gl.Str("world\x00")),
+		1, false, &worldTransform[0],
+	)
+
+	aspect := float32(window.Width) / float32(window.Height)
+	projectTransform := mgl32.Perspective(
+		mgl32.DegToRad(45), aspect, 0.1, 100.0,
+	)
+	gl.UniformMatrix4fv(
+		gl.GetUniformLocation(window.Program, gl.Str("projection\x00")),
+		1, false, &projectTransform[0],
+	)
+
+	gl.BindVertexArray(quadVao)
+	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+
+	// restore texScale and texOffset to defaults
+	// TODO separate GPU programs such that this becomes unecessary
+	gl.Uniform2f(
+		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
+		1, 1,
+	)
+	gl.Uniform2f(
+		gl.GetUniformLocation(window.Program, gl.Str("texOffset\x00")),
+		0, 0,
+	)
 }
