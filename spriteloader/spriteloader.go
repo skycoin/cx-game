@@ -14,12 +14,14 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
+var spriteLoaderIsInitialized = false
 var window *render.Window
 
 // call this before loading any spritesheets
 func InitSpriteloader(_window *render.Window) {
 	window = _window
 	quadVao = MakeQuadVao()
+	spriteLoaderIsInitialized = true
 }
 
 type Spritesheet struct {
@@ -76,6 +78,12 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) int {
 	})
 
 	return len(spritesheets) - 1
+}
+
+func LoadSingleSprite(fname string, name string) int {
+	spritesheetId := LoadSpriteSheetByColRow(fname,1,1)
+	LoadSprite(spritesheetId, name, 0,0)
+	return GetSpriteIdByName(name)
 }
 
 //Load sprite into internal sheet
@@ -181,6 +189,9 @@ func loadPng(fname string) *image.RGBA {
 
 // upload an in-memory RGBA image to the GPU
 func MakeTexture(img *image.RGBA) uint32 {
+	if !spriteLoaderIsInitialized {
+		log.Fatalln("Sprite loader is not initialized")
+	}
 	var tex uint32
 	gl.GenTextures(1, &tex)
 
