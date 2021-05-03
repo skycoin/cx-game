@@ -34,8 +34,6 @@ var CurrentPlanet *world.Planet
 const (
 	width  = 800
 	height = 480
-
-	gravity = 0.01
 )
 
 var (
@@ -50,7 +48,7 @@ var (
 	}
 )
 
-var wx, wy, wz float32
+var wz float32
 var upPressed bool
 var downPressed bool
 var leftPressed bool
@@ -121,19 +119,15 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			w.SetShouldClose(true)
 		}
 		if k == glfw.KeyW {
-			//wy += 0.5
 			upPressed = true
 		}
 		if k == glfw.KeyS {
-			// wy -= 0.5
 			downPressed = true
 		}
 		if k == glfw.KeyA {
-			// wx -= 0.5
 			leftPressed = true
 		}
 		if k == glfw.KeyD {
-			// wx += 0.5
 			rightPressed = true
 		}
 		if k == glfw.KeySpace {
@@ -153,19 +147,15 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
-			//wy += 0.5
 			upPressed = false
 		}
 		if k == glfw.KeyS {
-			// wy -= 0.5
 			downPressed = false
 		}
 		if k == glfw.KeyA {
-			// wx -= 0.5
 			leftPressed = false
 		}
 		if k == glfw.KeyD {
-			// wx += 0.5
 			rightPressed = false
 		}
 	}
@@ -180,14 +170,12 @@ func main() {
 		SS.DrawSprite()
 	*/
 
+	win := render.NewWindow(height, width, true)
+	spriteloader.InitSpriteloader(&win)
 	cat = models.NewCat()
 	fps = models.NewFps(false)
 
-	wx = 0
-	wy = 10
 	wz = -10
-	win = render.NewWindow(height, width, true)
-	spriteloader.InitSpriteloader(&win)
 	CurrentPlanet = world.NewDevPlanet()
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world",len(worldTiles))
@@ -195,9 +183,11 @@ func main() {
 		MakeTilePaleteSelector(worldTiles)
 	window := win.Window
 	Cam = camera.NewCamera(&win)
-	wx = 20
-	Cam.X = 20
+	spawnX := int(20)
+	Cam.X = float32(spawnX)
+	cat.X = float32(spawnX)
 	Cam.Y = 5
+	cat.Y = float32(CurrentPlanet.GetHeight(spawnX)+1)
 
 	window.SetKeyCallback(keyCallBack)
 	window.SetCursorPosCallback(cursorPosCallback)
@@ -221,7 +211,7 @@ func main() {
 	}
 }
 
-func boolToInt(x bool) int {
+func boolToFloat(x bool) float32 {
 	if x {
 		return 1
 	} else {
@@ -230,38 +220,16 @@ func boolToInt(x bool) int {
 }
 
 func Tick(elapsed int) {
-	if wy > 6.5 {
-		cat.YVelocity -= gravity
-	} else {
-		cat.YVelocity = 0
-
-		if spacePressed {
-			cat.YVelocity = 0.2
-		}
-	}
-
-	if !rightPressed || !leftPressed {
-		cat.XVelocity = 0
-	}
-
-	if rightPressed {
-		cat.XVelocity = 0.05
-	}
-
-	if leftPressed {
-		cat.XVelocity = -0.05
-	}
-
 	if isFreeCam {
 		Cam.MoveCam(
-			float32(boolToInt(rightPressed)-boolToInt(leftPressed)),
-			float32(boolToInt(upPressed)-boolToInt(downPressed)),
+			boolToFloat(rightPressed)-boolToFloat(leftPressed),
+			boolToFloat(upPressed)-boolToFloat(downPressed),
 			0,
 			float32(elapsed)/1000,
 		)
+		cat.Tick(false,false,false)
 	} else {
-		wx += cat.XVelocity
-		wy += cat.YVelocity
+		cat.Tick(leftPressed,rightPressed,spacePressed)
 	}
 
 	spacePressed = false
@@ -272,30 +240,8 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	starmap.Draw()
-
-	gl.UseProgram(program)
-
-	// cat := models.NewCat()
-	gl.Enable(gl.TEXTURE_2D)
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
-	//gl.Enable(gl.DEPTH_TEST)
-	//gl.DepthFunc(gl.LESS)
-	gl.Disable(gl.DEPTH_TEST)
-
-	gl.ActiveTexture(gl.TEXTURE0)
-	gl.BindTexture(gl.TEXTURE_2D, tex)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(cat.Size.X), int32(cat.Size.Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(cat.RGBA.Pix))
-
-	gl.BindVertexArray(VAO)
-	gl.DrawArrays(gl.TRIANGLES, 0, 6)
-
 	CurrentPlanet.Draw(Cam)
+	cat.Draw(Cam)
 
 	tilePaleteSelector.Draw()
 
