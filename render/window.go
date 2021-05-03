@@ -145,7 +145,9 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
+//opengl with custom shaders
 func InitOpenGLCustom(shaderDir string) uint32 {
+
 	var vertexShaderSource, fragmentShaderSource []byte
 
 	filepath.WalkDir(shaderDir, func(path string, d fs.DirEntry, err error) error {
@@ -175,8 +177,6 @@ func InitOpenGLCustom(shaderDir string) uint32 {
 	if err := gl.Init(); err != nil {
 		panic(err)
 	}
-	version := gl.GoStr(gl.GetString(gl.VERSION))
-	log.Println("OpenGL version", version)
 
 	vertexShader, err := CompileShader(string(vertexShaderSource)+"\x00", gl.VERTEX_SHADER)
 	if err != nil {
