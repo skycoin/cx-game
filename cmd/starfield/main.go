@@ -42,6 +42,10 @@ type Star struct {
 type Config struct {
 	PixelSize float32
 }
+type Position struct {
+	X float32
+	Y float32
+}
 
 var (
 	stars           []*Star
@@ -65,6 +69,8 @@ var (
 	height     int = 600
 
 	config *Config = &Config{1}
+
+	starPositions = []*Position{}
 )
 
 func main() {
@@ -181,8 +187,7 @@ func shuffle() {
 		star.Size = getSize()
 	}
 	for _, star := range stars {
-		star.X = rand.Float32()*8 - 4
-		star.Y = rand.Float32()*7 - 4
+		star.X, star.Y = getStarPosition()
 		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(16)))
 		star.Size = getSize()
 	}
@@ -235,7 +240,7 @@ func initStarField(win *render.Window) {
 			SpriteId:      spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(16))),
 			GradientValue: rand.Float32(),
 		}
-		star.X, star.Y = getStarPositions()
+		star.X, star.Y = getStarPosition()
 		stars = append(stars, star)
 	}
 
@@ -312,19 +317,23 @@ func getGradient(gradientNumber uint) uint32 {
 	return tex
 }
 
-//not working, needs to be fixed
-func getStarPositions() (float32, float32) {
-	starGap := 0.3
+//todo
+func getStarPosition() (float32, float32) {
+	starGap := 0.7
 	fmt.Println("abc")
 	xPos, yPos := rand.Float32()*8-4, rand.Float32()*7-4
 	//if too many stars
-	if starAmount > 20 || starGap > 2 {
+	if starAmount > 20 || starGap > 1.3 {
 		return xPos, yPos
 	}
 	for _, star := range stars {
-		if math.Abs(float64(xPos-star.X)) < float64(starGap) || math.Abs(float64(yPos-star.Y)) < float64(starGap) {
-			return getStarPositions()
+		if math.Abs(float64(xPos-star.X)) < float64(starGap) && math.Abs(float64(yPos-star.Y)) < float64(starGap) {
+			return getStarPosition()
 		}
 	}
+	// starPositions = append(starPositions, &Position{
+	// 	X: xPos,
+	// 	Y: yPos,
+	// })
 	return xPos, yPos
 }
