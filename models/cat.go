@@ -22,7 +22,7 @@ func NewCat() *Cat {
 	spriteId := spriteloader.LoadSingleSprite("./assets/cat.png", "cat")
 	cat := Cat{
 		Body: physics.Body{
-			Size: physics.Vec2{1.0, 1.0},
+			Size: physics.Vec2{X: 1.0, Y: 1.0},
 		},
 		movSpeed:  3.0,
 		jumpSpeed: 12.0,
@@ -33,8 +33,11 @@ func NewCat() *Cat {
 }
 
 func (cat *Cat) Draw(cam *camera.Camera) {
+	x := cat.Pos.X - cam.X
+	y := cat.Pos.Y - cam.Y
+
 	spriteloader.DrawSpriteQuad(
-		cat.Pos.X-cam.X, cat.Pos.Y-cam.Y,
+		x, y,
 		cat.Size.X, cat.Size.Y, cat.spriteId,
 	)
 }

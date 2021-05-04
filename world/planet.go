@@ -61,7 +61,7 @@ func (planet *Planet) GetTileIndex(x, y int) int {
 	return y*int(planet.Width) + x
 }
 
-// gets the y coordinate of the highest solid tile{
+// gets the y coordinate of the highest solid tile
 // for a given column given by an x coordinate
 func (planet *Planet) GetHeight(x int) int {
 	for y := int(planet.Height - 1); y >= 0; y-- {

@@ -124,6 +124,8 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 	}
 }
 
+var win render.Window
+
 func main() {
 
 	/*
@@ -133,7 +135,7 @@ func main() {
 		SS.DrawSprite()
 	*/
 
-	win := render.NewWindow(height, width, true)
+	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	cat = models.NewCat()
 	fps = models.NewFps(false)

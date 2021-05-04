@@ -81,8 +81,8 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) int {
 }
 
 func LoadSingleSprite(fname string, name string) int {
-	spritesheetId := LoadSpriteSheetByColRow(fname,1,1)
-	LoadSprite(spritesheetId, name, 0,0)
+	spritesheetId := LoadSpriteSheetByColRow(fname, 1, 1)
+	LoadSprite(spritesheetId, name, 0, 0)
 	return GetSpriteIdByName(name)
 }
 
