@@ -12,8 +12,8 @@ import (
 
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/world"
 )
 
 func init() {
@@ -146,7 +146,7 @@ func main() {
 	Cam.X = float32(spawnX)
 	Cam.Y = 5
 	cat.Pos.X = float32(spawnX)
-	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 1)
+	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 3)
 
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()

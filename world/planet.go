@@ -1,6 +1,8 @@
 package world
 
 import (
+	"log"
+
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/spriteloader"
 )
@@ -53,6 +55,9 @@ func (planet *Planet) Draw(cam *camera.Camera) {
 }
 
 func (planet *Planet) GetTileIndex(x, y int) int {
+	if x >= int(planet.Width) || x < 0 || y >= int(planet.Height) || y < 0 {
+		log.Panicln("trying to get tile out of the defined tile array")
+	}
 	return y*int(planet.Width) + x
 }
 
@@ -68,11 +73,7 @@ func (planet *Planet) GetHeight(x int) int {
 	return 0
 }
 
-func (planet *Planet) GetTopTile(x, y int) *Tile {
+func (planet *Planet) GetTopLayerTile(x, y int) *Tile {
 	index := planet.GetTileIndex(x, y)
-	if index == -1 {
-		return nil
-	}
-
 	return &planet.Layers.Top[index]
 }

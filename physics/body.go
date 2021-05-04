@@ -17,25 +17,36 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 		return
 	}
 
+	log.Println("pos: ", body.Pos)
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
 	if body.Vel.X > 0 { // moving right
-		body.Pos.X = newPos.X
-	} else {
-		body.Pos.X = newPos.X
-	}
-
-	if body.Vel.Y > 0 { // moving up
-		body.Pos.Y = newPos.Y
-	} else { // moving down
-		if planet.GetTopTile(int(newPos.X), int(newPos.Y-1.0)).TileType != world.TileTypeNone ||
-			planet.GetTopTile(int(newPos.X+0.9), int(newPos.Y+1.0)).TileType != world.TileTypeNone {
-			newPos.Y = float32(int(newPos.Y))
-			body.Vel.Y = 0
-			log.Println("on ground")
+		if planet.GetTopLayerTile(int(newPos.X+1.0), int(body.Pos.Y+0.9)).TileType != world.TileTypeNone ||
+			planet.GetTopLayerTile(int(newPos.X+1.0), int(body.Pos.Y+0.1)).TileType != world.TileTypeNone {
+			newPos.X = float32(int(newPos.X))
+			body.Vel.X = 0.0
+		}
+	} else { // moving left
+		if planet.GetTopLayerTile(int(newPos.X), int(body.Pos.Y+0.9)).TileType != world.TileTypeNone ||
+			planet.GetTopLayerTile(int(newPos.X), int(body.Pos.Y+0.1)).TileType != world.TileTypeNone {
+			newPos.X = float32(int(newPos.X) + 1)
+			body.Vel.X = 0.0
 		}
 	}
 
-	//topRight := body.Pos.Add(body.Size.Mult(0.4999))
-	//bottomLeft := body.Pos.Add(body.Size.Mult(-0.4999))
+	if body.Vel.Y > 0 { // moving up
+		if planet.GetTopLayerTile(int(newPos.X), int(newPos.Y+1.0)).TileType != world.TileTypeNone ||
+			planet.GetTopLayerTile(int(newPos.X+0.9), int(newPos.Y+1.0)).TileType != world.TileTypeNone {
+			newPos.Y = float32(int(newPos.Y))
+			body.Vel.Y = 0
+		}
+	} else { // moving down
+		if planet.GetTopLayerTile(int(newPos.X), int(newPos.Y)).TileType != world.TileTypeNone ||
+			planet.GetTopLayerTile(int(newPos.X+0.9), int(newPos.Y)).TileType != world.TileTypeNone {
+			newPos.Y = float32(int(newPos.Y) + 1)
+			body.Vel.Y = 0
+		}
+	}
+
+	body.Pos = newPos
 }
