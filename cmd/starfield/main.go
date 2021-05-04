@@ -42,26 +42,11 @@ type Star struct {
 type Config struct {
 	PixelSize float32
 }
-type Position struct {
-	X float32
-	Y float32
-}
 
 var (
 	stars           []*Star
 	backgroundStars []*Star
 
-	sprite = []float32{
-		1, 1, 0, 1, 0,
-		1, -1, 0, 1, 1,
-		-1, 1, 0, 0, 0,
-
-		1, -1, 0, 1, 1,
-		-1, -1, 0, 0, 1,
-		-1, 1, 0, 0, 0,
-	}
-
-	gradValue = float32(0.5)
 	//cli options
 	background int = 1 //0 is black, 1 is rgb
 	starAmount int = 20
@@ -69,8 +54,6 @@ var (
 	height     int = 600
 
 	config *Config = &Config{1}
-
-	starPositions = []*Position{}
 )
 
 func main() {
@@ -112,6 +95,7 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		drawStarField(program2)
+
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
@@ -128,8 +112,6 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw
 	switch k {
 	case glfw.KeyTab:
 		shuffle()
-	case glfw.KeyT:
-		gradValue = rand.Float32()
 	}
 }
 
@@ -151,7 +133,7 @@ func initArgs() {
 			Name:        "stars",
 			Aliases:     []string{"star"},
 			Usage:       "number of stars to draw",
-			Value:       5,
+			Value:       15,
 			Destination: &starAmount,
 		},
 		&cli.IntFlag{
@@ -331,9 +313,5 @@ func getStarPosition() (float32, float32) {
 			return getStarPosition()
 		}
 	}
-	// starPositions = append(starPositions, &Position{
-	// 	X: xPos,
-	// 	Y: yPos,
-	// })
 	return xPos, yPos
 }
