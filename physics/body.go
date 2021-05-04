@@ -1,8 +1,6 @@
 package physics
 
 import (
-	"log"
-
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -17,7 +15,6 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 		return
 	}
 
-	log.Println("pos: ", body.Pos)
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
 	if body.Vel.X > 0 { // moving right
