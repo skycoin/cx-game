@@ -1,6 +1,8 @@
 package render
 
 import (
+	"log"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 )
@@ -8,11 +10,27 @@ import (
 var lineProgram uint32
 
 func (window *Window) DrawLine(x0, y0, z0, x1, y1, z1 float32) {
-	gl.UseProgram(lineProgram)
 	var lineArray = []float32{
 		x0, y0, z0,
 		x1, y1, z1,
 	}
+	color := []float32{1.0, 1.0, 1.0}
+
+	window.DrawLines(lineArray, color)
+}
+
+func (window *Window) DrawLines(lineArray []float32, color []float32) {
+	// DEBUG: check if the array have the right amount of elements
+	if len(lineArray) < 6 {
+		log.Panicln("line array doesn't enough points to draw a line")
+	} else if len(lineArray)%3 != 0 {
+		log.Panicln("line array doesn't have the right amount of floats values to draw the lines")
+	}
+	if len(color) > 4 || len(color) < 3 {
+		log.Panicln("wrong amount of floats values for a color (need 3 or 4)")
+	}
+
+	gl.UseProgram(lineProgram)
 
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
@@ -31,8 +49,6 @@ func (window *Window) DrawLine(x0, y0, z0, x1, y1, z1 float32) {
 
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
 	gl.EnableVertexAttribArray(0)
-
-	color := []float32{1.0, 1.0, 1.0}
 
 	gl.Uniform3fv(
 		gl.GetUniformLocation(lineProgram, gl.Str("uColor\x00")),
@@ -62,5 +78,5 @@ func (window *Window) DrawLine(x0, y0, z0, x1, y1, z1 float32) {
 
 	gl.BindVertexArray(vao)
 	//gl.BindTexture(gl.TEXTURE_2D, 0)
-	gl.DrawArrays(gl.LINES, 0, 2)
+	gl.DrawArrays(gl.LINES, 0, int32(len(lineArray)/2))
 }
