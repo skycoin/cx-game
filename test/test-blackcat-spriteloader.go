@@ -45,7 +45,7 @@ func main() {
 		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		time.Sleep(100 * time.Millisecond)
-		spriteloader.DrawSpriteQuad(0, 0, 1, 1, spriteId)
+		spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
 		glfw.PollEvents()
 		window.SwapBuffers()
 		j++
