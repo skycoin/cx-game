@@ -15,6 +15,9 @@ type CatBlack struct {
 	RGBA                 *image.RGBA
 	Size                 image.Point
 	Walk                 func() bool
+	Sit                  func() bool
+	StartRunning         func() bool
+	Running              func() bool
 	width                float32
 	height               float32
 	X                    float32
@@ -48,6 +51,60 @@ func NewCatBlack(lwin *render.Window) *CatBlack {
 				window.SwapBuffers()
 				j++
 				if j == 11 {
+					j = 0
+				}
+			}
+		},
+		Sit: func() bool {
+			j := 0
+			for {
+				spriteloader.LoadSprite(lspriteSheetId, "blackcat", 1, j)
+				spriteId := spriteloader.GetSpriteIdByName("blackcat")
+				gl.ClearColor(1, 1, 1, 1)
+				gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+				time.Sleep(100 * time.Millisecond)
+				fmt.Println("spriteId. ", spriteId, " j. ", j)
+				spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
+				glfw.PollEvents()
+				window.SwapBuffers()
+				j++
+				if j == 5 {
+					j = 0
+				}
+			}
+		},
+		StartRunning: func() bool {
+			j := 0
+			for {
+				spriteloader.LoadSprite(lspriteSheetId, "blackcat", 2, j)
+				spriteId := spriteloader.GetSpriteIdByName("blackcat")
+				gl.ClearColor(1, 1, 1, 1)
+				gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+				time.Sleep(100 * time.Millisecond)
+				fmt.Println("spriteId. ", spriteId, " j. ", j)
+				spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
+				glfw.PollEvents()
+				window.SwapBuffers()
+				j++
+				if j == 11 {
+					j = 0
+				}
+			}
+		},
+		Running: func() bool {
+			j := 0
+			for {
+				spriteloader.LoadSprite(lspriteSheetId, "blackcat", 3, j)
+				spriteId := spriteloader.GetSpriteIdByName("blackcat")
+				gl.ClearColor(1, 1, 1, 1)
+				gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+				time.Sleep(100 * time.Millisecond)
+				fmt.Println("spriteId. ", spriteId, " j. ", j)
+				spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
+				glfw.PollEvents()
+				window.SwapBuffers()
+				j++
+				if j == 5 {
 					j = 0
 				}
 			}

@@ -7,8 +7,11 @@ import (
 )
 
 func main() {
-	win := render.NewWindow(800, 800, true)
+	win := render.NewWindow(400, 300, true)
 	defer glfw.Terminate()
 	catBlack := models.NewCatBlack(&win)
-	catBlack.Walk()
+	// catBlack.Walk()
+	catBlack.Sit()
+	// catBlack.StartRunning()
+	// catBlack.Running()
 }
