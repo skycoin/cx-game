@@ -12,8 +12,8 @@ import (
 
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/world"
 )
 
 func init() {
@@ -124,6 +124,8 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 	}
 }
 
+var win render.Window
+
 func main() {
 
 	/*
@@ -133,7 +135,7 @@ func main() {
 		SS.DrawSprite()
 	*/
 
-	win := render.NewWindow(height, width, true)
+	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	cat = models.NewCat()
 	fps = models.NewFps(false)
@@ -144,9 +146,9 @@ func main() {
 	Cam = camera.NewCamera(&win)
 	spawnX := int(20)
 	Cam.X = float32(spawnX)
-	cat.X = float32(spawnX)
 	Cam.Y = 5
-	cat.Y = float32(CurrentPlanet.GetHeight(spawnX)+1)
+	cat.Pos.X = float32(spawnX)
+	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 6)
 
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
@@ -177,16 +179,18 @@ func boolToFloat(x bool) float32 {
 }
 
 func Tick(elapsed int) {
+	dt := float32(elapsed) / 1000
+
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
 			boolToFloat(upPressed)-boolToFloat(downPressed),
 			0,
-			float32(elapsed)/1000,
+			dt,
 		)
-		cat.Tick(false,false,false)
+		cat.Tick(false, false, false, CurrentPlanet, dt)
 	} else {
-		cat.Tick(leftPressed,rightPressed,spacePressed)
+		cat.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
 	}
 
 	spacePressed = false
@@ -199,6 +203,11 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
 	cat.Draw(Cam)
+	win.DrawLines(cat.GetBBoxLinesRelative(Cam), []float32{0.0, 0.0, 1.0})
+	collidingLines := cat.GetCollidingLinesRelative(Cam)
+	if len(collidingLines) > 1 {
+		win.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
+	}
 
 	glfw.PollEvents()
 	window.SwapBuffers()
