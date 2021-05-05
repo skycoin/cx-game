@@ -2,41 +2,43 @@ package models
 
 import (
 	"image"
-	"github.com/skycoin/cx-game/spriteloader"
+
 	"github.com/skycoin/cx-game/camera"
-	//"github.com/skycoin/cx-game/physics"
+	"github.com/skycoin/cx-game/physics"
+	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/world"
 )
 
 type Cat struct {
+	physics.Body
 	RGBA      *image.RGBA
-	Size      image.Point
-	width     float32
-	height    float32
-	X         float32
-	Y         float32
-	XVelocity,YVelocity float32
+	ImageSize image.Point
 	movSpeed  float32
 	jumpSpeed float32
 	spriteId  int
 }
 
 func NewCat() *Cat {
-	spriteId := spriteloader.LoadSingleSprite("./assets/cat.png","cat")
+	spriteId := spriteloader.LoadSingleSprite("./assets/cat.png", "cat")
 	cat := Cat{
-		width:  1,
-		height: 1,
-		movSpeed: 0.05,
-		jumpSpeed: 0.2,
-		spriteId: spriteId,
+		Body: physics.Body{
+			Size: physics.Vec2{X: 1.0, Y: 1.0},
+		},
+		movSpeed:  3.0,
+		jumpSpeed: 12.0,
+		spriteId:  spriteId,
 	}
 
 	return &cat
 }
 
 func (cat *Cat) Draw(cam *camera.Camera) {
+	x := cat.Pos.X - cam.X
+	y := cat.Pos.Y - cam.Y
+
 	spriteloader.DrawSpriteQuad(
-		cat.X-cam.X,cat.Y-cam.Y,
-		cat.width,cat.height,cat.spriteId,
+		x, y,
+		cat.Size.X, cat.Size.Y, cat.spriteId,
 	)
 }
 
@@ -48,24 +50,13 @@ func boolToFloat(x bool) float32 {
 	}
 }
 
+func (cat *Cat) Tick(leftPressed, rightPressed, spacePressed bool, planet *world.Planet, dt float32) {
+	cat.Vel.X = (boolToFloat(rightPressed) - boolToFloat(leftPressed)) * cat.movSpeed
+	cat.Vel.Y -= physics.Gravity * dt
 
-func (cat *Cat) Tick(leftPressed,rightPressed,spacePressed bool) {
-	// TODO enable gravity after collision detection
-	/*if cat.Y > 6.5 {
-		cat.YVelocity -= physics.Gravity
-	} else {
-		cat.YVelocity = 0
+	if spacePressed {
+		cat.Vel.Y = cat.jumpSpeed
+	}
 
-		if spacePressed {
-			cat.YVelocity = 0.2
-		}
-	}*/
-	// FIXME speeds are currently based on ticks instead of time
-	xDirection := boolToFloat(rightPressed)-boolToFloat(leftPressed)
-	cat.XVelocity = xDirection*cat.movSpeed
-
-	//cat.YVelocity = boolToFloat(spacePressed)*cat.jumpSpeed
-
-	cat.X += cat.XVelocity
-	cat.Y += cat.YVelocity
+	cat.Move(planet, dt)
 }
