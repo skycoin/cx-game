@@ -43,6 +43,19 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 			planet.GetTopLayerTile(int(newPos.X+0.95), int(newPos.Y)).TileType != world.TileTypeNone {
 			newPos.Y = float32(int(newPos.Y) + 1)
 			body.Vel.Y = 0
+
+			// check the sides and correct the position to be centered when fall near another tile
+			// this is because we are checking with a slightly smaller width
+			if planet.GetTopLayerTile(int(newPos.X+1.0), int(body.Pos.Y+0.9)).TileType != world.TileTypeNone ||
+				planet.GetTopLayerTile(int(newPos.X+1.0), int(body.Pos.Y)).TileType != world.TileTypeNone {
+				newPos.X = float32(int(newPos.X))
+				body.Vel.X = 0.0
+			}
+			if planet.GetTopLayerTile(int(newPos.X), int(body.Pos.Y+0.9)).TileType != world.TileTypeNone ||
+				planet.GetTopLayerTile(int(newPos.X), int(body.Pos.Y)).TileType != world.TileTypeNone {
+				newPos.X = float32(int(newPos.X) + 1)
+				body.Vel.X = 0.0
+			}
 		}
 	}
 
