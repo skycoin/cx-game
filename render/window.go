@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 type Window struct {
@@ -178,6 +179,13 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 	}
 
 	return shader, nil
+}
+
+func (window *Window) GetProjectionMatrix() mgl32.Mat4 {
+    aspect := float32(window.Width)/float32(window.Height)
+    return mgl32.Perspective(
+        mgl32.DegToRad(45), aspect, 0.1, 100.0,
+    )
 }
 
 //opengl with custom shaders

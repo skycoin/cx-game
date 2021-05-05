@@ -3,8 +3,12 @@ package world
 import (
 	"log"
 
-	"github.com/skycoin/cx-game/camera"
+	"math"
+	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/cxmath"
 )
 
 type Layers struct {
@@ -21,7 +25,7 @@ type Planet struct {
 
 func NewPlanet(x, y int32) *Planet {
 	planet := Planet{
-		Width:  x,
+		Width:	x,
 		Height: y,
 		Layers: Layers{
 			Background: make([]Tile, x*y),
@@ -59,6 +63,38 @@ func (planet *Planet) GetTileIndex(x, y int) int {
 		log.Panicln("trying to get tile out of the defined tile array")
 	}
 	return y*int(planet.Width) + x
+}
+
+func (planet *Planet) GetAllTilesUnique() []Tile {
+	tiles := []Tile {}
+	seenTiles := map[Tile]bool {}
+	for _,tile := range planet.Layers.Top {
+		_,seen := seenTiles[tile]
+		if !seen {
+			tiles = append(tiles,tile)
+		}
+		seenTiles[tile] = true
+	}
+	return tiles
+}
+
+func (planet *Planet) TryPlaceTile(
+	x,y float32, projection mgl32.Mat4,
+	tile Tile,
+	cam *camera.Camera,
+) {
+	// tilemap is drawn directly on the world - no need to convert further
+	worldCoords := cxmath.ConvertScreenCoordsToWorld(x,y,projection)
+	// FIXME dirty workaround for broken view matrx
+	worldCoords[0] += cam.X
+	worldCoords[1] += cam.Y
+	tileX := int32(math.Floor((float64(worldCoords.X()+0.5))))
+	tileY := int32(math.Floor((float64)(worldCoords.Y()+0.5)))
+	if tileX>=0 && tileX<planet.Width && tileY>=0 && tileY<planet.Width {
+		tileIdx := planet.GetTileIndex(int(tileX),int(tileY))
+		// TODO allow placing on background and mid layers
+		planet.Layers.Top[tileIdx] = tile
+	}
 }
 
 // gets the y coordinate of the highest solid tile
