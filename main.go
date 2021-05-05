@@ -203,7 +203,11 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
 	cat.Draw(Cam)
-	win.DrawLines(cat.GetBBoxLinesProjection(Cam), []float32{0.0, 0.0, 1.0})
+	win.DrawLines(cat.GetBBoxLinesRelative(Cam), []float32{0.0, 0.0, 1.0})
+	collidingLines := cat.GetCollidingLinesRelative(Cam)
+	if len(collidingLines) > 1 {
+		win.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
+	}
 
 	glfw.PollEvents()
 	window.SwapBuffers()

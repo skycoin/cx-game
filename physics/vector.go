@@ -6,6 +6,10 @@ type Vec2 struct {
 	X, Y float32
 }
 
+type Vec2i struct {
+	X, Y int32
+}
+
 func (v1 Vec2) Add(v2 Vec2) Vec2 {
 	v1.X += v2.X
 	v1.Y += v2.Y
