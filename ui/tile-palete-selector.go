@@ -42,8 +42,9 @@ const padding = 0.1
 const spacing = 0.2
 
 func (selector TilePaleteSelector) worldTransformForTileAtIndex(idx int) mgl32.Mat4 {
-	yLocal := float32(idx/int(selector.Width))-0.5
-	xLocal := float32(idx%int(selector.Width))-0.5
+	offset := float32(selector.Width)/2 - 0.5
+	yLocal := float32(idx/int(selector.Width))-offset
+	xLocal := float32(idx%int(selector.Width))-offset
 	tileScale := 1.0/float32(selector.Width)
 	localTransform :=
 		mgl32.Scale3D(tileScale,tileScale,1).
@@ -79,15 +80,9 @@ func (selector *TilePaleteSelector) Draw() {
 	numTiles := float64(len(selector.Tiles))
 	if numTiles>0 {
 		for idx,tile := range selector.Tiles {
-			yLocal := float32(idx/int(selector.Width))-0.5
-			xLocal := float32(idx%int(selector.Width))-0.5
-			tileScale := 1.0/float32(selector.Width)
-			localTransform :=
-				mgl32.Scale3D(tileScale,tileScale,1).
-				Mul4(mgl32.Translate3D(xLocal,yLocal,0)).
+			tileWorldTransform := selector.worldTransformForTileAtIndex(idx).
 				Mul4(mgl32.Scale3D(1-spacing,1-spacing,1))
 
-			tileWorldTransform := selector.Transform.Mul4(localTransform)
 			// TODO add a custom texture for drawing air
 			if tile.TileType!=world.TileTypeNone {
 				spriteloader.DrawSpriteQuadMatrix(tileWorldTransform,int(tile.SpriteID))
@@ -115,7 +110,9 @@ func (selector *TilePaleteSelector) TrySelectTile(x,y float32, projection mgl32.
 }
 
 func (selector *TilePaleteSelector) GetSelectedTile() world.Tile {
-	if selector.SelectedTileIndex>=0 {
+	if selector.SelectedTileIndex>=0 &&
+		selector.SelectedTileIndex<len(selector.Tiles) {
+
 		return selector.Tiles[selector.SelectedTileIndex]
 	} else {
 		return world.Tile {}
