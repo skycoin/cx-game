@@ -148,7 +148,7 @@ func main() {
 	Cam.X = float32(spawnX)
 	Cam.Y = 5
 	cat.Pos.X = float32(spawnX)
-	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 3)
+	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 6)
 
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
