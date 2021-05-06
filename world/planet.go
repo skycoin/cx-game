@@ -77,3 +77,74 @@ func (planet *Planet) GetTopLayerTile(x, y int) *Tile {
 	index := planet.GetTileIndex(x, y)
 	return &planet.Layers.Top[index]
 }
+
+func (planet *Planet) GetCollidingTilesLinesRelative(x, y int, cam *camera.Camera) []float32 {
+	if x < 2 {
+		x = 2
+	}
+	if x >= int(planet.Width)-3 {
+		x = int(planet.Width) - 4
+	}
+	if y < 2 {
+		y = 0
+	}
+	if y >= int(planet.Height)-3 {
+		y = int(planet.Height) - 4
+	}
+
+	lines := []float32{}
+
+	for j := y - 2; j < y+4; j++ {
+		for i := x - 2; i < x+4; i++ {
+			if planet.GetTopLayerTile(i, j).TileType != TileTypeNone {
+				fx := float32(i) - cam.X - 0.5
+				fy := float32(j) - cam.Y - 0.5
+				fxw := fx + 1.0
+				fyh := fy + 1.0
+
+				lines = append(lines, []float32{
+					fx, fy, 0.0,
+					fx, fyh, 0.0,
+
+					fx, fyh, 0.0,
+					fxw, fyh, 0.0,
+
+					fxw, fyh, 0.0,
+					fxw, fy, 0.0,
+
+					fxw, fy, 0.0,
+					fx, fy, 0.0,
+				}...)
+
+				// only draw the tiles outline instead of every single one
+				// is cpu taxing!
+				/*if planet.GetTopLayerTile(i+1, j).TileType == TileTypeNone { // right
+					lines = append(lines, []float32{
+						fxw, fyh, 0.0,
+						fxw, fy, 0.0,
+					}...)
+				}
+				if planet.GetTopLayerTile(i-1, j).TileType == TileTypeNone { // left
+					lines = append(lines, []float32{
+						fx, fyh, 0.0,
+						fx, fy, 0.0,
+					}...)
+				}
+				if planet.GetTopLayerTile(i, j+1).TileType == TileTypeNone { // up
+					lines = append(lines, []float32{
+						fx, fyh, 0.0,
+						fxw, fyh, 0.0,
+					}...)
+				}
+				if planet.GetTopLayerTile(i, j-1).TileType == TileTypeNone { // down
+					lines = append(lines, []float32{
+						fx, fy, 0.0,
+						fxw, fy, 0.0,
+					}...)
+				}*/
+
+			}
+		}
+	}
+	return lines
+}
