@@ -244,9 +244,20 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
 	cat.Draw(Cam)
+
+	// tile - air line (green)
+	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
+		int(cat.Pos.X), int(cat.Pos.Y), Cam)
+	if len(collidingTileLines) > 2 {
+		win.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0})
+	}
+
+	// body bounding box (blue)
 	win.DrawLines(cat.GetBBoxLinesRelative(Cam), []float32{0.0, 0.0, 1.0})
+
+	// colliding line from body (red)
 	collidingLines := cat.GetCollidingLinesRelative(Cam)
-	if len(collidingLines) > 1 {
+	if len(collidingLines) > 2 {
 		win.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
 	}
 
