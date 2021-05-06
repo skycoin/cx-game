@@ -1,4 +1,5 @@
 package utility
+// Helper shader program class from learnopengl.com
 
 import (
 	"io/ioutil"

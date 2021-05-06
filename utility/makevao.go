@@ -1,5 +1,5 @@
 package utility
-
+// Helper vertex array object creator 
 import "github.com/go-gl/gl/v4.1-core/gl"
 
 var planevertices = []float32{

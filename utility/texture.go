@@ -1,5 +1,6 @@
 package utility
 
+// Helper texture generator functions
 import "github.com/go-gl/gl/v4.1-core/gl"
 
 func Make1DTexture(fname string) uint32 {
