@@ -1,7 +1,6 @@
 package physics
 
 import (
-	//"log"
 	"math"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/world"
