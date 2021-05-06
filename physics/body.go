@@ -120,11 +120,9 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
-	bounds := body.bounds(newPos)
-
 	if body.isCollidingLeft(planet, newPos) {
 		body.Vel.X = 0
-		newPos.X = float32(bounds.leftTile) + 0.5 + body.Size.X/2
+		newPos.X = float32(body.bounds(newPos).leftTile) + 0.5 + body.Size.X/2
 
 		body.collidingLines = append(body.collidingLines, []float32{
 			newPos.X-body.Size.X/2, newPos.Y - body.Size.Y/2, 0.0,
@@ -133,7 +131,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 	}
 	if body.isCollidingRight(planet, newPos) {
 		body.Vel.X = 0
-		newPos.X = float32(bounds.rightTile) - 0.5 - body.Size.X/2
+		newPos.X = float32(body.bounds(newPos).rightTile) - 0.5 - body.Size.X/2
 
 		body.collidingLines = append(body.collidingLines, []float32{
 			newPos.X+body.Size.X/2, newPos.Y - body.Size.Y/2, 0.0,
@@ -142,7 +140,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 	}
 	if body.isCollidingTop(planet, newPos) {
 		body.Vel.Y = 0
-		newPos.Y = float32(bounds.topTile) - 0.5 - body.Size.Y/2
+		newPos.Y = float32(body.bounds(newPos).topTile) - 0.5 - body.Size.Y/2
 
 		body.collidingLines = append(body.collidingLines, []float32{
 			newPos.X-body.Size.X/2, newPos.Y + body.Size.Y/2, 0.0,
@@ -151,7 +149,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 	}
 	if body.isCollidingBottom(planet, newPos) {
 		body.Vel.Y = 0
-		newPos.Y = float32(bounds.bottomTile) + 0.5 + body.Size.Y/2
+		newPos.Y = float32(body.bounds(newPos).bottomTile) + 0.5 + body.Size.Y/2
 
 		body.collidingLines = append(body.collidingLines, []float32{
 			newPos.X-body.Size.X/2, newPos.Y - body.Size.Y/2, 0.0,
