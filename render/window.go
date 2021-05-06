@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 type Window struct {
@@ -74,32 +75,69 @@ func initOpenGL() uint32 {
 	var fragmentShaderSource string
 
 	vertexShaderSource = `
-    #version 410
-    layout (location=0) in vec3 position;
-    layout (location=1) in vec2 texcoord;
+	#version 410
+	layout (location=0) in vec3 position;
+	layout (location=1) in vec2 texcoord;
 	out vec2 tCoord;
 	uniform mat4 projection;
 	uniform mat4 world;
 	uniform vec2 texScale;
 	uniform vec2 texOffset;
-    void main() {
-		
-        gl_Position = projection * world * vec4(position, 1.0);
+	void main() {
+		gl_Position = projection * world * vec4(position, 1.0);
 		tCoord = (texcoord+texOffset) * texScale;
-    }
-` + "\x00"
+	}
+	` + "\x00"
 	//gl_Position = vec4(position, 10.0, 1.0) * camera * projection;
 
 	fragmentShaderSource = `
-    #version 410
+	#version 410
 	in vec2 tCoord;
-    out vec4 frag_colour;
+	out vec4 frag_colour;
 	uniform sampler2D ourTexture;
-    void main() {
-		frag_colour = texture(ourTexture, tCoord);
-    }
-` + "\x00"
+	void main() {
+			frag_colour = texture(ourTexture, tCoord);
+	}
+	` + "\x00"
 
+	prog := CreateProgram(vertexShaderSource, fragmentShaderSource)
+
+	gl.UseProgram(prog)
+	gl.Uniform2f(
+		gl.GetUniformLocation(prog, gl.Str("texScale\x00")),
+		1.0, 1.0,
+	)
+
+	// line opengl program
+	vertexShaderSource = `
+	#version 330 core
+	layout (location = 0) in vec3 aPos;
+	uniform mat4 uProjection;
+	uniform mat4 uWorld;
+
+	void main()
+	{
+	   //gl_Position = uProjection * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	   gl_Position = uProjection * uWorld * vec4(aPos, 1.0);
+	   //gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	}` + "\x00"
+
+	fragmentShaderSource = `
+	#version 330 core
+	out vec4 FragColor;
+	uniform vec3 uColor;
+
+	void main()
+	{
+	   FragColor = vec4(uColor, 1.0f);
+	}` + "\x00"
+
+	lineProgram = CreateProgram(vertexShaderSource, fragmentShaderSource)
+
+	return prog
+}
+
+func CreateProgram(vertexShaderSource string, fragmentShaderSource string) uint32 {
 	vertexShader, err := CompileShader(vertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
 		panic(err)
@@ -114,11 +152,9 @@ func initOpenGL() uint32 {
 	gl.AttachShader(prog, vertexShader)
 	gl.AttachShader(prog, fragmentShader)
 	gl.LinkProgram(prog)
-	gl.UseProgram(prog)
-	gl.Uniform2f(
-		gl.GetUniformLocation(prog, gl.Str("texScale\x00")),
-		1.0, 1.0,
-	)
+	gl.DeleteShader(fragmentShader)
+	gl.DeleteShader(vertexShader)
+
 	return prog
 }
 
@@ -145,7 +181,16 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
+func (window *Window) GetProjectionMatrix() mgl32.Mat4 {
+    aspect := float32(window.Width)/float32(window.Height)
+    return mgl32.Perspective(
+        mgl32.DegToRad(45), aspect, 0.1, 100.0,
+    )
+}
+
+//opengl with custom shaders
 func InitOpenGLCustom(shaderDir string) uint32 {
+
 	var vertexShaderSource, fragmentShaderSource []byte
 
 	filepath.WalkDir(shaderDir, func(path string, d fs.DirEntry, err error) error {
@@ -175,23 +220,9 @@ func InitOpenGLCustom(shaderDir string) uint32 {
 	if err := gl.Init(); err != nil {
 		panic(err)
 	}
-	version := gl.GoStr(gl.GetString(gl.VERSION))
-	log.Println("OpenGL version", version)
 
-	vertexShader, err := CompileShader(string(vertexShaderSource)+"\x00", gl.VERTEX_SHADER)
-	if err != nil {
-		panic(err)
-	}
-
-	fragmentShader, err := CompileShader(string(fragmentShaderSource)+"\x00", gl.FRAGMENT_SHADER)
-	if err != nil {
-		panic(err)
-	}
-
-	prog := gl.CreateProgram()
-	gl.AttachShader(prog, vertexShader)
-	gl.AttachShader(prog, fragmentShader)
-	gl.LinkProgram(prog)
+	prog := CreateProgram(string(vertexShaderSource), string(fragmentShaderSource))
 	gl.UseProgram(prog)
+
 	return prog
 }

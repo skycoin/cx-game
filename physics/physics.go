@@ -1,3 +1,3 @@
 package physics
 
-var Gravity float32 = 0.01
+var Gravity float32 = 30.0

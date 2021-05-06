@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"runtime"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -12,8 +13,9 @@ import (
 
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/ui"
 )
 
 func init() {
@@ -24,7 +26,7 @@ func init() {
 
 var (
 	DrawCollisionBoxes = false
-	FPS                int
+	FPS				   int
 )
 
 var CurrentPlanet *world.Planet
@@ -52,13 +54,45 @@ var downPressed bool
 var leftPressed bool
 var rightPressed bool
 var spacePressed bool
+var mouseX, mouseY float64
+
+func mouseButtonCallback(
+		w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
+) {
+	// we only care about mousedown events for now
+	if a != glfw.Press {return}
+	screenX := float32(2*mouseX/float64(win.Width)-1)
+	screenY := 1-float32(2*mouseY/float64(win.Height))
+	projection := win.GetProjectionMatrix()
+
+	didSelectPaleteTile := tilePaleteSelector.
+		TrySelectTile(screenX,screenY,projection)
+
+	// only try to place a tile if we didn't select a palete with this click
+	if !didSelectPaleteTile {
+		CurrentPlanet.TryPlaceTile(
+			screenX,screenY,
+			projection,
+			tilePaleteSelector.GetSelectedTile(),
+			Cam,
+		)
+	}
+}
+
+func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
+	mouseX = xpos
+	mouseY = ypos
+}
 
 var isFreeCam = false
+var isTileSelectorVisible = false
+var tilePaleteSelector ui.TilePaleteSelector
 
 var cat *models.Cat
 var fps *models.Fps
 
 var Cam *camera.Camera
+var win render.Window
 var tex uint32
 
 func makeVao() uint32 {
@@ -108,6 +142,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyF2 {
 			isFreeCam = !isFreeCam
 		}
+		if k == glfw.KeyF3 {
+			tilePaleteSelector.Toggle()
+		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
 			upPressed = false
@@ -133,22 +170,28 @@ func main() {
 		SS.DrawSprite()
 	*/
 
-	win := render.NewWindow(height, width, true)
+	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	cat = models.NewCat()
 	fps = models.NewFps(false)
 
 	wz = -10
 	CurrentPlanet = world.NewDevPlanet()
+	worldTiles := CurrentPlanet.GetAllTilesUnique()
+	log.Printf("Found [%v] unique tiles in the world",len(worldTiles))
+	tilePaleteSelector = ui.
+		MakeTilePaleteSelector(worldTiles)
 	window := win.Window
 	Cam = camera.NewCamera(&win)
 	spawnX := int(20)
 	Cam.X = float32(spawnX)
-	cat.X = float32(spawnX)
 	Cam.Y = 5
-	cat.Y = float32(CurrentPlanet.GetHeight(spawnX)+1)
+	cat.Pos.X = float32(spawnX)
+	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 
 	window.SetKeyCallback(keyCallBack)
+	window.SetCursorPosCallback(cursorPosCallback)
+	window.SetMouseButtonCallback(mouseButtonCallback)
 	defer glfw.Terminate()
 	VAO := makeVao()
 	program := win.Program
@@ -177,16 +220,18 @@ func boolToFloat(x bool) float32 {
 }
 
 func Tick(elapsed int) {
+	dt := float32(elapsed) / 1000
+
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
 			boolToFloat(upPressed)-boolToFloat(downPressed),
 			0,
-			float32(elapsed)/1000,
+			dt,
 		)
-		cat.Tick(false,false,false)
+		cat.Tick(false, false, false, CurrentPlanet, dt)
 	} else {
-		cat.Tick(leftPressed,rightPressed,spacePressed)
+		cat.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
 	}
 
 	spacePressed = false
@@ -199,6 +244,13 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
 	cat.Draw(Cam)
+	win.DrawLines(cat.GetBBoxLinesRelative(Cam), []float32{0.0, 0.0, 1.0})
+	collidingLines := cat.GetCollidingLinesRelative(Cam)
+	if len(collidingLines) > 1 {
+		win.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
+	}
+
+	tilePaleteSelector.Draw()
 
 	glfw.PollEvents()
 	window.SwapBuffers()
