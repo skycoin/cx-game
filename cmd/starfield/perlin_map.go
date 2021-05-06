@@ -2,11 +2,14 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math"
 	"math/rand"
+	"os"
 	"path/filepath"
 	"runtime"
+	"time"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -14,6 +17,8 @@ import (
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/utility"
+	"gopkg.in/yaml.v2"
 )
 
 type noiseSettings struct {
@@ -65,21 +70,23 @@ func init() {
 	runtime.LockOSThread()
 }
 func main() {
+	go checkAndReload()
+
 	win := render.NewWindow(height, width, false)
 	window := win.Window
 
-	program := getProgram()
+	shader := utility.NewShader("./cmd/starfield/shaders/perlin_vertex.glsl", "./cmd/starfield/shaders/perlin_fragment.glsl")
+	shader.Use()
 
-	gl.UseProgram(program)
 	gl.Enable(gl.VERTEX_PROGRAM_POINT_SIZE)
-	tex := getGradient(7)
 
+	tex := getGradient(7)
 	gl.ActiveTexture(0)
 	gl.BindTexture(gl.TEXTURE_1D, tex)
-	gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("texture_1d\x00")), 0)
+	shader.SetInt("texture_1d", 0)
 
 	projection := mgl32.Ortho2D(0, width, 0, height)
-	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projection[0])
+	shader.SetMat4("projection", &projection)
 
 	vao := genStarField()
 	for !window.ShouldClose() {
@@ -92,53 +99,7 @@ func main() {
 		window.SwapBuffers()
 	}
 }
-func getProgram() uint32 {
-	var vertexShaderSource = `
-	#version 410
-	layout (location = 0) in vec3 aPos;
-	layout (location = 1) in float aSize;
-	layout (location = 2) in float aGradient;
-	out float gradientValue;
-	uniform mat4 projection;
 
-	void main(){
-		gl_PointSize = aSize;
-		gl_Position = projection*vec4(aPos, 1.0);
-		gradientValue = aGradient;
-	}
-	` + "\x00"
-
-	var fragmentShaderSource = `
-	#version 410
-	out vec4 frag_colour;
-	in float gradientValue;
-
-	uniform sampler1D texture_1d;
-
-	void main(){
-		frag_colour = texture(texture_1d, gradientValue);
-	}
-	` + "\x00"
-
-	vertexShader, err := render.CompileShader(vertexShaderSource, gl.VERTEX_SHADER)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fragmentShader, err := render.CompileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	program := gl.CreateProgram()
-	gl.AttachShader(program, vertexShader)
-	gl.AttachShader(program, fragmentShader)
-
-	gl.LinkProgram(program)
-
-	gl.UseProgram(program)
-	return program
-
-}
 func genStarField() uint32 {
 	perlinMap := genPerlin()
 	for i := 0; i < starAmount; i++ {
@@ -236,4 +197,30 @@ func getGradient(gradientNumber uint) uint32 {
 	gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGBA, int32(img.Rect.Size().X), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
 
 	return tex
+}
+
+func checkAndReload() {
+	configFilename := "./cmd/starfield/perlin.yaml"
+	fileStat, err := os.Stat(configFilename)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	for {
+		newFileStat, err := os.Stat(configFilename)
+		if err != nil {
+			log.Panic(err)
+		}
+		//check if file is changed
+		if newFileStat.ModTime() != fileStat.ModTime() || newFileStat.Size() != fileStat.Size() {
+			data, err := ioutil.ReadFile(configFilename)
+			if err != nil {
+				log.Panic(err)
+			}
+			yaml.Unmarshal(data, noise)
+			fmt.Println("reloaded")
+			fileStat = newFileStat
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 }
