@@ -14,8 +14,8 @@ import (
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/ui"
+	"github.com/skycoin/cx-game/world"
 )
 
 func init() {
@@ -26,7 +26,7 @@ func init() {
 
 var (
 	DrawCollisionBoxes = false
-	FPS				   int
+	FPS                int
 )
 
 var CurrentPlanet *world.Planet
@@ -57,21 +57,23 @@ var spacePressed bool
 var mouseX, mouseY float64
 
 func mouseButtonCallback(
-		w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
+	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
 	// we only care about mousedown events for now
-	if a != glfw.Press {return}
-	screenX := float32(2*mouseX/float64(win.Width)-1)
-	screenY := 1-float32(2*mouseY/float64(win.Height))
+	if a != glfw.Press {
+		return
+	}
+	screenX := float32(2*mouseX/float64(win.Width) - 1)
+	screenY := 1 - float32(2*mouseY/float64(win.Height))
 	projection := win.GetProjectionMatrix()
 
 	didSelectPaleteTile := tilePaleteSelector.
-		TrySelectTile(screenX,screenY,projection)
+		TrySelectTile(screenX, screenY, projection)
 
 	// only try to place a tile if we didn't select a palete with this click
 	if !didSelectPaleteTile {
 		CurrentPlanet.TryPlaceTile(
-			screenX,screenY,
+			screenX, screenY,
 			projection,
 			tilePaleteSelector.GetSelectedTile(),
 			Cam,
@@ -178,7 +180,7 @@ func main() {
 	wz = -10
 	CurrentPlanet = world.NewDevPlanet()
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
-	log.Printf("Found [%v] unique tiles in the world",len(worldTiles))
+	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 	tilePaleteSelector = ui.
 		MakeTilePaleteSelector(worldTiles)
 	window := win.Window
