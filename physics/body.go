@@ -1,7 +1,6 @@
 package physics
 
 import (
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -86,9 +85,9 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 	body.Pos = newPos
 }
 
-func (body *Body) GetBBoxLinesRelative(cam *camera.Camera) []float32 {
-	x := body.Pos.X - cam.X - body.Size.X/2
-	y := body.Pos.Y - cam.Y - body.Size.Y/2
+func (body *Body) GetBBoxLines() []float32 {
+	x := body.Pos.X - body.Size.X/2
+	y := body.Pos.Y - body.Size.Y/2
 	return []float32{
 		x, y, 0.0,
 		x + body.Size.X, y, 0.0,
@@ -104,13 +103,13 @@ func (body *Body) GetBBoxLinesRelative(cam *camera.Camera) []float32 {
 	}
 }
 
-func (body *Body) GetCollidingLinesRelative(cam *camera.Camera) []float32 {
+func (body *Body) GetCollidingLines() []float32 {
 	collidingLines := []float32{}
 
 	for i := 0; i < len(body.collidingLines); i += 3 {
 		collidingLines = append(collidingLines, []float32{
-			body.collidingLines[i] - cam.X - 0.5,
-			body.collidingLines[i+1] - cam.Y - 0.5,
+			body.collidingLines[i] - 0.5,
+			body.collidingLines[i+1] - 0.5,
 			0.0,
 		}...)
 	}
