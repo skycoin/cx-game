@@ -4,17 +4,17 @@ import (
 	"log"
 	"runtime"
 
-	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/camera"
-	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/world"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/world"
 )
 
 func init() {
 	// This is needed to arrange that main() runs on main thread.
-	// See documentation for functions that are only allowed to be called 
+	// See documentation for functions that are only allowed to be called
 	// from the main thread.
 	runtime.LockOSThread()
 }
@@ -32,38 +32,38 @@ func main() {
 	log.Print("running test")
 	log.Print("You should see 3 overlapping tiles from different layers.")
 	log.Print("top-to-bottom: (blue, orange, pink)")
-	win := render.NewWindow(640,480,true)
+	win := render.NewWindow(640, 480, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
-	cam = camera.NewCamera()
+	cam = camera.NewCamera(&win)
 	cam.X = 2
 	cam.Y = 2
-	earth = world.NewPlanet(4,4)
+	earth = world.NewPlanet(4, 4)
 
 	spriteloader.InitSpriteloader(&win)
 	spriteSheetId := spriteloader.
 		LoadSpriteSheet("./assets/starfield/stars/planets.png")
 	spriteloader.
-		LoadSprite(spriteSheetId, "big", 2,0)
+		LoadSprite(spriteSheetId, "big", 2, 0)
 	bigSpriteId := spriteloader.
 		GetSpriteIdByName("big")
 	spriteloader.
-		LoadSprite(spriteSheetId, "mid", 1,1)
+		LoadSprite(spriteSheetId, "mid", 1, 1)
 	midSpriteId := spriteloader.
 		GetSpriteIdByName("mid")
 	spriteloader.
-		LoadSprite(spriteSheetId, "small", 3,2)
+		LoadSprite(spriteSheetId, "small", 3, 2)
 	smallSpriteId := spriteloader.
 		GetSpriteIdByName("small")
 
-	log.Print(smallSpriteId,midSpriteId,bigSpriteId)
+	log.Print(smallSpriteId, midSpriteId, bigSpriteId)
 
 	earth.Layers.Top[0] = world.Tile{
 		SpriteID: uint32(smallSpriteId),
 		TileType: world.TileTypeNormal,
 	}
-	earth.Layers.Mid[0]= world.Tile{
+	earth.Layers.Mid[0] = world.Tile{
 		SpriteID: uint32(midSpriteId),
 		TileType: world.TileTypeNormal,
 	}
@@ -73,7 +73,7 @@ func main() {
 	}
 
 	for !window.ShouldClose() {
-		gl.ClearColor(1,1,1,1)
+		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		earth.Draw(cam)
 		glfw.PollEvents()
