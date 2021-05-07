@@ -21,6 +21,7 @@ type Fps struct {
 }
 
 func GetTimeStamp() int {
+	//seconds since epoch
 	return int(time.Now().UnixNano() / 1000000)
 }
 
