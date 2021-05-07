@@ -48,7 +48,6 @@ var (
 	}
 )
 
-var wz float32
 var upPressed bool
 var downPressed bool
 var leftPressed bool
@@ -136,10 +135,10 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			spacePressed = true
 		}
 		if k == glfw.KeyQ {
-			wz += 0.5
+			Cam.Zoom += 0.5
 		}
 		if k == glfw.KeyZ {
-			wz -= 0.5
+			Cam.Zoom -= 0.5
 		}
 		if k == glfw.KeyF2 {
 			isFreeCam = !isFreeCam
@@ -177,7 +176,6 @@ func main() {
 	cat = models.NewCat()
 	fps = models.NewFps(false)
 
-	wz = -10
 	CurrentPlanet = world.NewDevPlanet()
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
@@ -188,6 +186,7 @@ func main() {
 	spawnX := int(20)
 	Cam.X = float32(spawnX)
 	Cam.Y = 5
+	Cam.Zoom = -10
 	cat.Pos.X = float32(spawnX)
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 
@@ -249,18 +248,18 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 
 	// tile - air line (green)
 	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
-		int(cat.Pos.X), int(cat.Pos.Y), Cam)
+		int(cat.Pos.X), int(cat.Pos.Y))
 	if len(collidingTileLines) > 2 {
-		win.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0})
+		Cam.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0})
 	}
 
 	// body bounding box (blue)
-	win.DrawLines(cat.GetBBoxLinesRelative(Cam), []float32{0.0, 0.0, 1.0})
+	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0})
 
 	// colliding line from body (red)
-	collidingLines := cat.GetCollidingLinesRelative(Cam)
+	collidingLines := cat.GetCollidingLines()
 	if len(collidingLines) > 2 {
-		win.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
+		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
 	}
 
 	tilePaleteSelector.Draw()

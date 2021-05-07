@@ -118,7 +118,7 @@ func (planet *Planet) GetTopLayerTile(x, y int) *Tile {
 	return &planet.Layers.Top[index]
 }
 
-func (planet *Planet) GetCollidingTilesLinesRelative(x, y int, cam *camera.Camera) []float32 {
+func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 	// avoid from getting outside the world
 	if x < 2 {
 		x = 2
@@ -136,7 +136,8 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int, cam *camera.Camer
 	// return stored lines if it's in the range
 	if x > planet.collidingLinesX-2 && x < planet.collidingLinesX+2 &&
 		y > planet.collidingLinesY-2 && y < planet.collidingLinesY+2 {
-		return offsetLines(planet.collidingLines, cam.X, cam.Y)
+		//return offsetLines(planet.collidingLines, cam.X, cam.Y)
+		return planet.collidingLines
 	}
 
 	// store the new position for the newly calculated lines
@@ -200,8 +201,9 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int, cam *camera.Camer
 
 	// save array
 	planet.collidingLines = lines
+	return planet.collidingLines
 
-	return offsetLines(planet.collidingLines, cam.X, cam.Y)
+	//return offsetLines(planet.collidingLines, cam.X, cam.Y)
 }
 
 func offsetLines(lines []float32, x, y float32) []float32 {
