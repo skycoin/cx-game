@@ -2,29 +2,28 @@ package main
 
 import (
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
 )
 
-var catBlack *models.CatBlack
-
 func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
-	if a == glfw.Press && k == glfw.KeyEscape {
-		w.SetShouldClose(true)
-	}
-
-	if a == glfw.Press && k == glfw.KeyA {
-		catBlack.Walk()
+	if a == glfw.Press {
+		if k == glfw.KeyEscape {
+			//w.SetShouldClose(true)
+		}
 	}
 }
 
+
+
 func main() {
-	win := render.NewWindow(400, 300, true)
+	win := render.NewWindow(600, 800, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
-	catBlack := models.NewCatBlack(&win, window)
+	// gl.ClearColor(1, 1, 1, 1)
+	// gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	for !window.ShouldClose() {
-		catBlack.Sit()
+		glfw.PollEvents()
+		window.SwapBuffers()
 	}
 }

@@ -109,7 +109,7 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 		mgl32.Translate3D(float32(xpos), float32(ypos), -SpriteRenderDistance),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
 	)
-	DrawSpriteQuadMatrix(worldTransform,spriteId)
+	DrawSpriteQuadMatrix(worldTransform, spriteId)
 }
 
 func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId int) {
