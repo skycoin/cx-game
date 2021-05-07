@@ -119,11 +119,11 @@ func Draw() {
 
 	gl.UseProgram(program) // use shader
 
-	textureLocation := gl.GetUniformLocation(program, gl.Str("nebulaText\x00"))
+	textureLocation := gl.GetUniformLocation(program, gl.Str("nebulaTexture\x00"))
 	if textureLocation == -1 {
 		log.Println("[WARNING] can't get the nebule texture uniform location")
 	}
-	gradientLocation := gl.GetUniformLocation(program, gl.Str("gradientText\x00"))
+	gradientLocation := gl.GetUniformLocation(program, gl.Str("gradientTexture\x00"))
 	if gradientLocation == -1 {
 		log.Println("[WARNING] can't get the gradient texture uniform location")
 	}
