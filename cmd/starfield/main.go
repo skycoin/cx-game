@@ -16,6 +16,7 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/starmap"
+	"github.com/skycoin/cx-game/utility"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
 )
@@ -68,7 +69,8 @@ func main() {
 
 	window.SetKeyCallback(keyCallback)
 	// program1 := win.Program
-	program2 := render.InitOpenGLCustom("./cmd/starfield/shaders/")
+	// program2 := render.InitOpenGLCustom("./cmd/starfield/shaders/")
+	shader := utility.NewShader("./cmd/starfield/shaders/vertex.glsl", "./cmd/starfield/shaders/fragment.glsl")
 
 	if background == 1 {
 		starmap.Init(&win)
@@ -86,15 +88,15 @@ func main() {
 		gl.BindTexture(gl.TEXTURE_1D, tex)
 	}
 
-	gl.Uniform1i(gl.GetUniformLocation(program2, gl.Str("texture_1d\x00")), 1)
-	gl.UseProgram(program2)
+	shader.SetInt("texture_1d", 1)
+	shader.Use()
 	//main loop
 	for !window.ShouldClose() {
 		//clearing buffers
 		gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-		drawStarField(program2)
+		drawStarField(shader)
 
 		glfw.PollEvents()
 		window.SwapBuffers()
@@ -228,20 +230,20 @@ func initStarField(win *render.Window) {
 
 }
 
-func drawStarField(program uint32) {
+func drawStarField(shader *utility.Shader) {
 	//background stars
 	for _, star := range backgroundStars {
 		// spriteloader.DrawSpriteQuad(star.X, star.Y, star.Size, star.Size, star.SpriteId)
 		// spriteloader.DrawSpriteQuad(star.X, star.Y, star.Size*(1+config.PixelSize/10), star.Size*(1+config.PixelSize/10), star.SpriteId)
-		gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("texture_1d\x00")), star.GradientId)
-		gl.Uniform1f(gl.GetUniformLocation(program, gl.Str("gradValue\x00")), star.GradientValue)
-		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, star.Size, star.Size, star.SpriteId, program)
+		shader.SetInt("texture_1d", star.GradientId)
+		shader.SetFloat("gradValue", star.GradientValue)
+		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, star.Size, star.Size, star.SpriteId, shader.ID)
 	}
 
-	gl.UseProgram(program)
+	shader.Use()
 	for _, star := range stars {
-		gl.Uniform1f(gl.GetUniformLocation(program, gl.Str("gradValue\x00")), star.GradientValue)
-		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, 1, 1, star.SpriteId, program)
+		shader.SetFloat("gradValue", star.GradientValue)
+		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, 1, 1, star.SpriteId, shader.ID)
 	}
 }
 
@@ -254,7 +256,7 @@ func getSize() float32 {
 }
 
 func checkAndReload() {
-	configFilename := "./cmd/starfield/config.yaml"
+	configFilename := "./cmd/starfield/perlin.yaml"
 	fileStat, err := os.Stat(configFilename)
 	if err != nil {
 		log.Panic(err)
@@ -266,7 +268,7 @@ func checkAndReload() {
 			log.Panic(err)
 		}
 		//check if file is changed
-		if newFileStat.ModTime() != fileStat.ModTime() || newFileStat.Size() != fileStat.Size() {
+		if newFileStat.ModTime() != fileStat.ModTime() || newFileStat.Size() != fileStat.Size() || noise == (&noiseSettings{}) {
 			data, err := ioutil.ReadFile(configFilename)
 			if err != nil {
 				log.Panic(err)

@@ -14,8 +14,8 @@ import (
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/ui"
+	"github.com/skycoin/cx-game/world"
 )
 
 func init() {
@@ -26,7 +26,7 @@ func init() {
 
 var (
 	DrawCollisionBoxes = false
-	FPS				   int
+	FPS                int
 )
 
 var CurrentPlanet *world.Planet
@@ -48,7 +48,6 @@ var (
 	}
 )
 
-var wz float32
 var upPressed bool
 var downPressed bool
 var leftPressed bool
@@ -57,21 +56,23 @@ var spacePressed bool
 var mouseX, mouseY float64
 
 func mouseButtonCallback(
-		w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
+	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
 	// we only care about mousedown events for now
-	if a != glfw.Press {return}
-	screenX := float32(2*mouseX/float64(win.Width)-1)
-	screenY := 1-float32(2*mouseY/float64(win.Height))
+	if a != glfw.Press {
+		return
+	}
+	screenX := float32(2*mouseX/float64(win.Width) - 1)
+	screenY := 1 - float32(2*mouseY/float64(win.Height))
 	projection := win.GetProjectionMatrix()
 
 	didSelectPaleteTile := tilePaleteSelector.
-		TrySelectTile(screenX,screenY,projection)
+		TrySelectTile(screenX, screenY, projection)
 
 	// only try to place a tile if we didn't select a palete with this click
 	if !didSelectPaleteTile {
 		CurrentPlanet.TryPlaceTile(
-			screenX,screenY,
+			screenX, screenY,
 			projection,
 			tilePaleteSelector.GetSelectedTile(),
 			Cam,
@@ -134,10 +135,10 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			spacePressed = true
 		}
 		if k == glfw.KeyQ {
-			wz += 0.5
+			Cam.Zoom += 0.5
 		}
 		if k == glfw.KeyZ {
-			wz -= 0.5
+			Cam.Zoom -= 0.5
 		}
 		if k == glfw.KeyF2 {
 			isFreeCam = !isFreeCam
@@ -175,10 +176,9 @@ func main() {
 	cat = models.NewCat()
 	fps = models.NewFps(false)
 
-	wz = -10
 	CurrentPlanet = world.NewDevPlanet()
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
-	log.Printf("Found [%v] unique tiles in the world",len(worldTiles))
+	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 	tilePaleteSelector = ui.
 		MakeTilePaleteSelector(worldTiles)
 	window := win.Window
@@ -186,6 +186,7 @@ func main() {
 	spawnX := int(20)
 	Cam.X = float32(spawnX)
 	Cam.Y = 5
+	Cam.Zoom = -10
 	cat.Pos.X = float32(spawnX)
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 
@@ -244,10 +245,21 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
 	cat.Draw(Cam)
-	win.DrawLines(cat.GetBBoxLinesRelative(Cam), []float32{0.0, 0.0, 1.0})
-	collidingLines := cat.GetCollidingLinesRelative(Cam)
-	if len(collidingLines) > 1 {
-		win.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
+
+	// tile - air line (green)
+	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
+		int(cat.Pos.X), int(cat.Pos.Y))
+	if len(collidingTileLines) > 2 {
+		Cam.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0})
+	}
+
+	// body bounding box (blue)
+	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0})
+
+	// colliding line from body (red)
+	collidingLines := cat.GetCollidingLines(Cam)
+	if len(collidingLines) > 2 {
+		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
 	}
 
 	tilePaleteSelector.Draw()
