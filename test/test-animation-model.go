@@ -30,5 +30,5 @@ func main() {
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
 	catBlack := models.NewCatBlack(&win, window)
-	catBlack.Running()
+	catBlack.Walk()
 }

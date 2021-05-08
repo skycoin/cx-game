@@ -31,6 +31,36 @@ type CatBlack struct {
 
 var stopPlay chan bool
 
+const (
+	walkSprite         = 0
+	sitSprite          = 1
+	startRunningSprite = 2
+	runningSprite      = 3
+)
+
+// private method
+func play(action int, fcount int, lwindow *glfw.Window, lspriteSheetId int) {
+	j := 0
+	for {
+		if lwindow.ShouldClose() {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+		spriteloader.LoadSprite(lspriteSheetId, "blackcat", action, j)
+		spriteId := spriteloader.GetSpriteIdByName("blackcat")
+		fmt.Println("spriteId. ", spriteId, " j. ", j)
+		gl.ClearColor(1, 1, 1, 1)
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
+		glfw.PollEvents()
+		lwindow.SwapBuffers()
+		j++
+		if j == fcount {
+			j = 0
+		}
+	}
+}
+
 func NewCatBlack(lwin *render.Window, lwindow *glfw.Window) *CatBlack {
 	stopPlay = make(chan bool)
 	spriteloader.InitSpriteloader(lwin)
@@ -43,92 +73,19 @@ func NewCatBlack(lwin *render.Window, lwindow *glfw.Window) *CatBlack {
 		jumpSpeed:     0.2,
 		SpriteSheetId: lspriteSheetId,
 		Walk: func() {
-			j := 0
-			for {
-				if lwindow.ShouldClose() {
-					break
-				}
-				time.Sleep(100 * time.Millisecond)
-				spriteloader.LoadSprite(lspriteSheetId, "blackcat", 0, j)
-				spriteId := spriteloader.GetSpriteIdByName("blackcat")
-				fmt.Println("spriteId. ", spriteId, " j. ", j)
-				gl.ClearColor(1, 1, 1, 1)
-				gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-				spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
-				glfw.PollEvents()
-				lwindow.SwapBuffers()
-				j++
-				if j == 11 {
-					j = 0
-					// break
-				}
-			}
+			play(walkSprite, 11, lwindow, lspriteSheetId)
 		},
 		Sit: func() {
-			j := 0
-			for {
-				// if stopPlay == true {
-				// 	break
-				// }
-				time.Sleep(100 * time.Millisecond)
-				spriteloader.LoadSprite(lspriteSheetId, "blackcat", 1, j)
-				spriteId := spriteloader.GetSpriteIdByName("blackcat")
-				fmt.Println("spriteId. ", spriteId, " j. ", j)
-				gl.ClearColor(1, 1, 1, 1)
-				gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-				spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
-				glfw.PollEvents()
-				lwindow.SwapBuffers()
-				j++
-				if j == 5 {
-					break
-				}
-			}
+			play(sitSprite, 5, lwindow, lspriteSheetId)
 		},
 		SitStop: func() {
 
 		},
 		StartRunning: func() {
-			j := 0
-			for {
-				if lwindow.ShouldClose() {
-					break
-				}
-				time.Sleep(100 * time.Millisecond)
-				spriteloader.LoadSprite(lspriteSheetId, "blackcat", 2, j)
-				spriteId := spriteloader.GetSpriteIdByName("blackcat")
-				fmt.Println("spriteId. ", spriteId, " j. ", j)
-				gl.ClearColor(1, 1, 1, 1)
-				gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-				spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
-				glfw.PollEvents()
-				lwindow.SwapBuffers()
-				j++
-				if j == 11 {
-					j = 0
-				}
-			}
+			play(startRunningSprite, 11, lwindow, lspriteSheetId)
 		},
 		Running: func() {
-			j := 0
-			for {
-				if lwindow.ShouldClose() {
-					break
-				}
-				time.Sleep(100 * time.Millisecond)
-				spriteloader.LoadSprite(lspriteSheetId, "blackcat", 3, j)
-				spriteId := spriteloader.GetSpriteIdByName("blackcat")
-				fmt.Println("spriteId. ", spriteId, " j. ", j)
-				gl.ClearColor(1, 1, 1, 1)
-				gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-				spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
-				glfw.PollEvents()
-				lwindow.SwapBuffers()
-				j++
-				if j == 13 {
-					j = 0
-				}
-			}
+			play(runningSprite, 13, lwindow, lspriteSheetId)
 		},
 	}
 
