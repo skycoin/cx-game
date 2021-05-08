@@ -257,7 +257,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0})
 
 	// colliding line from body (red)
-	collidingLines := cat.GetCollidingLines()
+	collidingLines := cat.GetCollidingLines(Cam)
 	if len(collidingLines) > 2 {
 		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
 	}
