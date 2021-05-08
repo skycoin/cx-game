@@ -3,7 +3,6 @@ package physics
 import (
 	"math"
 
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -177,13 +176,13 @@ func (body *Body) GetBBoxLines() []float32 {
 	}
 }
 
-func (body *Body) GetCollidingLines(cam *camera.Camera) []float32 {
+func (body *Body) GetCollidingLines() []float32 {
 	collidingLines := []float32{}
 
 	for i := 0; i < len(body.collidingLines); i += 3 {
 		collidingLines = append(collidingLines, []float32{
-			body.collidingLines[i] - cam.X,
-			body.collidingLines[i+1] - cam.Y,
+			body.collidingLines[i],
+			body.collidingLines[i+1],
 			0.0,
 		}...)
 	}
