@@ -29,7 +29,10 @@ type CatBlack struct {
 	SpriteSheetId        int
 }
 
+var stopPlay chan bool
+
 func NewCatBlack(lwin *render.Window, lwindow *glfw.Window) *CatBlack {
+	stopPlay = make(chan bool)
 	spriteloader.InitSpriteloader(lwin)
 	lspriteSheetId := spriteloader.
 		LoadSpriteSheetByColRow("./assets/blackcat_sprite.png", 13, 4)
@@ -64,9 +67,9 @@ func NewCatBlack(lwin *render.Window, lwindow *glfw.Window) *CatBlack {
 		Sit: func() {
 			j := 0
 			for {
-				if lwindow.ShouldClose() {
-					break
-				}
+				// if stopPlay == true {
+				// 	break
+				// }
 				time.Sleep(100 * time.Millisecond)
 				spriteloader.LoadSprite(lspriteSheetId, "blackcat", 1, j)
 				spriteId := spriteloader.GetSpriteIdByName("blackcat")
@@ -81,6 +84,9 @@ func NewCatBlack(lwin *render.Window, lwindow *glfw.Window) *CatBlack {
 					break
 				}
 			}
+		},
+		SitStop: func() {
+
 		},
 		StartRunning: func() {
 			j := 0
@@ -119,7 +125,7 @@ func NewCatBlack(lwin *render.Window, lwindow *glfw.Window) *CatBlack {
 				glfw.PollEvents()
 				lwindow.SwapBuffers()
 				j++
-				if j == 5 {
+				if j == 13 {
 					j = 0
 				}
 			}

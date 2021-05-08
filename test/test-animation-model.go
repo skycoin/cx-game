@@ -8,8 +8,20 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
+var catBlack *models.CatBlack
+
 func init() {
 	runtime.LockOSThread()
+}
+
+func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
+	if a == glfw.Press && k == glfw.KeyEscape {
+		w.SetShouldClose(true)
+	}
+
+	if a == glfw.Press && k == glfw.KeyA {
+		// catBlack.Walk()
+	}
 }
 
 func main() {
@@ -18,7 +30,5 @@ func main() {
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()
 	catBlack := models.NewCatBlack(&win, window)
-	for !window.ShouldClose() {
-		catBlack.Sit()
-	}
+	catBlack.Running()
 }
