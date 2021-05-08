@@ -11,12 +11,12 @@ import (
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
+	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/item"
 )
 
 func init() {
@@ -67,7 +67,7 @@ func mouseButtonCallback(
 	screenY := 1 - float32(2*mouseY/float64(win.Height))
 	projection := win.GetProjectionMatrix()
 
-	didSelectPaleteTile := tilePaleteSelector.
+	didSelectPaleteTile := tilePaletteSelector.
 		TrySelectTile(screenX, screenY, projection)
 
 	// only try to place a tile if we didn't select a palete with this click
@@ -75,8 +75,8 @@ func mouseButtonCallback(
 		CurrentPlanet.TryPlaceTile(
 			screenX, screenY,
 			projection,
-			world.TopLayer,
-			tilePaleteSelector.GetSelectedTile(),
+			world.Layer(cyclingPalleteSelector),
+			tilePaletteSelector.GetSelectedTile(),
 			Cam,
 		)
 	}
@@ -90,7 +90,8 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 var isFreeCam = false
 var isTileSelectorVisible = false
 var isInventoryGridVisible = false
-var tilePaleteSelector ui.TilePaleteSelector
+var tilePaletteSelector ui.TilePaletteSelector
+var cyclingPalleteSelector int = -1
 
 var worldItem item.WorldItem
 var cat *models.Cat
@@ -148,10 +149,13 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			isFreeCam = !isFreeCam
 		}
 		if k == glfw.KeyF3 {
-			tilePaleteSelector.Toggle()
-		}
-		if k == glfw.KeyI {
-			isInventoryGridVisible = !isInventoryGridVisible
+			cyclingPalleteSelector++
+			if cyclingPalleteSelector == 0 {
+				tilePaletteSelector.Toggle()
+			} else if cyclingPalleteSelector > 2 {
+				cyclingPalleteSelector = -1
+				tilePaletteSelector.Toggle()
+			}
 		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
@@ -170,6 +174,7 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 }
 
 var inventoryId uint32
+
 func main() {
 
 	/*
@@ -182,23 +187,23 @@ func main() {
 	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	cat = models.NewCat()
-	log.Printf("inventoryId=%v",inventoryId)
+	log.Printf("inventoryId=%v", inventoryId)
 	fps = models.NewFps(false)
 
 	CurrentPlanet = world.NewDevPlanet()
-	inventoryId = item.NewInventory(10,8)
+	inventoryId = item.NewInventory(10, 8)
 	debugItemType :=
 		item.NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
 
 	inventory := item.GetInventoryById(inventoryId)
-	inventory.Slots[inventory.ItemSlotIndexForPosition(0,0)] =
-		item.InventorySlot { debugItemType, 1 }
-	inventory.Slots[inventory.ItemSlotIndexForPosition(1,7)] =
-		item.InventorySlot { debugItemType, 1 }
+	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 0)] =
+		item.InventorySlot{debugItemType, 1}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
+		item.InventorySlot{debugItemType, 1}
 
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
-	tilePaleteSelector = ui.
+	tilePaletteSelector = ui.
 		MakeTilePaleteSelector(worldTiles)
 	window := win.Window
 	Cam = camera.NewCamera(&win)
@@ -210,8 +215,8 @@ func main() {
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 
 	worldItem = item.NewWorldItem(debugItemType)
-	worldItem.Pos.X = cat.Pos.X-3
-	worldItem.Pos.Y = cat.Pos.Y+2
+	worldItem.Pos.X = cat.Pos.X - 3
+	worldItem.Pos.Y = cat.Pos.Y + 2
 
 	window.SetKeyCallback(keyCallBack)
 	window.SetCursorPosCallback(cursorPosCallback)
@@ -246,7 +251,7 @@ func boolToFloat(x bool) float32 {
 func Tick(elapsed int) {
 	dt := float32(elapsed) / 1000
 
-	worldItem.Tick(CurrentPlanet,dt)
+	worldItem.Tick(CurrentPlanet, dt)
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
@@ -293,7 +298,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	} else {
 		inventory.DrawBar()
 	}
-	tilePaleteSelector.Draw()
+	tilePaletteSelector.Draw()
 
 	glfw.PollEvents()
 	window.SwapBuffers()
