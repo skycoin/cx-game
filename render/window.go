@@ -117,9 +117,7 @@ func initOpenGL() uint32 {
 
 	void main()
 	{
-	   //gl_Position = uProjection * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-	   gl_Position = uProjection * uWorld * vec4(aPos, 1.0);
-	   //gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	   gl_Position = uProjection * vec4(aPos, 1.0);
 	}` + "\x00"
 
 	fragmentShaderSource = `
@@ -182,10 +180,10 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 }
 
 func (window *Window) GetProjectionMatrix() mgl32.Mat4 {
-    aspect := float32(window.Width)/float32(window.Height)
-    return mgl32.Perspective(
-        mgl32.DegToRad(45), aspect, 0.1, 100.0,
-    )
+	aspect := float32(window.Width) / float32(window.Height)
+	return mgl32.Perspective(
+		mgl32.DegToRad(45), aspect, 0.1, 100.0,
+	)
 }
 
 //opengl with custom shaders

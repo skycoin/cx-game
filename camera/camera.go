@@ -6,11 +6,12 @@ import (
 )
 
 type Camera struct {
-	X        float32
-	Y        float32
-	Zoom     float32
-	movSpeed float32
-	window   *render.Window
+	X         float32
+	Y         float32
+	Zoom      float32
+	movSpeed  float32
+	window    *render.Window
+	transform mgl32.Mat4
 }
 
 func NewCamera(window *render.Window) *Camera {
@@ -29,14 +30,11 @@ func (camera *Camera) MoveCam(x, y, z float32, dTime float32) {
 	camera.X += x * dTime * camera.movSpeed
 	camera.Y += y * dTime * camera.movSpeed
 	camera.Zoom += z * dTime * camera.movSpeed
-	if camera.Zoom > 0 {
-		camera.Zoom = 0
-	}
 }
 
 //moves and/or zooms  camera
 func (camera *Camera) GetTransform() mgl32.Mat4 {
-	return mgl32.Translate3D(camera.X, camera.Y, camera.Zoom)
+	return mgl32.Translate3D(-camera.X, -camera.Y, camera.Zoom)
 }
 
 func (camera *Camera) SetCameraCenter() {
@@ -66,4 +64,8 @@ func (camera *Camera) SetCameraZoomTarget(zoom float32) {
 func (camera *Camera) SetCameraZoomPosition(zoom float32) {
 	camera.Zoom = zoom
 	UpdateFrustrum(camera.X, camera.Y, zoom)
+}
+
+func (camera *Camera) DrawLines(lines []float32, color []float32) {
+	camera.window.DrawLines(lines, color, camera.GetTransform())
 }

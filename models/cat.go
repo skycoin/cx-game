@@ -22,7 +22,7 @@ func NewCat() *Cat {
 	spriteId := spriteloader.LoadSingleSprite("./assets/cat.png", "cat")
 	cat := Cat{
 		Body: physics.Body{
-			Size: physics.Vec2{X: 1.0, Y: 1.0},
+			Size: physics.Vec2{X: 2.0, Y: 2.0},
 		},
 		movSpeed:  3.0,
 		jumpSpeed: 12.0,
