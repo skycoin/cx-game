@@ -15,6 +15,7 @@ type Shader struct {
 	ID uint32
 }
 
+//helper class to create shader program
 func NewShader(vertexPath, fragmentPath string) *Shader {
 
 	vertexSource, err := ioutil.ReadFile(vertexPath)

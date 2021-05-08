@@ -3,6 +3,8 @@ package utility
 // Helper texture generator functions
 import "github.com/go-gl/gl/v4.1-core/gl"
 
+
+//generate 1d_texture provided filename
 func Make1DTexture(fname string) uint32 {
 	var tex uint32
 	gl.GenTextures(1, &tex)
@@ -17,6 +19,7 @@ func Make1DTexture(fname string) uint32 {
 	return tex
 }
 
+//generate 2d_texture provided filename
 func Make2DTexture(fname string) uint32 {
 	var tex uint32
 	gl.GenTextures(1, &tex)
