@@ -48,8 +48,13 @@ type starSettings struct {
 	PixelSize int
 }
 
+type cliSettings struct {
+	Background int
+	StarAmount int
+	Width      int
+	Height     int
+}
 type Star struct {
-	// Drawable uint32
 	X             float32
 	Y             float32
 	Size          float32
@@ -60,42 +65,42 @@ type Star struct {
 }
 
 var (
-	width           = 800
-	height          = 600
 	stars           []*Star
 	backgroundStars []*Star
 
 	//cli options
-	background int = 1 //0 is black, 1 is rgb
-	starAmount int = 20
+	cliConfig *cliSettings = &cliSettings{
+		StarAmount: 15,
+		Background: 0,
+		Width:      800,
+		Height:     600,
+	}
+	//star options (pixelsize)
+	starConfig *starSettings = &starSettings{}
 
-	starConfig  *starSettings  = &starSettings{}
+	//perlin options
 	noiseConfig *noiseSettings = &noiseSettings{}
 )
 
 func main() {
+
 	//parse command line arguments and flags
 	initArgs()
 
 	// initialize both glfw and gl libraries, setting up the window and shader program
-	win := render.NewWindow(height, width, true)
+	win := render.NewWindow(cliConfig.Height, cliConfig.Width, true)
 	defer glfw.Terminate()
-	spriteloader.InitSpriteloader(&win)
 	window := win.Window
-
 	window.SetKeyCallback(keyCallback)
-	// program1 := win.Program
-	// program2 := render.InitOpenGLCustom("./cmd/starfield/shaders/")
 	shader := utility.NewShader("./cmd/starfield/shaders/vertex.glsl", "./cmd/starfield/shaders/fragment.glsl")
 
-	if background == 1 {
+	//randomize stars
+	initStarField(&win)
+
+	if cliConfig.Background == 1 {
 		starmap.Init(&win)
 		starmap.Generate(256, 0.08, 3)
 	}
-	//reload yaml config in a goroutine
-	// go checkAndReload("config.yaml", &config)
-	//randomize stars
-	initStarField(&win)
 
 	//bind gradient 1d textures
 	for i := 1; i < 12; i++ {
@@ -112,84 +117,13 @@ func main() {
 		gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
+		if cliConfig.Background == 1 {
+			starmap.Draw()
+		}
 		drawStarField(shader)
 
 		glfw.PollEvents()
 		window.SwapBuffers()
-	}
-}
-
-//callback function to register key events
-func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw.ModifierKey) {
-	if a != glfw.Press {
-		return
-	}
-	if k == glfw.KeyEscape {
-		w.SetShouldClose(true)
-	}
-	switch k {
-	case glfw.KeyTab:
-		shuffle()
-	}
-}
-
-//function to parse cli flags
-func initArgs() {
-
-	app := cli.NewApp()
-	app.Name = "starfield-cli"
-	app.Description = "starfield example"
-	app.Flags = []cli.Flag{
-		&cli.IntFlag{
-			Name:        "background",
-			Aliases:     []string{"bg", "b"},
-			Usage:       "background to use",
-			Value:       0,
-			Destination: &background,
-		},
-		&cli.IntFlag{
-			Name:        "stars",
-			Aliases:     []string{"star"},
-			Usage:       "number of stars to draw",
-			Value:       15,
-			Destination: &starAmount,
-		},
-		&cli.IntFlag{
-			Name:        "width",
-			Usage:       "Resolution width",
-			Value:       800,
-			Destination: &width,
-		},
-		&cli.IntFlag{
-			Name:        "height",
-			Usage:       "Resolution height",
-			Value:       600,
-			Destination: &height,
-		},
-	}
-	app.After = func(c *cli.Context) error {
-		command := c.Args().First()
-		if command == "help" {
-			os.Exit(0)
-		}
-		return nil
-	}
-	app.Action = func(c *cli.Context) error {
-		return nil
-	}
-	app.Run(os.Args)
-}
-
-//function to shuffle stars on the background
-func shuffle() {
-	for _, star := range backgroundStars {
-		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("background-stars-%d", rand.Intn(15)))
-		star.Size = getSize()
-	}
-	for _, star := range stars {
-		star.X, star.Y = getStarPosition()
-		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(16)))
-		star.Size = getSize()
 	}
 }
 
@@ -228,12 +162,12 @@ func initStarField(win *render.Window) {
 				// Size:     1,
 				SpriteId:      spriteloader.GetSpriteIdByName(fmt.Sprintf("background-stars-%d", rand.Intn(16))),
 				GradientValue: rand.Float32(),
-				GradientId:    int32(rand.Intn(10) + 1),
+				GradientId:    int32(rand.Intn(10) + 1), // pick one from 11 gradient files
 			})
 		}
 	}
 
-	for i := 0; i < starAmount; i++ {
+	for i := 0; i < cliConfig.StarAmount; i++ {
 		star := &Star{
 			//bad generation position, TODO
 			Size:          1,
@@ -260,6 +194,80 @@ func drawStarField(shader *utility.Shader) {
 	for _, star := range stars {
 		shader.SetFloat("gradValue", star.GradientValue)
 		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, 1, 1, star.SpriteId, shader.ID)
+	}
+}
+
+//callback function to register key events
+func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw.ModifierKey) {
+	if a != glfw.Press {
+		return
+	}
+	if k == glfw.KeyEscape {
+		w.SetShouldClose(true)
+	}
+	switch k {
+	case glfw.KeyTab:
+		shuffle()
+	}
+}
+
+//function to parse cli flags
+func initArgs() {
+
+	app := cli.NewApp()
+	app.Name = "starfield-cli"
+	app.Description = "starfield example"
+	app.Flags = []cli.Flag{
+		&cli.IntFlag{
+			Name:        "background",
+			Aliases:     []string{"bg", "b"},
+			Usage:       "background to use",
+			Value:       0,
+			Destination: &cliConfig.Background,
+		},
+		&cli.IntFlag{
+			Name:        "stars",
+			Aliases:     []string{"star"},
+			Usage:       "number of stars to draw",
+			Value:       15,
+			Destination: &cliConfig.StarAmount,
+		},
+		&cli.IntFlag{
+			Name:        "width",
+			Usage:       "Resolution width",
+			Value:       800,
+			Destination: &cliConfig.Width,
+		},
+		&cli.IntFlag{
+			Name:        "height",
+			Usage:       "Resolution height",
+			Value:       600,
+			Destination: &cliConfig.Height,
+		},
+	}
+	app.After = func(c *cli.Context) error {
+		command := c.Args().First()
+		if command == "help" {
+			os.Exit(0)
+		}
+		return nil
+	}
+	app.Action = func(c *cli.Context) error {
+		return nil
+	}
+	app.Run(os.Args)
+}
+
+//function to shuffle stars on the background
+func shuffle() {
+	for _, star := range backgroundStars {
+		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("background-stars-%d", rand.Intn(15)))
+		star.Size = getSize()
+	}
+	for _, star := range stars {
+		star.X, star.Y = getStarPosition()
+		star.SpriteId = spriteloader.GetSpriteIdByName(fmt.Sprintf("stars-%d", rand.Intn(16)))
+		star.Size = getSize()
 	}
 }
 
@@ -294,10 +302,9 @@ func getGradient(gradientNumber uint) uint32 {
 //todo
 func getStarPosition() (float32, float32) {
 	starGap := 0.7
-	fmt.Println("abc")
 	xPos, yPos := rand.Float32()*8-4, rand.Float32()*7-4
 	//if too many stars
-	if starAmount > 20 || starGap > 1.3 {
+	if cliConfig.StarAmount > 20 || starGap > 1.3 {
 		return xPos, yPos
 	}
 	for _, star := range stars {
@@ -306,38 +313,4 @@ func getStarPosition() (float32, float32) {
 		}
 	}
 	return xPos, yPos
-}
-
-func gaussianTheta(x32, y32 float32) float32 {
-	x, y := float64(x32), float64(y32)
-	var sigmaX, sigmaY, x0, y0 float64
-	var A float64 = 1
-	var theta float64
-	sigmaX = 0.1
-	sigmaY = 0.3
-	x0 = 0.5
-	y0 = 0.5
-	theta = float64(DegToRad(-45))
-	// a := math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaY, 2))
-	// b := -math.Sin(2*theta)/(4*math.Pow(sigmaX, 2)) + math.Sin(2*theta)/(4*math.Pow(sigmaY, 2))
-	// c := math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaY, 2))
-
-	// result := A * math.Exp(-((a * math.Pow((x-x0), 2)) + 2*b*(x-x0)*(y-y0) + c*math.Pow((y-y0), 2)))
-
-	a := math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaY, 2))
-	b := -math.Sin(2*theta)/(4*math.Pow(sigmaX, 2)) + math.Sin(2*theta)/(4*math.Pow(sigmaY, 2))
-	c := math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaY, 2))
-
-	fmt.Println(a, b, c)
-
-	result := A * math.Exp(-(a*math.Pow(x-x0, 2) + 2*b*(x-x0)*(y-y0) + c*math.Pow(y-y0, 2)))
-	// result := A * math.Exp(-float64(z))
-	// if math.Abs(float64(x)) > 0.8 && math.Abs(float64(y)) > 0.8 {
-	// 	fmt.Println(x, " ", y, " ", result)
-	// }
-	return float32(result)
-}
-
-func DegToRad(angle float32) float32 {
-	return math.Pi / 180.0 * angle
 }
