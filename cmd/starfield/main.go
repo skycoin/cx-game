@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math"
 	"math/rand"
@@ -18,7 +17,6 @@ import (
 	"github.com/skycoin/cx-game/starmap"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/urfave/cli/v2"
-	"gopkg.in/yaml.v2"
 )
 
 //Press TAB to shuffle stars
@@ -28,6 +26,26 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 	//lock thread so drawing will be only in main thread, otherwise there will be errors
 	runtime.LockOSThread()
+}
+
+type noiseSettings struct {
+	Size     int
+	Scale    float32
+	Levels   uint8
+	Contrast float32
+
+	Seed        int64
+	Gradmax     int
+	X           int
+	Xs          int
+	Persistance float32
+	Lacunarity  float32
+	Octaves     int
+
+	GradFile string
+}
+type starSettings struct {
+	PixelSize int
 }
 
 type Star struct {
@@ -40,21 +58,19 @@ type Star struct {
 	GradientId    int32
 	Depth         float32
 }
-type Config struct {
-	PixelSize float32
-}
 
 var (
+	width           = 800
+	height          = 600
 	stars           []*Star
 	backgroundStars []*Star
 
 	//cli options
 	background int = 1 //0 is black, 1 is rgb
 	starAmount int = 20
-	width      int = 800
-	height     int = 600
 
-	config *Config = &Config{1}
+	starConfig  *starSettings  = &starSettings{}
+	noiseConfig *noiseSettings = &noiseSettings{}
 )
 
 func main() {
@@ -77,7 +93,7 @@ func main() {
 		starmap.Generate(256, 0.08, 3)
 	}
 	//reload yaml config in a goroutine
-	go checkAndReload()
+	// go checkAndReload("config.yaml", &config)
 	//randomize stars
 	initStarField(&win)
 
@@ -255,32 +271,6 @@ func getSize() float32 {
 	return size
 }
 
-func checkAndReload() {
-	configFilename := "./cmd/starfield/perlin.yaml"
-	fileStat, err := os.Stat(configFilename)
-	if err != nil {
-		log.Panic(err)
-	}
-
-	for {
-		newFileStat, err := os.Stat(configFilename)
-		if err != nil {
-			log.Panic(err)
-		}
-		//check if file is changed
-		if newFileStat.ModTime() != fileStat.ModTime() || newFileStat.Size() != fileStat.Size() || noise == (&noiseSettings{}) {
-			data, err := ioutil.ReadFile(configFilename)
-			if err != nil {
-				log.Panic(err)
-			}
-			yaml.Unmarshal(data, config)
-			fmt.Println(config)
-			fileStat = newFileStat
-		}
-		time.Sleep(100 * time.Millisecond)
-	}
-}
-
 //get gradient file
 func getGradient(gradientNumber uint) uint32 {
 	var tex uint32
@@ -316,4 +306,38 @@ func getStarPosition() (float32, float32) {
 		}
 	}
 	return xPos, yPos
+}
+
+func gaussianTheta(x32, y32 float32) float32 {
+	x, y := float64(x32), float64(y32)
+	var sigmaX, sigmaY, x0, y0 float64
+	var A float64 = 1
+	var theta float64
+	sigmaX = 0.1
+	sigmaY = 0.3
+	x0 = 0.5
+	y0 = 0.5
+	theta = float64(DegToRad(-45))
+	// a := math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaY, 2))
+	// b := -math.Sin(2*theta)/(4*math.Pow(sigmaX, 2)) + math.Sin(2*theta)/(4*math.Pow(sigmaY, 2))
+	// c := math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaY, 2))
+
+	// result := A * math.Exp(-((a * math.Pow((x-x0), 2)) + 2*b*(x-x0)*(y-y0) + c*math.Pow((y-y0), 2)))
+
+	a := math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaY, 2))
+	b := -math.Sin(2*theta)/(4*math.Pow(sigmaX, 2)) + math.Sin(2*theta)/(4*math.Pow(sigmaY, 2))
+	c := math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaY, 2))
+
+	fmt.Println(a, b, c)
+
+	result := A * math.Exp(-(a*math.Pow(x-x0, 2) + 2*b*(x-x0)*(y-y0) + c*math.Pow(y-y0, 2)))
+	// result := A * math.Exp(-float64(z))
+	// if math.Abs(float64(x)) > 0.8 && math.Abs(float64(y)) > 0.8 {
+	// 	fmt.Println(x, " ", y, " ", result)
+	// }
+	return float32(result)
+}
+
+func DegToRad(angle float32) float32 {
+	return math.Pi / 180.0 * angle
 }

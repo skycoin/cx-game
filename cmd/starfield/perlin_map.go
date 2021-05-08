@@ -60,10 +60,12 @@ var (
 	}
 
 	//breaks if more than 1
-	probability = 0.3
-	stars       []float32
-	starAmount  int     = 500
-	maxStarSize float32 = 3
+	probability              = 0.3
+	stars                    []float32
+	starAmount               int     = 1500
+	gaussian_band_percentage         = 50
+	gaussian_band_amount     int     = starAmount * gaussian_band_percentage / 100
+	maxStarSize              float32 = 3
 )
 
 func init() {
@@ -102,8 +104,15 @@ func main() {
 
 func genStarField() uint32 {
 	perlinMap := genPerlin()
+
 	for i := 0; i < starAmount; i++ {
-		xPos, yPos := genStar(perlinMap)
+		var xPos, yPos float32
+		if i < gaussian_band_amount {
+			xPos, yPos = getGaussianCoords()
+		} else {
+			xPos, yPos = genStar(perlinMap)
+		}
+
 		stars = append(stars, xPos, yPos, 0.0, rand.Float32()*maxStarSize, rand.Float32())
 	}
 
@@ -199,8 +208,9 @@ func getGradient(gradientNumber uint) uint32 {
 	return tex
 }
 
-func checkAndReload() {
-	configFilename := "./cmd/starfield/perlin.yaml"
+func checkAndReload(configFileame string) {
+	// configFilename := "./cmd/starfield/perlin.yaml"
+	m := make(map[string]string)
 	fileStat, err := os.Stat(configFilename)
 	if err != nil {
 		log.Panic(err)
@@ -217,10 +227,44 @@ func checkAndReload() {
 			if err != nil {
 				log.Panic(err)
 			}
-			yaml.Unmarshal(data, noise)
+			yaml.Unmarshal(data, &m)
 			fmt.Println("reloaded")
 			fileStat = newFileStat
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
+}
+
+func gaussianStandard(x32, y32 float32) float32 {
+	x, y := float64(x32), float64(y32)
+	var x0, y0, sigmaX, sigmaY float64
+	x0 = 0.3
+	y0 = 0.2
+	sigmaX = 0.2
+	sigmaY = 0.2
+
+	z := math.Pow(2*x-x0, 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(y-y0, 2)/(2*math.Pow(sigmaY, 2))
+
+	result := math.Exp(-1 * z)
+	// if inRange(x, 0.5, 0.05) && inRange(y, 0.5, 0.05) {
+	// 	fmt.Println("ttt", x, " ", y, " ", z)
+	// }
+	return float32(result)
+}
+
+func getGaussianCoords() (float32, float32) {
+	x, y := getRand(), getRand()
+
+	if 1-gaussianStandard(x, y) > 0.5*rand.Float32() {
+		return getGaussianCoords()
+	}
+	return x * float32(width), y * float32(height)
+}
+
+func getRand() float32 {
+	var sum float32
+	for i := 0; i < 3; i++ {
+		sum += rand.Float32()
+	}
+	return sum / 3
 }
