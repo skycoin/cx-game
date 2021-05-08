@@ -75,6 +75,7 @@ func mouseButtonCallback(
 		CurrentPlanet.TryPlaceTile(
 			screenX, screenY,
 			projection,
+			world.TopLayer,
 			tilePaleteSelector.GetSelectedTile(),
 			Cam,
 		)

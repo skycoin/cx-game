@@ -12,6 +12,14 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
+type Layer int
+
+const (
+	BgLayer  Layer = 0
+	MidLayer Layer = 1
+	TopLayer Layer = 2
+)
+
 type Layers struct {
 	Background []Tile
 	Mid        []Tile
@@ -84,6 +92,7 @@ func (planet *Planet) GetAllTilesUnique() []Tile {
 
 func (planet *Planet) TryPlaceTile(
 	x, y float32, projection mgl32.Mat4,
+	layer Layer,
 	tile Tile,
 	cam *camera.Camera,
 ) {
@@ -96,8 +105,14 @@ func (planet *Planet) TryPlaceTile(
 	tileY := int32(math.Floor((float64)(worldCoords.Y() + 0.5)))
 	if tileX >= 0 && tileX < planet.Width && tileY >= 0 && tileY < planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
-		// TODO allow placing on background and mid layers
-		planet.Layers.Top[tileIdx] = tile
+		switch layer {
+		case BgLayer:
+			planet.Layers.Background[tileIdx] = tile
+		case MidLayer:
+			planet.Layers.Mid[tileIdx] = tile
+		case TopLayer:
+			planet.Layers.Top[tileIdx] = tile
+		}
 	}
 }
 
