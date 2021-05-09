@@ -1,0 +1,15 @@
+---
+size: 1024
+scale: 0.04
+levels: 8
+contrast: 1.2
+
+seed: 5
+x: 512
+xs: 16
+gradmax: 256
+persistance: 0.2
+lacunarity: 2
+octaves: 7
+
+gradfile: ./assets/starfield/gradients/heightmap_gradient_07.png

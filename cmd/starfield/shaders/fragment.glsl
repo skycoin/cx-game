@@ -13,4 +13,5 @@ void main() {
     if (tex2d.a < 0.3)
         discard;
     frag_colour = mix(tex2d, tex1d, 0.5);
+    // frag_colour = vec4(1.0, 0.0, 0.0, 1.0);
 }       

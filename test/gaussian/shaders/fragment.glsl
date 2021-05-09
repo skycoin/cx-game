@@ -5,6 +5,6 @@ in float gradientValue;
 uniform sampler1D texture_1d;
 
 void main(){
-    // frag_colour = texture(texture_1d, gradientValue);
-    frag_colour = vec4(1.0, 0.0, 0.0, 1.0);
+    frag_colour = texture(texture_1d, gradientValue);
+    // frag_colour = vec4(1.0, 0.0, 0.0, 1.0);
 }

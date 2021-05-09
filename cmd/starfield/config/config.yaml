@@ -1,1 +1,8 @@
-pixelsize: 1
+pixel_size: 1
+gaussian_percentage: 65
+gaussian_angle: -45
+gaussian_offset_x: 0.3
+gaussian_offset_y: 0.8
+gaussian_sigma_x: 0.1
+gaussian_sigma_y: 0.4
+gaussian_constant: 1.5
