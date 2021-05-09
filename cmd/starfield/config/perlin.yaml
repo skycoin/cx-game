@@ -4,12 +4,12 @@ scale: 0.04
 levels: 8
 contrast: 1.2
 
-seed: 5
+seed: 25
 x: 512
-xs: 16
+xs: 4
 gradmax: 256
-persistance: 0.2
-lacunarity: 2
-octaves: 7
+persistance: 0.4
+lacunarity: 1
+octaves: 8
 
 gradfile: ./assets/starfield/gradients/heightmap_gradient_07.png

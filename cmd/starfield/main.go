@@ -134,6 +134,7 @@ func main() {
 		for {
 			select {
 			case <-starConfigReloaded:
+				gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
 				regenStarField()
 			case <-perlinConfigReloaded:
 				perlinMap = genPerlin(cliConfig.Width, cliConfig.Height, noiseConfig)
@@ -231,8 +232,10 @@ func regenStarField() {
 	for i, star := range stars {
 		if i < gaussianAmount {
 			star.X, star.Y = getStarPosition(true)
+			star.IsGaussian = true
 		} else {
 			star.X, star.Y = getStarPosition(false)
+			star.IsGaussian = false
 		}
 		star.Size = float32(starConfig.Pixel_Size) / 32 * (1 + rand.Float32()/2)
 	}
