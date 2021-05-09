@@ -16,6 +16,7 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/item"
 )
 
 func init() {
@@ -87,8 +88,10 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 
 var isFreeCam = false
 var isTileSelectorVisible = false
+var isInventoryGridVisible = false
 var tilePaleteSelector ui.TilePaleteSelector
 
+var worldItem item.WorldItem
 var cat *models.Cat
 var fps *models.Fps
 
@@ -146,6 +149,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyF3 {
 			tilePaleteSelector.Toggle()
 		}
+		if k == glfw.KeyI {
+			isInventoryGridVisible = !isInventoryGridVisible
+		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
 			upPressed = false
@@ -162,6 +168,7 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 	}
 }
 
+var inventoryId uint32
 func main() {
 
 	/*
@@ -174,9 +181,20 @@ func main() {
 	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	cat = models.NewCat()
+	log.Printf("inventoryId=%v",inventoryId)
 	fps = models.NewFps(false)
 
 	CurrentPlanet = world.NewDevPlanet()
+	inventoryId = item.NewInventory(10,8)
+	debugItemType :=
+		item.NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
+
+	inventory := item.GetInventoryById(inventoryId)
+	inventory.Slots[inventory.ItemSlotIndexForPosition(0,0)] =
+		item.InventorySlot { debugItemType, 1 }
+	inventory.Slots[inventory.ItemSlotIndexForPosition(1,7)] =
+		item.InventorySlot { debugItemType, 1 }
+
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 	tilePaleteSelector = ui.
@@ -189,6 +207,10 @@ func main() {
 	Cam.Zoom = -10
 	cat.Pos.X = float32(spawnX)
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
+
+	worldItem = item.NewWorldItem(debugItemType)
+	worldItem.Pos.X = cat.Pos.X-3
+	worldItem.Pos.Y = cat.Pos.Y+2
 
 	window.SetKeyCallback(keyCallBack)
 	window.SetCursorPosCallback(cursorPosCallback)
@@ -223,6 +245,7 @@ func boolToFloat(x bool) float32 {
 func Tick(elapsed int) {
 	dt := float32(elapsed) / 1000
 
+	worldItem.Tick(CurrentPlanet,dt)
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
@@ -244,6 +267,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
+	worldItem.Draw(Cam)
 	cat.Draw(Cam)
 
 	// tile - air line (green)
@@ -262,6 +286,12 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
 	}
 
+	inventory := item.GetInventoryById(inventoryId)
+	if isInventoryGridVisible {
+		inventory.DrawGrid()
+	} else {
+		inventory.DrawBar()
+	}
 	tilePaleteSelector.Draw()
 
 	glfw.PollEvents()

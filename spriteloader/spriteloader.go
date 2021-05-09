@@ -15,12 +15,12 @@ import (
 )
 
 var spriteLoaderIsInitialized = false
-var window *render.Window
+var Window *render.Window
 
 // call this before loading any spritesheets
 func InitSpriteloader(_window *render.Window) {
-	window = _window
-	quadVao = MakeQuadVao()
+	Window = _window
+	QuadVao = MakeQuadVao()
 	spriteLoaderIsInitialized = true
 }
 
@@ -130,46 +130,46 @@ func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId int) {
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, spritesheet.tex)
 
-	gl.UseProgram(window.Program)
+	gl.UseProgram(Window.Program)
 	gl.Uniform1ui(
-		gl.GetUniformLocation(window.Program, gl.Str("ourTexture\x00")),
+		gl.GetUniformLocation(Window.Program, gl.Str("ourTexture\x00")),
 		// spritesheet.tex,
 		0,
 	)
 	gl.Uniform2f(
-		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
+		gl.GetUniformLocation(Window.Program, gl.Str("texScale\x00")),
 		spritesheet.xScale, spritesheet.yScale,
 	)
 	gl.Uniform2f(
-		gl.GetUniformLocation(window.Program, gl.Str("texOffset\x00")),
+		gl.GetUniformLocation(Window.Program, gl.Str("texOffset\x00")),
 		float32(sprite.x), float32(sprite.y),
 	)
 
 	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(window.Program, gl.Str("world\x00")),
+		gl.GetUniformLocation(Window.Program, gl.Str("world\x00")),
 		1, false, &worldTransform[0],
 	)
 
-	aspect := float32(window.Width) / float32(window.Height)
+	aspect := float32(Window.Width) / float32(Window.Height)
 	projectTransform := mgl32.Perspective(
 		mgl32.DegToRad(45), aspect, 0.1, 100.0,
 	)
 	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(window.Program, gl.Str("projection\x00")),
+		gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
 		1, false, &projectTransform[0],
 	)
 
-	gl.BindVertexArray(quadVao)
+	gl.BindVertexArray(QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
 	// restore texScale and texOffset to defaults
 	// TODO separate GPU programs such that this becomes unecessary
 	gl.Uniform2f(
-		gl.GetUniformLocation(window.Program, gl.Str("texScale\x00")),
+		gl.GetUniformLocation(Window.Program, gl.Str("texScale\x00")),
 		1, 1,
 	)
 	gl.Uniform2f(
-		gl.GetUniformLocation(window.Program, gl.Str("texOffset\x00")),
+		gl.GetUniformLocation(Window.Program, gl.Str("texOffset\x00")),
 		0, 0,
 	)
 }
@@ -235,7 +235,7 @@ var quadVertexAttributes = []float32{
 	-0.5, 0.5, 0, 0, 0,
 }
 
-var quadVao uint32
+var QuadVao uint32
 
 func MakeQuadVao() uint32 {
 	var vbo uint32
@@ -302,7 +302,7 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 		1, false, &worldTransform[0],
 	)
 
-	aspect := float32(window.Width) / float32(window.Height)
+	aspect := float32(Window.Width) / float32(Window.Height)
 	projectTransform := mgl32.Perspective(
 		mgl32.DegToRad(45), aspect, 0.1, 100.0,
 	)
@@ -311,7 +311,7 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 		1, false, &projectTransform[0],
 	)
 
-	gl.BindVertexArray(quadVao)
+	gl.BindVertexArray(QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
 	// restore texScale and texOffset to defaults
