@@ -1,4 +1,5 @@
 package utility
+
 // Helper shader program class from learnopengl.com
 
 import (
@@ -14,8 +15,8 @@ type Shader struct {
 	ID uint32
 }
 
+//helper class to create shader program
 func NewShader(vertexPath, fragmentPath string) *Shader {
-	shader := &Shader{}
 
 	vertexSource, err := ioutil.ReadFile(vertexPath)
 	if err != nil {
@@ -26,15 +27,20 @@ func NewShader(vertexPath, fragmentPath string) *Shader {
 		log.Fatal(err)
 	}
 
+	return NewShaderFromSource(string(vertexSource), string(fragmentSource))
+}
+
+func NewShaderFromSource(vertexSource, fragmentSource string) *Shader {
+	shader := &Shader{}
 	vertexShader := gl.CreateShader(gl.VERTEX_SHADER)
-	csources, free := gl.Strs(string(vertexSource) + "\x00")
+	csources, free := gl.Strs(vertexSource + "\x00")
 	gl.ShaderSource(vertexShader, 1, csources, nil)
 	free()
 	gl.CompileShader(vertexShader)
 	checkCompileErrors(vertexShader, "VERTEX")
 
 	fragmentShader := gl.CreateShader(gl.FRAGMENT_SHADER)
-	csources, free = gl.Strs(string(fragmentSource) + "\x00")
+	csources, free = gl.Strs(fragmentSource + "\x00")
 	gl.ShaderSource(fragmentShader, 1, csources, nil)
 	free()
 	gl.CompileShader(fragmentShader)
@@ -51,7 +57,6 @@ func NewShader(vertexPath, fragmentPath string) *Shader {
 
 	return shader
 }
-
 func (s *Shader) Use() {
 	gl.UseProgram(s.ID)
 }
