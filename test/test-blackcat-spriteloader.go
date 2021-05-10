@@ -40,7 +40,7 @@ func main() {
 		if window.ShouldClose() {
 			break
 		}
-		spriteloader.LoadSprite(spriteSheetId, "blackcat", 0, j)
+		spriteloader.LoadSprite(spriteSheetId, "blackcat", 3, j)
 		spriteId := spriteloader.GetSpriteIdByName("blackcat")
 		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
