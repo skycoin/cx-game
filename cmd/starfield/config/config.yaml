@@ -1,4 +1,5 @@
 pixel_size: 1
+star_separation_enabled: 1
 gaussian_percentage: 45
 gaussian_angle: -65
 gaussian_offset_x: 0.3
