@@ -92,17 +92,20 @@ func main() {
 	projection := mgl32.Ortho2D(0, width, 0, height)
 	shader.SetMat4("projection", &projection)
 
-	vao := genStarField()
+	var vao1, vao2 uint32
+	vao1 = genStarField()
+	vao2 = vao1
 	go func() {
 		for {
+			vao2 = genStarField()
 			time.Sleep(1500 * time.Millisecond)
-			vao = genStarField()
+			vao1 = vao2
 		}
 	}()
 	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		gl.BindVertexArray(vao)
+		gl.BindVertexArray(vao1)
 
 		gl.DrawArrays(gl.POINTS, 0, int32(len(stars)))
 		glfw.PollEvents()

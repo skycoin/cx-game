@@ -11,12 +11,12 @@ import (
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
+	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/item"
 )
 
 func init() {
@@ -47,6 +47,8 @@ var (
 		-1, -1, 0, 0, 1,
 		-1, 1, 0, 0, 0,
 	}
+
+	dt, lastFrame float32
 )
 
 var upPressed bool
@@ -169,6 +171,7 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 }
 
 var inventoryId uint32
+
 func main() {
 
 	/*
@@ -181,19 +184,19 @@ func main() {
 	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
 	cat = models.NewCat()
-	log.Printf("inventoryId=%v",inventoryId)
+	log.Printf("inventoryId=%v", inventoryId)
 	fps = models.NewFps(false)
 
 	CurrentPlanet = world.NewDevPlanet()
-	inventoryId = item.NewInventory(10,8)
+	inventoryId = item.NewInventory(10, 8)
 	debugItemType :=
 		item.NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
 
 	inventory := item.GetInventoryById(inventoryId)
-	inventory.Slots[inventory.ItemSlotIndexForPosition(0,0)] =
-		item.InventorySlot { debugItemType, 1 }
-	inventory.Slots[inventory.ItemSlotIndexForPosition(1,7)] =
-		item.InventorySlot { debugItemType, 1 }
+	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 0)] =
+		item.InventorySlot{debugItemType, 1}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
+		item.InventorySlot{debugItemType, 1}
 
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
@@ -209,8 +212,8 @@ func main() {
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 
 	worldItem = item.NewWorldItem(debugItemType)
-	worldItem.Pos.X = cat.Pos.X-3
-	worldItem.Pos.Y = cat.Pos.Y+2
+	worldItem.Pos.X = cat.Pos.X - 3
+	worldItem.Pos.Y = cat.Pos.Y + 2
 
 	window.SetKeyCallback(keyCallBack)
 	window.SetCursorPosCallback(cursorPosCallback)
@@ -219,18 +222,21 @@ func main() {
 	VAO := makeVao()
 	program := win.Program
 	gl.GenTextures(1, &tex)
-	lastTime := models.GetTimeStamp()
 
 	starmap.Init(&win)
 	starmap.Generate(256, 0.04, 8)
 
 	for !window.ShouldClose() {
-		currTime := models.GetTimeStamp()
-		elapsed := currTime - lastTime
-		Tick(elapsed)
+		currTime := float32(glfw.GetTime())
+		dt = currTime - lastFrame
+		lastFrame = currTime
+
+		Tick()
+
 		redraw(window, program, VAO)
+
 		fps.Tick()
-		lastTime = currTime
+
 	}
 }
 
@@ -242,10 +248,11 @@ func boolToFloat(x bool) float32 {
 	}
 }
 
-func Tick(elapsed int) {
-	dt := float32(elapsed) / 1000
-
-	worldItem.Tick(CurrentPlanet,dt)
+func Tick() {
+	if dt > 0.1 {
+		dt = 0
+	}
+	worldItem.Tick(CurrentPlanet, dt)
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
@@ -257,7 +264,6 @@ func Tick(elapsed int) {
 	} else {
 		cat.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
 	}
-
 	spacePressed = false
 }
 
