@@ -48,7 +48,8 @@ var window *render.Window
 
 var frameCounter = 0 // reload the texture if yaml has change
 const maxFrames = 60 // every 60 frames
-const settingsFile = "./starmap/config/starmap.yaml"
+var SettingsFile = "./starmap/config/starmap.yaml"
+
 const fragShaderFile = "./starmap/gradient.glsl"
 const vertShaderFile = "./starmap/vertex.glsl"
 
@@ -68,7 +69,7 @@ func Init(_window *render.Window) {
 
 func Generate(size int, scale float32, levels uint8) {
 	var err error
-	settingsFileInfo, err = os.Stat(settingsFile)
+	settingsFileInfo, err = os.Stat(SettingsFile)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -107,9 +108,9 @@ func Draw() {
 	frameCounter += 1
 	if frameCounter > maxFrames {
 		frameCounter = 0
-		if fileHasChanged(settingsFile, settingsFileInfo) {
+		if fileHasChanged(SettingsFile, settingsFileInfo) {
 			var err error
-			settingsFileInfo, err = os.Stat(settingsFile)
+			settingsFileInfo, err = os.Stat(SettingsFile)
 			if err != nil {
 				log.Panic(err)
 			}
@@ -170,7 +171,7 @@ func Draw() {
 func loadTextures() {
 	noise := noiseSettings{}
 
-	settingsData, err := ioutil.ReadFile(settingsFile)
+	settingsData, err := ioutil.ReadFile(SettingsFile)
 	if err != nil {
 		log.Panic(err)
 	}
