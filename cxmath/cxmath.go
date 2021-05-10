@@ -13,3 +13,7 @@ func ConvertScreenCoordsToWorld(x,y float32, projection mgl32.Mat4) mgl32.Vec4 {
 	worldCoords[3]=1
 	return worldCoords
 }
+
+func Scale(factor float32) mgl32.Mat4 {
+	return mgl32.Scale3D(factor,factor,factor)
+}

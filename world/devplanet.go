@@ -16,6 +16,8 @@ func NewDevPlanet() *Planet {
 		LoadSprite(spriteSheetId, "Stone", 0, 1)
 	spriteloader.
 		LoadSprite(spriteSheetId, "Bedrock", 1, 0)
+	spriteloader.
+		LoadSprite(spriteSheetId, "RedBlip", 0, 0)
 
 	// dirt
 	for x := 0; x < int(planet.Width); x++ {
