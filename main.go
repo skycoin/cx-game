@@ -59,7 +59,7 @@ func mouseButtonCallback(
 	screenY := 1 - float32(2*mouseY/float64(win.Height))
 	projection := win.GetProjectionMatrix()
 
-	didSelectPaleteTile := tilePaleteSelector.
+	didSelectPaleteTile := tilePaletteSelector.
 		TrySelectTile(screenX, screenY, projection)
 
 	// only try to place a tile if we didn't select a palete with this click
@@ -67,7 +67,8 @@ func mouseButtonCallback(
 		CurrentPlanet.TryPlaceTile(
 			screenX, screenY,
 			projection,
-			tilePaleteSelector.GetSelectedTile(),
+			world.Layer(cyclingPalleteSelector),
+			tilePaletteSelector.GetSelectedTile(),
 			Cam,
 		)
 	}
@@ -81,7 +82,8 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 var isFreeCam = false
 var isTileSelectorVisible = false
 var isInventoryGridVisible = false
-var tilePaleteSelector ui.TilePaleteSelector
+var tilePaletteSelector ui.TilePaletteSelector
+var cyclingPalleteSelector int = -1
 
 var worldItem item.WorldItem
 var cat *models.Cat
@@ -121,10 +123,13 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			isFreeCam = !isFreeCam
 		}
 		if k == glfw.KeyF3 {
-			tilePaleteSelector.Toggle()
-		}
-		if k == glfw.KeyI {
-			isInventoryGridVisible = !isInventoryGridVisible
+			cyclingPalleteSelector++
+			if cyclingPalleteSelector == 0 {
+				tilePaletteSelector.Toggle()
+			} else if cyclingPalleteSelector > 2 {
+				cyclingPalleteSelector = -1
+				tilePaletteSelector.Toggle()
+			}
 		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
@@ -172,7 +177,7 @@ func main() {
 
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
-	tilePaleteSelector = ui.
+	tilePaletteSelector = ui.
 		MakeTilePaleteSelector(worldTiles)
 	window := win.Window
 	Cam = camera.NewCamera(&win)
@@ -258,7 +263,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0})
 
 	// colliding line from body (red)
-	collidingLines := cat.GetCollidingLines(Cam)
+	collidingLines := cat.GetCollidingLines()
 	if len(collidingLines) > 2 {
 		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
 	}
@@ -269,7 +274,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	} else {
 		inventory.DrawBar()
 	}
-	tilePaleteSelector.Draw()
+	tilePaletteSelector.Draw()
 
 	glfw.PollEvents()
 	window.SwapBuffers()
