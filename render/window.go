@@ -31,8 +31,38 @@ func NewWindow(height, width int, resizable bool) Window {
 		Resizable: resizable,
 		Window:    window,
 		Program:   program,
-		VAO:       0,
+		VAO:       makeVao(),
 	}
+}
+
+var (
+	sprite = []float32{
+		1, 1, 0, 1, 0,
+		1, -1, 0, 1, 1,
+		-1, 1, 0, 0, 0,
+
+		1, -1, 0, 1, 1,
+		-1, -1, 0, 0, 1,
+		-1, 1, 0, 0, 0,
+	}
+)
+
+func makeVao() uint32 {
+	var vbo uint32
+	gl.GenBuffers(1, &vbo)
+
+	var vao uint32
+	gl.GenVertexArrays(1, &vao)
+	gl.BindVertexArray(vao)
+	gl.EnableVertexAttribArray(0)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, 4*len(sprite), gl.Ptr(sprite), gl.STATIC_DRAW)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
+	gl.EnableVertexAttribArray(1)
+
+	return vao
 }
 
 // initGlfw initializes glfw and returns a Window to use.

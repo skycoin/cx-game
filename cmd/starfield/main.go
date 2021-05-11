@@ -49,24 +49,23 @@ type noiseSettings struct {
 
 //via yaml set pixel_size
 type starSettings struct {
-	Pixel_Size int
-
-	Gaussian_Percentage int
-	Gaussian_Angle      int
-	Gaussian_Offset_X   float32
-	Gaussian_Offset_Y   float32
-	Gaussian_Sigma_X    float32
-	Gaussian_Sigma_Y    float32
-	Gaussian_Constant   float32
+	Pixel_Size              int
+	Star_Separation_Enabled int
+	Gaussian_Percentage     int
+	Gaussian_Angle          int
+	Gaussian_Offset_X       float32
+	Gaussian_Offset_Y       float32
+	Gaussian_Sigma_X        float32
+	Gaussian_Sigma_Y        float32
+	Gaussian_Constant       float32
 }
 
 //via cli set bg, star_amount, window width and height
 type cliSettings struct {
-	Background          int
-	StarAmount          int
-	Width               int
-	Height              int
-	Gaussian_Percentage int
+	Background int
+	StarAmount int
+	Width      int
+	Height     int
 }
 
 type Star struct {
@@ -83,68 +82,82 @@ type Star struct {
 var (
 	stars []*Star
 
-	perlinMap = genPerlin(cliConfig.Width, cliConfig.Height, noiseConfig)
+	perlinMap [][]float32
 	//cli options
 	cliConfig *cliSettings = &cliSettings{
-		StarAmount:          500,
-		Background:          0,
-		Width:               800,
-		Height:              600,
-		Gaussian_Percentage: 45,
+		StarAmount: 500,
+		Background: 0,
+		Width:      800,
+		Height:     600,
 	}
 	gaussianAmount int
 	//star options (pixelsize)
 	starConfig *starSettings = &starSettings{
-		Pixel_Size:          1,
-		Gaussian_Percentage: 25,
-		Gaussian_Angle:      45,
-		Gaussian_Offset_X:   0,
-		Gaussian_Offset_Y:   0,
-		Gaussian_Sigma_X:    0.3,
-		Gaussian_Sigma_Y:    0.2,
-		Gaussian_Constant:   1,
+		// Pixel_Size:            1,
+		// StarSeparationEnabled: false,
+		// Gaussian_Percentage:   25,
+		// Gaussian_Angle:        45,
+		// Gaussian_Offset_X:     0,
+		// Gaussian_Offset_Y:     0,
+		// Gaussian_Sigma_X:      0.3,
+		// Gaussian_Sigma_Y:      0.2,
+		// Gaussian_Constant:     1,
 	}
 
 	//perlin options
 	noiseConfig *noiseSettings = &noiseSettings{
-		Size:     1024,
-		Scale:    0.04,
-		Levels:   8,
-		Contrast: 1.0,
+		// Size:     1024,
+		// Scale:    0.04,
+		// Levels:   8,
+		// Contrast: 1.0,
 
-		Seed:        1,
-		X:           512,
-		Xs:          4,
-		Gradmax:     256,
-		Persistance: 0.5,
-		Lacunarity:  2,
-		Octaves:     8,
+		// Seed:        1,
+		// X:           512,
+		// Xs:          4,
+		// Gradmax:     256,
+		// Persistance: 0.5,
+		// Lacunarity:  2,
+		// Octaves:     8,
 	}
 
-	starConfigReloaded   chan struct{}
-	perlinConfigReloaded chan struct{}
+	starConfigReloaded   chan struct{} = make(chan struct{})
+	perlinConfigReloaded chan struct{} = make(chan struct{})
+
+	done chan struct{} = make(chan struct{})
 )
 
 func main() {
-	starConfigReloaded = make(chan struct{})
-	perlinConfigReloaded = make(chan struct{})
+	//parse command line arguments and flags
+	initArgs()
+
+	//goroutines to check reloaded files and update 	configurations
 	go utility.CheckAndReload("./cmd/starfield/config/config.yaml", starConfig, starConfigReloaded)
-	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", starConfig, perlinConfigReloaded)
+	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", noiseConfig, perlinConfigReloaded)
 	go func() {
+		var isStarConfigFirstLoad, isPerlinConfigFirstLoad bool = true, true
 		for {
 			select {
 			case <-starConfigReloaded:
 				gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
-				regenStarField()
+				if isStarConfigFirstLoad {
+					done <- struct{}{}
+					isStarConfigFirstLoad = false
+				} else {
+					regenStarField()
+				}
+
 			case <-perlinConfigReloaded:
-				perlinMap = genPerlin(cliConfig.Width, cliConfig.Height, noiseConfig)
-				regenStarField()
+
+				if isPerlinConfigFirstLoad {
+					done <- struct{}{}
+					isPerlinConfigFirstLoad = false
+				} else {
+					regenStarField()
+				}
 			}
 		}
 	}()
-	//parse command line arguments and flags
-	initArgs()
-	gaussianAmount = cliConfig.StarAmount * cliConfig.Gaussian_Percentage / 100
+
 	// initialize both glfw and gl libraries, setting up the window and shader program
 	win := render.NewWindow(cliConfig.Height, cliConfig.Width, true)
 	defer glfw.Terminate()
@@ -154,10 +167,11 @@ func main() {
 	shader.Use()
 	ortho := mgl32.Ortho2D(0, float32(cliConfig.Width), 0, float32(cliConfig.Height))
 	shader.SetMat4("ortho", &ortho)
-	//randomize stars
+	//init  stars
 	initStarField(&win)
 
 	if cliConfig.Background == 1 {
+		starmap.SettingsFile = "./cmd/starfield/config/starmap.yaml"
 		starmap.Init(&win)
 		starmap.Generate(256, 0.08, 3)
 	}
@@ -189,7 +203,14 @@ func main() {
 
 //create random stars
 func initStarField(win *render.Window) {
+	<-done
+	<-done
+	close(done)
+	fmt.Println("WAITED")
+	fmt.Println("WAITED")
 	//spriteloader init
+	perlinMap = genPerlin(cliConfig.Width, cliConfig.Height, noiseConfig)
+
 	spriteloader.InitSpriteloader(win)
 	star1SpriteSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_1.png")
 	star2SpriteSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_2.png")
@@ -229,6 +250,7 @@ func initStarField(win *render.Window) {
 }
 
 func regenStarField() {
+	gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
 	for i, star := range stars {
 		if i < gaussianAmount {
 			star.X, star.Y = getStarPosition(true)
@@ -255,7 +277,7 @@ func drawStarField(shader *utility.Shader) {
 }
 
 //callback function to register key events
-func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw.ModifierKey) {
+func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glfw.ModifierKey) {
 	if a != glfw.Press {
 		return
 	}
@@ -265,6 +287,10 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, m glfw
 	switch k {
 	case glfw.KeyTab:
 		shuffle()
+	case glfw.KeyS:
+		if mk == glfw.ModShift {
+			fmt.Println("saved!")
+		}
 	}
 }
 
@@ -320,15 +346,7 @@ func shuffle() {
 	regenStarField()
 }
 
-func getSize() float32 {
-	size := rand.Float32()/2 + 0.75
-	if size > 0.5 && size < 0.75 {
-		size = rand.Float32() / 4
-	}
-	return size
-}
-
-//get gradient file
+//get gradient file given id from 1-11 (see assets folder)
 func getGradient(gradientNumber uint) uint32 {
 	var tex uint32
 
@@ -348,7 +366,8 @@ func getGradient(gradientNumber uint) uint32 {
 	return tex
 }
 
-//todo
+// Get Random Position for a star
+//  isGaussian - boolean to specify is star should be in a gaussian band
 func getStarPosition(isGaussian bool) (float32, float32) {
 
 	var xPos, yPos float32
@@ -377,22 +396,27 @@ func getStarPosition(isGaussian bool) (float32, float32) {
 		}
 	}
 
+	if starConfig.Star_Separation_Enabled > 0 {
+		if starPositionInConflict(xPos, yPos) {
+			// return getStarPosition(isGaussian)
+		}
+	}
 	return xPos, yPos
-	// xPos, yPos = convertIntCoords(x, y, 0, cliConfig.Width, 0, cliConfig.Height)
+}
 
-	// starGap := 0.7
-	// xPos, yPos := rand.Intn(cliConfig.Width), rand.Intn(cliConfig.Height)
-	// return float32(xPos), float32(yPos)
-	//if too many stars
-	// if cliConfig.StarAmount > 20 || starGap > 1.3 {
-	// 	return xPos, yPos
-	// }
-	// for _, star := range stars {
-	// 	if math.Abs(float64(xPos-star.X)) < float64(starGap) && math.Abs(float64(yPos-star.Y)) < float64(starGap) {
-	// 		return getStarPosition()
-	// 	}
-	// }
+// Checks whether the position is within minimum distance of other stars
+var counter int
 
+func starPositionInConflict(xPos, yPos float32) bool {
+	mindistance := 0.3
+
+	for _, star := range stars {
+		if math.Abs(float64(star.X-xPos)) < mindistance ||
+			math.Abs(float64(star.Y-yPos)) < mindistance {
+			return true
+		}
+	}
+	return false
 }
 
 //Convert from any coordinates specified min max to screen coordinates
@@ -408,6 +432,12 @@ func convertIntToSpriteCoords(xPos, yPos, minX, maxX, minY, maxY int) (float32, 
 }
 
 //Convert from any coordinates specified min max to screen coordinates
+//  xPos - X position in original coordinates
+//  yPos - Y position
+//  minX - lower X bound
+//  maxX - upper X bound
+//  minY - lower Y bound
+//  maxY - upper Y bound
 func convertToSpriteCoords(xPos, yPos, minX, maxX, minY, maxY float32) (float32, float32) {
 	// for 800/600 aspect
 	// bottom left = -5.4, -4
@@ -423,6 +453,11 @@ func convertToSpriteCoords(xPos, yPos, minX, maxX, minY, maxY float32) (float32,
 
 	return x, y
 }
+
+// Generate perlin 2d slice for each pixel on the window.
+//  width - width of the window
+//  height - height of the window
+//  noiseConfig - config struct with parameters
 func genPerlin(width, height int, noiseConfig *noiseSettings) [][]float32 {
 	grid := make([][]float32, 0)
 	myPerlin := perlin.NewPerlin2D(
@@ -452,6 +487,10 @@ func genPerlin(width, height int, noiseConfig *noiseSettings) [][]float32 {
 	return grid
 }
 
+// Clamp values to edges
+//  number - value to clamp
+//  min - lower bound
+//  max - upper bound
 func clamp(number, min, max float32) float32 {
 	if number > max {
 		return max
@@ -462,6 +501,9 @@ func clamp(number, min, max float32) float32 {
 	return number
 }
 
+// Gaussian bivariate distribution function
+//  x32 - X position (float32)
+//  y32 - Y position (float32)
 func gaussianTheta(x32, y32 float32) float32 {
 	x, y := float64(x32), float64(y32)
 	var sigmaX, sigmaY, x0, y0, A, theta float64
@@ -485,6 +527,8 @@ func gaussianTheta(x32, y32 float32) float32 {
 	return float32(result)
 }
 
+// Convenient function to convert angle in degrees to radians
+//  angle - angle in degrees
 func DegToRad(angle float32) float32 {
 	return math.Pi / 180 * angle
 }

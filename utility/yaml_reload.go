@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-//pass in config filename and struct instance, and optional channel
+//pass in config filename and struct instance, and optional channel, run in goroutine
 func CheckAndReload(configFilename string, configStruct interface{}, fileHasChanged chan struct{}) {
 	var firstCheck bool = true
 	// configFilename := "./cmd/starfield/perlin.yaml"
@@ -36,7 +36,7 @@ func CheckAndReload(configFilename string, configStruct interface{}, fileHasChan
 			if fileHasChanged != nil {
 				fileHasChanged <- struct{}{}
 			}
-			fmt.Println("changed")
+			fmt.Printf("File %q has been changed", configFilename)
 		}
 		time.Sleep(100 * time.Millisecond)
 	}

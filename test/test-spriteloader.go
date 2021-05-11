@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
 	"runtime"
@@ -41,16 +40,12 @@ func main() {
 	spriteId := spriteloader.
 		GetSpriteIdByName("star")
 	rand.Seed(time.Now().UnixNano())
-	x, y := convertCoords(0.5, 0.5, 0, 1)
-
-	fmt.Println(x, y)
 	for !window.ShouldClose() {
 		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-		spriteloader.DrawSpriteQuad(x, y, 1, 1, spriteId)
+		spriteloader.DrawSpriteQuad(-1, -1, 1, 1, spriteId)
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
 }
-
