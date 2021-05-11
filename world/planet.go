@@ -12,6 +12,14 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
+type Layer int
+
+const (
+	BgLayer  Layer = 0
+	MidLayer Layer = 1
+	TopLayer Layer = 2
+)
+
 type Layers struct {
 	Background []Tile
 	Mid        []Tile
@@ -84,6 +92,7 @@ func (planet *Planet) GetAllTilesUnique() []Tile {
 
 func (planet *Planet) TryPlaceTile(
 	x, y float32, projection mgl32.Mat4,
+	layer Layer,
 	tile Tile,
 	cam *camera.Camera,
 ) {
@@ -96,8 +105,14 @@ func (planet *Planet) TryPlaceTile(
 	tileY := int32(math.Floor((float64)(worldCoords.Y() + 0.5)))
 	if tileX >= 0 && tileX < planet.Width && tileY >= 0 && tileY < planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
-		// TODO allow placing on background and mid layers
-		planet.Layers.Top[tileIdx] = tile
+		switch layer {
+		case BgLayer:
+			planet.Layers.Background[tileIdx] = tile
+		case MidLayer:
+			planet.Layers.Mid[tileIdx] = tile
+		case TopLayer:
+			planet.Layers.Top[tileIdx] = tile
+		}
 	}
 }
 
@@ -136,7 +151,6 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 	// return stored lines if it's in the range
 	if x > planet.collidingLinesX-2 && x < planet.collidingLinesX+2 &&
 		y > planet.collidingLinesY-2 && y < planet.collidingLinesY+2 {
-		//return offsetLines(planet.collidingLines, cam.X, cam.Y)
 		return planet.collidingLines
 	}
 
@@ -154,21 +168,6 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 				fy := float32(j) - 0.5
 				fxw := fx + 1.0
 				fyh := fy + 1.0
-
-				// draw line around every single tile that is not empty
-				/*lines = append(lines, []float32{
-					fx, fy, 0.0,
-					fx, fyh, 0.0,
-
-					fx, fyh, 0.0,
-					fxw, fyh, 0.0,
-
-					fxw, fyh, 0.0,
-					fxw, fy, 0.0,
-
-					fxw, fy, 0.0,
-					fx, fy, 0.0,
-				}...)*/
 
 				// only draw the tiles outline instead of every single one
 				if planet.GetTopLayerTile(i+1, j).TileType == TileTypeNone { // right
@@ -202,19 +201,4 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 	// save array
 	planet.collidingLines = lines
 	return planet.collidingLines
-
-	//return offsetLines(planet.collidingLines, cam.X, cam.Y)
-}
-
-func offsetLines(lines []float32, x, y float32) []float32 {
-	amountLines := len(lines)
-	linesOffseted := make([]float32, amountLines)
-	copy(linesOffseted, lines)
-
-	for i := 0; i < amountLines; i += 3 {
-		linesOffseted[i] -= x
-		linesOffseted[i+1] -= y
-	}
-
-	return linesOffseted
 }
