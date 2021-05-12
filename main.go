@@ -131,6 +131,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 				tilePaletteSelector.Toggle()
 			}
 		}
+		if k == glfw.KeyI {
+			isInventoryGridVisible = !isInventoryGridVisible
+		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
 			upPressed = false
@@ -160,6 +163,8 @@ func main() {
 
 	win = render.NewWindow(height, width, true)
 	spriteloader.InitSpriteloader(&win)
+	ui.InitTextRendering()
+
 	cat = models.NewCat()
 	log.Printf("inventoryId=%v", inventoryId)
 	fps = models.NewFps(false)
@@ -173,7 +178,7 @@ func main() {
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 0)] =
 		item.InventorySlot{debugItemType, 1}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
-		item.InventorySlot{debugItemType, 1}
+		item.InventorySlot{debugItemType, 5}
 
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))

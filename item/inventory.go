@@ -1,10 +1,12 @@
 package item;
 
 import (
+	"strconv"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/ui"
 )
 
 type InventorySlot struct {
@@ -104,6 +106,11 @@ func (inventory Inventory) DrawSlot(slot InventorySlot, world mgl32.Mat4) {
 	if slot.Quantity > 0 {
 		spriteId := itemTypes[slot.ItemTypeId].SpriteID
 		spriteloader.DrawSpriteQuadMatrix(itemTransform, int(spriteId))
+
+		textTransform := itemTransform.
+			Mul4(mgl32.Translate3D(0.5,-0.05,0)).
+			Mul4(cxmath.Scale(0.6))
+		ui.DrawStringRightAligned(strconv.Itoa(int(slot.Quantity)), textTransform)
 	}
 }
 
