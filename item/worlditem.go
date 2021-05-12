@@ -2,7 +2,15 @@
 package item;
 
 import (
+	"log"
+	"os"
+	"time"
+
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/wav"
+	"github.com/faiface/beep/speaker"
+
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/spriteloader"
@@ -10,19 +18,38 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 )
 
+var bloopStreamer beep.StreamSeeker
+const bloopVolume = 1
+func init() {
+	// setup bloop sound
+	file, err := os.Open("./assets/sound/bloop.wav")
+	if err != nil {
+		log.Fatal(err)
+	}
+	streamer,format, err := wav.Decode(file)
+	bloopStreamer = streamer
+	if err != nil {
+		log.Fatal(err)
+	}
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+}
+
+const pickupRadius = 0.2
+const attractRadius = 2
 const worldItemSize = 0.5
 type WorldItem struct {
 	physics.Body
 	ItemTypeId uint32
 }
 
-func NewWorldItem(ItemTypeId uint32) WorldItem {
-	return WorldItem {
+func NewWorldItem(ItemTypeId uint32) *WorldItem {
+	item :=  WorldItem {
 		Body: physics.Body {
 			Size: physics.Vec2 { X: worldItemSize, Y: worldItemSize },
 		},
 		ItemTypeId: ItemTypeId,
 	}
+	return &item
 }
 
 func (item WorldItem) Draw(cam *camera.Camera) {
@@ -38,7 +65,23 @@ func (item WorldItem) Draw(cam *camera.Camera) {
 	spriteloader.DrawSpriteQuadMatrix(modelView,spriteId)
 }
 
-func (item *WorldItem) Tick(planet *world.Planet, dt float32) {
+func (item *WorldItem) Tick(
+		planet *world.Planet, dt float32,
+		playerPos physics.Vec2,
+) bool {
 	item.Vel.Y -= physics.Gravity * dt
+
+	itemToPlayerDisplacement := playerPos.Sub(item.Pos)
+	itemToPlayerDistSqr := itemToPlayerDisplacement.LengthSqr()
+	if itemToPlayerDistSqr < attractRadius*attractRadius {
+		attractForce := itemToPlayerDisplacement.Mult(1/itemToPlayerDisplacement.LengthSqr())
+		item.Vel = item.Vel.Add(attractForce)
+	}
+
 	item.Move(planet,dt)
+	didPickup := itemToPlayerDistSqr < pickupRadius * pickupRadius
+	if didPickup {
+		speaker.Play(bloopStreamer)
+	}
+	return didPickup
 }

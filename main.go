@@ -85,7 +85,7 @@ var isInventoryGridVisible = false
 var tilePaletteSelector ui.TilePaletteSelector
 var cyclingPalleteSelector int = -1
 
-var worldItem item.WorldItem
+var worldItem *item.WorldItem
 var cat *models.Cat
 var fps *models.Fps
 
@@ -175,8 +175,6 @@ func main() {
 		item.NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
 
 	inventory := item.GetInventoryById(inventoryId)
-	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 0)] =
-		item.InventorySlot{debugItemType, 1}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
 		item.InventorySlot{debugItemType, 5}
 
@@ -233,7 +231,14 @@ func boolToFloat(x bool) float32 {
 }
 
 func Tick() {
-	worldItem.Tick(CurrentPlanet, dt)
+	if worldItem!=nil {
+		pickupItem := worldItem.Tick(CurrentPlanet, dt, cat.Pos)
+		if pickupItem {
+			item.GetInventoryById(inventoryId).
+				TryAddItem(worldItem.ItemTypeId)
+			worldItem=nil
+		}
+	}
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
@@ -254,7 +259,9 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
-	worldItem.Draw(Cam)
+	if worldItem !=nil {
+		worldItem.Draw(Cam)
+	}
 	cat.Draw(Cam)
 
 	// tile - air line (green)
