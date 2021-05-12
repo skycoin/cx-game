@@ -125,8 +125,9 @@ func initOpenGL() uint32 {
 	in vec2 tCoord;
 	out vec4 frag_colour;
 	uniform sampler2D ourTexture;
+	uniform vec4 color;
 	void main() {
-			frag_colour = texture(ourTexture, tCoord);
+			frag_colour = texture(ourTexture, tCoord) * color;
 	}
 	` + "\x00"
 
@@ -136,6 +137,10 @@ func initOpenGL() uint32 {
 	gl.Uniform2f(
 		gl.GetUniformLocation(prog, gl.Str("texScale\x00")),
 		1.0, 1.0,
+	)
+	gl.Uniform4f(
+		gl.GetUniformLocation(prog, gl.Str("color\x00")),
+		1,1,1,1,
 	)
 
 	// line opengl program

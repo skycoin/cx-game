@@ -110,7 +110,11 @@ func (inventory Inventory) DrawSlot(slot InventorySlot, world mgl32.Mat4) {
 		textTransform := itemTransform.
 			Mul4(mgl32.Translate3D(0.5,-0.05,0)).
 			Mul4(cxmath.Scale(0.6))
-		ui.DrawStringRightAligned(strconv.Itoa(int(slot.Quantity)), textTransform)
+		ui.DrawStringRightAligned(
+			strconv.Itoa(int(slot.Quantity)),
+			textTransform,
+			mgl32.Vec4 {1,1,1,1},
+		)
 	}
 }
 
