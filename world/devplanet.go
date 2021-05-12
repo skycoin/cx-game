@@ -11,11 +11,11 @@ func NewDevPlanet() *Planet {
 	spriteSheetId := spriteloader.
 		LoadSpriteSheet("./assets/tile/mixed-tileset_00.png")
 	spriteloader.
-		LoadSprite(spriteSheetId, "Dirt", 1, 3)
+		LoadSingleSprite("./assets/tile/dirt.png","Dirt")
 	spriteloader.
-		LoadSprite(spriteSheetId, "Stone", 0, 1)
+		LoadSingleSprite("./assets/tile/stone.png", "Stone")
 	spriteloader.
-		LoadSprite(spriteSheetId, "Bedrock", 1, 0)
+		LoadSingleSprite("./assets/tile/bedrock.png", "Bedrock")
 	spriteloader.
 		LoadSprite(spriteSheetId, "RedBlip", 0, 0)
 
