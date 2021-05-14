@@ -9,6 +9,7 @@ import (
 )
 
 var catBlack *models.CatBlack
+var goroutineDelta = make(chan int)
 
 func init() {
 	runtime.LockOSThread()
@@ -20,15 +21,24 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 	}
 
 	if a == glfw.Press && k == glfw.KeyA {
-		// catBlack.Walk()
+		catBlack.SitStop()
+		// go catBlack.Walk()
 	}
 }
 
 func main() {
+	err := glfw.Init()
+	if err != nil {
+		panic(err)
+	}
+	defer glfw.Terminate()
+
 	win := render.NewWindow(400, 300, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
-	defer glfw.Terminate()
-	catBlack := models.NewCatBlack(&win, window)
-	catBlack.Walk()
+	catBlack = models.NewCatBlack(&win, window)
+	go catBlack.Sit()
+	for !window.ShouldClose() {
+		glfw.PollEvents()
+	}
 }
