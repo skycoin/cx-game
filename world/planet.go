@@ -57,7 +57,7 @@ func (planet *Planet) DrawLayer(tiles []Tile, cam *camera.Camera) {
 		if tile.TileType != TileTypeNone {
 			spriteloader.DrawSpriteQuad(
 				float32(x)-cam.X, float32(y)-cam.Y,
-				cam.Zoom, cam.Zoom,
+				1, 1,
 				int(tile.SpriteID),
 			)
 		}

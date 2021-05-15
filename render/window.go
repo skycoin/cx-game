@@ -63,7 +63,7 @@ func makeVao() uint32 {
 }
 
 // initGlfw initializes glfw and returns a Window to use.
-func initGlfw(height, width int, resizable bool) *glfw.Window {
+func initGlfw(width, height int, resizable bool) *glfw.Window {
 	if err := glfw.Init(); err != nil {
 		panic(err)
 	}
