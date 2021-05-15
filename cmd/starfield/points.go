@@ -1,3 +1,5 @@
+//same starfield but drawn with gl.Points
+//todo code is not working net to rewrite shader
 package main
 
 import (
@@ -76,7 +78,7 @@ type Star struct {
 	Size          float32
 	SpriteId      int
 	GradientValue float32
-	GradientId    int
+	GradientId    int32
 	Depth         float32
 	IsGaussian    bool
 }
@@ -175,7 +177,7 @@ func main() {
 	defer glfw.Terminate()
 	window := win.Window
 	window.SetKeyCallback(keyCallback)
-	shader := utility.NewShader("./cmd/starfield/shaders/main/vertex.glsl", "./cmd/starfield/shaders/main/fragment.glsl")
+	shader := utility.NewShader("./cmd/starfield/shaders/points/vertex.glsl", "./cmd/starfield/shaders/points/fragment.glsl")
 	shader.Use()
 	// ortho := mgl32.Ortho2D(0, float32(cliConfig.Width), 0, float32(cliConfig.Height))
 	// shader.SetMat4("ortho", &ortho)
@@ -197,6 +199,7 @@ func main() {
 
 	shader.Use()
 
+	VAO := utility.MakePlaneVao()
 	//main loop
 	for !window.ShouldClose() {
 		//deltatime
@@ -212,7 +215,7 @@ func main() {
 			starmap.Draw()
 		}
 		updateStarField()
-		drawStarField(shader)
+		drawStarField(shader, VAO)
 
 		glfw.PollEvents()
 		window.SwapBuffers()
@@ -246,6 +249,7 @@ func initStarField(win *render.Window) {
 		}
 	}
 	gaussianDepth := rand.Float32()
+	gaussianGradient := rand.Intn(11) + 1
 	for i := 0; i < cliConfig.StarAmount; i++ {
 		spriteName := fmt.Sprintf("stars-%d-%d", rand.Intn(2)+1, rand.Intn(16))
 		star := &Star{
@@ -259,10 +263,12 @@ func initStarField(win *render.Window) {
 			star.IsGaussian = true
 			star.X, star.Y = getStarPosition(true)
 			star.GradientValue = 0.9
+			star.GradientId = int32(gaussianGradient)
 			star.Depth = gaussianDepth
 		} else {
 			star.X, star.Y = getStarPosition(false)
 			star.GradientValue = rand.Float32()
+			star.GradientId = int32(rand.Intn(11) + 1)
 			star.IsGaussian = false
 		}
 
@@ -303,16 +309,24 @@ func updateStarField() {
 }
 
 //draws stars via drawquad function
-func drawStarField(shader *utility.Shader) {
+func drawStarField(shader *utility.Shader, vao uint32) {
+
 	shader.Use()
 	for _, star := range stars {
-		if star.IsGaussian {
-			shader.SetInt("texture_1d", 1)
-		} else {
-			shader.SetInt("texture_1d", 4)
-			shader.SetFloat("gradValue", star.GradientValue)
-		}
-		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, star.Size, star.Size, star.SpriteId, shader.ID)
+		shader.SetFloat("gradValue", star.GradientValue)
+
+		world := mgl32.Mat4.Mul4(
+			mgl32.Translate3D(star.X, star.Y, -10),
+			mgl32.Scale3D(star.Size, star.Size, 1),
+		)
+		projection := mgl32.Perspective(mgl32.DegToRad(45), float32(cliConfig.Width)/float32(cliConfig.Height), 0.1, 100)
+		shader.SetMat4("projection", &projection)
+		shader.SetMat4("world", &world)
+
+		shader.SetInt("texture_1d", star.GradientId)
+		gl.BindVertexArray(vao)
+
+		gl.DrawArrays(gl.POINTS, 0, 1)
 	}
 
 }
