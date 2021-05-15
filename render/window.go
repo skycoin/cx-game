@@ -2,10 +2,7 @@ package render
 
 import (
 	"fmt"
-	"io/fs"
-	"io/ioutil"
 	"log"
-	"path/filepath"
 	"strings"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -214,43 +211,4 @@ func (window *Window) GetProjectionMatrix() mgl32.Mat4 {
 	return mgl32.Perspective(
 		mgl32.DegToRad(45), aspect, 0.1, 100.0,
 	)
-}
-
-//opengl with custom shaders
-func InitOpenGLCustom(shaderDir string) uint32 {
-
-	var vertexShaderSource, fragmentShaderSource []byte
-
-	filepath.WalkDir(shaderDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			log.Panic(err)
-		}
-		if d.IsDir() {
-			return nil
-		}
-		if d.Name() == "vertex.glsl" {
-			vertexShaderSource, err = ioutil.ReadFile(path)
-			if err != nil {
-				log.Panic(err)
-			}
-		} else if d.Name() == "fragment.glsl" {
-			fragmentShaderSource, err = ioutil.ReadFile(path)
-			if err != nil {
-				log.Panic(err)
-			}
-		}
-
-		return nil
-	})
-	if len(vertexShaderSource) == 0 || len(fragmentShaderSource) == 0 {
-		log.Panic("NO shaders found")
-	}
-	if err := gl.Init(); err != nil {
-		panic(err)
-	}
-
-	prog := CreateProgram(string(vertexShaderSource), string(fragmentShaderSource))
-	gl.UseProgram(prog)
-
-	return prog
 }
