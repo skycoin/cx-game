@@ -325,3 +325,67 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 		0, 0,
 	)
 }
+
+func DrawSpriteQuadOrtho(xpos, ypos, xwidth, yheight float32, spriteId int) {
+	// TODO this method probably shouldn't be responsible
+	// for setting up the projection matrix.
+	// clarify responsibilities later
+	worldTransform := mgl32.Mat4.Mul4(
+		mgl32.Translate3D(float32(xpos), float32(ypos), 0),
+		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
+	)
+
+	sprite := sprites[spriteId]
+	spritesheet := spritesheets[sprite.spriteSheetId]
+
+	// bind texture
+	gl.Enable(gl.TEXTURE_2D)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	// NOTE depth test is disabled for now,
+	// as we assume that objects are drawn in the correct order
+	gl.Disable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, spritesheet.tex)
+
+	gl.UseProgram(Window.Program)
+	gl.Uniform1ui(
+		gl.GetUniformLocation(Window.Program, gl.Str("ourTexture\x00")),
+		// spritesheet.tex,
+		0,
+	)
+	gl.Uniform2f(
+		gl.GetUniformLocation(Window.Program, gl.Str("texScale\x00")),
+		spritesheet.xScale, spritesheet.yScale,
+	)
+	gl.Uniform2f(
+		gl.GetUniformLocation(Window.Program, gl.Str("texOffset\x00")),
+		float32(sprite.x), float32(sprite.y),
+	)
+
+	gl.UniformMatrix4fv(
+		gl.GetUniformLocation(Window.Program, gl.Str("world\x00")),
+		1, false, &worldTransform[0],
+	)
+
+	projectTransform := mgl32.Ortho2D(0, 800, 0, 600)
+	gl.UniformMatrix4fv(
+		gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
+		1, false, &projectTransform[0],
+	)
+
+	gl.BindVertexArray(QuadVao)
+	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+
+	// restore texScale and texOffset to defaults
+	// TODO separate GPU programs such that this becomes unecessary
+	gl.Uniform2f(
+		gl.GetUniformLocation(Window.Program, gl.Str("texScale\x00")),
+		1, 1,
+	)
+	gl.Uniform2f(
+		gl.GetUniformLocation(Window.Program, gl.Str("texOffset\x00")),
+		0, 0,
+	)
+}
