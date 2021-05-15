@@ -331,7 +331,7 @@ func DrawSpriteQuadOrtho(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	// for setting up the projection matrix.
 	// clarify responsibilities later
 	worldTransform := mgl32.Mat4.Mul4(
-		mgl32.Translate3D(xpos*32, ypos*32, 0),
+		mgl32.Translate3D(xpos*32+16, ypos*32+16, 0),
 		mgl32.Scale3D(xwidth*32, yheight*32, 1),
 	)
 
