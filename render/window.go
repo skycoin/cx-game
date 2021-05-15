@@ -19,8 +19,8 @@ type Window struct {
 	VAO       uint32
 }
 
-func NewWindow(height, width int, resizable bool) Window {
-	window := initGlfw(height, width, resizable)
+func NewWindow(width, height int, resizable bool) Window {
+	window := initGlfw(width, height, resizable)
 	program := initOpenGL()
 	return Window{
 		Height:    height,
