@@ -375,6 +375,20 @@ func initArgs() {
 			Value:       cliConfig.Height,
 			Destination: &cliConfig.Height,
 		},
+		&cli.IntFlag{
+			Name:        "swidth",
+			Aliases:     []string{"starfield_width", "starfieldw"},
+			Usage:       "Starfield width",
+			Value:       cliConfig.Starfield_Width,
+			Destination: &cliConfig.Starfield_Width,
+		},
+		&cli.IntFlag{
+			Name:        "sheight",
+			Aliases:     []string{"starfield_height", "starfieldh"},
+			Usage:       "Starfield height",
+			Value:       cliConfig.Starfield_Width,
+			Destination: &cliConfig.Starfield_Height,
+		},
 	}
 	app.After = func(c *cli.Context) error {
 		command := c.Args().First()
