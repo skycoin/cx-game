@@ -10,8 +10,8 @@ type Frustrum struct {
 var (
 	cameraCurrent Frustrum
 	// cameraTarget Frustrum
-	baseWidth  = float32(32)
-	baseHeight = float32(32)
+	baseWidth  float32 = 32
+	baseHeight float32 = 32
 )
 
 func UpdateFrustrum(x, y, zoom float32) {
