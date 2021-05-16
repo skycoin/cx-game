@@ -237,6 +237,7 @@ func initStarField(win *render.Window) {
 	perlinMap = genPerlin(cliConfig.Starfield_Width, cliConfig.Starfield_Height, noiseConfig)
 
 	spriteloader.InitSpriteloader(win)
+	spriteloader.DEBUG = false
 	star1SpriteSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_1.png")
 	star2SpriteSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_2.png")
 
@@ -257,7 +258,6 @@ func initStarField(win *render.Window) {
 	gaussianDepth := rand.Float32()
 	gaussianGradient := 6
 	gaussianGradientValue := rand.Float32()
-	fmt.Println(gaussianGradientValue)
 	for i := 0; i < cliConfig.StarAmount; i++ {
 		spriteName := fmt.Sprintf("stars-%d-%d", rand.Intn(2)+1, rand.Intn(16))
 		star := &Star{
@@ -265,8 +265,7 @@ func initStarField(win *render.Window) {
 			SpriteId: spriteloader.GetSpriteIdByName(spriteName),
 		}
 
-		star.Size = float32(starConfig.Pixel_Size) * (3 * rand.Float32())
-		fmt.Println(star.Size)
+		star.Size = getStarSize()
 		star.Depth = rand.Float32()
 		if i < gaussianAmount {
 			star.IsGaussian = true
@@ -296,7 +295,7 @@ func regenStarField() {
 			star.X, star.Y = getStarPosition(false)
 			star.IsGaussian = false
 		}
-		star.Size = float32(starConfig.Pixel_Size) * (3 * rand.Float32())
+		star.Size = getStarSize()
 	}
 }
 
@@ -624,4 +623,8 @@ func gaussianTheta(x32, y32 float32) float32 {
 //  angle - angle in degrees
 func DegToRad(angle float32) float32 {
 	return math.Pi / 180 * angle
+}
+
+func getStarSize() float32 {
+	return float32(starConfig.Pixel_Size) * (3 * rand.Float32())
 }
