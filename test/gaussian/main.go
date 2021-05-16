@@ -86,7 +86,7 @@ func main() {
 	// fileHasChanged = make(chan struct{})
 	go utility.CheckAndReload("./test/gaussian/config/perlin.yaml", noise, nil)
 
-	win := render.NewWindow(height, width, false)
+	win := render.NewWindow(width, height, false)
 	window := win.Window
 
 	shader := utility.NewShader(

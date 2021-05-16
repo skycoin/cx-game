@@ -3,10 +3,7 @@ package spriteloader
 import (
 	"fmt"
 	"image"
-	"image/draw"
-	"image/png"
 	"log"
-	"os"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -172,26 +169,6 @@ func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId int) {
 		gl.GetUniformLocation(Window.Program, gl.Str("texOffset\x00")),
 		0, 0,
 	)
-}
-
-//this function is unused??
-// load a PNG image from disk into memory as RGBA
-func loadPng(fname string) *image.RGBA {
-	imgFile, err := os.Open(fname)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer imgFile.Close()
-
-	im, err := png.Decode(imgFile)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	img := image.NewRGBA(im.Bounds())
-	draw.Draw(img, img.Bounds(), im, image.Pt(0, 0), draw.Src)
-	return img
 }
 
 // upload an in-memory RGBA image to the GPU

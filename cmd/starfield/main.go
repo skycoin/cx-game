@@ -76,7 +76,7 @@ type Star struct {
 	Size          float32
 	SpriteId      int
 	GradientValue float32
-	GradientId    int32
+	GradientId    int
 	Depth         float32
 	IsGaussian    bool
 }
@@ -171,11 +171,11 @@ func main() {
 	}()
 
 	// initialize both glfw and gl libraries, setting up the window and shader program
-	win := render.NewWindow(cliConfig.Height, cliConfig.Width, true)
+	win := render.NewWindow(cliConfig.Width, cliConfig.Height, true)
 	defer glfw.Terminate()
 	window := win.Window
 	window.SetKeyCallback(keyCallback)
-	shader := utility.NewShader("./cmd/starfield/shaders/vertex.glsl", "./cmd/starfield/shaders/fragment.glsl")
+	shader := utility.NewShader("./cmd/starfield/shaders/main/vertex.glsl", "./cmd/starfield/shaders/main/fragment.glsl")
 	shader.Use()
 	// ortho := mgl32.Ortho2D(0, float32(cliConfig.Width), 0, float32(cliConfig.Height))
 	// shader.SetMat4("ortho", &ortho)
@@ -314,6 +314,7 @@ func drawStarField(shader *utility.Shader) {
 		}
 		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, star.Size, star.Size, star.SpriteId, shader.ID)
 	}
+
 }
 
 //callback function to register key events
