@@ -28,7 +28,6 @@ func NewCat() *Cat {
 		jumpSpeed: 12.0,
 		spriteId:  spriteId,
 	}
-
 	return &cat
 }
 

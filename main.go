@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"runtime"
 
@@ -161,7 +162,7 @@ func main() {
 		SS.DrawSprite()
 	*/
 
-	win = render.NewWindow(height, width, true)
+	win = render.NewWindow(width, height, true)
 	spriteloader.InitSpriteloader(&win)
 	ui.InitTextRendering()
 
@@ -252,6 +253,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
+	fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
 	worldItem.Draw(Cam)
