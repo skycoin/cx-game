@@ -26,7 +26,7 @@ var (
 )
 
 func main() {
-	win := render.NewWindow(600, 800, true)
+	win := render.NewWindow(800, 600, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	defer glfw.Terminate()

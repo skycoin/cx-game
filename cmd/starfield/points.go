@@ -86,7 +86,8 @@ type Star struct {
 var (
 	stars []*Star
 
-	perlinMap [][]float32
+	perlinMap    [][]float32
+	intensityMap [][]float32
 	//cli options
 	cliConfig *cliSettings = &cliSettings{
 		StarAmount:       500,
@@ -125,16 +126,18 @@ var (
 		// Lacunarity:  2,
 		// Octaves:     8,
 	}
+	intensityConfig *noiseSettings = &noiseSettings{}
 
 	dt, lastFrame float32
 
-	starConfigReloaded   chan struct{} = make(chan struct{})
-	perlinConfigReloaded chan struct{} = make(chan struct{})
+	starConfigReloaded      chan struct{} = make(chan struct{})
+	perlinConfigReloaded    chan struct{} = make(chan struct{})
+	intensityConfigReloaded chan struct{} = make(chan struct{})
 
 	done chan struct{} = make(chan struct{})
 
 	//stop auto moving stars
-	toggleAutoMove bool
+	autoMove bool
 
 	//variable for star move speed
 	speed float32 = 0.25
@@ -145,6 +148,7 @@ func main() {
 	initArgs()
 
 	//goroutines to check reloaded files and update 	configurations
+	go utility.CheckAndReload("./cmd/starfield/config/perlin_intensity.yaml", intensityConfig, intensityConfigReloaded)
 	go utility.CheckAndReload("./cmd/starfield/config/config.yaml", starConfig, starConfigReloaded)
 	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", noiseConfig, perlinConfigReloaded)
 	go func() {
@@ -220,7 +224,7 @@ func main() {
 		if cliConfig.Background == 1 {
 			starmap.Draw()
 		}
-		updateStarFieldPositions()
+		updateStarField(shader)
 		drawStarField(shader, VAO)
 
 		glfw.PollEvents()
@@ -299,11 +303,15 @@ func regenStarField() {
 	}
 }
 
+var intensity float32
+
 //updates position of each star at each game iteration
-func updateStarFieldPositions() {
-	if toggleAutoMove {
+func updateStarField(shader *utility.Shader) {
+	if autoMove {
 		return
 	}
+	intensity = float32(math.Mod((float64(intensity) + 0.003), 1))
+	shader.SetFloat("intensity", clamp(intensity, 0.2, 0.8))
 
 	coords := float64(cliConfig.Starfield_Width) / float64(cliConfig.Width) * 5.333
 	for _, star := range stars {
@@ -329,7 +337,8 @@ func drawStarField(shader *utility.Shader, vao uint32) {
 			// mgl32.Scale3D(star.Size, star.Size, 1),
 			mgl32.Ident4(),
 		)
-		projection := mgl32.Perspective(mgl32.DegToRad(45), float32(cliConfig.Width)/float32(cliConfig.Height), 0.1, 100)
+		// projection := mgl32.Perspective(mgl32.DegToRad(45), float32(cliConfig.Width)/float32(cliConfig.Height), 0.1, 100)
+		projection := mgl32.Ortho2D(0, float32(cliConfig.Width), 0, float32(cliConfig.Height))
 		shader.SetMat4("projection", &projection)
 		shader.SetMat4("world", &world)
 
@@ -355,7 +364,7 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glf
 				fmt.Println("saved!")
 			}
 		case glfw.KeyP:
-			toggleAutoMove = !toggleAutoMove
+			autoMove = !autoMove
 		}
 	} else {
 		switch k {
@@ -537,8 +546,10 @@ func convertToWorldCoords(xPos, yPos, minX, maxX, minY, maxY float32) (float32, 
 	diffY := maxY - minY
 	b := (xPos - minX) / diffX
 	c := (yPos - minY) / diffY
-	x := 10.8*b - 5.4
-	y := 8*c - 4
+	// x := 10.8*b - 5.4
+	// y := 8*c - 4
+	x := float32(cliConfig.Width) * b
+	y := float32(cliConfig.Height) * c
 
 	//multipliers for star
 	xMul := float32(cliConfig.Starfield_Width) / float32(cliConfig.Width)

@@ -132,7 +132,7 @@ var (
 	done chan struct{} = make(chan struct{})
 
 	//stop auto moving stars
-	toggleAutoMove bool
+	autoMove bool
 
 	//variable for star move speed
 	speed float32 = 0.25
@@ -287,7 +287,7 @@ func regenStarField() {
 
 //updates position of each star at each game iteration
 func updateStarField() {
-	if toggleAutoMove {
+	if autoMove {
 		return
 	}
 
@@ -330,7 +330,7 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glf
 				fmt.Println("saved!")
 			}
 		case glfw.KeyP:
-			toggleAutoMove = !toggleAutoMove
+			autoMove = !autoMove
 		}
 	} else {
 		switch k {
