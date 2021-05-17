@@ -5,6 +5,7 @@ import (
 	"image"
 	"time"
 
+	"github.com/go-gl/gl/v2.1/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
@@ -48,25 +49,24 @@ func play(action int, fcount int, lwindow *glfw.Window, lspriteSheetId int) {
 			spriteloader.LoadSprite(lspriteSheetId, "blackcat", action, j)
 			spriteId := spriteloader.GetSpriteIdByName("blackcat")
 			fmt.Println("spriteId. ", spriteId, " j. ", j)
-			// gl.ClearColor(1, 1, 1, 1)
-			// gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-			// spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
+			gl.ClearColor(1, 1, 1, 1)
+			gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+			spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
 			lwindow.SwapBuffers()
+			glfw.PollEvents()
 			j++
 			if j == fcount {
 				j = 0
 			}
 		case <-stopPlay:
+			close(stopPlay)
 			return
 		}
 	}
 }
 
 func stop() {
-	fmt.Println("Stop.")
 	stopPlay <- true
-	// sp := <-stopPlay
-	// fmt.Println("channel. ", sp)
 }
 
 func NewCatBlack(lwin *render.Window, lwindow *glfw.Window) *CatBlack {
@@ -80,18 +80,23 @@ func NewCatBlack(lwin *render.Window, lwindow *glfw.Window) *CatBlack {
 		jumpSpeed:     0.2,
 		SpriteSheetId: lspriteSheetId,
 		Walk: func() {
+			fmt.Println("Walk")
 			play(walkSprite, 11, lwindow, lspriteSheetId)
 		},
 		Sit: func() {
+			fmt.Println("Sit")
 			play(sitSprite, 5, lwindow, lspriteSheetId)
 		},
 		SitStop: func() {
+			fmt.Println("SitStop")
 			stop()
 		},
 		StartRunning: func() {
+			fmt.Println("StartRunning")
 			play(startRunningSprite, 11, lwindow, lspriteSheetId)
 		},
 		Running: func() {
+			fmt.Println("Running")
 			play(runningSprite, 13, lwindow, lspriteSheetId)
 		},
 	}
