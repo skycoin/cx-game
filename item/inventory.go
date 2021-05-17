@@ -7,6 +7,7 @@ import (
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/ui"
+	"github.com/skycoin/cx-game/render"
 )
 
 type InventorySlot struct {
@@ -42,13 +43,13 @@ func (inventory Inventory) getBarSlots() []InventorySlot {
 	return inventory.Slots[start:]
 }
 
-var gridScale float32 = 0.8
+var gridScale float32 = 1.5
 // size of displayed item relative to slot
 var itemSize float32 = 0.8
 var borderSize float32 = 0.1
-func (inventory Inventory) DrawGrid() {
+func (inventory Inventory) DrawGrid(ctx render.Context) {
 	gridTransform :=
-		mgl32.Translate3D(0,0.5,-spriteloader.SpriteRenderDistance).
+		mgl32.Translate3D(0,0.5,0).
 		Mul4(mgl32.Scale3D(gridScale,gridScale,gridScale))
 
 	w := float32(inventory.Width)
@@ -63,7 +64,9 @@ func (inventory Inventory) DrawGrid() {
 			slotTransform := gridTransform.
 				Mul4(mgl32.Translate3D(xRender,yRender,0))
 
-			inventory.DrawSlot(slot,slotTransform)
+			slotCtx := ctx.PushLocal(slotTransform)
+
+			inventory.DrawSlot(slot,slotCtx)
 		}
 	}
 
@@ -76,44 +79,50 @@ func (inventory Inventory) DrawGrid() {
 		slotTransform := gridTransform.
 			Mul4(mgl32.Translate3D(xRender,yRender,0))
 
-		inventory.DrawSlot(slot,slotTransform)
+		slotCtx := ctx.PushLocal(slotTransform)
+
+		inventory.DrawSlot(slot,slotCtx)
 	}
 }
 
-func (inv Inventory) DrawBar() {
-	barTransform := mgl32.Translate3D(0,-3,-spriteloader.SpriteRenderDistance)
+func (inv Inventory) DrawBar(ctx render.Context) {
+	barCtx := ctx.PushLocal(mgl32.Translate3D(0,1-ctx.Size.Y()/2,0))
+	//barTransform := mgl32.Translate3D(0,-3,-spriteloader.SpriteRenderDistance)
 	barSlots := inv.getBarSlots()
 	for idx,slot := range barSlots {
 		x := float32(idx) - float32(len(barSlots)) / 2
+		/*
 		slotTransform := barTransform.
 			Mul4(mgl32.Translate3D(x,0,0))
+		*/
+		slotCtx := barCtx.PushLocal(mgl32.Translate3D(x,0,0))
 		_ = idx
 		_ = slot
 		// TODO draw the correct sprite
-		inv.DrawSlot(slot,slotTransform)
+		inv.DrawSlot(slot,slotCtx)
 	}
 }
 
-func (inventory Inventory) DrawSlot(slot InventorySlot, world mgl32.Mat4) {
+func (inventory Inventory) DrawSlot(slot InventorySlot, ctx render.Context) {
 	// draw border
-	utility.DrawColorQuad(world,borderColor)
+	utility.DrawColorQuad(ctx,borderColor)
 	// draw bg on top of border
-	bgTransform := world.Mul4(cxmath.Scale(1-borderSize))
-	utility.DrawColorQuad(bgTransform,bgColor)
+	bgCtx := ctx.PushLocal(cxmath.Scale(1-borderSize))
+	utility.DrawColorQuad(bgCtx,bgColor)
 	// draw item on top of bg
-	itemTransform := world.Mul4(cxmath.Scale(itemSize))
+	itemCtx := ctx.PushLocal(cxmath.Scale(itemSize))
 	// TODO write number for quantity
 	if slot.Quantity > 0 {
 		spriteId := itemTypes[slot.ItemTypeID].SpriteID
-		spriteloader.DrawSpriteQuadMatrix(itemTransform, int(spriteId))
+		spriteloader.DrawSpriteQuadContext(itemCtx, int(spriteId))
 
-		textTransform := itemTransform.
-			Mul4(mgl32.Translate3D(0.5,-0.05,0)).
-			Mul4(cxmath.Scale(0.6))
+		textCtx := itemCtx.PushLocal(
+			mgl32.Translate3D(0.5,-0.05,0).
+			Mul4(cxmath.Scale(0.6)))
 		ui.DrawStringRightAligned(
 			strconv.Itoa(int(slot.Quantity)),
-			textTransform,
 			mgl32.Vec4 {1,1,1,1},
+			textCtx,
 		)
 	}
 }

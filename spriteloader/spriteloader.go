@@ -101,6 +101,7 @@ func GetSpriteIdByName(name string) int {
 var SpriteRenderDistance float32 = 10
 
 //Draw sprite specified with spriteId at x,y position
+
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	worldTransform := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(xpos), float32(ypos), -SpriteRenderDistance),
@@ -109,7 +110,15 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	DrawSpriteQuadMatrix(worldTransform, spriteId)
 }
 
+
 func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId int) {
+	DrawSpriteQuadContext( render.Context {
+		World: worldTransform,
+		Projection: Window.DefaultRenderContext().Projection,
+	}, spriteId)
+}
+
+func DrawSpriteQuadContext(ctx render.Context, spriteId int) {
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
 	// clarify responsibilities later
@@ -144,16 +153,12 @@ func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId int) {
 
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(Window.Program, gl.Str("world\x00")),
-		1, false, &worldTransform[0],
+		1, false, &ctx.World[0],
 	)
 
-	aspect := float32(Window.Width) / float32(Window.Height)
-	projectTransform := mgl32.Perspective(
-		mgl32.DegToRad(45), aspect, 0.1, 100.0,
-	)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
-		1, false, &projectTransform[0],
+		1, false, &ctx.Projection[0],
 	)
 
 	gl.BindVertexArray(QuadVao)
@@ -279,9 +284,12 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 		1, false, &worldTransform[0],
 	)
 
-	aspect := float32(Window.Width) / float32(Window.Height)
-	projectTransform := mgl32.Perspective(
-		mgl32.DegToRad(45), aspect, 0.1, 100.0,
+	w := float32(Window.Width)
+	h := float32(Window.Height)
+	projectTransform := mgl32.Ortho(
+		-w/2, w/2,
+		-h/2, h/2,
+		-1, 1000,
 	)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(program, gl.Str("projection\x00")),
