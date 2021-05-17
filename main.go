@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"runtime"
 
@@ -86,7 +87,7 @@ var isInventoryGridVisible = false
 var tilePaletteSelector ui.TilePaletteSelector
 var cyclingPalleteSelector int = -1
 
-var worldItem item.WorldItem
+var worldItem *item.WorldItem
 var cat *models.Cat
 var fps *models.Fps
 
@@ -162,7 +163,7 @@ func main() {
 		SS.DrawSprite()
 	*/
 
-	win = render.NewWindow(height, width, true)
+	win = render.NewWindow(width, height, true)
 	spriteloader.InitSpriteloader(&win)
 	ui.InitTextRendering()
 
@@ -176,8 +177,6 @@ func main() {
 		item.NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
 
 	inventory := item.GetInventoryById(inventoryId)
-	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 0)] =
-		item.InventorySlot{debugItemType, 1}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
 		item.InventorySlot{debugItemType, 5}
 
@@ -234,7 +233,6 @@ func boolToFloat(x bool) float32 {
 }
 
 func Tick() {
-	worldItem.Tick(CurrentPlanet, dt)
 	if (spacePressed) {
 		ui.PlaceDialogueBox(
 			"*jump*", ui.AlignRight, 1,
@@ -246,6 +244,16 @@ func Tick() {
 		)
 	}
 	ui.TickDialogueBoxes(dt)
+
+	if worldItem!=nil {
+		pickupItem := worldItem.Tick(CurrentPlanet, dt, cat.Pos)
+		if pickupItem {
+			item.GetInventoryById(inventoryId).
+				TryAddItem(worldItem.ItemTypeId)
+			worldItem=nil
+		}
+	}
+
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
@@ -264,9 +272,12 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
+	fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
-	worldItem.Draw(Cam)
+	if worldItem !=nil {
+		worldItem.Draw(Cam)
+	}
 	cat.Draw(Cam)
 
 	// tile - air line (green)

@@ -32,7 +32,7 @@ var (
 )
 
 func main() {
-	win := render.NewWindow(height, width, false)
+	win := render.NewWindow(width, height, false)
 	window := win.Window
 	window.SetKeyCallback(keyCallback)
 	// program := win.Program

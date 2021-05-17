@@ -10,7 +10,7 @@ import (
 )
 
 type InventorySlot struct {
-	ItemTypeId uint32
+	ItemTypeID uint32
 	Quantity uint32
 }
 
@@ -31,8 +31,8 @@ func NewInventory(width, height int) uint32 {
 	return uint32(len(inventories)-1)
 }
 
-func GetInventoryById(id uint32) Inventory {
-	return inventories[id]
+func GetInventoryById(id uint32) *Inventory {
+	return &inventories[id]
 }
 
 // TODO really need to figure out screen space solution
@@ -104,7 +104,7 @@ func (inventory Inventory) DrawSlot(slot InventorySlot, world mgl32.Mat4) {
 	itemTransform := world.Mul4(cxmath.Scale(itemSize))
 	// TODO write number for quantity
 	if slot.Quantity > 0 {
-		spriteId := itemTypes[slot.ItemTypeId].SpriteID
+		spriteId := itemTypes[slot.ItemTypeID].SpriteID
 		spriteloader.DrawSpriteQuadMatrix(itemTransform, int(spriteId))
 
 		textTransform := itemTransform.
@@ -120,4 +120,36 @@ func (inventory Inventory) DrawSlot(slot InventorySlot, world mgl32.Mat4) {
 
 func (inventory Inventory) ItemSlotIndexForPosition(x,y int) int {
 	return y*inventory.Width+x
+}
+
+func (inventory *Inventory) tryAddItemToStack(ItemTypeID uint32) bool {
+	for idx,slot := range inventory.Slots {
+		if slot.Quantity>0 && slot.ItemTypeID == ItemTypeID {
+			inventory.Slots[idx] = InventorySlot {
+				ItemTypeID: ItemTypeID,
+				Quantity: slot.Quantity+1,
+			}
+			return true
+		}
+	}
+	return false
+}
+
+func (inventory *Inventory) tryAddItemToFreeSlot(ItemTypeID uint32) bool {
+	for idx,slot := range inventory.Slots {
+		if slot.Quantity == 0 {
+			inventory.Slots[idx] = InventorySlot {
+				ItemTypeID: ItemTypeID,
+				Quantity: 1,
+			}
+			return true
+		}
+	}
+	return false
+}
+
+func (inventory *Inventory) TryAddItem(ItemTypeID uint32) bool {
+	return (
+		inventory.tryAddItemToStack(ItemTypeID) ||
+		inventory.tryAddItemToFreeSlot(ItemTypeID) )
 }
