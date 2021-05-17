@@ -53,7 +53,7 @@ func NewDevPlanet() *Planet {
 	// DEBUG: tiles to test collision and physics
 	*planet.GetTopLayerTile(27, 7) = Tile{
 		TileType: TileTypeNormal,
-		SpriteID: 1,
+		SpriteID: uint32(spriteloader.GetSpriteIdByName("Stone")),
 	}
 	*planet.GetTopLayerTile(25, 5) = Tile{
 		TileType: TileTypeNone,
