@@ -12,6 +12,12 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
+type TextAlignment uint32
+const (
+	AlignLeft = iota
+	AlignRight
+)
+
 const fontTexWidth = 256
 const fontTexHeight = 256
 const fontScale = float32(10)
@@ -132,8 +138,9 @@ func calculateLineWidth(text string) float32 {
 	return float32(x)*fontScale
 }
 // TODO line wrapping
-// TODO alignment options
-func DrawStringLeftAligned(text string, transform mgl32.Mat4) {
+func DrawStringLeftAligned(
+		text string, transform mgl32.Mat4, color mgl32.Vec4,
+) {
 	// setup GPU params
 	gl.Disable(gl.DEPTH_TEST)
 	gl.ActiveTexture(gl.TEXTURE0)
@@ -149,6 +156,10 @@ func DrawStringLeftAligned(text string, transform mgl32.Mat4) {
 	gl.Uniform1ui(
 		gl.GetUniformLocation(program, gl.Str("ourTexture\x00")),
 		fontTex,
+	)
+	gl.Uniform4f(
+		gl.GetUniformLocation(program, gl.Str("color\x00")),
+		color[0], color[1], color[2], color[3],
 	)
 
 	// center it
@@ -179,11 +190,30 @@ func DrawStringLeftAligned(text string, transform mgl32.Mat4) {
 		// TODO variable width fonts
 		pos = pos.Add(mgl32.Vec2{charData.size.X()*fontScale,0})
 	}
+
+	// restore default color
+	gl.Uniform4f(
+		gl.GetUniformLocation(program, gl.Str("color\x00")),
+		1,1,1,1,
+	)
 }
 
-func DrawStringRightAligned(text string, transform mgl32.Mat4) {
+func DrawStringRightAligned(
+		text string, transform mgl32.Mat4, color mgl32.Vec4,
+) {
 	transformLeftAligned := transform.
 		Mul4(mgl32.Translate3D(-calculateLineWidth(text),0,0))
 
-	DrawStringLeftAligned(text, transformLeftAligned)
+	DrawStringLeftAligned(text, transformLeftAligned, color)
+}
+
+func DrawString(
+		text string, transform mgl32.Mat4,
+		color mgl32.Vec4, alignment TextAlignment,
+) {
+	if alignment == AlignLeft {
+		DrawStringLeftAligned(text, transform, color)
+	} else if alignment == AlignRight {
+		DrawStringRightAligned(text, transform, color)
+	}
 }

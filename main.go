@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/starmap"
 
@@ -232,6 +233,18 @@ func boolToFloat(x bool) float32 {
 }
 
 func Tick() {
+	if (spacePressed) {
+		ui.PlaceDialogueBox(
+			"*jump*", ui.AlignRight, 1,
+			mgl32.Translate3D(
+				cat.Pos.X,
+				cat.Pos.Y,
+				-spriteloader.SpriteRenderDistance,
+			),
+		)
+	}
+	ui.TickDialogueBoxes(dt)
+
 	if worldItem!=nil {
 		pickupItem := worldItem.Tick(CurrentPlanet, dt, cat.Pos)
 		if pickupItem {
@@ -240,6 +253,7 @@ func Tick() {
 			worldItem=nil
 		}
 	}
+
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
@@ -282,6 +296,7 @@ func redraw(window *glfw.Window, program uint32, VAO uint32) {
 		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
 	}
 
+	ui.DrawDialogueBoxes(Cam)
 	inventory := item.GetInventoryById(inventoryId)
 	if isInventoryGridVisible {
 		inventory.DrawGrid()
