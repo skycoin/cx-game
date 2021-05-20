@@ -124,15 +124,8 @@ var (
 		// Octaves:     8,
 	}
 
-	dt, lastFrame float32
-
-	starConfigReloaded   chan struct{} = make(chan struct{})
-	perlinConfigReloaded chan struct{} = make(chan struct{})
-
-	done chan struct{} = make(chan struct{})
-
 	//stop auto moving stars
-	autoMove bool
+	pauseAutoMove bool
 
 	//variable for star move speed
 	speed float32 = 0.25
@@ -143,33 +136,7 @@ func main() {
 	initArgs()
 
 	//goroutines to check reloaded files and update 	configurations
-	go utility.CheckAndReload("./cmd/starfield/config/config.yaml", starConfig, starConfigReloaded)
-	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", noiseConfig, perlinConfigReloaded)
-	go func() {
-		var isStarConfigFirstLoad, isPerlinConfigFirstLoad bool = true, true
-		for {
-			select {
-			case <-starConfigReloaded:
-				gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
-				if isStarConfigFirstLoad {
-					done <- struct{}{}
-					isStarConfigFirstLoad = false
-				} else {
-					regenStarField()
-				}
-
-			case <-perlinConfigReloaded:
-
-				if isPerlinConfigFirstLoad {
-					done <- struct{}{}
-					isPerlinConfigFirstLoad = false
-				} else {
-					regenStarField()
-				}
-			}
-		}
-	}()
-
+	initReloadConfig()
 	// initialize both glfw and gl libraries, setting up the window and shader program
 	win := render.NewWindow(cliConfig.Width, cliConfig.Height, true)
 	defer glfw.Terminate()
@@ -197,6 +164,9 @@ func main() {
 
 	shader.Use()
 
+	lastFrame := float32(glfw.GetTime())
+	dt := float32(0)
+
 	//main loop
 	for !window.ShouldClose() {
 		//deltatime
@@ -211,7 +181,7 @@ func main() {
 		if cliConfig.Background == 1 {
 			starmap.Draw()
 		}
-		updateStarField()
+		updateStarField(dt)
 		drawStarField(shader)
 
 		glfw.PollEvents()
@@ -221,9 +191,7 @@ func main() {
 
 //create random stars
 func initStarField(win *render.Window) {
-	<-done
-	<-done
-	close(done)
+
 	//spriteloader init
 	perlinMap = genPerlin(cliConfig.Starfield_Width, cliConfig.Starfield_Height, noiseConfig)
 
@@ -286,8 +254,8 @@ func regenStarField() {
 }
 
 //updates position of each star at each game iteration
-func updateStarField() {
-	if autoMove {
+func updateStarField(dt float32) {
+	if pauseAutoMove {
 		return
 	}
 
@@ -304,8 +272,12 @@ func updateStarField() {
 
 //draws stars via drawquad function
 func drawStarField(shader *utility.Shader) {
+
 	shader.Use()
-	for _, star := range stars {
+	for i, star := range stars {
+		if i == 5 {
+			fmt.Printf("%v    %v    %v    %v   %v\n", star.X, star.Y, star.Size, star.SpriteId, star.Depth)
+		}
 		if star.IsGaussian {
 			shader.SetInt("texture_1d", 1)
 		} else {
@@ -330,7 +302,7 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glf
 				fmt.Println("saved!")
 			}
 		case glfw.KeyP:
-			autoMove = !autoMove
+			pauseAutoMove = !pauseAutoMove
 		}
 	} else {
 		switch k {
@@ -462,24 +434,24 @@ func getStarPosition(isGaussian bool) (float32, float32) {
 
 	if starConfig.Star_Separation_Enabled > 0 {
 		if starPositionInConflict(xPos, yPos) {
-			// return getStarPosition(isGaussian)
+			return getStarPosition(isGaussian)
 		}
 	}
 	return xPos, yPos
 }
 
-// Checks whether the position is within minimum distance of other stars
-var counter int
-
 func starPositionInConflict(xPos, yPos float32) bool {
-	mindistance := 0.3
+	//todo, not working
 
-	for _, star := range stars {
-		if math.Abs(float64(star.X-xPos)) < mindistance ||
-			math.Abs(float64(star.Y-yPos)) < mindistance {
-			return true
-		}
-	}
+	// mindistance := 0.3
+
+	// for _, star := range stars {
+	// 	if math.Abs(float64(star.X-xPos)) < mindistance ||
+	// 		math.Abs(float64(star.Y-yPos)) < mindistance {
+	// 		return true
+	// 	}
+	// }
+	// return false
 	return false
 }
 
@@ -598,4 +570,41 @@ func gaussianTheta(x32, y32 float32) float32 {
 //  angle - angle in degrees
 func DegToRad(angle float32) float32 {
 	return math.Pi / 180 * angle
+}
+
+//yaml reload function
+func initReloadConfig() {
+	starConfigReloaded := make(chan struct{})
+	perlinConfigReloaded := make(chan struct{})
+	done := make(chan struct{})
+	go utility.CheckAndReload("./cmd/starfield/config/star.yaml", &starConfig, starConfigReloaded)
+	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", &noiseConfig, perlinConfigReloaded)
+	go func() {
+		var isStarConfigFirstLoad, isPerlinConfigFirstLoad bool = true, true
+		for {
+			select {
+			case <-starConfigReloaded:
+				gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
+				if isStarConfigFirstLoad {
+					done <- struct{}{}
+					isStarConfigFirstLoad = false
+				} else {
+					regenStarField()
+				}
+
+			case <-perlinConfigReloaded:
+
+				if isPerlinConfigFirstLoad {
+					done <- struct{}{}
+					isPerlinConfigFirstLoad = false
+				} else {
+					regenStarField()
+				}
+			}
+		}
+
+	}()
+	<-done
+	<-done
+	close(done)
 }

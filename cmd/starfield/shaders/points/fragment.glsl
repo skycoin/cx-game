@@ -8,5 +8,6 @@ uniform float intensity;
 
 void main() {
     vec4 tex1d = texture(texture_1d, gradValue);
-    frag_colour = vec4(tex1d.xyz, intensity);
+    frag_colour = vec4(tex1d.xyz,intensity);
+    // frag_colour = vec4(1.0,1.0,0.0, 1.0);
 }

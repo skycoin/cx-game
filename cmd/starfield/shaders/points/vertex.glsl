@@ -6,6 +6,6 @@ uniform float pointSize;
 
 
 void main() {
-    gl_Position = projection * world * vec4(aPos, 1.0);
+    gl_Position = projection* world * vec4(aPos, 1.0);
     gl_PointSize = pointSize;
 }

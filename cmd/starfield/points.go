@@ -81,6 +81,7 @@ type Star struct {
 	GradientId    int
 	Depth         float32
 	IsGaussian    bool
+	Intensity     float32
 }
 
 var (
@@ -128,53 +129,18 @@ var (
 	}
 	intensityConfig *noiseSettings = &noiseSettings{}
 
-	dt, lastFrame float32
-
-	starConfigReloaded      chan struct{} = make(chan struct{})
-	perlinConfigReloaded    chan struct{} = make(chan struct{})
-	intensityConfigReloaded chan struct{} = make(chan struct{})
-
-	done chan struct{} = make(chan struct{})
-
 	//stop auto moving stars
-	autoMove bool
+	pauseAutoMove bool = false
 
 	//variable for star move speed
-	speed float32 = 0.25
+	speed float32 = 10
 )
 
 func main() {
 	//parse command line arguments and flags
 	initArgs()
 
-	//goroutines to check reloaded files and update 	configurations
-	go utility.CheckAndReload("./cmd/starfield/config/perlin_intensity.yaml", intensityConfig, intensityConfigReloaded)
-	go utility.CheckAndReload("./cmd/starfield/config/config.yaml", starConfig, starConfigReloaded)
-	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", noiseConfig, perlinConfigReloaded)
-	go func() {
-		var isStarConfigFirstLoad, isPerlinConfigFirstLoad bool = true, true
-		for {
-			select {
-			case <-starConfigReloaded:
-				gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
-				if isStarConfigFirstLoad {
-					done <- struct{}{}
-					isStarConfigFirstLoad = false
-				} else {
-					regenStarField()
-				}
-
-			case <-perlinConfigReloaded:
-
-				if isPerlinConfigFirstLoad {
-					done <- struct{}{}
-					isPerlinConfigFirstLoad = false
-				} else {
-					regenStarField()
-				}
-			}
-		}
-	}()
+	initReloadConfig()
 
 	// initialize both glfw and gl libraries, setting up the window and shader program
 	win := render.NewWindow(cliConfig.Width, cliConfig.Height, true)
@@ -188,8 +154,8 @@ func main() {
 	//enable varying point size
 	gl.Enable(gl.PROGRAM_POINT_SIZE)
 
-	// ortho := mgl32.Ortho2D(0, float32(cliConfig.Width), 0, float32(cliConfig.Height))
-	// shader.SetMat4("ortho", &ortho)
+	projection := mgl32.Ortho2D(0, float32(cliConfig.Width), 0, float32(cliConfig.Height))
+	shader.SetMat4("projection", &projection)
 	//init  stars
 
 	initStarField(&win)
@@ -210,6 +176,9 @@ func main() {
 	shader.Use()
 
 	VAO := utility.MakePlaneVao()
+
+	lastFrame := float32(glfw.GetTime())
+	dt := float32(0)
 	//main loop
 	for !window.ShouldClose() {
 		//deltatime
@@ -224,9 +193,8 @@ func main() {
 		if cliConfig.Background == 1 {
 			starmap.Draw()
 		}
-		updateStarField(shader)
+		updateStarField(shader, dt)
 		drawStarField(shader, VAO)
-
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
@@ -234,14 +202,14 @@ func main() {
 
 //create random stars
 func initStarField(win *render.Window) {
-	<-done
-	<-done
-	close(done)
 	//spriteloader init
 	perlinMap = genPerlin(cliConfig.Starfield_Width, cliConfig.Starfield_Height, noiseConfig)
-
 	spriteloader.InitSpriteloader(win)
+
+	//turn off debug messages
 	spriteloader.DEBUG = false
+
+	//load spritesheets
 	star1SpriteSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_1.png")
 	star2SpriteSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_2.png")
 
@@ -271,6 +239,7 @@ func initStarField(win *render.Window) {
 
 		star.Size = getStarSize()
 		star.Depth = rand.Float32()
+		star.Intensity = rand.Float32()/2 + 0.5
 		if i < gaussianAmount {
 			star.IsGaussian = true
 			star.X, star.Y = getStarPosition(true)
@@ -284,6 +253,7 @@ func initStarField(win *render.Window) {
 			star.IsGaussian = false
 		}
 
+		fmt.Println(star.X, "      ", star.Y)
 		stars = append(stars, star)
 	}
 }
@@ -303,25 +273,42 @@ func regenStarField() {
 	}
 }
 
-var intensity float32
+// var intensity float32
 
 //updates position of each star at each game iteration
-func updateStarField(shader *utility.Shader) {
-	if autoMove {
+func updateStarField(shader *utility.Shader, dt float32) {
+	if pauseAutoMove {
 		return
 	}
-	intensity = float32(math.Mod((float64(intensity) + 0.003), 1))
-	shader.SetFloat("intensity", clamp(intensity, 0.2, 0.8))
+	// intensity = float32(math.Mod((float64(intensity) + 0.003), 1))
+	// shader.SetFloat("intensity", clamp(intensity, 0.2, 0.8))
 
-	coords := float64(cliConfig.Starfield_Width) / float64(cliConfig.Width) * 5.333
+	// coords := float64(cliConfig.Starfield_Width) / float64(cliConfig.Width) * 5.333
 	for _, star := range stars {
 		// star.X = float32(math.Mod(float64(star.X+(speed*dt)), coords*2))
+
 		star.X += speed * dt * star.Depth
-		if star.X > float32(coords) {
-			star.X = -float32(coords)
+
+		if star.X > float32(cliConfig.Starfield_Width) {
+			star.X = 0
 		}
-		// star.X = star.X + dt
 	}
+}
+
+func getIntensity(intensity float32) float32 {
+
+	// t := time.Now()
+
+	// return myclamp(float32(math.Sin(float64(time.Now().UnixNano()))))
+	ttime := float64(time.Now().UnixNano() / (10000000 * 1))
+
+	rad := math.Pi / 180 * ttime
+
+	sinusoid := math.Sin(rad * float64(intensity))
+
+	result := sinusoid*0.6 + 0.4
+
+	return float32(result)
 }
 
 //draws stars via drawquad function
@@ -330,14 +317,17 @@ func drawStarField(shader *utility.Shader, vao uint32) {
 	shader.Use()
 
 	for _, star := range stars {
+		// if i != 5 {
+		// 	continue
+		// 	fmt.Printf("%v    %v    %v    %v   %v\n", star.X, star.Y, star.Size, star.SpriteId, star.Depth)
+		// }
 		shader.SetFloat("gradValue", star.GradientValue)
-
+		shader.SetFloat("intensity", getIntensity(star.Intensity))
 		world := mgl32.Mat4.Mul4(
-			mgl32.Translate3D(star.X, star.Y, -10),
-			// mgl32.Scale3D(star.Size, star.Size, 1),
+			mgl32.Translate3D(star.X, star.Y, 0),
 			mgl32.Ident4(),
 		)
-		// projection := mgl32.Perspective(mgl32.DegToRad(45), float32(cliConfig.Width)/float32(cliConfig.Height), 0.1, 100)
+
 		projection := mgl32.Ortho2D(0, float32(cliConfig.Width), 0, float32(cliConfig.Height))
 		shader.SetMat4("projection", &projection)
 		shader.SetMat4("world", &world)
@@ -364,7 +354,7 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glf
 				fmt.Println("saved!")
 			}
 		case glfw.KeyP:
-			autoMove = !autoMove
+			pauseAutoMove = !pauseAutoMove
 		}
 	} else {
 		switch k {
@@ -496,24 +486,21 @@ func getStarPosition(isGaussian bool) (float32, float32) {
 
 	if starConfig.Star_Separation_Enabled > 0 {
 		if starPositionInConflict(xPos, yPos) {
-			// return getStarPosition(isGaussian)
+			return getStarPosition(isGaussian)
 		}
 	}
 	return xPos, yPos
 }
 
-// Checks whether the position is within minimum distance of other stars
-var counter int
-
 func starPositionInConflict(xPos, yPos float32) bool {
-	mindistance := 0.3
+	// mindistance := 0.3
 
-	for _, star := range stars {
-		if math.Abs(float64(star.X-xPos)) < mindistance ||
-			math.Abs(float64(star.Y-yPos)) < mindistance {
-			return true
-		}
-	}
+	// for _, star := range stars {
+	// 	if math.Abs(float64(star.X-xPos)) < mindistance ||
+	// 		math.Abs(float64(star.Y-yPos)) < mindistance {
+	// 		return true
+	// 	}
+	// }
 	return false
 }
 
@@ -638,4 +625,40 @@ func DegToRad(angle float32) float32 {
 
 func getStarSize() float32 {
 	return float32(starConfig.Pixel_Size) * (3 * rand.Float32())
+}
+
+func initReloadConfig() {
+	starConfigReloaded := make(chan struct{})
+	perlinConfigReloaded := make(chan struct{})
+	done := make(chan struct{})
+	go utility.CheckAndReload("./cmd/starfield/config/star.yaml", &starConfig, starConfigReloaded)
+	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", &noiseConfig, perlinConfigReloaded)
+	go func() {
+		var isStarConfigFirstLoad, isPerlinConfigFirstLoad bool = true, true
+		for {
+			select {
+			case <-starConfigReloaded:
+				gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
+				if isStarConfigFirstLoad {
+					done <- struct{}{}
+					isStarConfigFirstLoad = false
+				} else {
+					regenStarField()
+				}
+
+			case <-perlinConfigReloaded:
+
+				if isPerlinConfigFirstLoad {
+					done <- struct{}{}
+					isPerlinConfigFirstLoad = false
+				} else {
+					regenStarField()
+				}
+			}
+		}
+
+	}()
+	<-done
+	<-done
+	close(done)
 }
