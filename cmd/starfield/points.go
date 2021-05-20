@@ -203,6 +203,13 @@ func main() {
 //create random stars
 func initStarField(win *render.Window) {
 	//spriteloader init
+
+	if cliConfig.Width > cliConfig.Starfield_Width {
+		cliConfig.Starfield_Width = cliConfig.Width + 100
+	}
+	if cliConfig.Height > cliConfig.Starfield_Height {
+		cliConfig.Starfield_Height = cliConfig.Height + 100
+	}
 	perlinMap = genPerlin(cliConfig.Starfield_Width, cliConfig.Starfield_Height, noiseConfig)
 	spriteloader.InitSpriteloader(win)
 
