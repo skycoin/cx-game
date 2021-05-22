@@ -135,7 +135,7 @@ func main() {
 	//parse command line arguments and flags
 	initArgs()
 
-	//goroutines to check reloaded files and update 	configurations
+	//start goroutines to check reloaded files and update 	configurations
 	initReloadConfig()
 	// initialize both glfw and gl libraries, setting up the window and shader program
 	win := render.NewWindow(cliConfig.Width, cliConfig.Height, true)
@@ -196,8 +196,12 @@ func initStarField(win *render.Window) {
 	perlinMap = genPerlin(cliConfig.Starfield_Width, cliConfig.Starfield_Height, noiseConfig)
 
 	spriteloader.InitSpriteloader(win)
-	star1SpriteSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_1.png")
-	star2SpriteSheetId := spriteloader.LoadSpriteSheet("./cmd/starfield/stars_2.png")
+	// file1 := "./assets/starfield/stars/planets.png"
+	// file2 := file1
+	file1 := "cmd/starfield/stars_1.png"
+	file2 := "cmd/starfield/stars_2.png"
+	star1SpriteSheetId := spriteloader.LoadSpriteSheet(file1)
+	star2SpriteSheetId := spriteloader.LoadSpriteSheet(file2)
 
 	//load all sprites from spritesheet
 	for y := 0; y < 4; y++ {
@@ -208,7 +212,7 @@ func initStarField(win *render.Window) {
 				x, y,
 			)
 			spriteloader.LoadSprite(star2SpriteSheetId,
-				fmt.Sprintf("stars-2-%d", y+4*x),
+				fmt.Sprintf("stars-2-%d", y*4+x),
 				x, y,
 			)
 		}
@@ -221,7 +225,7 @@ func initStarField(win *render.Window) {
 			SpriteId: spriteloader.GetSpriteIdByName(spriteName),
 		}
 
-		star.Size = float32(starConfig.Pixel_Size) / 32 * (3 * rand.Float32() / 2)
+		star.Size = float32(starConfig.Pixel_Size) / 32 * (1 + 3*rand.Float32()/20)
 		star.Depth = rand.Float32()
 		if i < gaussianAmount {
 			star.IsGaussian = true
@@ -253,6 +257,8 @@ func regenStarField() {
 	}
 }
 
+var frameCounter int
+
 //updates position of each star at each game iteration
 func updateStarField(dt float32) {
 	if pauseAutoMove {
@@ -272,12 +278,8 @@ func updateStarField(dt float32) {
 
 //draws stars via drawquad function
 func drawStarField(shader *utility.Shader) {
-
 	shader.Use()
-	for i, star := range stars {
-		if i == 5 {
-			fmt.Printf("%v    %v    %v    %v   %v\n", star.X, star.Y, star.Size, star.SpriteId, star.Depth)
-		}
+	for _, star := range stars {
 		if star.IsGaussian {
 			shader.SetInt("texture_1d", 1)
 		} else {

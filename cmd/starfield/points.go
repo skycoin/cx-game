@@ -366,9 +366,9 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glf
 	} else {
 		switch k {
 		case glfw.KeyKPAdd:
-			speed += 0.05
+			speed += 0.5
 		case glfw.KeyKPSubtract:
-			speed -= 0.05
+			speed -= 0.5
 		}
 	}
 
@@ -638,8 +638,8 @@ func initReloadConfig() {
 	starConfigReloaded := make(chan struct{})
 	perlinConfigReloaded := make(chan struct{})
 	done := make(chan struct{})
-	go utility.CheckAndReload("./cmd/starfield/config/star.yaml", &starConfig, starConfigReloaded)
-	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", &noiseConfig, perlinConfigReloaded)
+	utility.CheckAndReload("./cmd/starfield/config/star.yaml", &starConfig, starConfigReloaded)
+	utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", &noiseConfig, perlinConfigReloaded)
 	go func() {
 		var isStarConfigFirstLoad, isPerlinConfigFirstLoad bool = true, true
 		for {
