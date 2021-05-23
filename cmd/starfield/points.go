@@ -24,7 +24,7 @@ import (
 )
 
 //Press TAB to shuffle stars
-
+// P to pause movement
 func init() {
 	// seed rand so stars will be random each program run
 	rand.Seed(time.Now().UnixNano())
@@ -193,6 +193,8 @@ func main() {
 		if cliConfig.Background == 1 {
 			starmap.Draw()
 		}
+
+		fmt.Println("HI")
 		updateStarField(shader, dt)
 		drawStarField(shader, VAO)
 		glfw.PollEvents()
@@ -603,6 +605,9 @@ func gaussianTheta(x32, y32 float32) float32 {
 	// x0 = 0.5
 	// y0 = 0.5
 	A = float64(starConfig.Gaussian_Constant)
+	if A < 0.6 {
+		A = 0.7
+	}
 	theta = float64(mgl32.DegToRad(float32(starConfig.Gaussian_Angle)))
 	sigmaX = float64(starConfig.Gaussian_Sigma_X)
 	sigmaY = float64(starConfig.Gaussian_Sigma_Y)
@@ -630,8 +635,8 @@ func initReloadConfig() {
 	starConfigReloaded := make(chan struct{})
 	perlinConfigReloaded := make(chan struct{})
 	done := make(chan struct{})
-	utility.CheckAndReload("./cmd/starfield/config/star.yaml", &starConfig, starConfigReloaded)
-	utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", &noiseConfig, perlinConfigReloaded)
+	go utility.CheckAndReload("./cmd/starfield/config/star.yaml", &starConfig, starConfigReloaded)
+	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", &noiseConfig, perlinConfigReloaded)
 	go func() {
 		var isStarConfigFirstLoad, isPerlinConfigFirstLoad bool = true, true
 		for {
