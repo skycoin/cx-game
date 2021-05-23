@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//	"fmt"
 	"log"
 	"runtime"
 
@@ -13,6 +13,7 @@ import (
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
+	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
@@ -41,6 +42,8 @@ var (
 	CurrentPlanet      *world.Planet
 	DrawCollisionBoxes = false
 	FPS                int
+
+	catIsScratching bool
 
 	upPressed      bool
 	downPressed    bool
@@ -72,7 +75,9 @@ func main() {
 	win = render.NewWindow(width, height, true)
 	defer glfw.Terminate()
 	spriteloader.InitSpriteloader(&win)
+	item.InitWorldItem()
 	ui.InitTextRendering()
+	enemies.InitBasicEnemies()
 
 	cat = models.NewCat()
 	fps = models.NewFps(false)
@@ -92,7 +97,7 @@ func main() {
 
 	inventory := item.GetInventoryById(inventoryId)
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
-		item.InventorySlot{debugItemType, 5}
+		item.InventorySlot{uint32(debugItemType), 5}
 
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
@@ -106,7 +111,10 @@ func main() {
 	cat.Pos.X = float32(spawnX)
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 
-	worldItem = item.NewWorldItem(debugItemType)
+	enemies.SpawnBasicEnemy(cat.Pos.X+6, cat.Pos.Y)
+	enemies.SpawnBasicEnemy(cat.Pos.X-6, cat.Pos.Y)
+
+	worldItem = item.NewWorldItem(uint32(debugItemType))
 	worldItem.Pos.X = cat.Pos.X - 3
 	worldItem.Pos.Y = cat.Pos.Y + 2
 
@@ -149,6 +157,16 @@ func Tick(dt float32) {
 			),
 		)
 	}
+	if catIsScratching {
+		ui.PlaceDialogueBox(
+			"*scratch", ui.AlignLeft, 1,
+			mgl32.Translate3D(
+				cat.Pos.X,
+				cat.Pos.Y,
+				-spriteloader.SpriteRenderDistance,
+			),
+		)
+	}
 	ui.TickDialogueBoxes(dt)
 
 	if worldItem != nil {
@@ -159,6 +177,8 @@ func Tick(dt float32) {
 			worldItem = nil
 		}
 	}
+
+	enemies.TickBasicEnemies(CurrentPlanet, dt, cat, catIsScratching)
 
 	if isFreeCam {
 		Cam.MoveCam(
@@ -174,18 +194,20 @@ func Tick(dt float32) {
 	spacePressed = false
 
 	fps.Tick()
+	catIsScratching = false
 }
 
 func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-	fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
+	//fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
 	if worldItem != nil {
 		worldItem.Draw(Cam)
 	}
+	enemies.DrawBasicEnemies(Cam)
 	cat.Draw(Cam)
 
 	// tile - air line (green)
@@ -257,6 +279,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		}
 		if k == glfw.KeyI {
 			isInventoryGridVisible = !isInventoryGridVisible
+		}
+		if k == glfw.KeyLeftShift {
+			catIsScratching = true
 		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
