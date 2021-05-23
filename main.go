@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+//	"fmt"
 	"log"
 	"runtime"
 
@@ -19,6 +19,7 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/enemies"
 )
 
 func init() {
@@ -48,6 +49,7 @@ var downPressed bool
 var leftPressed bool
 var rightPressed bool
 var spacePressed bool
+var catIsScratching bool
 var mouseX, mouseY float64
 
 func mouseButtonCallback(
@@ -136,6 +138,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyI {
 			isInventoryGridVisible = !isInventoryGridVisible
 		}
+		if k == glfw.KeyLeftShift {
+			catIsScratching = true
+		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
 			upPressed = false
@@ -166,6 +171,7 @@ func main() {
 	win = render.NewWindow(width, height, true)
 	spriteloader.InitSpriteloader(&win)
 	ui.InitTextRendering()
+	enemies.InitBasicEnemies()
 
 	cat = models.NewCat()
 	log.Printf("inventoryId=%v", inventoryId)
@@ -192,6 +198,9 @@ func main() {
 	Cam.Zoom = -10
 	cat.Pos.X = float32(spawnX)
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
+
+	enemies.SpawnBasicEnemy(cat.Pos.X+6,cat.Pos.Y)
+	enemies.SpawnBasicEnemy(cat.Pos.X-6,cat.Pos.Y)
 
 	worldItem = item.NewWorldItem(debugItemType)
 	worldItem.Pos.X = cat.Pos.X - 3
@@ -243,6 +252,16 @@ func Tick() {
 			),
 		)
 	}
+	if (catIsScratching) {
+		ui.PlaceDialogueBox(
+			"*scratch", ui.AlignLeft, 1,
+			mgl32.Translate3D(
+				cat.Pos.X,
+				cat.Pos.Y,
+				-spriteloader.SpriteRenderDistance,
+			),
+		)
+	}
 	ui.TickDialogueBoxes(dt)
 
 	if worldItem!=nil {
@@ -253,6 +272,8 @@ func Tick() {
 			worldItem=nil
 		}
 	}
+
+	enemies.TickBasicEnemies(CurrentPlanet, dt, cat, catIsScratching)
 
 	if isFreeCam {
 		Cam.MoveCam(
@@ -266,18 +287,20 @@ func Tick() {
 		cat.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
 	}
 	spacePressed = false
+	catIsScratching = false
 }
 
 func redraw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-	fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
+	//fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
 	if worldItem !=nil {
 		worldItem.Draw(Cam)
 	}
+	enemies.DrawBasicEnemies(Cam)
 	cat.Draw(Cam)
 
 	// tile - air line (green)
