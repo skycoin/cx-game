@@ -26,7 +26,7 @@ func CheckAndReload(configFilename string, configStruct interface{}, fileHasChan
 		}
 		//check if file is changed
 		if newFileStat.ModTime() != fileStat.ModTime() || newFileStat.Size() != fileStat.Size() || firstCheck {
-			firstCheck = false
+
 			data, err := ioutil.ReadFile(configFilename)
 			if err != nil {
 				log.Panicf("Could not read file: \n, %v", err)
@@ -36,7 +36,10 @@ func CheckAndReload(configFilename string, configStruct interface{}, fileHasChan
 			if fileHasChanged != nil {
 				fileHasChanged <- struct{}{}
 			}
-			fmt.Printf("File %q has been changed", configFilename)
+			if !firstCheck {
+				fmt.Printf("[File has been changed]: %q\n", configFilename)
+			}
+			firstCheck = false
 		}
 		time.Sleep(100 * time.Millisecond)
 	}

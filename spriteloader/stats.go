@@ -16,6 +16,10 @@ const (
 	DecodeError
 )
 
+var (
+	DEBUG = true
+)
+
 type ImgStat struct {
 	name string
 	//how long to read file from disc
@@ -69,13 +73,17 @@ func decodePng(imgStat *ImgStat, imgFile *os.File) (int, *image.RGBA, *ImgStat) 
 	defer timeCost(func(end time.Duration) {
 		imgStat.convertTime = end
 		imgStat.loaded = true
-		fmt.Printf("decode png ok \n%v\n", imgStat.name)
+		if DEBUG {
+			fmt.Printf("decode png ok \n%v\n", imgStat.name)
+		}
 	})()
 	defer imgFile.Close()
 
 	im, err := png.Decode(imgFile)
 	if err != nil {
-		fmt.Printf("error decodePng %v %v\n", imgStat, err)
+		if DEBUG {
+			fmt.Printf("error decodePng %v %v\n", imgStat, err)
+		}
 		// log.Fatalln(err)
 		return DecodeError, nil, nil
 	}
@@ -88,12 +96,16 @@ func decodePng(imgStat *ImgStat, imgFile *os.File) (int, *image.RGBA, *ImgStat) 
 func openPng(imgStat *ImgStat) *os.File {
 	defer timeCost(func(end time.Duration) {
 		imgStat.readTime = end
-		fmt.Printf("open png ok \n%v\n", imgStat.name)
+		if DEBUG {
+			fmt.Printf("open png ok \n%v\n", imgStat.name)
+		}
 	})()
 	imgFile, err := os.Open(imgStat.name)
 
 	if err != nil {
-		fmt.Printf("error openPng %v %v\n", imgStat, err)
+		if DEBUG {
+			fmt.Printf("error openPng %v %v\n", imgStat, err)
+		}
 		// log.Fatalln(err)
 		imgFile.Close()
 		return nil
@@ -107,10 +119,10 @@ func openPng(imgStat *ImgStat) *os.File {
 //please check return value if load failed
 func LoadPng(path string) (int, *image.RGBA, *ImgStat) {
 	imgStat := ImgStat{
-		name:       path,
-		readTime:   0,
+		name:        path,
+		readTime:    0,
 		convertTime: 0,
-		fileSize:   0,
+		fileSize:    0,
 	}
 	imgFile := openPng(&imgStat)
 	if imgFile == nil {
@@ -123,10 +135,13 @@ func LoadPng(path string) (int, *image.RGBA, *ImgStat) {
 func GetCodeString(code int) string {
 	var ret string
 	switch code {
-	case LoadOk: ret = "LoadOk"
+	case LoadOk:
+		ret = "LoadOk"
 	//case HadLoaded: ret = "HadLoaded"
-	case OpenError: ret = "OpenError"
-	case DecodeError: ret = "DecodeError"
+	case OpenError:
+		ret = "OpenError"
+	case DecodeError:
+		ret = "DecodeError"
 	}
 	return ret
 }
