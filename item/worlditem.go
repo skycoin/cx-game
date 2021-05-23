@@ -20,7 +20,7 @@ import (
 
 var bloopStreamer beep.StreamSeeker
 const bloopVolume = 1
-func init() {
+func InitWorldItem() {
 	// setup bloop sound
 	file, err := os.Open("./assets/sound/bloop.wav")
 	if err != nil {

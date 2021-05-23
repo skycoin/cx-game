@@ -170,6 +170,7 @@ func main() {
 
 	win = render.NewWindow(width, height, true)
 	spriteloader.InitSpriteloader(&win)
+	item.InitWorldItem()
 	ui.InitTextRendering()
 	enemies.InitBasicEnemies()
 
