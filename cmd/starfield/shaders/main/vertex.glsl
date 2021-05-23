@@ -7,6 +7,6 @@ uniform mat4 world;
 uniform vec2 texScale;
 uniform vec2 texOffset;
 void main() {
-    gl_Position = projection*world* vec4(position, 1.0);
+    gl_Position = projection * world* vec4(position, 1.0);
     tCoord = (texcoord+texOffset) * texScale;
 }

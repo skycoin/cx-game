@@ -1,7 +1,6 @@
 package main
 
 import (
-//	"fmt"
 	"log"
 	"runtime"
 
@@ -13,6 +12,7 @@ import (
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
+	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
@@ -27,13 +27,6 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var (
-	DrawCollisionBoxes = false
-	FPS                int
-)
-
-var CurrentPlanet *world.Planet
-
 const (
 	width  = 800
 	height = 480
@@ -41,63 +34,223 @@ const (
 
 var (
 	dt, lastFrame float32
+
+	Cam *camera.Camera
+	win render.Window
+	cat *models.Cat
+	fps *models.Fps
+
+	CurrentPlanet      *world.Planet
+	DrawCollisionBoxes = false
+	FPS                int
+
+	catIsScratching bool
+
+	upPressed      bool
+	downPressed    bool
+	leftPressed    bool
+	rightPressed   bool
+	spacePressed   bool
+	mouseX, mouseY float64
+
+	isFreeCam              = false
+	isTileSelectorVisible  = false
+	isInventoryGridVisible = false
+	tilePaletteSelector    ui.TilePaletteSelector
+	cyclingPalleteSelector int = -1
+
+	worldItem *item.WorldItem
+
+	inventoryId uint32
 )
 
-var upPressed bool
-var downPressed bool
-var leftPressed bool
-var rightPressed bool
-var spacePressed bool
-var mouseX, mouseY float64
 
-func mouseButtonCallback(
-	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
-) {
-	// we only care about mousedown events for now
-	if a != glfw.Press {
-		return
+
+func main() {
+
+	/*
+		var SS cv.SpriteSet
+		SS.LoadFile("./assets/sprite.png", 250, false)
+		SS.ProcessContours()
+		SS.DrawSprite()
+	*/
+
+	win = render.NewWindow(width, height, true)
+	defer glfw.Terminate()
+	spriteloader.InitSpriteloader(&win)
+	item.InitWorldItem()
+	ui.InitTextRendering()
+	enemies.InitBasicEnemies()
+
+	cat = models.NewCat()
+	fps = models.NewFps(false)
+
+	window := win.Window
+	window.SetKeyCallback(keyCallBack)
+	window.SetCursorPosCallback(cursorPosCallback)
+	window.SetMouseButtonCallback(mouseButtonCallback)
+
+	program := win.Program
+	Cam = camera.NewCamera(&win)
+	CurrentPlanet = world.NewDevPlanet()
+
+	inventoryId = item.NewInventory(10, 8)
+	debugItemType :=
+		item.NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
+
+	inventory := item.GetInventoryById(inventoryId)
+	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
+		item.InventorySlot{uint32(debugItemType), 5}
+
+	worldTiles := CurrentPlanet.GetAllTilesUnique()
+	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
+	tilePaletteSelector = ui.
+		MakeTilePaleteSelector(worldTiles)
+
+	spawnX := int(20)
+	Cam.X = float32(spawnX)
+	Cam.Y = 5
+	Cam.Zoom = -10
+	cat.Pos.X = float32(spawnX)
+	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
+
+	enemies.SpawnBasicEnemy(cat.Pos.X+6, cat.Pos.Y)
+	enemies.SpawnBasicEnemy(cat.Pos.X-6, cat.Pos.Y)
+
+	worldItem = item.NewWorldItem(uint32(debugItemType))
+	worldItem.Pos.X = cat.Pos.X - 3
+	worldItem.Pos.Y = cat.Pos.Y + 2
+
+	window.SetKeyCallback(keyCallBack)
+	window.SetCursorPosCallback(cursorPosCallback)
+	window.SetMouseButtonCallback(mouseButtonCallback)
+	window.SetSizeCallback(windowSizeCallback)
+	defer glfw.Terminate()
+	// VAO := makeVao()
+	//gl.GenTextures(1, &tex)
+
+	starmap.Init(&win)
+	starmap.Generate(256, 0.04, 8)
+	//without this panics
+
+	var dt, lastFrame float32
+	lastFrame = float32(glfw.GetTime())
+
+	for !window.ShouldClose() {
+		currTime := float32(glfw.GetTime())
+		dt = currTime - lastFrame
+		lastFrame = currTime
+
+		Tick(dt)
+
+		Draw(window, program, win.VAO)
+
 	}
+}
 
-	screenX := float32(mouseX - float64(win.Width)/2)
-	screenY := float32(mouseY - float64(win.Height)/2)*-1
+func boolToFloat(x bool) float32 {
+	if x {
+		return 1
+	} else {
+		return 0
+	}
+}
 
-	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
+func Tick(dt float32) {
 
-	// only try to place a tile if we didn't select a palete with this click
-	if !didSelectPaleteTile {
-		CurrentPlanet.TryPlaceTile(
-			screenX, screenY,
-			world.Layer(cyclingPalleteSelector),
-			tilePaletteSelector.GetSelectedTile(),
-			Cam,
+	if spacePressed {
+		ui.PlaceDialogueBox(
+			"*jump*", ui.AlignRight, 1,
+			mgl32.Translate3D(
+				cat.Pos.X,
+				cat.Pos.Y,
+				-spriteloader.SpriteRenderDistance,
+			),
 		)
 	}
+	if catIsScratching {
+		ui.PlaceDialogueBox(
+			"*scratch", ui.AlignLeft, 1,
+			mgl32.Translate3D(
+				cat.Pos.X,
+				cat.Pos.Y,
+				-spriteloader.SpriteRenderDistance,
+			),
+		)
+	}
+	ui.TickDialogueBoxes(dt)
+
+	if worldItem != nil {
+		pickupItem := worldItem.Tick(CurrentPlanet, dt, cat.Pos)
+		if pickupItem {
+			item.GetInventoryById(inventoryId).
+				TryAddItem(worldItem.ItemTypeId)
+			worldItem = nil
+		}
+	}
+
+	enemies.TickBasicEnemies(CurrentPlanet, dt, cat, catIsScratching)
+
+	if isFreeCam {
+		Cam.MoveCam(
+			boolToFloat(rightPressed)-boolToFloat(leftPressed),
+			boolToFloat(upPressed)-boolToFloat(downPressed),
+			0,
+			dt,
+		)
+		cat.Tick(false, false, false, CurrentPlanet, dt)
+	} else {
+		cat.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
+	}
+	spacePressed = false
+
+	fps.Tick()
+	catIsScratching = false
 }
 
-func windowSizeCallback(window *glfw.Window, width, height int) {
-	gl.Viewport(0,0,int32(width),int32(height))
-	win.Width = width
-	win.Height = height
+func Draw(window *glfw.Window, program uint32, VAO uint32) {
+	gl.ClearColor(1, 1, 1, 1)
+	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+	baseCtx := win.DefaultRenderContext()
+	camCtx := baseCtx.PushView(Cam.GetView())
+	//fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
+	starmap.Draw()
+	CurrentPlanet.Draw(Cam)
+	if worldItem != nil {
+		worldItem.Draw(Cam)
+	}
+	enemies.DrawBasicEnemies(Cam)
+	cat.Draw(Cam)
+
+	// tile - air line (green)
+	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
+		int(cat.Pos.X), int(cat.Pos.Y))
+	if len(collidingTileLines) > 2 {
+		Cam.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0}, baseCtx)
+	}
+
+	// body bounding box (blue)
+	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0},baseCtx)
+
+	// colliding line from body (red)
+	collidingLines := cat.GetCollidingLines()
+	if len(collidingLines) > 2 {
+		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0},baseCtx)
+	}
+
+	ui.DrawDialogueBoxes(camCtx)
+	inventory := item.GetInventoryById(inventoryId)
+	if isInventoryGridVisible {
+		inventory.DrawGrid(baseCtx)
+	} else {
+		inventory.DrawBar(baseCtx)
+	}
+	tilePaletteSelector.Draw(baseCtx)
+
+	glfw.PollEvents()
+	window.SwapBuffers()
 }
-
-func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
-	mouseX = xpos
-	mouseY = ypos
-}
-
-var isFreeCam = false
-var isTileSelectorVisible = false
-var isInventoryGridVisible = false
-var tilePaletteSelector ui.TilePaletteSelector
-var cyclingPalleteSelector int = -1
-
-var worldItem *item.WorldItem
-var cat *models.Cat
-var fps *models.Fps
-
-var Cam *camera.Camera
-var win render.Window
-var tex uint32
 
 func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
 	if a == glfw.Press {
@@ -140,6 +293,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyI {
 			isInventoryGridVisible = !isInventoryGridVisible
 		}
+		if k == glfw.KeyLeftShift {
+			catIsScratching = true
+		}
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
 			upPressed = false
@@ -156,162 +312,37 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 	}
 }
 
-var inventoryId uint32
-
-func main() {
-
-	/*
-		var SS cv.SpriteSet
-		SS.LoadFile("./assets/sprite.png", 250, false)
-		SS.ProcessContours()
-		SS.DrawSprite()
-	*/
-
-	win = render.NewWindow(width, height, true)
-	spriteloader.InitSpriteloader(&win)
-	ui.InitTextRendering()
-
-	cat = models.NewCat()
-	log.Printf("inventoryId=%v", inventoryId)
-	fps = models.NewFps(false)
-
-	CurrentPlanet = world.NewDevPlanet()
-	inventoryId = item.NewInventory(10, 8)
-	debugItemType :=
-		item.NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
-
-	inventory := item.GetInventoryById(inventoryId)
-	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
-		item.InventorySlot{debugItemType, 5}
-
-	worldTiles := CurrentPlanet.GetAllTilesUnique()
-	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
-	tilePaletteSelector = ui.
-		MakeTilePaleteSelector(worldTiles)
-	window := win.Window
-	Cam = camera.NewCamera(&win)
-	spawnX := int(20)
-	Cam.X = float32(spawnX)
-	Cam.Y = 5
-	Cam.Zoom = -10
-	cat.Pos.X = float32(spawnX)
-	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
-
-	worldItem = item.NewWorldItem(debugItemType)
-	worldItem.Pos.X = cat.Pos.X - 3
-	worldItem.Pos.Y = cat.Pos.Y + 2
-
-	window.SetKeyCallback(keyCallBack)
-	window.SetCursorPosCallback(cursorPosCallback)
-	window.SetMouseButtonCallback(mouseButtonCallback)
-	window.SetSizeCallback(windowSizeCallback)
-	defer glfw.Terminate()
-	// VAO := makeVao()
-	program := win.Program
-	gl.GenTextures(1, &tex)
-
-	starmap.Init(&win)
-	starmap.Generate(256, 0.04, 8)
-	//without this panics
-	lastFrame = float32(glfw.GetTime())
-
-	for !window.ShouldClose() {
-		currTime := float32(glfw.GetTime())
-		dt = currTime - lastFrame
-		lastFrame = currTime
-
-		Tick()
-
-		redraw(window, program, win.VAO)
-
-		fps.Tick()
-
+func mouseButtonCallback(
+	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
+) {
+	// we only care about mousedown events for now
+	if a != glfw.Press {
+		return
 	}
-}
 
-func boolToFloat(x bool) float32 {
-	if x {
-		return 1
-	} else {
-		return 0
-	}
-}
+	screenX := float32(mouseX - float64(win.Width)/2)
+	screenY := float32(mouseY - float64(win.Height)/2)*-1
 
-func Tick() {
-	if (spacePressed) {
-		ui.PlaceDialogueBox(
-			"*jump*", ui.AlignRight, 1,
-			mgl32.Translate3D(
-				cat.Pos.X,
-				cat.Pos.Y,
-				-spriteloader.SpriteRenderDistance,
-			),
+	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
+
+	// only try to place a tile if we didn't select a palete with this click
+	if !didSelectPaleteTile {
+		CurrentPlanet.TryPlaceTile(
+			screenX, screenY,
+			world.Layer(cyclingPalleteSelector),
+			tilePaletteSelector.GetSelectedTile(),
+			Cam,
 		)
 	}
-	ui.TickDialogueBoxes(dt)
-
-	if worldItem!=nil {
-		pickupItem := worldItem.Tick(CurrentPlanet, dt, cat.Pos)
-		if pickupItem {
-			item.GetInventoryById(inventoryId).
-				TryAddItem(worldItem.ItemTypeId)
-			worldItem=nil
-		}
-	}
-
-	if isFreeCam {
-		Cam.MoveCam(
-			boolToFloat(rightPressed)-boolToFloat(leftPressed),
-			boolToFloat(upPressed)-boolToFloat(downPressed),
-			0,
-			dt,
-		)
-		cat.Tick(false, false, false, CurrentPlanet, dt)
-	} else {
-		cat.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
-	}
-	spacePressed = false
 }
 
-func redraw(window *glfw.Window, program uint32, VAO uint32) {
-	gl.ClearColor(1, 1, 1, 1)
-	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
+	mouseX = xpos
+	mouseY = ypos
+}
 
-	baseCtx := win.DefaultRenderContext()
-	camCtx := baseCtx.PushView(Cam.GetView())
-	//fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
-	starmap.Draw()
-	CurrentPlanet.Draw(Cam)
-	if worldItem !=nil {
-		worldItem.Draw(Cam)
-	}
-	cat.Draw(Cam)
-
-	// tile - air line (green)
-	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
-		int(cat.Pos.X), int(cat.Pos.Y))
-	if len(collidingTileLines) > 2 {
-		Cam.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0}, baseCtx)
-	}
-
-	// body bounding box (blue)
-	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0},baseCtx)
-
-	// colliding line from body (red)
-	collidingLines := cat.GetCollidingLines()
-	if len(collidingLines) > 2 {
-		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0},baseCtx)
-	}
-
-	ui.DrawDialogueBoxes(camCtx)
-	inventory := item.GetInventoryById(inventoryId)
-	if isInventoryGridVisible {
-		inventory.DrawGrid(baseCtx)
-	} else {
-		inventory.DrawBar(baseCtx)
-	}
-	tilePaletteSelector.Draw(baseCtx)
-
-	glfw.PollEvents()
-	window.SwapBuffers()
+func windowSizeCallback(window *glfw.Window, width, height int) {
+	gl.Viewport(0,0,int32(width),int32(height))
+	win.Width = width
+	win.Height = height
 }
