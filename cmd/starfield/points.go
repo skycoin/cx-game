@@ -287,12 +287,8 @@ func updateStarField(shader *utility.Shader, dt float32) {
 	if pauseAutoMove {
 		return
 	}
-	// intensity = float32(math.Mod((float64(intensity) + 0.003), 1))
-	// shader.SetFloat("intensity", clamp(intensity, 0.2, 0.8))
 
-	// coords := float64(cliConfig.Starfield_Width) / float64(cliConfig.Width) * 5.333
 	for _, star := range stars {
-		// star.X = float32(math.Mod(float64(star.X+(speed*dt)), coords*2))
 
 		star.X += speed * dt * star.Depth
 
@@ -324,10 +320,6 @@ func drawStarField(shader *utility.Shader, vao uint32) {
 	shader.Use()
 
 	for _, star := range stars {
-		// if i != 5 {
-		// 	continue
-		// 	fmt.Printf("%v    %v    %v    %v   %v\n", star.X, star.Y, star.Size, star.SpriteId, star.Depth)
-		// }
 		shader.SetFloat("gradValue", star.GradientValue)
 		shader.SetFloat("intensity", getIntensity(star.Intensity))
 		world := mgl32.Mat4.Mul4(
