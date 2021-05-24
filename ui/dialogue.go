@@ -4,8 +4,9 @@ import (
 	"math"
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/camera"
+	//"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/render"
 )
 
 const dialogueScale = 0.3
@@ -46,14 +47,20 @@ func TickDialogueBoxes(dt float32) {
 	dialogueBoxes = newDialogueBoxes
 }
 
-func DrawDialogueBoxes(cam *camera.Camera) {
+func DrawDialogueBoxes(ctx render.Context) {
 	for _, box := range dialogueBoxes {
+		boxLocalTransform := box.WorldTransform.
+			Mul4(cxmath.Scale(dialogueScale))
+
+		boxCtx := ctx.PushLocal(boxLocalTransform)
+		/*
 		modelViewMatrix :=
 			mgl32.Translate3D(-cam.X,-cam.Y,0).Mul4(box.WorldTransform).
 			Mul4(cxmath.Scale(dialogueScale))
+		*/
 		// TODO fade out
 		opacity := float32(math.Min(float64(box.Time / dialogueFadeTime),1))
 		color := mgl32.Vec4 {1,1,1,opacity}
-		DrawString(box.Text, modelViewMatrix, color, box.Alignment)
+		DrawString(box.Text, color, box.Alignment, boxCtx)
 	}
 }

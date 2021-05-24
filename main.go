@@ -1,7 +1,6 @@
 package main
 
 import (
-	//	"fmt"
 	"log"
 	"runtime"
 
@@ -34,6 +33,8 @@ const (
 )
 
 var (
+	dt, lastFrame float32
+
 	Cam *camera.Camera
 	win render.Window
 	cat *models.Cat
@@ -62,6 +63,8 @@ var (
 
 	inventoryId uint32
 )
+
+
 
 func main() {
 
@@ -117,6 +120,14 @@ func main() {
 	worldItem = item.NewWorldItem(uint32(debugItemType))
 	worldItem.Pos.X = cat.Pos.X - 3
 	worldItem.Pos.Y = cat.Pos.Y + 2
+
+	window.SetKeyCallback(keyCallBack)
+	window.SetCursorPosCallback(cursorPosCallback)
+	window.SetMouseButtonCallback(mouseButtonCallback)
+	window.SetSizeCallback(windowSizeCallback)
+	defer glfw.Terminate()
+	// VAO := makeVao()
+	//gl.GenTextures(1, &tex)
 
 	starmap.Init(&win)
 	starmap.Generate(256, 0.04, 8)
@@ -201,6 +212,8 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
+	baseCtx := win.DefaultRenderContext()
+	camCtx := baseCtx.PushView(Cam.GetView())
 	//fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
@@ -214,26 +227,26 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
 		int(cat.Pos.X), int(cat.Pos.Y))
 	if len(collidingTileLines) > 2 {
-		Cam.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0})
+		Cam.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0}, baseCtx)
 	}
 
 	// body bounding box (blue)
-	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0})
+	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0},baseCtx)
 
 	// colliding line from body (red)
 	collidingLines := cat.GetCollidingLines()
 	if len(collidingLines) > 2 {
-		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0})
+		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0},baseCtx)
 	}
 
-	ui.DrawDialogueBoxes(Cam)
+	ui.DrawDialogueBoxes(camCtx)
 	inventory := item.GetInventoryById(inventoryId)
 	if isInventoryGridVisible {
-		inventory.DrawGrid()
+		inventory.DrawGrid(baseCtx)
 	} else {
-		inventory.DrawBar()
+		inventory.DrawBar(baseCtx)
 	}
-	tilePaletteSelector.Draw()
+	tilePaletteSelector.Draw(baseCtx)
 
 	glfw.PollEvents()
 	window.SwapBuffers()
@@ -306,18 +319,16 @@ func mouseButtonCallback(
 	if a != glfw.Press {
 		return
 	}
-	screenX := float32(2*mouseX/float64(win.Width) - 1)
-	screenY := 1 - float32(2*mouseY/float64(win.Height))
-	projection := win.GetProjectionMatrix()
 
-	didSelectPaleteTile := tilePaletteSelector.
-		TrySelectTile(screenX, screenY, projection)
+	screenX := float32(mouseX - float64(win.Width)/2)
+	screenY := float32(mouseY - float64(win.Height)/2)*-1
+
+	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
 
 	// only try to place a tile if we didn't select a palete with this click
 	if !didSelectPaleteTile {
 		CurrentPlanet.TryPlaceTile(
 			screenX, screenY,
-			projection,
 			world.Layer(cyclingPalleteSelector),
 			tilePaletteSelector.GetSelectedTile(),
 			Cam,
@@ -328,4 +339,10 @@ func mouseButtonCallback(
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 	mouseX = xpos
 	mouseY = ypos
+}
+
+func windowSizeCallback(window *glfw.Window, width, height int) {
+	gl.Viewport(0,0,int32(width),int32(height))
+	win.Width = width
+	win.Height = height
 }

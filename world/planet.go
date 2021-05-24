@@ -8,8 +8,9 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/camera"
-	"github.com/skycoin/cx-game/cxmath"
+	//"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/render"
 )
 
 type Layer int
@@ -91,18 +92,17 @@ func (planet *Planet) GetAllTilesUnique() []Tile {
 }
 
 func (planet *Planet) TryPlaceTile(
-	x, y float32, projection mgl32.Mat4,
+	x, y float32,
 	layer Layer,
 	tile Tile,
 	cam *camera.Camera,
 ) {
-	// tilemap is drawn directly on the world - no need to convert further
-	worldCoords := cxmath.ConvertScreenCoordsToWorld(x, y, projection)
-	// FIXME dirty workaround for broken view matrx
-	worldCoords[0] += cam.X
-	worldCoords[1] += cam.Y
-	tileX := int32(math.Floor((float64(worldCoords.X() + 0.5))))
-	tileY := int32(math.Floor((float64)(worldCoords.Y() + 0.5)))
+	// click relative to camera
+	camCoords := mgl32.Vec4{x/render.PixelsPerTile,y/render.PixelsPerTile,0,1}
+	// click relative to world
+	worldCoords := cam.GetTransform().Mul4x1(camCoords)
+	tileX := int32(math.Round((float64(worldCoords.X()))))
+	tileY := int32(math.Round((float64)(worldCoords.Y())))
 	if tileX >= 0 && tileX < planet.Width && tileY >= 0 && tileY < planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
 		switch layer {
