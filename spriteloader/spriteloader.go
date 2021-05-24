@@ -110,10 +110,9 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	DrawSpriteQuadMatrix(worldTransform, spriteId)
 }
 
-
 func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId int) {
-	DrawSpriteQuadContext( render.Context {
-		World: worldTransform,
+	DrawSpriteQuadContext(render.Context{
+		World:      worldTransform,
 		Projection: Window.DefaultRenderContext().Projection,
 	}, spriteId)
 }
@@ -187,8 +186,8 @@ func MakeTexture(img *image.RGBA) uint32 {
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-	gl.Enable(gl.DEPTH_TEST)
-	gl.DepthFunc(gl.LESS)
+	// gl.Enable(gl.DEPTH_TEST)
+	// gl.DepthFunc(gl.LESS)
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, tex)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
