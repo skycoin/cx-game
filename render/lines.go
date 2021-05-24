@@ -4,12 +4,13 @@ import (
 	"log"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/go-gl/mathgl/mgl32"
 )
 
 var lineProgram uint32
 
-func (window *Window) DrawLines(lineArray []float32, color []float32, worldTransform mgl32.Mat4) {
+func (window *Window) DrawLines(
+		lineArray []float32, color []float32, ctx Context,
+) {
 	// DEBUG: check if the array have the right amount of elements
 	if len(lineArray) < 6 {
 		log.Panicln("line array doesn't enough points to draw a line")
@@ -46,16 +47,11 @@ func (window *Window) DrawLines(lineArray []float32, color []float32, worldTrans
 		&color[0],
 	)
 
-	aspect := float32(window.Width) / float32(window.Height)
-	projectTransform := mgl32.Perspective(
-		mgl32.DegToRad(45), aspect, 0.1, 100.0,
-	)
-
-	projection := projectTransform.Mul4(worldTransform)
+	mvp := ctx.MVP()
 
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(lineProgram, gl.Str("uProjection\x00")),
-		1, false, &projection[0],
+		1, false, &mvp[0],
 	)
 
 	gl.BindVertexArray(vao)

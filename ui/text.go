@@ -10,6 +10,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/render"
 )
 
 type TextAlignment uint32
@@ -139,7 +140,8 @@ func calculateLineWidth(text string) float32 {
 }
 // TODO line wrapping
 func DrawStringLeftAligned(
-		text string, transform mgl32.Mat4, color mgl32.Vec4,
+		text string, color mgl32.Vec4,
+		ctx render.Context,
 ) {
 	// setup GPU params
 	gl.Disable(gl.DEPTH_TEST)
@@ -167,7 +169,7 @@ func DrawStringLeftAligned(
 	for _, charCode := range text {
 		charData,ok := asciiToCharDataMap[int(charCode)]
 		if ok {
-			letterTransform := transform.
+			letterTransform := ctx.World.
 				Mul4(mgl32.Translate3D(pos.X(),pos.Y(),0)).
 				Mul4(cxmath.Scale(fontScale))
 
@@ -175,13 +177,15 @@ func DrawStringLeftAligned(
 				gl.GetUniformLocation(program, gl.Str("world\x00")),
 				1, false, &letterTransform[0],
 			)
+			/*
 			aspect := float32(spriteloader.Window.Width) / float32(spriteloader.Window.Height)
 			projectTransform := mgl32.Perspective(
 				mgl32.DegToRad(45), aspect, 0.1, 100.0,
 			)
+			*/
 			gl.UniformMatrix4fv(
 				gl.GetUniformLocation(program, gl.Str("projection\x00")),
-				1, false, &projectTransform[0],
+				1, false, &ctx.Projection[0],
 			)
 			gl.BindVertexArray(vao)
 			glStart := 6*charData.index
@@ -199,21 +203,22 @@ func DrawStringLeftAligned(
 }
 
 func DrawStringRightAligned(
-		text string, transform mgl32.Mat4, color mgl32.Vec4,
+		text string, color mgl32.Vec4, ctx render.Context,
 ) {
-	transformLeftAligned := transform.
-		Mul4(mgl32.Translate3D(-calculateLineWidth(text),0,0))
+	ctxLeftAligned := ctx.PushLocal(
+		mgl32.Translate3D(-calculateLineWidth(text),0,0),
+	)
 
-	DrawStringLeftAligned(text, transformLeftAligned, color)
+	DrawStringLeftAligned(text, color, ctxLeftAligned)
 }
 
 func DrawString(
-		text string, transform mgl32.Mat4,
-		color mgl32.Vec4, alignment TextAlignment,
+		text string, color mgl32.Vec4, alignment TextAlignment,
+		ctx render.Context,
 ) {
 	if alignment == AlignLeft {
-		DrawStringLeftAligned(text, transform, color)
+		DrawStringLeftAligned(text, color, ctx)
 	} else if alignment == AlignRight {
-		DrawStringRightAligned(text, transform, color)
+		DrawStringRightAligned(text, color, ctx)
 	}
 }

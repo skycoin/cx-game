@@ -11,7 +11,6 @@ type Camera struct {
 	Zoom      float32
 	movSpeed  float32
 	window    *render.Window
-	transform mgl32.Mat4
 }
 
 func NewCamera(window *render.Window) *Camera {
@@ -33,7 +32,7 @@ func (camera *Camera) MoveCam(x, y, z float32, dTime float32) {
 }
 
 //moves and/or zooms  camera
-func (camera *Camera) GetTransform() mgl32.Mat4 {
+func (camera *Camera) GetView() mgl32.Mat4 {
 	return mgl32.Translate3D(-camera.X, -camera.Y, camera.Zoom)
 }
 
@@ -66,6 +65,13 @@ func (camera *Camera) SetCameraZoomPosition(zoom float32) {
 	UpdateFrustrum(camera.X, camera.Y, zoom)
 }
 
-func (camera *Camera) DrawLines(lines []float32, color []float32) {
-	camera.window.DrawLines(lines, color, camera.GetTransform())
+func (camera *Camera) DrawLines(
+		lines []float32, color []float32, ctx render.Context,
+) {
+	camCtx := ctx.PushView(camera.GetView())
+	camera.window.DrawLines(lines, color, camCtx)
+}
+
+func (camera Camera) GetTransform() mgl32.Mat4 {
+	return mgl32.Translate3D(camera.X,camera.Y,0)
 }

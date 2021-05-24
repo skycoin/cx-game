@@ -8,6 +8,7 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/render"
 )
 
 type TilePaletteSelector struct {
@@ -21,6 +22,8 @@ type TilePaletteSelector struct {
 	redPixelSpriteId  int
 }
 
+const selectorSize = 2
+
 func MakeTilePaleteSelector(tiles []world.Tile) TilePaletteSelector {
 	width := math.Ceil(math.Sqrt(float64(len(tiles))))
 
@@ -29,7 +32,6 @@ func MakeTilePaleteSelector(tiles []world.Tile) TilePaletteSelector {
 
 	return TilePaletteSelector{
 		Tiles:             tiles,
-		Transform:         mgl32.Translate3D(-5, 0, -spriteloader.SpriteRenderDistance),
 		Width:             int(width),
 		SelectedTileIndex: -1,
 		bluePixelSpriteId: spriteloader.GetSpriteIdByName("blue-pixel"),
@@ -53,20 +55,25 @@ func (selector TilePaletteSelector) worldTransformForTileAtIndex(idx int) mgl32.
 	return tileWorldTransform
 }
 
-func (selector *TilePaletteSelector) Draw() {
+func (selector *TilePaletteSelector) UpdateTransform(ctx render.Context) {
+	x := -ctx.Size.X()/2+float32(selector.Width)/2
+	selector.Transform =
+		mgl32.Translate3D(x,0,0).
+		Mul4(cxmath.Scale(selectorSize))
+}
+
+func (selector *TilePaletteSelector) Draw(ctx render.Context) {
+	selector.UpdateTransform(ctx)
+
 	if !selector.visible {
 		return
 	}
 
-	// TODO create a shader for drawing arbitrary colors
-	bgScale := float32(1 + padding)
-	bgTransform := mgl32.Mat4.Mul4(
-		selector.Transform,
-		mgl32.Scale3D(bgScale, bgScale, 1),
-	)
+	selectorCtx := ctx.PushLocal(selector.Transform)
+	bgCtx := selectorCtx.PushLocal(cxmath.Scale(float32(1+padding)))
 
 	spriteloader.
-		DrawSpriteQuadMatrix(bgTransform, selector.redPixelSpriteId)
+		DrawSpriteQuadContext(bgCtx, selector.redPixelSpriteId)
 
 	if selector.SelectedTileIndex >= 0 {
 		selectedTransform := selector.
@@ -91,15 +98,21 @@ func (selector *TilePaletteSelector) Draw() {
 
 }
 
-func (selector *TilePaletteSelector) TrySelectTile(x, y float32, projection mgl32.Mat4) bool {
+func (selector *TilePaletteSelector) TrySelectTile(x, y float32) bool {
 	// can't select palete tile when palete is invisible
 	if !selector.visible {
 		return false
 	}
-	worldCoords := cxmath.ConvertScreenCoordsToWorld(x, y, projection)
-	paleteCoords := selector.Transform.Inv().Mul4x1(worldCoords).Vec2()
-	tileX := int(math.Floor(float64(paleteCoords.X()+0.5) * float64(selector.Width)))
-	tileY := int(math.Floor(float64(paleteCoords.Y()+0.5) * float64(selector.Width)))
+
+	// click relative to camera
+	camCoords := mgl32.Vec4{x/render.PixelsPerTile,y/render.PixelsPerTile,0,1}
+	// click relative to palete center in [-0.5,0.5]
+	paleteCoords := selector.Transform.Inv().Mul4x1(camCoords).Vec2()
+	// click relative to palete top left corner in [0,1]
+	tileCoords := paleteCoords.Add(mgl32.Vec2{0.5,0.5})
+
+	tileX := int(tileCoords.X()*float32(selector.Width))
+	tileY := int(tileCoords.Y()*float32(selector.Width))
 
 	if tileX >= 0 && tileX < selector.Width && tileY >= 0 && tileY < selector.Width {
 		selector.SelectedTileIndex = tileY*selector.Width + tileX
