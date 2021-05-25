@@ -60,6 +60,7 @@ type starSettings struct {
 	Gaussian_Sigma_X        float32
 	Gaussian_Sigma_Y        float32
 	Gaussian_Constant       float32
+	Intensity_Period        int
 }
 
 //via cli set bg, star_amount, window width and height
@@ -233,7 +234,7 @@ func initStarField(win *render.Window) {
 		star := &Star{
 			//bad generation position, TODO
 			SpriteId:  spriteloader.GetSpriteIdByName(spriteName),
-			Intensity: rand.Float32()/2 + 0.5,
+			Intensity: rand.Float32(),
 			Depth:     rand.Float32(),
 			Size:      float32(starConfig.Pixel_Size) / 32 * (1 + 3*rand.Float32()/20),
 		}
@@ -288,7 +289,7 @@ func getIntensity(intensity float32) float32 {
 	// t := time.Now()
 
 	// return myclamp(float32(math.Sin(float64(time.Now().UnixNano()))))
-	ttime := float64(time.Now().UnixNano() / (10000000 * 1))
+	ttime := float64(time.Now().UnixNano() / (10000000 * int64(starConfig.Intensity_Period)))
 
 	rad := math.Pi / 180 * ttime
 
