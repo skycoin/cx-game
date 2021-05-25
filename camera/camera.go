@@ -11,6 +11,7 @@ type Camera struct {
 	Zoom      float32
 	movSpeed  float32
 	window    *render.Window
+	Frustrum  Frustrum
 }
 
 func NewCamera(window *render.Window) *Camera {
@@ -29,6 +30,7 @@ func (camera *Camera) MoveCam(x, y, z float32, dTime float32) {
 	camera.X += x * dTime * camera.movSpeed
 	camera.Y += y * dTime * camera.movSpeed
 	camera.Zoom += z * dTime * camera.movSpeed
+	camera.UpdateFrustrum()
 }
 
 //moves and/or zooms  camera
@@ -39,14 +41,14 @@ func (camera *Camera) GetView() mgl32.Mat4 {
 func (camera *Camera) SetCameraCenter() {
 	camera.X = float32(camera.window.Width) / 2
 	camera.Y = float32(camera.window.Height) / 2
-	UpdateFrustrum(camera.X, camera.Y, camera.Zoom)
+	camera.UpdateFrustrum()
 }
 
 //sets camera for current position
 func (camera *Camera) SetCameraPosition(x, y float32) {
 	camera.X = x
 	camera.Y = y
-	UpdateFrustrum(x, y, camera.Zoom)
+	camera.UpdateFrustrum()
 }
 
 //sets camera for target position
@@ -62,7 +64,7 @@ func (camera *Camera) SetCameraZoomTarget(zoom float32) {
 //zooms on current position
 func (camera *Camera) SetCameraZoomPosition(zoom float32) {
 	camera.Zoom = zoom
-	UpdateFrustrum(camera.X, camera.Y, zoom)
+	camera.UpdateFrustrum()
 }
 
 func (camera *Camera) DrawLines(

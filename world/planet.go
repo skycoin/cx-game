@@ -8,7 +8,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/camera"
-	//"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/render"
 )
@@ -51,16 +51,28 @@ func NewPlanet(x, y int32) *Planet {
 }
 
 func (planet *Planet) DrawLayer(tiles []Tile, cam *camera.Camera) {
-	for idx, tile := range tiles {
-		y := int32(idx) / planet.Width
-		x := int32(idx) % planet.Width
+	w := int(planet.Width)
+	h := int(planet.Height)
 
-		if tile.TileType != TileTypeNone {
-			spriteloader.DrawSpriteQuad(
-				float32(x)-cam.X, float32(y)-cam.Y,
-				1, 1,
-				int(tile.SpriteID),
-			)
+	frustrum := cam.Frustrum
+	left := cxmath.IntMax(0,frustrum.Left)
+	right := cxmath.IntMin(w-1,frustrum.Right)
+	bottom := cxmath.IntMax(0,frustrum.Bottom)
+	top := cxmath.IntMin(h-1,frustrum.Top)
+
+	for x:=left; x<=right; x++ {
+		for y:=bottom; y<top; y++ {
+
+			idx := y*w + x
+			tile := tiles[idx]
+
+			if tile.TileType != TileTypeNone {
+				spriteloader.DrawSpriteQuad(
+					float32(x)-cam.X, float32(y)-cam.Y,
+					1, 1,
+					int(tile.SpriteID),
+				)
+			}
 		}
 	}
 }

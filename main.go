@@ -108,9 +108,7 @@ func main() {
 		MakeTilePaleteSelector(worldTiles)
 
 	spawnX := int(20)
-	Cam.X = float32(spawnX)
-	Cam.Y = 5
-	Cam.Zoom = -10
+	Cam.SetCameraPosition(float32(spawnX),5)
 	cat.Pos.X = float32(spawnX)
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 
@@ -289,6 +287,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 				cyclingPalleteSelector = -1
 				tilePaletteSelector.Toggle()
 			}
+		}
+		if k == glfw.KeyF4 {
+			Cam.ToggleDebugUseSmallerFrustrum()
 		}
 		if k == glfw.KeyI {
 			isInventoryGridVisible = !isInventoryGridVisible

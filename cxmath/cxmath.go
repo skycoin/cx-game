@@ -14,3 +14,19 @@ func ConvertScreenCoordsToWorld(x,y float32, projection mgl32.Mat4) mgl32.Vec2 {
 func Scale(factor float32) mgl32.Mat4 {
 	return mgl32.Scale3D(factor,factor,factor)
 }
+
+func IntMax(x,y int) int {
+	if x>y {
+		return x
+	} else {
+		return y
+	}
+}
+
+func IntMin(x,y int) int {
+	if x<y {
+		return x
+	} else {
+		return y
+	}
+}
