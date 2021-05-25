@@ -23,5 +23,5 @@ func (camera *Camera) UpdateFrustrum() {
 	camera.Frustum.Left = int(camera.X) - margin - int(halfWidth/camera.Zoom)
 	camera.Frustum.Right = int(camera.X) + margin + int(halfWidth/camera.Zoom)
 	camera.Frustum.Top = int(camera.Y) + margin + int(halfHeight/camera.Zoom)
-	camera.Frustum.Bottom = int(camera.Y - margin - int(halfHeight/camera.Zoom)
+	camera.Frustum.Bottom = int(camera.Y) - margin - int(halfHeight/camera.Zoom)
 }

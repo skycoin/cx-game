@@ -90,3 +90,7 @@ func (camera *Camera) IsInBounds(x, y int) bool {
 	}
 	return false
 }
+
+func (camera *Camera) IsInBoundsF(x, y float32) bool {
+	return camera.IsInBounds(int(x), int(y))
+}
