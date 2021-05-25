@@ -9,8 +9,8 @@ import (
 
 	"github.com/skycoin/cx-game/camera"
 	//"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type Layer int
@@ -55,7 +55,7 @@ func (planet *Planet) DrawLayer(tiles []Tile, cam *camera.Camera) {
 		y := int32(idx) / planet.Width
 		x := int32(idx) % planet.Width
 
-		if tile.TileType != TileTypeNone {
+		if tile.TileType != TileTypeNone && cam.IsInBounds(int(x), int(y)) {
 			spriteloader.DrawSpriteQuad(
 				float32(x)-cam.X, float32(y)-cam.Y,
 				1, 1,
@@ -98,11 +98,11 @@ func (planet *Planet) TryPlaceTile(
 	cam *camera.Camera,
 ) {
 	// click relative to camera
-	camCoords := mgl32.Vec4{x/render.PixelsPerTile,y/render.PixelsPerTile,0,1}
+	camCoords := mgl32.Vec4{x / render.PixelsPerTile, y / render.PixelsPerTile, 0, 1}
 	// click relative to world
 	worldCoords := cam.GetTransform().Mul4x1(camCoords)
 	tileX := int32(math.Round((float64(worldCoords.X()))))
-	tileY := int32(math.Round((float64)(worldCoords.Y())))
+	tileY := int32(math.Round((float64(worldCoords.Y()))))
 	if tileX >= 0 && tileX < planet.Width && tileY >= 0 && tileY < planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
 		switch layer {

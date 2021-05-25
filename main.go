@@ -64,8 +64,6 @@ var (
 	inventoryId uint32
 )
 
-
-
 func main() {
 
 	/*
@@ -78,6 +76,8 @@ func main() {
 	win = render.NewWindow(width, height, true)
 	defer glfw.Terminate()
 	spriteloader.InitSpriteloader(&win)
+	spriteloader.DEBUG = false
+
 	item.InitWorldItem()
 	ui.InitTextRendering()
 	enemies.InitBasicEnemies()
@@ -89,6 +89,7 @@ func main() {
 	window.SetKeyCallback(keyCallBack)
 	window.SetCursorPosCallback(cursorPosCallback)
 	window.SetMouseButtonCallback(mouseButtonCallback)
+	window.SetScrollCallback(scrollCallback)
 
 	program := win.Program
 	Cam = camera.NewCamera(&win)
@@ -110,7 +111,8 @@ func main() {
 	spawnX := int(20)
 	Cam.X = float32(spawnX)
 	Cam.Y = 5
-	Cam.Zoom = -10
+	Cam.SetCameraPosition(Cam.X, Cam.Y)
+	// Cam.Zoom = -10
 	cat.Pos.X = float32(spawnX)
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 
@@ -195,7 +197,6 @@ func Tick(dt float32) {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
 			boolToFloat(upPressed)-boolToFloat(downPressed),
-			0,
 			dt,
 		)
 		cat.Tick(false, false, false, CurrentPlanet, dt)
@@ -206,12 +207,14 @@ func Tick(dt float32) {
 
 	fps.Tick()
 	catIsScratching = false
+
 }
 
 func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
+	// fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
 	baseCtx := win.DefaultRenderContext()
 	camCtx := baseCtx.PushView(Cam.GetView())
 	//fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
@@ -231,12 +234,12 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	}
 
 	// body bounding box (blue)
-	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0},baseCtx)
+	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0}, baseCtx)
 
 	// colliding line from body (red)
 	collidingLines := cat.GetCollidingLines()
 	if len(collidingLines) > 2 {
-		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0},baseCtx)
+		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0}, baseCtx)
 	}
 
 	ui.DrawDialogueBoxes(camCtx)
@@ -321,7 +324,7 @@ func mouseButtonCallback(
 	}
 
 	screenX := float32(mouseX - float64(win.Width)/2)
-	screenY := float32(mouseY - float64(win.Height)/2)*-1
+	screenY := float32(mouseY-float64(win.Height)/2) * -1
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
 
@@ -342,7 +345,11 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 }
 
 func windowSizeCallback(window *glfw.Window, width, height int) {
-	gl.Viewport(0,0,int32(width),int32(height))
+	gl.Viewport(0, 0, int32(width), int32(height))
 	win.Width = width
 	win.Height = height
+}
+
+func scrollCallback(w *glfw.Window, xpos, ypos float64) {
+	Cam.SetCameraZoomPosition(float32(ypos))
 }
