@@ -131,7 +131,7 @@ var (
 	pauseAutoMove bool
 
 	//variable for star move speed
-	speed        float32 = 0.25
+	speed        float32 = 25
 	rightPressed bool
 	leftPressed  bool
 )
@@ -239,10 +239,10 @@ func initStarField(win *render.Window) {
 		}
 
 		if i < gaussianAmount {
-			star.IsGaussian = true
 			star.X, star.Y = getStarPosition(true)
 			star.GradientValue = 0.9
 			star.Depth = gaussianDepth
+			star.IsGaussian = true
 		} else {
 			star.X, star.Y = getStarPosition(false)
 			star.GradientValue = rand.Float32()
@@ -251,19 +251,14 @@ func initStarField(win *render.Window) {
 
 		stars = append(stars, star)
 	}
+
 }
 
 //regenerates positions of stars
 func regenStarField() {
 	gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
-	for i, star := range stars {
-		if i < gaussianAmount {
-			star.X, star.Y = getStarPosition(true)
-			star.IsGaussian = true
-		} else {
-			star.X, star.Y = getStarPosition(false)
-			star.IsGaussian = false
-		}
+	for _, star := range stars {
+		star.X, star.Y = getStarPosition(star.IsGaussian)
 		star.Size = float32(starConfig.Pixel_Size) / 32 * (1 + 3*rand.Float32()/2)
 	}
 }
@@ -273,7 +268,6 @@ var frameCounter int
 //updates position of each star at each game iteration
 func updateStarField(dt float32) {
 
-	coords := float64(cliConfig.Starfield_Width) / float64(cliConfig.Width) * 5.333
 	for _, star := range stars {
 		// star.X = float32(math.Mod(float64(star.X+(speed*dt)), coords*2))
 		if rightPressed {
@@ -282,8 +276,8 @@ func updateStarField(dt float32) {
 		if leftPressed {
 			star.X -= speed * dt * star.Depth
 		}
-		if star.X > float32(coords) {
-			star.X = -float32(coords)
+		if star.X > float32(cliConfig.Starfield_Width) {
+			star.X = 0
 		}
 		// star.X = star.X + dt
 	}
@@ -300,7 +294,7 @@ func getIntensity(intensity float32) float32 {
 
 	sinusoid := math.Sin(rad * float64(intensity))
 
-	result := sinusoid*0.6 + 0.4
+	result := float32(sinusoid)*0.55 + 0.45
 
 	return float32(result)
 }
@@ -312,10 +306,10 @@ func drawStarField(shader *utility.Shader) {
 		if star.IsGaussian {
 			shader.SetInt("texture_1d", 1)
 		} else {
-			shader.SetFloat("intensity", getIntensity(star.Intensity))
 			shader.SetInt("texture_1d", 4)
 			shader.SetFloat("gradValue", star.GradientValue)
 		}
+		shader.SetFloat("intensity", getIntensity(star.Intensity))
 		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, star.Size, star.Size, star.SpriteId, shader.ID)
 	}
 
@@ -465,14 +459,16 @@ func getStarPosition(isGaussian bool) (float32, float32) {
 	} else {
 
 		for {
-			x := rand.Intn(cliConfig.Width)
-			y := rand.Intn(cliConfig.Height)
+			x := rand.Intn(cliConfig.Starfield_Width)
+			y := rand.Intn(cliConfig.Starfield_Height)
 			perlinProb := perlinMap[x][y]
 			deleteChance := (1 - perlinProb)
 			if deleteChance > 0.5 {
 				continue
 			}
-			xPos, yPos = convertIntToSpriteCoords(x, y, 0, cliConfig.Width, 0, cliConfig.Height)
+			// xPos, yPos = convertIntToSpriteCoords(x, y, 0, cliConfig.Width, 0, cliConfig.Height)
+			// fmt.Println(x, "         ", y)
+			xPos, yPos = float32(x), float32(y)
 			break
 		}
 	}
@@ -506,17 +502,17 @@ func starPositionInConflict(xPos, yPos float32) bool {
 
 }
 
-//Convert from any coordinates specified min max to screen coordinates
-func convertIntToSpriteCoords(xPos, yPos, minX, maxX, minY, maxY int) (float32, float32) {
-	return convertToWorldCoords(
-		float32(xPos),
-		float32(yPos),
-		float32(minX),
-		float32(maxX),
-		float32(minY),
-		float32(maxY),
-	)
-}
+// //Convert from any coordinates specified min max to screen coordinates
+// func convertIntToSpriteCoords(xPos, yPos, minX, maxX, minY, maxY int) (float32, float32) {
+// 	return convertToWorldCoords(
+// 		float32(xPos),
+// 		float32(yPos),
+// 		float32(minX),
+// 		float32(maxX),
+// 		float32(minY),
+// 		float32(maxY),
+// 	)
+// }
 
 //Convert from any coordinates specified min max to screen coordinates
 //  xPos - X position in original coordinates
@@ -535,13 +531,15 @@ func convertToWorldCoords(xPos, yPos, minX, maxX, minY, maxY float32) (float32, 
 	diffY := maxY - minY
 	b := (xPos - minX) / diffX
 	c := (yPos - minY) / diffY
-	x := 10.8*b - 5.4
-	y := 8*c - 4
-
-	//multipliers for star
-	xMul := float32(cliConfig.Starfield_Width) / float32(cliConfig.Width)
-	yMul := float32(cliConfig.Starfield_Height) / float32(cliConfig.Height)
-	return x * xMul, y * yMul
+	// x := 10.8*b - 5.4
+	// y := 8*c - 4
+	x := float32(cliConfig.Starfield_Width) * b
+	y := float32(cliConfig.Starfield_Height) * c
+	// //multipliers for star
+	// xMul := float32(cliConfig.Starfield_Width) / float32(cliConfig.Width)
+	// yMul := float32(cliConfig.Starfield_Height) / float32(cliConfig.Height)
+	// return x * xMul, y * yMul
+	return x, y
 }
 
 // Generate perlin 2d slice for each pixel on the window.
@@ -645,7 +643,6 @@ func initReloadConfig() {
 				} else {
 					regenStarField()
 				}
-
 			case <-perlinConfigReloaded:
 
 				if isPerlinConfigFirstLoad {
