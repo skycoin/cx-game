@@ -275,7 +275,7 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 	)
 
 	worldTransform := mgl32.Mat4.Mul4(
-		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
+		mgl32.Translate3D(float32(xpos), float32(ypos), 0),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
 	)
 	gl.UniformMatrix4fv(
@@ -286,9 +286,9 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 	w := float32(Window.Width)
 	h := float32(Window.Height)
 	projectTransform := mgl32.Ortho(
-		-w/2, w/2,
-		-h/2, h/2,
-		-1, 1000,
+		0, w,
+		0, h,
+		-1, 1,
 	)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(program, gl.Str("projection\x00")),
