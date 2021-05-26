@@ -15,6 +15,12 @@ type Shader struct {
 	ID uint32
 }
 
+func ShaderWrapper(program uint32) *Shader {
+	return &Shader{
+		ID: program,
+	}
+}
+
 //helper class to create shader program
 func NewShader(vertexPath, fragmentPath string) *Shader {
 
