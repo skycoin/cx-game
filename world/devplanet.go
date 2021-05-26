@@ -19,6 +19,12 @@ func NewDevPlanet() *Planet {
 	spriteloader.
 		LoadSprite(spriteSheetId, "RedBlip", 0, 0)
 
+	foregroundTilesSpritesheetId := spriteloader.
+		LoadSpriteSheetByColRow("./assets/tile/ForegroundTiles.png",16,16)
+
+	blueLabSpriteIds := spriteloader.
+		LoadSprites(foregroundTilesSpritesheetId,"bluelab",6,3,15,3)
+
 	// dirt
 	for x := 0; x < int(planet.Width); x++ {
 		for y := 4; y < 6; y++ {
@@ -59,6 +65,14 @@ func NewDevPlanet() *Planet {
 		TileType: TileTypeNone,
 		SpriteID: uint32(spriteloader.GetSpriteIdByName("Dirt")),
 	}
+
+	devMultiTile := MultiTile {
+		Width: 10, Height: 1,
+		TileType: TileTypeNormal,
+		SpriteIDs: blueLabSpriteIds,
+		Name: "dev multi tile",
+	}
+	planet.PlaceMultiTile(20,8,BgLayer,devMultiTile)
 
 	return planet
 }
