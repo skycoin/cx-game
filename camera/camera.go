@@ -32,7 +32,7 @@ func (camera *Camera) MoveCam(x, y float32, dTime float32) {
 	camera.X += x * dTime * camera.movSpeed
 	camera.Y += y * dTime * camera.movSpeed
 	// camera.Zoom += z * dTime * camera.movSpeed
-	camera.UpdateFrustrum()
+	camera.UpdateFrustum()
 }
 
 //moves and/or zooms  camera
@@ -43,20 +43,20 @@ func (camera *Camera) GetView() mgl32.Mat4 {
 func (camera *Camera) SetCameraCenter() {
 	camera.X = float32(camera.window.Width) / 2
 	camera.Y = float32(camera.window.Height) / 2
-	camera.UpdateFrustrum()
+	camera.UpdateFrustum()
 }
 
 //sets camera for current position
 func (camera *Camera) SetCameraPosition(x, y float32) {
 	camera.X = x
 	camera.Y = y
-	camera.UpdateFrustrum()
+	camera.UpdateFrustum()
 }
 
 //sets camera for target position
 func (camera *Camera) SetCameraPositionTarget(x, y float32) {
 	camera.SetCameraPosition(x, y)
-	camera.UpdateFrustrum()
+	camera.UpdateFrustum()
 }
 
 //zooms on target
@@ -67,7 +67,7 @@ func (camera *Camera) SetCameraZoomTarget(zoom float32) {
 //zooms on current position
 func (camera *Camera) SetCameraZoomPosition(zoom float32) {
 	camera.Zoom = utility.Clamp(camera.Zoom+zoom, 1, 3)
-	camera.UpdateFrustrum()
+	camera.UpdateFrustum()
 }
 
 func (camera *Camera) DrawLines(
