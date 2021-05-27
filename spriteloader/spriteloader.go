@@ -155,10 +155,10 @@ func DrawSpriteQuadContext(ctx render.Context, spriteId int) {
 		1, false, &ctx.World[0],
 	)
 
-	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
-		1, false, &ctx.Projection[0],
-	)
+	// gl.UniformMatrix4fv(
+	// 	gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
+	// 	1, false, &ctx.Projection[0],
+	// )
 
 	gl.BindVertexArray(QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
