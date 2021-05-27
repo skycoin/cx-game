@@ -177,6 +177,8 @@ func main() {
 	lastFrame := float32(glfw.GetTime())
 	dt := float32(0)
 
+	ortho := mgl32.Ortho2D(0, float32(win.Width), 0, float32(win.Height))
+	shader.SetMat4("projection", &ortho)
 	//main loop
 	for !window.ShouldClose() {
 		//deltatime
