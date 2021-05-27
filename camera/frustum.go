@@ -22,3 +22,17 @@ func (camera *Camera) UpdateFrustum() {
 	camera.Frustum.Top = int(camera.Y) + margin + int(halfHeight)
 	camera.Frustum.Bottom = int(camera.Y) - margin - int(halfHeight)
 }
+
+func (camera *Camera) IsInBounds(x, y int) bool {
+	if x >= camera.Frustum.Left &&
+		x <= camera.Frustum.Right &&
+		y >= camera.Frustum.Bottom &&
+		y <= camera.Frustum.Top {
+		return true
+	}
+	return false
+}
+
+func (camera *Camera) IsInBoundsF(x, y float32) bool {
+	return camera.IsInBounds(int(x), int(y))
+}

@@ -135,6 +135,7 @@ func main() {
 	starmap.Generate(256, 0.04, 8)
 	//without this panics
 
+	Cam.SetCameraZoomPosition(0)
 	var dt, lastFrame float32
 	lastFrame = float32(glfw.GetTime())
 
@@ -159,6 +160,7 @@ func boolToFloat(x bool) float32 {
 }
 
 func Tick(dt float32) {
+	Cam.Tick(dt)
 
 	if spacePressed {
 		ui.PlaceDialogueBox(
@@ -207,17 +209,15 @@ func Tick(dt float32) {
 
 	fps.Tick()
 	catIsScratching = false
-
 }
 
 func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-	// fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
 	baseCtx := win.DefaultRenderContext()
 	camCtx := baseCtx.PushView(Cam.GetView())
-	//fmt.Println(Cam.X, " ", Cam.Y, " ", Cam.Zoom)
+
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam)
 	if worldItem != nil {
@@ -350,6 +350,8 @@ func windowSizeCallback(window *glfw.Window, width, height int) {
 	win.Height = height
 }
 
-func scrollCallback(w *glfw.Window, xpos, ypos float64) {
-	Cam.SetCameraZoomPosition(float32(ypos))
+var yOffset float32 = 0
+
+func scrollCallback(w *glfw.Window, xOff, yOff float64) {
+	Cam.SetCameraZoomPosition(float32(yOff))
 }

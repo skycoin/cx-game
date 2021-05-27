@@ -1,9 +1,20 @@
 package camera
 
 import (
+	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/utility"
+)
+
+type zoomStatus int
+
+var (
+	zooming     bool    = false
+	zoomTarget  float32 = 1
+	zoomCurrent float32
+	zoomPercent float32
+	zoomSpeed   float32 = 1.3
 )
 
 type Camera struct {
@@ -60,14 +71,22 @@ func (camera *Camera) SetCameraPositionTarget(x, y float32) {
 }
 
 //zooms on target
-func (camera *Camera) SetCameraZoomTarget(zoom float32) {
-	camera.SetCameraZoomPosition(zoom)
+func (camera *Camera) SetCameraZoomTarget(zoomOffset float32) {
+	camera.SetCameraZoomPosition(zoomOffset)
 }
 
 //zooms on current position
-func (camera *Camera) SetCameraZoomPosition(zoom float32) {
-	camera.Zoom = utility.Clamp(camera.Zoom+zoom, 1, 3)
-	camera.UpdateFrustum()
+
+func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
+	// camera.Zoom += zoomOffset
+	// camera.Zoom = utility.Clamp(camera.Zoom, 1, 3)
+	// camera.updateProjection()
+	if !zooming {
+		zooming = true
+		zoomCurrent = camera.Zoom
+		zoomTarget = zoomCurrent + zoomOffset
+		zoomTarget = utility.Clamp(zoomTarget, 1, 3)
+	}
 }
 
 func (camera *Camera) DrawLines(
@@ -81,16 +100,30 @@ func (camera Camera) GetTransform() mgl32.Mat4 {
 	return mgl32.Translate3D(camera.X, camera.Y, 0)
 }
 
-func (camera *Camera) IsInBounds(x, y int) bool {
-	if x >= camera.Frustum.Left &&
-		x <= camera.Frustum.Right &&
-		y >= camera.Frustum.Bottom &&
-		y <= camera.Frustum.Top {
-		return true
-	}
-	return false
+func (camera *Camera) updateProjection() {
+	left := -float32(camera.window.Width) / 2 / 32 / camera.Zoom
+	right := float32(camera.window.Width) / 2 / 32 / camera.Zoom
+	bottom := -float32(camera.window.Height) / 2 / 32 / camera.Zoom
+	top := float32(camera.window.Height) / 2 / 32 / camera.Zoom
+	projection := mgl32.Ortho(left, right, bottom, top, -1, 1000)
+
+	gl.UseProgram(camera.window.Program)
+	gl.UniformMatrix4fv(gl.GetUniformLocation(camera.window.Program, gl.Str("projection\x00")), 1, false, &projection[0])
 }
 
-func (camera *Camera) IsInBoundsF(x, y float32) bool {
-	return camera.IsInBounds(int(x), int(y))
+func (camera *Camera) Tick(dt float32) {
+	// if not zooming nothing to do here
+	if !zooming {
+		return
+	}
+	zoomPercent += dt * zoomSpeed
+
+	camera.Zoom = utility.Lerp(zoomCurrent, zoomTarget, zoomPercent)
+	camera.updateProjection()
+
+	// fmt.Println(camera.Zoom, "    ", zoomTarget)
+	if camera.Zoom == zoomTarget {
+		zooming = false
+		zoomPercent = 0
+	}
 }
