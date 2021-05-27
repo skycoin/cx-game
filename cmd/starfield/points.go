@@ -24,7 +24,7 @@ import (
 )
 
 //Press TAB to shuffle stars
-
+// P to pause movement
 func init() {
 	// seed rand so stars will be random each program run
 	rand.Seed(time.Now().UnixNano())
@@ -193,6 +193,8 @@ func main() {
 		if cliConfig.Background == 1 {
 			starmap.Draw()
 		}
+
+		fmt.Println("HI")
 		updateStarField(shader, dt)
 		drawStarField(shader, VAO)
 		glfw.PollEvents()
@@ -287,12 +289,8 @@ func updateStarField(shader *utility.Shader, dt float32) {
 	if pauseAutoMove {
 		return
 	}
-	// intensity = float32(math.Mod((float64(intensity) + 0.003), 1))
-	// shader.SetFloat("intensity", clamp(intensity, 0.2, 0.8))
 
-	// coords := float64(cliConfig.Starfield_Width) / float64(cliConfig.Width) * 5.333
 	for _, star := range stars {
-		// star.X = float32(math.Mod(float64(star.X+(speed*dt)), coords*2))
 
 		star.X += speed * dt * star.Depth
 
@@ -324,10 +322,6 @@ func drawStarField(shader *utility.Shader, vao uint32) {
 	shader.Use()
 
 	for _, star := range stars {
-		// if i != 5 {
-		// 	continue
-		// 	fmt.Printf("%v    %v    %v    %v   %v\n", star.X, star.Y, star.Size, star.SpriteId, star.Depth)
-		// }
 		shader.SetFloat("gradValue", star.GradientValue)
 		shader.SetFloat("intensity", getIntensity(star.Intensity))
 		world := mgl32.Mat4.Mul4(
@@ -611,6 +605,9 @@ func gaussianTheta(x32, y32 float32) float32 {
 	// x0 = 0.5
 	// y0 = 0.5
 	A = float64(starConfig.Gaussian_Constant)
+	if A < 0.6 {
+		A = 0.7
+	}
 	theta = float64(mgl32.DegToRad(float32(starConfig.Gaussian_Angle)))
 	sigmaX = float64(starConfig.Gaussian_Sigma_X)
 	sigmaY = float64(starConfig.Gaussian_Sigma_Y)
@@ -638,8 +635,8 @@ func initReloadConfig() {
 	starConfigReloaded := make(chan struct{})
 	perlinConfigReloaded := make(chan struct{})
 	done := make(chan struct{})
-	utility.CheckAndReload("./cmd/starfield/config/star.yaml", &starConfig, starConfigReloaded)
-	utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", &noiseConfig, perlinConfigReloaded)
+	go utility.CheckAndReload("./cmd/starfield/config/star.yaml", &starConfig, starConfigReloaded)
+	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", &noiseConfig, perlinConfigReloaded)
 	go func() {
 		var isStarConfigFirstLoad, isPerlinConfigFirstLoad bool = true, true
 		for {

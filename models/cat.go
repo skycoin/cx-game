@@ -32,8 +32,12 @@ func NewCat() *Cat {
 }
 
 func (cat *Cat) Draw(cam *camera.Camera) {
+
 	x := cat.Pos.X - cam.X
 	y := cat.Pos.Y - cam.Y
+	if !cam.IsInBoundsF(cat.Pos.X, cat.Pos.Y) {
+		return
+	}
 
 	spriteloader.DrawSpriteQuad(
 		x, y,
