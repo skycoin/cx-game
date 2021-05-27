@@ -283,17 +283,17 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 		1, false, &worldTransform[0],
 	)
 
-	w := float32(Window.Width)
-	h := float32(Window.Height)
-	projectTransform := mgl32.Ortho(
-		0, w,
-		0, h,
-		-1, 1,
-	)
-	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(program, gl.Str("projection\x00")),
-		1, false, &projectTransform[0],
-	)
+	// w := float32(Window.Width)
+	// h := float32(Window.Height)
+	// projectTransform := mgl32.Ortho(
+	// 	0, w,
+	// 	0, h,
+	// 	-1, 1,
+	// )
+	// gl.UniformMatrix4fv(
+	// 	gl.GetUniformLocation(program, gl.Str("projection\x00")),
+	// 	1, false, &projectTransform[0],
+	// )
 
 	gl.BindVertexArray(QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
