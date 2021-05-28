@@ -10,11 +10,14 @@ import (
 type zoomStatus int
 
 var (
-	zooming     bool    = false
+	//variables for smooth zooming over time, flag for zooming,
+	zooming      bool    = false
+	zoomDuration float32 = 0.6 // in seconds
+
+	// variables for interpolation
 	zoomTarget  float32 = 1
 	zoomCurrent float32
 	zoomPercent float32
-	zoomSpeed   float32 = 1.3
 )
 
 type Camera struct {
@@ -78,13 +81,19 @@ func (camera *Camera) SetCameraZoomTarget(zoomOffset float32) {
 //zooms on current position
 
 func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
-	// camera.Zoom += zoomOffset
-	// camera.Zoom = utility.Clamp(camera.Zoom, 1, 3)
-	// camera.updateProjection()
 	if !zooming {
 		zooming = true
 		zoomCurrent = camera.Zoom
-		zoomTarget = zoomCurrent + zoomOffset
+
+		//find better values for better zooming
+		var offset float32
+		if zoomCurrent == 1 || zoomCurrent == 2.25 {
+			offset = 0.75 * zoomOffset
+		} else {
+			offset = 1.25 * zoomOffset
+		}
+
+		zoomTarget = zoomCurrent + offset
 		zoomTarget = utility.Clamp(zoomTarget, 1, 3)
 	}
 }
@@ -116,12 +125,12 @@ func (camera *Camera) Tick(dt float32) {
 	if !zooming {
 		return
 	}
-	zoomPercent += dt * zoomSpeed
+
+	zoomPercent += dt / zoomDuration
 
 	camera.Zoom = utility.Lerp(zoomCurrent, zoomTarget, zoomPercent)
 	camera.updateProjection()
 
-	// fmt.Println(camera.Zoom, "    ", zoomTarget)
 	if camera.Zoom == zoomTarget {
 		zooming = false
 		zoomPercent = 0
