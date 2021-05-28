@@ -84,9 +84,31 @@ func LoadSingleSprite(fname string, name string) int {
 }
 
 //Load sprite into internal sheet
-func LoadSprite(spriteSheetId int, name string, x, y int) {
+func LoadSprite(spriteSheetId int, name string, x, y int) uint32 {
 	sprites = append(sprites, Sprite{spriteSheetId, x, y})
-	spriteIdsByName[name] = len(sprites) - 1
+	spriteId := len(sprites) - 1
+	spriteIdsByName[name] = spriteId
+	return uint32(spriteId)
+}
+
+// convenient for loading multi-tiles,
+// loads a rectangle of sprites from a spritesheet
+func LoadSprites(
+	spritesheetId int, name string,
+	left,top,right,bottom int,
+) []uint32 {
+	spriteIds := make([]uint32,(right-left+1)*(bottom-top+1))
+	spriteIdIdx := 0
+	for x:=left; x<=right; x++ {
+		for y:=top; y<=bottom; y++ {
+			localX := x-left
+			localY := y-bottom
+			name := fmt.Sprintf("%s_%d_%d",name,localX,localY)
+			spriteIds[spriteIdIdx] = LoadSprite(spritesheetId, name, x,y)
+			spriteIdIdx++
+		}
+	}
+	return spriteIds
 }
 
 //Get the id of loaded sprite by its registered name

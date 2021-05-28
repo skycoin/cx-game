@@ -55,7 +55,7 @@ func (planet *Planet) DrawLayer(tiles []Tile, cam *camera.Camera) {
 		y := int32(idx) / planet.Width
 		x := int32(idx) % planet.Width
 
-		if tile.TileType != TileTypeNone && cam.IsInBounds(int(x), int(y)) {
+		if tile.TileType.ShouldRender() && cam.IsInBounds(int(x),int(y)) {
 			spriteloader.DrawSpriteQuad(
 				float32(x)-cam.X, float32(y)-cam.Y,
 				1, 1,
@@ -105,13 +105,91 @@ func (planet *Planet) TryPlaceTile(
 	tileY := int32(math.Round((float64(worldCoords.Y()))))
 	if tileX >= 0 && tileX < planet.Width && tileY >= 0 && tileY < planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
-		switch layer {
-		case BgLayer:
-			planet.Layers.Background[tileIdx] = tile
-		case MidLayer:
-			planet.Layers.Mid[tileIdx] = tile
-		case TopLayer:
-			planet.Layers.Top[tileIdx] = tile
+		planetLayer := planet.GetLayer(layer)
+		if len(planetLayer) == 0 {
+			return
+		}
+		if planetLayer[tileIdx].TileType == TileTypeChild {
+			planet.RemoveParentTile(planetLayer,tileIdx)
+		}
+		planetLayer[tileIdx] = tile
+	}
+}
+
+// note that multi-tiles are assumed to be rectangular
+func (planet *Planet) getMultiTileWidth(layer []Tile, x,y int) int {
+	offsetX := 1
+	for layer[planet.GetTileIndex(x+offsetX,y)].OffsetX == int8(offsetX) {
+		offsetX++
+	}
+	return offsetX
+}
+
+func (planet *Planet) getMultiTileHeight(layer []Tile, x,y int) int {
+	offsetY := 1
+	for layer[planet.GetTileIndex(x,y+offsetY)].OffsetY == int8(offsetY) {
+		offsetY++
+	}
+	return offsetY
+}
+
+func (planet *Planet) RemoveParentTile(layer []Tile, idx int) {
+	tile := layer[idx]
+	parentY := idx / int(planet.Width) - int(tile.OffsetY)
+	parentX := idx % int(planet.Width) - int(tile.OffsetX)
+
+	width := planet.getMultiTileWidth(layer,parentX,parentY)
+	height := planet.getMultiTileHeight(layer,parentX,parentY)
+
+	for y:=parentY; y<parentY+height; y++ {
+		for x:=parentX; x<parentX+width; x++ {
+
+			layer[planet.GetTileIndex(x,y)] = Tile {
+				TileType: TileTypeNone,
+			}
+
+		}
+	}
+
+}
+
+
+func (planet *Planet) GetLayer(layer Layer) []Tile {
+	switch layer {
+		case BgLayer: return planet.Layers.Background;
+		case MidLayer: return planet.Layers.Mid;
+		case TopLayer: return planet.Layers.Top;
+	}
+	return []Tile{}
+}
+
+func (planet *Planet) PlaceMultiTile(
+	left,bottom int, layer Layer, mt MultiTile,
+) {
+	planetLayer := planet.GetLayer(layer)
+
+	// place master tile
+	planetLayer[planet.GetTileIndex(left,bottom)] = Tile {
+		SpriteID: mt.SpriteIDs[0],
+		TileType: mt.TileType,
+		Name: mt.Name,
+		// (0,0) offset indicates master / standalone tile
+		OffsetX: 0, OffsetY: 0,
+	}
+
+	for spriteIdIdx:=1; spriteIdIdx<len(mt.SpriteIDs); spriteIdIdx++ {
+		localY := spriteIdIdx / mt.Width
+		localX := spriteIdIdx % mt.Width
+
+		x := left + localX
+		y := bottom + localY
+		tileIdx := planet.GetTileIndex(x,y)
+
+		planetLayer[tileIdx] = Tile {
+			SpriteID: mt.SpriteIDs[spriteIdIdx],
+			TileType: TileTypeChild,
+			Name:     mt.Name,
+			OffsetX: int8(localX), OffsetY: int8(localY),
 		}
 	}
 }
