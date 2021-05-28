@@ -108,10 +108,11 @@ func initOpenGL() uint32 {
 	out vec2 tCoord;
 	uniform mat4 projection;
 	uniform mat4 world;
+	uniform mat4 view;
 	uniform vec2 texScale;
 	uniform vec2 texOffset;
 	void main() {
-		gl_Position = projection * world * vec4(position, 1.0);
+		gl_Position = projection  *  world * vec4(position, 1.0);
 		tCoord = (texcoord+texOffset) * texScale;
 	}
 	` + "\x00"
@@ -137,7 +138,7 @@ func initOpenGL() uint32 {
 	)
 	gl.Uniform4f(
 		gl.GetUniformLocation(prog, gl.Str("color\x00")),
-		1,1,1,1,
+		1, 1, 1, 1,
 	)
 
 	// line opengl program
