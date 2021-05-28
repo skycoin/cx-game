@@ -1,6 +1,6 @@
 # star size and gaussian options
 
-pixel_size: 55
+pixel_size: 2
 star_separation_enabled: 0 # not working
 gaussian_percentage: 25
 gaussian_angle: -35
