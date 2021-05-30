@@ -111,6 +111,9 @@ func initFontVbo() {
 	gl.EnableVertexAttribArray(0)
 	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
 	gl.EnableVertexAttribArray(1)
+	//unbind
+	gl.BindVertexArray(0)
+
 }
 
 func InitTextRendering() {

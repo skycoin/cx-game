@@ -95,16 +95,16 @@ func LoadSprite(spriteSheetId int, name string, x, y int) uint32 {
 // loads a rectangle of sprites from a spritesheet
 func LoadSprites(
 	spritesheetId int, name string,
-	left,top,right,bottom int,
+	left, top, right, bottom int,
 ) []uint32 {
-	spriteIds := make([]uint32,(right-left+1)*(bottom-top+1))
+	spriteIds := make([]uint32, (right-left+1)*(bottom-top+1))
 	spriteIdIdx := 0
-	for x:=left; x<=right; x++ {
-		for y:=top; y<=bottom; y++ {
-			localX := x-left
-			localY := y-bottom
-			name := fmt.Sprintf("%s_%d_%d",name,localX,localY)
-			spriteIds[spriteIdIdx] = LoadSprite(spritesheetId, name, x,y)
+	for x := left; x <= right; x++ {
+		for y := top; y <= bottom; y++ {
+			localX := x - left
+			localY := y - bottom
+			name := fmt.Sprintf("%s_%d_%d", name, localX, localY)
+			spriteIds[spriteIdIdx] = LoadSprite(spritesheetId, name, x, y)
 			spriteIdIdx++
 		}
 	}
@@ -259,6 +259,8 @@ func MakeQuadVao() uint32 {
 	gl.EnableVertexAttribArray(0)
 	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
 	gl.EnableVertexAttribArray(1)
+	//unbind
+	gl.BindVertexArray(0)
 
 	return vao
 }
@@ -305,17 +307,17 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 		1, false, &worldTransform[0],
 	)
 
-	// w := float32(Window.Width)
-	// h := float32(Window.Height)
-	// projectTransform := mgl32.Ortho(
-	// 	0, w,
-	// 	0, h,
-	// 	-1, 1,
-	// )
-	// gl.UniformMatrix4fv(
-	// 	gl.GetUniformLocation(program, gl.Str("projection\x00")),
-	// 	1, false, &projectTransform[0],
-	// )
+	w := float32(Window.Width)
+	h := float32(Window.Height)
+	projectTransform := mgl32.Ortho(
+		0, w,
+		0, h,
+		-1, 1,
+	)
+	gl.UniformMatrix4fv(
+		gl.GetUniformLocation(program, gl.Str("projection\x00")),
+		1, false, &projectTransform[0],
+	)
 
 	gl.BindVertexArray(QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
