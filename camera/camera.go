@@ -10,14 +10,14 @@ import (
 type zoomStatus int
 
 var (
-	//variables for smooth zooming over time, flag for zooming,
-	zooming      bool    = false
-	zoomDuration float32 = 0.6 // in seconds
+	//variables for smooth zooming over time
+	zooming      bool    = false // flag for to know if zooming is occuring
+	zoomDuration float32 = 0.6   // in seconds
 
 	// variables for interpolation
-	zoomTarget  float32 = 1
-	zoomCurrent float32
-	zoomPercent float32
+	zoomTarget   float32 = 1 // zoom value to end on
+	zoomCurrent  float32     // zoom value to start from
+	zoomProgress float32     // current zoom progress (from 0 to 1)
 )
 
 type Camera struct {
@@ -29,12 +29,13 @@ type Camera struct {
 	Frustum  Frustum
 }
 
+//Initiates Camera Instances given the window
 func NewCamera(window *render.Window) *Camera {
 	cam := Camera{
 		//take X,Y pos as a center to frustrum
 		X:        0,
 		Y:        0,
-		Zoom:     1.0,
+		Zoom:     1,
 		movSpeed: 5,
 		window:   window,
 	}
@@ -42,16 +43,25 @@ func NewCamera(window *render.Window) *Camera {
 	return &cam
 }
 
+//Updates Camera Positions
 func (camera *Camera) MoveCam(x, y float32, dTime float32) {
 	camera.X += x * dTime * camera.movSpeed
 	camera.Y += y * dTime * camera.movSpeed
-	// camera.Zoom += z * dTime * camera.movSpeed
 	camera.UpdateFrustum()
 }
 
-//moves and/or zooms  camera
 func (camera *Camera) GetView() mgl32.Mat4 {
 	return mgl32.Translate3D(-camera.X, -camera.Y, camera.Zoom)
+}
+
+func (camera *Camera) GetProjectionMatrix() mgl32.Mat4 {
+	left := -float32(camera.window.Width) / 2 / 32 / camera.Zoom
+	right := float32(camera.window.Width) / 2 / 32 / camera.Zoom
+	bottom := -float32(camera.window.Height) / 2 / 32 / camera.Zoom
+	top := float32(camera.window.Height) / 2 / 32 / camera.Zoom
+	projection := mgl32.Ortho(left, right, bottom, top, -1, 1000)
+
+	return projection
 }
 
 func (camera *Camera) SetCameraCenter() {
@@ -87,14 +97,15 @@ func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
 
 		//find better values for better zooming
 		var offset float32
-		if zoomCurrent == 1 || zoomCurrent == 2.25 {
-			offset = 0.75 * zoomOffset
-		} else {
-			offset = 1.25 * zoomOffset
-		}
+		// if zoomCurrent == 1 || zoomCurrent == 2.25 {
+		// 	offset = 0.75 * zoomOffset
+		// } else {
+		// 	offset = 1.25 * zoomOffset
+		// }
+		offset = 0.5 * zoomOffset
 
 		zoomTarget = zoomCurrent + offset
-		zoomTarget = utility.Clamp(zoomTarget, 1, 3)
+		zoomTarget = utility.Clamp(zoomTarget, 0.5, 3)
 	}
 }
 
@@ -110,12 +121,7 @@ func (camera Camera) GetTransform() mgl32.Mat4 {
 }
 
 func (camera *Camera) updateProjection() {
-	left := -float32(camera.window.Width) / 2 / 32 / camera.Zoom
-	right := float32(camera.window.Width) / 2 / 32 / camera.Zoom
-	bottom := -float32(camera.window.Height) / 2 / 32 / camera.Zoom
-	top := float32(camera.window.Height) / 2 / 32 / camera.Zoom
-	projection := mgl32.Ortho(left, right, bottom, top, -1, 1000)
-
+	projection := camera.GetProjectionMatrix()
 	gl.UseProgram(camera.window.Program)
 	gl.UniformMatrix4fv(gl.GetUniformLocation(camera.window.Program, gl.Str("projection\x00")), 1, false, &projection[0])
 }
@@ -126,13 +132,13 @@ func (camera *Camera) Tick(dt float32) {
 		return
 	}
 
-	zoomPercent += dt / zoomDuration
+	zoomProgress += dt / zoomDuration
 
-	camera.Zoom = utility.Lerp(zoomCurrent, zoomTarget, zoomPercent)
+	camera.Zoom = utility.Lerp(zoomCurrent, zoomTarget, zoomProgress)
 	camera.updateProjection()
 
 	if camera.Zoom == zoomTarget {
 		zooming = false
-		zoomPercent = 0
+		zoomProgress = 0
 	}
 }

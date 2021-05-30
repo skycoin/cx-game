@@ -190,10 +190,10 @@ func DrawStringLeftAligned(
 					mgl32.DegToRad(45), aspect, 0.1, 100.0,
 				)
 			*/
-			// gl.UniformMatrix4fv(
-			// 	gl.GetUniformLocation(program, gl.Str("projection\x00")),
-			// 	1, false, &ctx.Projection[0],
-			// )
+			gl.UniformMatrix4fv(
+				gl.GetUniformLocation(program, gl.Str("projection\x00")),
+				1, false, &ctx.Projection[0],
+			)
 			gl.BindVertexArray(vao)
 			glStart := 6 * charData.index
 			gl.DrawArrays(gl.TRIANGLES, int32(glStart), 6)

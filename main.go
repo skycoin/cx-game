@@ -28,13 +28,11 @@ func init() {
 }
 
 const (
-	width  = 800
-	height = 480
+	WINDOW_WIDTH  = 800
+	WINDOW_HEIGHT = 480
 )
 
 var (
-	dt, lastFrame float32
-
 	Cam *camera.Camera
 	win render.Window
 	cat *models.Cat
@@ -53,7 +51,8 @@ var (
 	spacePressed   bool
 	mouseX, mouseY float64
 
-	isFreeCam              = false
+	isFreeCam = false
+	//unused
 	isTileSelectorVisible  = false
 	isInventoryGridVisible = false
 	tilePaletteSelector    ui.TilePaletteSelector
@@ -65,40 +64,20 @@ var (
 )
 
 func main() {
-
-	/*
-		var SS cv.SpriteSet
-		SS.LoadFile("./assets/sprite.png", 250, false)
-		SS.ProcessContours()
-		SS.DrawSprite()
-	*/
-
-	win = render.NewWindow(width, height, true)
+	win = render.NewWindow(WINDOW_WIDTH, WINDOW_HEIGHT, true)
 	defer glfw.Terminate()
-	spriteloader.InitSpriteloader(&win)
-	spriteloader.DEBUG = false
 
-	item.InitWorldItem()
-	ui.InitTextRendering()
-	enemies.InitBasicEnemies()
-
-	cat = models.NewCat()
-	fps = models.NewFps(false)
-
+	Init()
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
 	window.SetCursorPosCallback(cursorPosCallback)
 	window.SetMouseButtonCallback(mouseButtonCallback)
 	window.SetScrollCallback(scrollCallback)
-
 	program := win.Program
-	Cam = camera.NewCamera(&win)
-	CurrentPlanet = world.NewDevPlanet()
 
 	inventoryId = item.NewInventory(10, 8)
 	debugItemType :=
 		item.NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
-
 	inventory := item.GetInventoryById(inventoryId)
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
 		item.InventorySlot{uint32(debugItemType), 5}
@@ -108,14 +87,14 @@ func main() {
 	tilePaletteSelector = ui.
 		MakeTilePaleteSelector(worldTiles)
 
+	//init cam and cat positions
 	spawnX := int(20)
 	Cam.X = float32(spawnX)
 	Cam.Y = 5
 	Cam.SetCameraPosition(Cam.X, Cam.Y)
-	// Cam.Zoom = -10
+	Cam.SetCameraZoomPosition(0)
 	cat.Pos.X = float32(spawnX)
 	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
-
 	enemies.SpawnBasicEnemy(cat.Pos.X+6, cat.Pos.Y)
 	enemies.SpawnBasicEnemy(cat.Pos.X-6, cat.Pos.Y)
 
@@ -123,19 +102,6 @@ func main() {
 	worldItem.Pos.X = cat.Pos.X - 3
 	worldItem.Pos.Y = cat.Pos.Y + 2
 
-	window.SetKeyCallback(keyCallBack)
-	window.SetCursorPosCallback(cursorPosCallback)
-	window.SetMouseButtonCallback(mouseButtonCallback)
-	window.SetSizeCallback(windowSizeCallback)
-	defer glfw.Terminate()
-	// VAO := makeVao()
-	//gl.GenTextures(1, &tex)
-
-	starmap.Init(&win)
-	starmap.Generate(256, 0.04, 8)
-	//without this panics
-
-	Cam.SetCameraZoomPosition(0)
 	var dt, lastFrame float32
 	lastFrame = float32(glfw.GetTime())
 
@@ -145,30 +111,36 @@ func main() {
 		lastFrame = currTime
 
 		Tick(dt)
-
 		Draw(window, program, win.VAO)
-
 	}
 }
 
-func boolToFloat(x bool) float32 {
-	if x {
-		return 1
-	} else {
-		return 0
-	}
+func Init() {
+	spriteloader.InitSpriteloader(&win)
+	spriteloader.DEBUG = false
+	item.InitWorldItem()
+	ui.InitTextRendering()
+	enemies.InitBasicEnemies()
+
+	cat = models.NewCat()
+	fps = models.NewFps(false)
+	Cam = camera.NewCamera(&win)
+	CurrentPlanet = world.NewDevPlanet()
+
+	starmap.Init(&win)
+	starmap.Generate(256, 0.04, 8)
 }
 
 func Tick(dt float32) {
 	Cam.Tick(dt)
-
+	fps.Tick()
 	if spacePressed {
 		ui.PlaceDialogueBox(
 			"*jump*", ui.AlignRight, 1,
 			mgl32.Translate3D(
 				cat.Pos.X,
 				cat.Pos.Y,
-				-spriteloader.SpriteRenderDistance,
+				0,
 			),
 		)
 	}
@@ -178,7 +150,7 @@ func Tick(dt float32) {
 			mgl32.Translate3D(
 				cat.Pos.X,
 				cat.Pos.Y,
-				-spriteloader.SpriteRenderDistance,
+				0,
 			),
 		)
 	}
@@ -192,9 +164,6 @@ func Tick(dt float32) {
 			worldItem = nil
 		}
 	}
-
-	enemies.TickBasicEnemies(CurrentPlanet, dt, cat, catIsScratching)
-
 	if isFreeCam {
 		Cam.MoveCam(
 			boolToFloat(rightPressed)-boolToFloat(leftPressed),
@@ -205,9 +174,9 @@ func Tick(dt float32) {
 	} else {
 		cat.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
 	}
-	spacePressed = false
+	enemies.TickBasicEnemies(CurrentPlanet, dt, cat, catIsScratching)
 
-	fps.Tick()
+	spacePressed = false
 	catIsScratching = false
 }
 
@@ -216,6 +185,8 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	baseCtx := win.DefaultRenderContext()
+	baseCtx.Projection = Cam.GetProjectionMatrix()
+	//
 	camCtx := baseCtx.PushView(Cam.GetView())
 
 	starmap.Draw()
@@ -354,4 +325,12 @@ var yOffset float32 = 0
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {
 	Cam.SetCameraZoomPosition(float32(yOff))
+}
+
+func boolToFloat(x bool) float32 {
+	if x {
+		return 1
+	} else {
+		return 0
+	}
 }
