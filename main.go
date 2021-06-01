@@ -56,7 +56,6 @@ var (
 	isTileSelectorVisible  = false
 	isInventoryGridVisible = false
 	tilePaletteSelector    ui.TilePaletteSelector
-	cyclingPalleteSelector int = -1
 
 	worldItem *item.WorldItem
 
@@ -73,6 +72,7 @@ func main() {
 	window.SetCursorPosCallback(cursorPosCallback)
 	window.SetMouseButtonCallback(mouseButtonCallback)
 	window.SetScrollCallback(scrollCallback)
+	window.SetSizeCallback(windowSizeCallback)
 	program := win.Program
 
 	inventoryId = item.NewInventory(10, 8)
@@ -85,7 +85,7 @@ func main() {
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 	tilePaletteSelector = ui.
-		MakeTilePaleteSelector(worldTiles)
+		NewDevTilePaleteSelector()
 
 	//init cam and cat positions
 	spawnX := int(20)
@@ -181,6 +181,7 @@ func Tick(dt float32) {
 }
 
 func Draw(window *glfw.Window, program uint32, VAO uint32) {
+	win.UpdateProjectionMatrix()
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -214,6 +215,9 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	}
 
 	ui.DrawDialogueBoxes(camCtx)
+	// FIXME: draw dialogue boxes uses alternate projection matrix;
+	// restore original projection matrix
+	win.UpdateProjectionMatrix()
 	inventory := item.GetInventoryById(inventoryId)
 	if isInventoryGridVisible {
 		inventory.DrawGrid(baseCtx)
@@ -256,13 +260,7 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 			isFreeCam = !isFreeCam
 		}
 		if k == glfw.KeyF3 {
-			cyclingPalleteSelector++
-			if cyclingPalleteSelector == 0 {
-				tilePaletteSelector.Toggle()
-			} else if cyclingPalleteSelector > 2 {
-				cyclingPalleteSelector = -1
-				tilePaletteSelector.Toggle()
-			}
+			tilePaletteSelector.CycleLayer()
 		}
 		if k == glfw.KeyI {
 			isInventoryGridVisible = !isInventoryGridVisible
@@ -301,12 +299,21 @@ func mouseButtonCallback(
 
 	// only try to place a tile if we didn't select a palete with this click
 	if !didSelectPaleteTile {
-		CurrentPlanet.TryPlaceTile(
-			screenX, screenY,
-			world.Layer(cyclingPalleteSelector),
-			tilePaletteSelector.GetSelectedTile(),
-			Cam,
-		)
+		if (tilePaletteSelector.IsMultiTileSelected()) {
+			CurrentPlanet.TryPlaceMultiTile(
+				screenX, screenY,
+				world.Layer(tilePaletteSelector.LayerIndex),
+				tilePaletteSelector.GetSelectedMultiTile(),
+				Cam,
+			)
+		} else {
+			CurrentPlanet.TryPlaceTile(
+				screenX, screenY,
+				world.Layer(tilePaletteSelector.LayerIndex),
+				tilePaletteSelector.GetSelectedTile(),
+				Cam,
+			)
+		}
 	}
 }
 
