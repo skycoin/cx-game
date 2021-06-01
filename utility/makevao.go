@@ -1,5 +1,6 @@
 package utility
-// Helper vertex array object creator 
+
+// Helper vertex array object creator
 import "github.com/go-gl/gl/v4.1-core/gl"
 
 var planevertices = []float32{
@@ -30,6 +31,8 @@ func MakePlaneVao() uint32 {
 	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(3*4))
 	gl.EnableVertexAttribArray(1)
 
+	gl.BindVertexArray(0)
+
 	return vao
 }
 
@@ -47,6 +50,8 @@ func MakePlaneVaoCustom(vertices []float32) uint32 {
 
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
 	gl.EnableVertexAttribArray(0)
+
+	gl.BindVertexArray(0)
 
 	return vao
 }

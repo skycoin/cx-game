@@ -20,16 +20,24 @@ type Window struct {
 }
 
 func NewWindow(width, height int, resizable bool) Window {
-	window := initGlfw(width, height, resizable)
+	glfwWindow := initGlfw(width, height, resizable)
 	program := initOpenGL()
-	return Window{
-		Height:    height,
+
+	//temporary, to set projection matrix
+
+	window := Window{
 		Width:     width,
+		Height:    height,
 		Resizable: resizable,
-		Window:    window,
+		Window:    glfwWindow,
 		Program:   program,
 		VAO:       makeVao(),
 	}
+
+	projectionMatrix := window.GetProjectionMatrix()
+	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectionMatrix[0])
+
+	return window
 }
 
 var (
@@ -58,6 +66,9 @@ func makeVao() uint32 {
 	gl.EnableVertexAttribArray(0)
 	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
 	gl.EnableVertexAttribArray(1)
+
+	//unbind
+	gl.BindVertexArray(0)
 
 	return vao
 }

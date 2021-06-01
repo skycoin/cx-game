@@ -111,6 +111,9 @@ func initFontVbo() {
 	gl.EnableVertexAttribArray(0)
 	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
 	gl.EnableVertexAttribArray(1)
+	//unbind
+	gl.BindVertexArray(0)
+
 }
 
 func InitTextRendering() {
@@ -187,10 +190,10 @@ func DrawStringLeftAligned(
 					mgl32.DegToRad(45), aspect, 0.1, 100.0,
 				)
 			*/
-			// gl.UniformMatrix4fv(
-			// 	gl.GetUniformLocation(program, gl.Str("projection\x00")),
-			// 	1, false, &ctx.Projection[0],
-			// )
+			gl.UniformMatrix4fv(
+				gl.GetUniformLocation(program, gl.Str("projection\x00")),
+				1, false, &ctx.Projection[0],
+			)
 			gl.BindVertexArray(vao)
 			glStart := 6 * charData.index
 			gl.DrawArrays(gl.TRIANGLES, int32(glStart), 6)
