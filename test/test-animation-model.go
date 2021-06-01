@@ -8,7 +8,6 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/starmap"
 	"github.com/skycoin/cx-game/ui"
 )
@@ -55,8 +54,7 @@ func main() {
 	}
 	defer glfw.Terminate()
 
-	win := render.NewWindow(800, 600, true)
-	spriteloader.InitSpriteloader(&win)
+	win := render.NewWindow(600, 400, true)
 	window := win.Window
 	starmap.Init(&win)
 	starmap.Generate(256, 0.04, 8)

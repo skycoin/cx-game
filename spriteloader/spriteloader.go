@@ -84,9 +84,31 @@ func LoadSingleSprite(fname string, name string) int {
 }
 
 //Load sprite into internal sheet
-func LoadSprite(spriteSheetId int, name string, x, y int) {
+func LoadSprite(spriteSheetId int, name string, x, y int) uint32 {
 	sprites = append(sprites, Sprite{spriteSheetId, x, y})
-	spriteIdsByName[name] = len(sprites) - 1
+	spriteId := len(sprites) - 1
+	spriteIdsByName[name] = spriteId
+	return uint32(spriteId)
+}
+
+// convenient for loading multi-tiles,
+// loads a rectangle of sprites from a spritesheet
+func LoadSprites(
+	spritesheetId int, name string,
+	left, top, right, bottom int,
+) []uint32 {
+	spriteIds := make([]uint32, (right-left+1)*(bottom-top+1))
+	spriteIdIdx := 0
+	for x := left; x <= right; x++ {
+		for y := top; y <= bottom; y++ {
+			localX := x - left
+			localY := y - bottom
+			name := fmt.Sprintf("%s_%d_%d", name, localX, localY)
+			spriteIds[spriteIdIdx] = LoadSprite(spritesheetId, name, x, y)
+			spriteIdIdx++
+		}
+	}
+	return spriteIds
 }
 
 //Get the id of loaded sprite by its registered name
@@ -110,10 +132,9 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	DrawSpriteQuadMatrix(worldTransform, spriteId)
 }
 
-
 func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId int) {
-	DrawSpriteQuadContext( render.Context {
-		World: worldTransform,
+	DrawSpriteQuadContext(render.Context{
+		World:      worldTransform,
 		Projection: Window.DefaultRenderContext().Projection,
 	}, spriteId)
 }
@@ -156,10 +177,10 @@ func DrawSpriteQuadContext(ctx render.Context, spriteId int) {
 		1, false, &ctx.World[0],
 	)
 
-	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
-		1, false, &ctx.Projection[0],
-	)
+	// gl.UniformMatrix4fv(
+	// 	gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
+	// 	1, false, &ctx.Projection[0],
+	// )
 
 	gl.BindVertexArray(QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
@@ -187,8 +208,8 @@ func MakeTexture(img *image.RGBA) uint32 {
 	gl.Enable(gl.TEXTURE_2D)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-	gl.Enable(gl.DEPTH_TEST)
-	gl.DepthFunc(gl.LESS)
+	// gl.Enable(gl.DEPTH_TEST)
+	// gl.DepthFunc(gl.LESS)
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, tex)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
@@ -238,6 +259,8 @@ func MakeQuadVao() uint32 {
 	gl.EnableVertexAttribArray(0)
 	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 5*4, gl.PtrOffset(4*3))
 	gl.EnableVertexAttribArray(1)
+	//unbind
+	gl.BindVertexArray(0)
 
 	return vao
 }
@@ -276,7 +299,7 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 	)
 
 	worldTransform := mgl32.Mat4.Mul4(
-		mgl32.Translate3D(float32(xpos), float32(ypos), -10),
+		mgl32.Translate3D(float32(xpos), float32(ypos), 0),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
 	)
 	gl.UniformMatrix4fv(
@@ -287,9 +310,9 @@ func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, pro
 	w := float32(Window.Width)
 	h := float32(Window.Height)
 	projectTransform := mgl32.Ortho(
-		-w/2, w/2,
-		-h/2, h/2,
-		-1, 1000,
+		0, w,
+		0, h,
+		-1, 1,
 	)
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(program, gl.Str("projection\x00")),

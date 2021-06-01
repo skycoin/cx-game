@@ -23,6 +23,8 @@ import (
 
 //Press TAB to shuffle stars
 
+// A/D for moving
+
 func init() {
 	// seed rand so stars will be random each program run
 	rand.Seed(time.Now().UnixNano())
@@ -58,6 +60,7 @@ type starSettings struct {
 	Gaussian_Sigma_X        float32
 	Gaussian_Sigma_Y        float32
 	Gaussian_Constant       float32
+	Intensity_Period        int
 }
 
 //via cli set bg, star_amount, window width and height
@@ -79,6 +82,7 @@ type Star struct {
 	GradientId    int
 	Depth         float32
 	IsGaussian    bool
+	Intensity     float32
 }
 
 var (
@@ -128,30 +132,39 @@ var (
 	pauseAutoMove bool
 
 	//variable for star move speed
-	speed float32 = 0.25
+	speed        float32 = 25
+	rightPressed bool
+	leftPressed  bool
 )
 
 func main() {
 	//parse command line arguments and flags
 	initArgs()
-
 	//start goroutines to check reloaded files and update 	configurations
 	initReloadConfig()
+
 	// initialize both glfw and gl libraries, setting up the window and shader program
-	win := render.NewWindow(cliConfig.Width, cliConfig.Height, true)
+	window := render.NewWindow(cliConfig.Width, cliConfig.Height, true)
 	defer glfw.Terminate()
-	window := win.Window
-	window.SetKeyCallback(keyCallback)
+	glfwWindow := window.Window
+	glfwWindow.SetKeyCallback(keyCallback)
 	shader := utility.NewShader("./cmd/starfield/shaders/main/vertex.glsl", "./cmd/starfield/shaders/main/fragment.glsl")
 	shader.Use()
+
+	spriteloader.InitSpriteloader(&window)
+	spriteloader.DEBUG = false
+
+	//ENABLE BLENDING
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	// ortho := mgl32.Ortho2D(0, float32(cliConfig.Width), 0, float32(cliConfig.Height))
 	// shader.SetMat4("ortho", &ortho)
 	//init  stars
-	initStarField(&win)
+	initStarField()
 
 	if cliConfig.Background == 1 {
 		starmap.SettingsFile = "./cmd/starfield/config/starmap.yaml"
-		starmap.Init(&win)
+		starmap.Init(&window)
 		starmap.Generate(256, 0.08, 3)
 	}
 
@@ -162,13 +175,15 @@ func main() {
 		gl.BindTexture(gl.TEXTURE_1D, tex)
 	}
 
-	shader.Use()
-
 	lastFrame := float32(glfw.GetTime())
 	dt := float32(0)
 
+	//set up its own projection
+	ortho := mgl32.Ortho2D(0, float32(window.Width), 0, float32(window.Height))
+	shader.SetMat4("projection", &ortho)
+
 	//main loop
-	for !window.ShouldClose() {
+	for !glfwWindow.ShouldClose() {
 		//deltatime
 		currFrame := float32(glfw.GetTime())
 		dt = currFrame - lastFrame
@@ -181,25 +196,24 @@ func main() {
 		if cliConfig.Background == 1 {
 			starmap.Draw()
 		}
+
 		updateStarField(dt)
 		drawStarField(shader)
 
 		glfw.PollEvents()
-		window.SwapBuffers()
+		glfwWindow.SwapBuffers()
 	}
 }
 
 //create random stars
-func initStarField(win *render.Window) {
+func initStarField() {
 
-	//spriteloader init
 	perlinMap = genPerlin(cliConfig.Starfield_Width, cliConfig.Starfield_Height, noiseConfig)
 
-	spriteloader.InitSpriteloader(win)
-	// file1 := "./assets/starfield/stars/planets.png"
-	// file2 := file1
-	file1 := "cmd/starfield/stars_1.png"
-	file2 := "cmd/starfield/stars_2.png"
+	file1 := "./assets/starfield/stars/planets.png"
+	file2 := file1
+	// file1 := "cmd/starfield/stars_1.png"
+	// file2 := "cmd/starfield/stars_2.png"
 	star1SpriteSheetId := spriteloader.LoadSpriteSheet(file1)
 	star2SpriteSheetId := spriteloader.LoadSpriteSheet(file2)
 
@@ -222,16 +236,17 @@ func initStarField(win *render.Window) {
 		spriteName := fmt.Sprintf("stars-%d-%d", rand.Intn(2)+1, rand.Intn(16))
 		star := &Star{
 			//bad generation position, TODO
-			SpriteId: spriteloader.GetSpriteIdByName(spriteName),
+			SpriteId:  spriteloader.GetSpriteIdByName(spriteName),
+			Intensity: rand.Float32(),
+			Depth:     rand.Float32(),
+			Size:      float32(starConfig.Pixel_Size) * getRandomSize(),
 		}
 
-		star.Size = float32(starConfig.Pixel_Size) / 32 * (1 + 3*rand.Float32()/20)
-		star.Depth = rand.Float32()
 		if i < gaussianAmount {
-			star.IsGaussian = true
 			star.X, star.Y = getStarPosition(true)
 			star.GradientValue = 0.9
 			star.Depth = gaussianDepth
+			star.IsGaussian = true
 		} else {
 			star.X, star.Y = getStarPosition(false)
 			star.GradientValue = rand.Float32()
@@ -240,37 +255,31 @@ func initStarField(win *render.Window) {
 
 		stars = append(stars, star)
 	}
+
 }
 
 //regenerates positions of stars
 func regenStarField() {
 	gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
-	for i, star := range stars {
-		if i < gaussianAmount {
-			star.X, star.Y = getStarPosition(true)
-			star.IsGaussian = true
-		} else {
-			star.X, star.Y = getStarPosition(false)
-			star.IsGaussian = false
-		}
-		star.Size = float32(starConfig.Pixel_Size) / 32 * (3 * rand.Float32() / 2)
+	for _, star := range stars {
+		star.X, star.Y = getStarPosition(star.IsGaussian)
+		star.Size = float32(starConfig.Pixel_Size) * getRandomSize()
 	}
 }
 
-var frameCounter int
-
 //updates position of each star at each game iteration
 func updateStarField(dt float32) {
-	if pauseAutoMove {
-		return
-	}
 
-	coords := float64(cliConfig.Starfield_Width) / float64(cliConfig.Width) * 5.333
 	for _, star := range stars {
 		// star.X = float32(math.Mod(float64(star.X+(speed*dt)), coords*2))
-		star.X += speed * dt * star.Depth
-		if star.X > float32(coords) {
-			star.X = -float32(coords)
+		if rightPressed {
+			star.X += speed * dt * star.Depth
+		}
+		if leftPressed {
+			star.X -= speed * dt * star.Depth
+		}
+		if star.X > float32(cliConfig.Starfield_Width) {
+			star.X = 0
 		}
 		// star.X = star.X + dt
 	}
@@ -286,10 +295,190 @@ func drawStarField(shader *utility.Shader) {
 			shader.SetInt("texture_1d", 4)
 			shader.SetFloat("gradValue", star.GradientValue)
 		}
+		shader.SetFloat("intensity", getIntensity(star.Intensity))
 		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, star.Size, star.Size, star.SpriteId, shader.ID)
 	}
 
 }
+
+func getIntensity(intensity float32) float32 {
+
+	// t := time.Now()
+
+	// return myclamp(float32(math.Sin(float64(time.Now().UnixNano()))))
+	ttime := float64(time.Now().UnixNano() / (10000000 * int64(starConfig.Intensity_Period)))
+
+	rad := math.Pi / 180 * ttime
+
+	sinusoid := math.Sin(rad * float64(intensity))
+
+	result := float32(sinusoid)*0.55 + 0.45
+
+	return float32(result)
+}
+func getRandomSize() float32 {
+	return (1 + 3*rand.Float32()/2)
+}
+
+//function to shuffle stars on the background
+func shuffle() {
+	regenStarField()
+}
+
+//get gradient file given id from 1-11 (see assets folder)
+func getGradient(gradientNumber uint) uint32 {
+	var tex uint32
+
+	gl.GenTextures(1, &tex)
+	gl.BindTexture(gl.TEXTURE_1D, tex)
+
+	result, img, _ := spriteloader.LoadPng(filepath.Join("./assets/starfield/gradients", fmt.Sprintf("heightmap_gradient_%02d.png", gradientNumber)))
+	if result != 0 {
+		log.Panic("Could not load picture!")
+	}
+
+	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+
+	gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGBA, int32(img.Rect.Size().X), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+
+	return tex
+}
+
+// Get Random Position for a star
+//  isGaussian - boolean to specify is star should be in a gaussian band
+func getStarPosition(isGaussian bool) (float32, float32) {
+
+	var xPos, yPos float32
+	if isGaussian {
+		for {
+			xPos, yPos = rand.Float32(), rand.Float32()
+			z := gaussianTheta(xPos, yPos)
+			//randomness
+			if 1-z > 0.5*rand.Float32() {
+				continue
+			}
+			xPos, yPos = convertToWorldCoords(xPos, yPos, 0, 1, 0, 1)
+			break
+		}
+	} else {
+
+		for {
+			x := rand.Intn(cliConfig.Starfield_Width)
+			y := rand.Intn(cliConfig.Starfield_Height)
+			perlinProb := perlinMap[x][y]
+			deleteChance := (1 - perlinProb)
+			if deleteChance > 0.5 {
+				continue
+			}
+			// xPos, yPos = convertIntToSpriteCoords(x, y, 0, cliConfig.Width, 0, cliConfig.Height)
+			// fmt.Println(x, "         ", y)
+			xPos, yPos = float32(x), float32(y)
+			break
+		}
+	}
+
+	if starConfig.Star_Separation_Enabled > 0 {
+		if starPositionInConflict(xPos, yPos) {
+			return getStarPosition(isGaussian)
+		}
+	}
+	return xPos, yPos
+}
+
+func starPositionInConflict(xPos, yPos float32) bool {
+
+	// mindistance := 10.3
+
+	// for i, star := range stars {
+	// 	numtries[i] = numtries[i] + 1
+	// 	if numtries[i] > 50 {
+	// 		fmt.Println("TODO")
+	// 		return false
+	// 	}
+	// 	if math.Abs(float64(star.X-xPos)) < mindistance ||
+	// 		math.Abs(float64(star.Y-yPos)) < mindistance {
+	// 		return true
+	// 	}
+	// }
+	return false
+
+}
+
+func convertToWorldCoords(xPos, yPos, minX, maxX, minY, maxY float32) (float32, float32) {
+	diffX := maxX - minX
+	diffY := maxY - minY
+	b := (xPos - minX) / diffX
+	c := (yPos - minY) / diffY
+	x := float32(cliConfig.Starfield_Width) * b
+	y := float32(cliConfig.Starfield_Height) * c
+	return x, y
+}
+
+// Generate perlin 2d slice for each pixel on the window.
+//  width - width of the window
+//  height - height of the window
+//  noiseConfig - config struct with parameters
+func genPerlin(width, height int, noiseConfig *noiseSettings) [][]float32 {
+	grid := make([][]float32, 0)
+	myPerlin := perlin.NewPerlin2D(
+		noiseConfig.Seed,
+		noiseConfig.X,
+		noiseConfig.Xs,
+		noiseConfig.Gradmax,
+	)
+	max := float32(math.Sqrt2 / (1.9 * noiseConfig.Contrast))
+	min := float32(-math.Sqrt2 / (1.9 * noiseConfig.Contrast))
+	for y := 0; y < width; y++ {
+		grid = append(grid, []float32{})
+		for x := 0; x < height; x++ {
+			result := myPerlin.Noise(
+				float32(x)*noiseConfig.Scale,
+				float32(y)*noiseConfig.Scale,
+				noiseConfig.Persistance,
+				noiseConfig.Lacunarity,
+				noiseConfig.Octaves,
+			)
+			result = utility.Clamp(result-min/(max-min), 0.0, 1.0)
+			grid[y] = append(grid[y], result)
+		}
+
+	}
+
+	return grid
+}
+
+// Gaussian bivariate distribution function
+//  x32 - X position (float32)
+//  y32 - Y position (float32)
+func gaussianTheta(x32, y32 float32) float32 {
+	x, y := float64(x32), float64(y32)
+	var sigmaX, sigmaY, x0, y0, A, theta float64
+	// var A float64 = 1.9
+	// var theta float64
+	// sigmaX = 0.1
+	// sigmaY = 0.3
+	// x0 = 0.5
+	// y0 = 0.5
+	A = float64(starConfig.Gaussian_Constant)
+	if A < 0.6 {
+		A = 0.6
+	}
+	theta = float64(utility.DegToRad(float32(starConfig.Gaussian_Angle)))
+	sigmaX = float64(starConfig.Gaussian_Sigma_X)
+	sigmaY = float64(starConfig.Gaussian_Sigma_Y)
+	x0 = float64(starConfig.Gaussian_Offset_X)
+	y0 = float64(starConfig.Gaussian_Offset_Y)
+
+	a := math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaY, 2))
+	b := -math.Sin(2*theta)/(4*math.Pow(sigmaX, 2)) + math.Sin(2*theta)/(4*math.Pow(sigmaY, 2))
+	c := math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaY, 2))
+	result := A * math.Exp(-(a*math.Pow(x-x0, 2) + 2*b*(x-x0)*(y-y0) + c*math.Pow(y-y0, 2)))
+	return float32(result)
+}
+
+// Convenient function to convert angle in degrees to radians
+//  angle - angle in degrees
 
 //callback function to register key events
 func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glfw.ModifierKey) {
@@ -305,13 +494,26 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glf
 			}
 		case glfw.KeyP:
 			pauseAutoMove = !pauseAutoMove
+		case glfw.KeyA:
+			leftPressed = true
+		case glfw.KeyLeft:
+			leftPressed = true
+		case glfw.KeyD:
+			rightPressed = true
+		case glfw.KeyRight:
+			rightPressed = true
 		}
-	} else {
+
+	} else if a == glfw.Release {
 		switch k {
-		case glfw.KeyKPAdd:
-			speed += 0.05
-		case glfw.KeyKPSubtract:
-			speed -= 0.05
+		case glfw.KeyA:
+			leftPressed = false
+		case glfw.KeyLeft:
+			leftPressed = false
+		case glfw.KeyD:
+			rightPressed = false
+		case glfw.KeyRight:
+			rightPressed = false
 		}
 	}
 
@@ -378,202 +580,6 @@ func initArgs() {
 	app.Run(os.Args)
 }
 
-//function to shuffle stars on the background
-func shuffle() {
-	regenStarField()
-}
-
-//get gradient file given id from 1-11 (see assets folder)
-func getGradient(gradientNumber uint) uint32 {
-	var tex uint32
-
-	gl.GenTextures(1, &tex)
-	gl.BindTexture(gl.TEXTURE_1D, tex)
-
-	result, img, _ := spriteloader.LoadPng(filepath.Join("./assets/starfield/gradients", fmt.Sprintf("heightmap_gradient_%02d.png", gradientNumber)))
-	if result != 0 {
-		log.Panic("Could not load picture!")
-	}
-
-	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-
-	gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGBA, int32(img.Rect.Size().X), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
-
-	return tex
-}
-
-// Get Random Position for a star
-//  isGaussian - boolean to specify is star should be in a gaussian band
-func getStarPosition(isGaussian bool) (float32, float32) {
-
-	var xPos, yPos float32
-	if isGaussian {
-		for {
-			xPos, yPos = rand.Float32(), rand.Float32()
-			z := gaussianTheta(xPos, yPos)
-			//randomness
-			if 1-z > 0.5*rand.Float32() {
-				continue
-			}
-			xPos, yPos = convertToWorldCoords(xPos, yPos, 0, 1, 0, 1)
-			break
-		}
-	} else {
-
-		for {
-			x := rand.Intn(cliConfig.Width)
-			y := rand.Intn(cliConfig.Height)
-			perlinProb := perlinMap[x][y]
-			deleteChance := (1 - perlinProb)
-			if deleteChance > 0.5 {
-				continue
-			}
-			xPos, yPos = convertIntToSpriteCoords(x, y, 0, cliConfig.Width, 0, cliConfig.Height)
-			break
-		}
-	}
-
-	if starConfig.Star_Separation_Enabled > 0 {
-		if starPositionInConflict(xPos, yPos) {
-			return getStarPosition(isGaussian)
-		}
-	}
-	return xPos, yPos
-}
-
-func starPositionInConflict(xPos, yPos float32) bool {
-	//todo, not working
-
-	// mindistance := 0.3
-
-	// for _, star := range stars {
-	// 	if math.Abs(float64(star.X-xPos)) < mindistance ||
-	// 		math.Abs(float64(star.Y-yPos)) < mindistance {
-	// 		return true
-	// 	}
-	// }
-	// return false
-	return false
-}
-
-//Convert from any coordinates specified min max to screen coordinates
-func convertIntToSpriteCoords(xPos, yPos, minX, maxX, minY, maxY int) (float32, float32) {
-	return convertToWorldCoords(
-		float32(xPos),
-		float32(yPos),
-		float32(minX),
-		float32(maxX),
-		float32(minY),
-		float32(maxY),
-	)
-}
-
-//Convert from any coordinates specified min max to screen coordinates
-//  xPos - X position in original coordinates
-//  yPos - Y position
-//  minX - lower X bound
-//  maxX - upper X bound
-//  minY - lower Y bound
-//  maxY - upper Y bound
-func convertToWorldCoords(xPos, yPos, minX, maxX, minY, maxY float32) (float32, float32) {
-	// for 800/600 aspect
-	// bottom left = -5.4`QQ, -4
-	// top left =  -5.4, 4
-	// top right = 5.4, 4
-	// bottom right = 5.4, -4
-	diffX := maxX - minX
-	diffY := maxY - minY
-	b := (xPos - minX) / diffX
-	c := (yPos - minY) / diffY
-	x := 10.8*b - 5.4
-	y := 8*c - 4
-
-	//multipliers for star
-	xMul := float32(cliConfig.Starfield_Width) / float32(cliConfig.Width)
-	yMul := float32(cliConfig.Starfield_Height) / float32(cliConfig.Height)
-	return x * xMul, y * yMul
-}
-
-// Generate perlin 2d slice for each pixel on the window.
-//  width - width of the window
-//  height - height of the window
-//  noiseConfig - config struct with parameters
-func genPerlin(width, height int, noiseConfig *noiseSettings) [][]float32 {
-	grid := make([][]float32, 0)
-	myPerlin := perlin.NewPerlin2D(
-		noiseConfig.Seed,
-		noiseConfig.X,
-		noiseConfig.Xs,
-		noiseConfig.Gradmax,
-	)
-	max := float32(math.Sqrt2 / (1.9 * noiseConfig.Contrast))
-	min := float32(-math.Sqrt2 / (1.9 * noiseConfig.Contrast))
-	for y := 0; y < width; y++ {
-		grid = append(grid, []float32{})
-		for x := 0; x < height; x++ {
-			result := myPerlin.Noise(
-				float32(x)*noiseConfig.Scale,
-				float32(y)*noiseConfig.Scale,
-				noiseConfig.Persistance,
-				noiseConfig.Lacunarity,
-				noiseConfig.Octaves,
-			)
-			result = clamp(result-min/(max-min), 0.0, 1.0)
-			grid[y] = append(grid[y], result)
-		}
-
-	}
-
-	return grid
-}
-
-// Clamp values to edges
-//  number - value to clamp
-//  min - lower bound
-//  max - upper bound
-func clamp(number, min, max float32) float32 {
-	if number > max {
-		return max
-	}
-	if number < min {
-		return min
-	}
-	return number
-}
-
-// Gaussian bivariate distribution function
-//  x32 - X position (float32)
-//  y32 - Y position (float32)
-func gaussianTheta(x32, y32 float32) float32 {
-	x, y := float64(x32), float64(y32)
-	var sigmaX, sigmaY, x0, y0, A, theta float64
-	// var A float64 = 1.9
-	// var theta float64
-	// sigmaX = 0.1
-	// sigmaY = 0.3
-	// x0 = 0.5
-	// y0 = 0.5
-	A = float64(starConfig.Gaussian_Constant)
-	theta = float64(mgl32.DegToRad(float32(starConfig.Gaussian_Angle)))
-	sigmaX = float64(starConfig.Gaussian_Sigma_X)
-	sigmaY = float64(starConfig.Gaussian_Sigma_Y)
-	x0 = float64(starConfig.Gaussian_Offset_X)
-	y0 = float64(starConfig.Gaussian_Offset_Y)
-
-	a := math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaY, 2))
-	b := -math.Sin(2*theta)/(4*math.Pow(sigmaX, 2)) + math.Sin(2*theta)/(4*math.Pow(sigmaY, 2))
-	c := math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaY, 2))
-	result := A * math.Exp(-(a*math.Pow(x-x0, 2) + 2*b*(x-x0)*(y-y0) + c*math.Pow(y-y0, 2)))
-	return float32(result)
-}
-
-// Convenient function to convert angle in degrees to radians
-//  angle - angle in degrees
-func DegToRad(angle float32) float32 {
-	return math.Pi / 180 * angle
-}
-
 //yaml reload function
 func initReloadConfig() {
 	starConfigReloaded := make(chan struct{})
@@ -593,7 +599,6 @@ func initReloadConfig() {
 				} else {
 					regenStarField()
 				}
-
 			case <-perlinConfigReloaded:
 
 				if isPerlinConfigFirstLoad {
