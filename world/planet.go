@@ -109,10 +109,34 @@ func (planet *Planet) TryPlaceTile(
 		if len(planetLayer) == 0 {
 			return
 		}
-		if planetLayer[tileIdx].TileType == TileTypeChild {
+		if planetLayer[tileIdx].TileType == TileTypeChild ||
+		 	planetLayer[tileIdx].TileType == TileTypeMulti {
 			planet.RemoveParentTile(planetLayer,tileIdx)
 		}
 		planetLayer[tileIdx] = tile
+	}
+}
+
+func (planet *Planet) TryPlaceMultiTile(
+		x,y float32, layer Layer, multiTile MultiTile, cam *camera.Camera,
+) {
+	// click relative to camera
+	camCoords := mgl32.Vec4{x / render.PixelsPerTile, y / render.PixelsPerTile, 0, 1}
+	// click relative to world
+	worldCoords := cam.GetTransform().Mul4x1(camCoords)
+	tileX := int32(math.Round((float64(worldCoords.X()))))
+	tileY := int32(math.Round((float64(worldCoords.Y()))))
+	if tileX >= 0 && tileX < planet.Width && tileY >= 0 && tileY < planet.Width {
+		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
+		planetLayer := planet.GetLayer(layer)
+		if len(planetLayer) == 0 {
+			return
+		}
+		if planetLayer[tileIdx].TileType == TileTypeChild ||
+		    planetLayer[tileIdx].TileType == TileTypeMulti {
+			planet.RemoveParentTile(planetLayer,tileIdx)
+		}
+		planet.PlaceMultiTile(int(tileX),int(tileY),layer,multiTile)
 	}
 }
 
@@ -171,7 +195,7 @@ func (planet *Planet) PlaceMultiTile(
 	// place master tile
 	planetLayer[planet.GetTileIndex(left,bottom)] = Tile {
 		SpriteID: mt.SpriteIDs[0],
-		TileType: mt.TileType,
+		TileType: TileTypeMulti,
 		Name: mt.Name,
 		// (0,0) offset indicates master / standalone tile
 		OffsetX: 0, OffsetY: 0,

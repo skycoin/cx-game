@@ -1,8 +1,7 @@
 package ui
 
 import (
-	"math"
-
+	"log"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/cxmath"
@@ -11,31 +10,73 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
+type layerIndexPair struct {layer, index int}
+
 type TilePaletteSelector struct {
 	// store tiles for (1) displaying selector and (2) placing tiles
-	Tiles             []world.Tile
+	Layers            []PaleteLayer
 	Transform         mgl32.Mat4
 	Width             int
+	Height            int
 	SelectedTileIndex int
-	visible           bool
+	LayerIndex        int
 	bluePixelSpriteId int
 	redPixelSpriteId  int
+	multiTiles        map[layerIndexPair]world.MultiTile
 }
 
-const selectorSize = 2
+type PaleteLayer []world.Tile
 
-func MakeTilePaleteSelector(tiles []world.Tile) TilePaletteSelector {
-	width := math.Ceil(math.Sqrt(float64(len(tiles))))
+func NewPaleteLayers(slots int) []PaleteLayer {
+	layers := make([]PaleteLayer,numLayers)
+	for layer:=0; layer<numLayers; layer++ {
+		layers[layer] = make([]world.Tile,slots)
+		for slot:=0; slot<slots; slot++ {
+			layers[layer][slot] = world.NewEmptyTile()
+		}
+	}
+	return layers
+}
+
+const numLayers = 3
+var layerNames = []string { "Background","Mid","Top" }
+
+func (selector *TilePaletteSelector) CycleLayer() {
+	selector.LayerIndex++
+	if selector.LayerIndex == numLayers {
+		selector.LayerIndex = -1
+	}
+}
+
+func (selector *TilePaletteSelector) Visible() bool {
+	return selector.LayerIndex >= 0
+}
+
+func (selector *TilePaletteSelector) SelectedTile() *world.Tile {
+	return &selector.Tiles()[selector.SelectedTileIndex]
+}
+
+func (selector *TilePaletteSelector) IsMultiTileSelected() bool {
+	if !selector.Visible() { return false }
+	return selector.SelectedTile().TileType == world.TileTypeMulti
+}
+
+const selectorSize = 5
+
+func MakeTilePaleteSelector(width,height int) TilePaletteSelector {
 
 	spriteloader.LoadSingleSprite("./assets/blue_pixel.png", "blue-pixel")
 	spriteloader.LoadSingleSprite("./assets/red_pixel.png", "red-pixel")
 
 	return TilePaletteSelector{
-		Tiles:             tiles,
-		Width:             int(width),
+		Layers:            NewPaleteLayers(width*height),
+		Width:             width,
+		Height:            height,
 		SelectedTileIndex: -1,
+		LayerIndex:        -1,
 		bluePixelSpriteId: spriteloader.GetSpriteIdByName("blue-pixel"),
 		redPixelSpriteId:  spriteloader.GetSpriteIdByName("red-pixel"),
+		multiTiles:        make(map[layerIndexPair]world.MultiTile),
 	}
 }
 
@@ -65,7 +106,7 @@ func (selector *TilePaletteSelector) UpdateTransform(ctx render.Context) {
 func (selector *TilePaletteSelector) Draw(ctx render.Context) {
 	selector.UpdateTransform(ctx)
 
-	if !selector.visible {
+	if !selector.Visible() {
 		return
 	}
 
@@ -83,9 +124,9 @@ func (selector *TilePaletteSelector) Draw(ctx render.Context) {
 			DrawSpriteQuadMatrix(selectedTransform, selector.bluePixelSpriteId)
 	}
 
-	numTiles := float64(len(selector.Tiles))
-	if numTiles > 0 {
-		for idx, tile := range selector.Tiles {
+	tiles := selector.Layers[selector.LayerIndex]
+	if len(tiles) > 0 {
+		for idx, tile := range tiles {
 			tileWorldTransform := selector.worldTransformForTileAtIndex(idx).
 				Mul4(mgl32.Scale3D(1-spacing, 1-spacing, 1))
 
@@ -96,11 +137,18 @@ func (selector *TilePaletteSelector) Draw(ctx render.Context) {
 		}
 	}
 
+	textCtx := selectorCtx.
+		PushLocal(mgl32.Translate3D(0,1,0).Mul4(cxmath.Scale(0.4)))
+	DrawString(
+		layerNames[selector.LayerIndex], mgl32.Vec4{1,1,1,1},
+		AlignLeft, textCtx,
+	)
+
 }
 
 func (selector *TilePaletteSelector) TrySelectTile(x, y float32) bool {
 	// can't select palete tile when palete is invisible
-	if !selector.visible {
+	if !selector.Visible() {
 		return false
 	}
 
@@ -114,23 +162,65 @@ func (selector *TilePaletteSelector) TrySelectTile(x, y float32) bool {
 	tileX := int(tileCoords.X()*float32(selector.Width))
 	tileY := int(tileCoords.Y()*float32(selector.Width))
 
+
 	if tileX >= 0 && tileX < selector.Width && tileY >= 0 && tileY < selector.Width {
-		selector.SelectedTileIndex = tileY*selector.Width + tileX
+		childTile := selector.Tiles()[tileY*selector.Width + tileX]
+		parentX := tileX - int(childTile.OffsetX)
+		parentY := tileY - int(childTile.OffsetY)
+		parentIdx := parentY*selector.Width + parentX
+		selector.SelectedTileIndex = parentIdx
 		return true
 	}
 	return false
 }
 
+func (selector *TilePaletteSelector) Tiles() []world.Tile {
+	return selector.Layers[selector.LayerIndex]
+}
+
 func (selector *TilePaletteSelector) GetSelectedTile() world.Tile {
 	if selector.SelectedTileIndex >= 0 &&
-		selector.SelectedTileIndex < len(selector.Tiles) {
+		selector.SelectedTileIndex < len(selector.Tiles()) {
 
-		return selector.Tiles[selector.SelectedTileIndex]
+		return selector.Tiles()[selector.SelectedTileIndex]
 	} else {
 		return world.Tile{}
 	}
 }
 
-func (selector *TilePaletteSelector) Toggle() {
-	selector.visible = !selector.visible
+func (selector *TilePaletteSelector) AddTile(
+		tile world.Tile,
+		x,y int,
+		layerIndex world.Layer,
+) {
+	idx := y*selector.Width + x
+	layer := selector.Layers[layerIndex]
+	layer[idx] = tile
+}
+
+func (selector *TilePaletteSelector) AddMultiTile(
+		multiTile world.MultiTile,
+		left,top int,
+		layerIndex world.Layer,
+) {
+	for _,tile := range multiTile.Tiles() {
+		selector.AddTile(
+			tile,
+			left+int(tile.OffsetX),
+			top+int(tile.OffsetY),
+			layerIndex,
+		)
+	}
+	tileIdx := top*selector.Width + left
+	pair := layerIndexPair {int(layerIndex), tileIdx}
+	selector.multiTiles[pair] = multiTile
+}
+
+func (selector *TilePaletteSelector) GetSelectedMultiTile() world.MultiTile {
+	pair := layerIndexPair { selector.LayerIndex, selector.SelectedTileIndex }
+	mt,ok := selector.multiTiles[pair]
+	if !ok {
+		log.Fatal("Tile palette selector cannot find selected multi-tile")
+	}
+	return mt
 }
