@@ -49,3 +49,17 @@ func (v1 Vec2) Normalize() Vec2 {
 
 	return v1
 }
+
+func (v1 Vec2i) Mult(n int32) Vec2i{
+	return Vec2i {
+		X: v1.X*n,
+		Y: v1.Y*n,
+	}
+}
+
+func (v1 Vec2i) Add(v2 Vec2i) Vec2i {
+	return Vec2i {
+		X: v1.X + v2.X,
+		Y: v1.Y + v2.Y,
+	}
+}

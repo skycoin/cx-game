@@ -76,11 +76,17 @@ func main() {
 	program := win.Program
 
 	inventoryId = item.NewInventory(10, 8)
+
 	debugItemType :=
-		item.NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
+		item.NewItemType(spriteloader.GetSpriteIdByName("Bedrock"))
+	debugItemTypeId :=
+		item.AddItemType(debugItemType)
+
 	inventory := item.GetInventoryById(inventoryId)
+	laserGunItemTypeId := item.RegisterLaserGunItemType()
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
-		item.InventorySlot{uint32(debugItemType), 5}
+		item.InventorySlot{laserGunItemTypeId, 1, 0}
+
 
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
@@ -98,7 +104,7 @@ func main() {
 	enemies.SpawnBasicEnemy(cat.Pos.X+6, cat.Pos.Y)
 	enemies.SpawnBasicEnemy(cat.Pos.X-6, cat.Pos.Y)
 
-	worldItem = item.NewWorldItem(uint32(debugItemType))
+	worldItem = item.NewWorldItem(debugItemTypeId)
 	worldItem.Pos.X = cat.Pos.X - 3
 	worldItem.Pos.Y = cat.Pos.Y + 2
 
@@ -268,6 +274,8 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyLeftShift {
 			catIsScratching = true
 		}
+		inventory := item.GetInventoryById(inventoryId)
+		inventory.TrySelectSlot(k)
 	} else if a == glfw.Release {
 		if k == glfw.KeyW {
 			upPressed = false
@@ -296,25 +304,32 @@ func mouseButtonCallback(
 	screenY := float32(mouseY-float64(win.Height)/2) * -1
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
+	if didSelectPaleteTile { return }
 
-	// only try to place a tile if we didn't select a palete with this click
-	if !didSelectPaleteTile {
-		if (tilePaletteSelector.IsMultiTileSelected()) {
-			CurrentPlanet.TryPlaceMultiTile(
-				screenX, screenY,
-				world.Layer(tilePaletteSelector.LayerIndex),
-				tilePaletteSelector.GetSelectedMultiTile(),
-				Cam,
-			)
-		} else {
-			CurrentPlanet.TryPlaceTile(
-				screenX, screenY,
-				world.Layer(tilePaletteSelector.LayerIndex),
-				tilePaletteSelector.GetSelectedTile(),
-				Cam,
-			)
+	if (tilePaletteSelector.IsMultiTileSelected()) {
+		didPlaceMultiTile := CurrentPlanet.TryPlaceMultiTile(
+			screenX, screenY,
+			world.Layer(tilePaletteSelector.LayerIndex),
+			tilePaletteSelector.GetSelectedMultiTile(),
+			Cam,
+		)
+		if didPlaceMultiTile {
+			return
+		}
+	} else {
+		didPlaceTile := CurrentPlanet.TryPlaceTile(
+			screenX, screenY,
+			world.Layer(tilePaletteSelector.LayerIndex),
+			tilePaletteSelector.GetSelectedTile(),
+			Cam,
+		)
+		if didPlaceTile {
+			return
 		}
 	}
+
+	item.GetInventoryById(inventoryId).
+		TryUseItem(screenX,screenY, Cam, CurrentPlanet, cat)
 }
 
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {

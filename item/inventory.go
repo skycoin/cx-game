@@ -2,32 +2,42 @@ package item;
 
 import (
 	"strconv"
+
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/models"
 )
 
 type InventorySlot struct {
-	ItemTypeID uint32
+	ItemTypeID ItemTypeID
 	Quantity uint32
+	Durability uint32
 }
 
 type Inventory struct {
 	Width, Height int
 	Slots []InventorySlot
+	SelectedBarSlotIndex int
 }
 
 var inventories = []Inventory{}
 var bgColor = mgl32.Vec4{0.3,0.3,0.3,1}
 var borderColor = mgl32.Vec4{0.8,0.8,0.8,1}
+var selectedBorderColor = mgl32.Vec4{0.8,0,0,1}
 
 func NewInventory(width, height int) uint32 {
 	inventories = append(inventories, Inventory {
 		Width: width, Height: height,
 		Slots: make([]InventorySlot, width*height),
+		SelectedBarSlotIndex: 3,
 	})
 	return uint32(len(inventories)-1)
 }
@@ -35,8 +45,6 @@ func NewInventory(width, height int) uint32 {
 func GetInventoryById(id uint32) *Inventory {
 	return &inventories[id]
 }
-
-// TODO really need to figure out screen space solution
 
 func (inventory Inventory) getBarSlots() []InventorySlot {
 	start := inventory.Width*(inventory.Height-1)
@@ -66,7 +74,7 @@ func (inventory Inventory) DrawGrid(ctx render.Context) {
 
 			slotCtx := ctx.PushLocal(slotTransform)
 
-			inventory.DrawSlot(slot,slotCtx)
+			inventory.DrawSlot(slot,slotCtx,false)
 		}
 	}
 
@@ -81,7 +89,7 @@ func (inventory Inventory) DrawGrid(ctx render.Context) {
 
 		slotCtx := ctx.PushLocal(slotTransform)
 
-		inventory.DrawSlot(slot,slotCtx)
+		inventory.DrawSlot(slot,slotCtx,false)
 	}
 }
 
@@ -91,21 +99,25 @@ func (inv Inventory) DrawBar(ctx render.Context) {
 	barSlots := inv.getBarSlots()
 	for idx,slot := range barSlots {
 		x := float32(idx) - float32(len(barSlots)) / 2
-		/*
-		slotTransform := barTransform.
-			Mul4(mgl32.Translate3D(x,0,0))
-		*/
 		slotCtx := barCtx.PushLocal(mgl32.Translate3D(x,0,0))
-		_ = idx
-		_ = slot
-		// TODO draw the correct sprite
-		inv.DrawSlot(slot,slotCtx)
+		isSelected := idx == inv.SelectedBarSlotIndex
+		inv.DrawSlot(slot,slotCtx,isSelected)
 	}
 }
 
-func (inventory Inventory) DrawSlot(slot InventorySlot, ctx render.Context) {
+func getBorderColor(isSelected bool) mgl32.Vec4 {
+	if isSelected {
+		return selectedBorderColor
+	} else {
+		return borderColor
+	}
+}
+
+func (inventory Inventory) DrawSlot(
+		slot InventorySlot, ctx render.Context, isSelected bool,
+) {
 	// draw border
-	utility.DrawColorQuad(ctx,borderColor)
+	utility.DrawColorQuad(ctx,getBorderColor(isSelected))
 	// draw bg on top of border
 	bgCtx := ctx.PushLocal(cxmath.Scale(1-borderSize))
 	utility.DrawColorQuad(bgCtx,bgColor)
@@ -131,7 +143,7 @@ func (inventory Inventory) ItemSlotIndexForPosition(x,y int) int {
 	return y*inventory.Width+x
 }
 
-func (inventory *Inventory) tryAddItemToStack(ItemTypeID uint32) bool {
+func (inventory *Inventory) tryAddItemToStack(ItemTypeID ItemTypeID) bool {
 	for idx,slot := range inventory.Slots {
 		if slot.Quantity>0 && slot.ItemTypeID == ItemTypeID {
 			inventory.Slots[idx] = InventorySlot {
@@ -144,7 +156,7 @@ func (inventory *Inventory) tryAddItemToStack(ItemTypeID uint32) bool {
 	return false
 }
 
-func (inventory *Inventory) tryAddItemToFreeSlot(ItemTypeID uint32) bool {
+func (inventory *Inventory) tryAddItemToFreeSlot(ItemTypeID ItemTypeID) bool {
 	for idx,slot := range inventory.Slots {
 		if slot.Quantity == 0 {
 			inventory.Slots[idx] = InventorySlot {
@@ -157,8 +169,51 @@ func (inventory *Inventory) tryAddItemToFreeSlot(ItemTypeID uint32) bool {
 	return false
 }
 
-func (inventory *Inventory) TryAddItem(ItemTypeID uint32) bool {
+func (inventory *Inventory) TryAddItem(ItemTypeID ItemTypeID) bool {
 	return (
 		inventory.tryAddItemToStack(ItemTypeID) ||
 		inventory.tryAddItemToFreeSlot(ItemTypeID) )
+}
+
+// Select a slot from the inventory bar based on the key pressed.
+// slot layout matches keyboard layout.
+// (1,2,3,4,5,6,7,8,9,0)
+func (inventory *Inventory) TrySelectSlot(k glfw.Key) bool {
+	if k < glfw.Key0 || k > glfw.Key9 {
+		return false
+	}
+
+	idx := int(k-glfw.Key0)-1
+	if idx == -1 {
+		idx = 9
+	}
+	inventory.SelectedBarSlotIndex = idx
+
+	return true
+}
+
+func (inventory *Inventory) SelectedItemSlot() *InventorySlot {
+	globalIdx :=
+		inventory.SelectedBarSlotIndex +
+		inventory.Width*(inventory.Height-1)
+	return &inventory.Slots[globalIdx]
+}
+
+func (inventory *Inventory) TryUseItem(
+		screenX,screenY float32, cam *camera.Camera,
+		planet *world.Planet, player *models.Cat,
+) bool {
+	itemSlot := inventory.SelectedItemSlot()
+	// don't use empty items
+	if itemSlot.Quantity == 0 {
+		return false
+	}
+	itemType := GetItemTypeById(itemSlot.ItemTypeID)
+	itemType.Use(ItemUseInfo {
+		Slot: itemSlot,
+		ScreenX: screenX, ScreenY: screenY,
+		Camera: cam, Planet: planet,
+		Player: player,
+	})
+	return true
 }

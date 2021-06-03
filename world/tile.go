@@ -23,6 +23,7 @@ type Tile struct {
 	Name     string
 	OffsetX  int8
 	OffsetY  int8
+	Durability int8
 }
 
 func NewEmptyTile() Tile {
