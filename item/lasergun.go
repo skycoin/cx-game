@@ -1,8 +1,6 @@
 package item
 
 import (
-	"log"
-
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/cxmath"
@@ -12,7 +10,6 @@ import (
 )
 
 func UseLaserGun(info ItemUseInfo) {
-	log.Print("shooting laser gun")
 	// click relative to camera
 	camCoords :=
 		mgl32.Vec4{
