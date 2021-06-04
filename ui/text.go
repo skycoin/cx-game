@@ -19,6 +19,7 @@ type TextAlignment uint32
 const (
 	AlignLeft = iota
 	AlignRight
+	AlignCenter
 )
 
 const fontTexWidth = 256
@@ -184,12 +185,6 @@ func DrawStringLeftAligned(
 				gl.GetUniformLocation(program, gl.Str("world\x00")),
 				1, false, &letterTransform[0],
 			)
-			/*
-				aspect := float32(spriteloader.Window.Width) / float32(spriteloader.Window.Height)
-				projectTransform := mgl32.Perspective(
-					mgl32.DegToRad(45), aspect, 0.1, 100.0,
-				)
-			*/
 			gl.UniformMatrix4fv(
 				gl.GetUniformLocation(program, gl.Str("projection\x00")),
 				1, false, &ctx.Projection[0],
@@ -219,6 +214,16 @@ func DrawStringRightAligned(
 	DrawStringLeftAligned(text, color, ctxLeftAligned)
 }
 
+func DrawStringCenterAligned(
+	text string, color mgl32.Vec4, ctx render.Context,
+) {
+	ctxLeftAligned := ctx.PushLocal(
+		mgl32.Translate3D(-calculateLineWidth(text)/2, 0, 0),
+	)
+
+	DrawStringLeftAligned(text, color, ctxLeftAligned)
+}
+
 func DrawString(
 	text string, color mgl32.Vec4, alignment TextAlignment,
 	ctx render.Context,
@@ -227,5 +232,7 @@ func DrawString(
 		DrawStringLeftAligned(text, color, ctx)
 	} else if alignment == AlignRight {
 		DrawStringRightAligned(text, color, ctx)
+	} else if alignment == AlignCenter {
+		DrawStringCenterAligned(text, color, ctx)
 	}
 }

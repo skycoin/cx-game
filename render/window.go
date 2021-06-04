@@ -19,6 +19,14 @@ type Window struct {
 	VAO       uint32
 }
 
+func (window *Window) UpdateProjectionMatrix() {
+	projectionMatrix := window.GetProjectionMatrix()
+	gl.UniformMatrix4fv(
+		gl.GetUniformLocation(window.Program, gl.Str("projection\x00")),
+		1, false, &projectionMatrix[0],
+	)
+}
+
 func NewWindow(width, height int, resizable bool) Window {
 	glfwWindow := initGlfw(width, height, resizable)
 	program := initOpenGL()
@@ -34,8 +42,7 @@ func NewWindow(width, height int, resizable bool) Window {
 		VAO:       makeVao(),
 	}
 
-	projectionMatrix := window.GetProjectionMatrix()
-	gl.UniformMatrix4fv(gl.GetUniformLocation(program, gl.Str("projection\x00")), 1, false, &projectionMatrix[0])
+	window.UpdateProjectionMatrix()
 
 	return window
 }
