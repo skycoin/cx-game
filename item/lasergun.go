@@ -7,6 +7,7 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/particles"
 )
 
 func UseLaserGun(info ItemUseInfo) {
@@ -21,6 +22,11 @@ func UseLaserGun(info ItemUseInfo) {
 		float64(info.Player.Pos.X),float64(info.Player.Pos.Y),
 		float64(worldCoords.X()),float64(worldCoords.Y()))
 
+	particles.CreateLaser(
+		mgl32.Vec2{ info.Player.Pos.X, info.Player.Pos.Y},
+		worldCoords.Vec2(),
+	)
+
 	for _,pos := range positions {
 		tile := info.Planet.GetTile(int(pos.X),int(pos.Y),world.TopLayer)
 		if tile.TileType != world.TileTypeNone {
@@ -31,8 +37,10 @@ func UseLaserGun(info ItemUseInfo) {
 }
 
 func RegisterLaserGunItemType() ItemTypeID {
-	// TODO use "lasergun" instead of "redblip" once we have asset
-	laserGunItemType := NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
+	// TODO use proper asset
+	laserGunSpriteId :=spriteloader.LoadSingleSprite(
+			"./assets/item/lasergun-temp.png","lasergun")
+	laserGunItemType := NewItemType(laserGunSpriteId)
 	laserGunItemType.Use = UseLaserGun
 	laserGunItemType.Name = "Laser Gun"
 	return AddItemType(laserGunItemType)
