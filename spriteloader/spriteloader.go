@@ -66,8 +66,10 @@ func LoadSpriteSheet(fname string) int {
 func LoadSpriteSheetByColRow(fname string, row int, col int) int {
 	_, img, _ := LoadPng(fname)
 
-	fmt.Println("xScale: ", float32(img.Bounds().Dx()/col)/float32(img.Bounds().Dx()))
-	fmt.Println("yScale: ", float32(img.Bounds().Dy()/row)/float32(img.Bounds().Dy()))
+	if DEBUG {
+		fmt.Println("xScale: ", float32(img.Bounds().Dx()/col)/float32(img.Bounds().Dx()))
+		fmt.Println("yScale: ", float32(img.Bounds().Dy()/row)/float32(img.Bounds().Dy()))
+	}
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(img.Bounds().Dx()/col) / float32(img.Bounds().Dx()),
 		yScale: float32(img.Bounds().Dy()/row) / float32(img.Bounds().Dy()),
