@@ -15,16 +15,9 @@ type Window struct {
 	Width     int
 	Resizable bool
 	Window    *glfw.Window
+	context   Context
 	Program   uint32
 	VAO       uint32
-}
-
-func (window *Window) UpdateProjectionMatrix() {
-	projectionMatrix := window.GetProjectionMatrix()
-	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(window.Program, gl.Str("projection\x00")),
-		1, false, &projectionMatrix[0],
-	)
 }
 
 func NewWindow(width, height int, resizable bool) Window {
@@ -41,8 +34,6 @@ func NewWindow(width, height int, resizable bool) Window {
 		Program:   program,
 		VAO:       makeVao(),
 	}
-
-	window.UpdateProjectionMatrix()
 
 	return window
 }
@@ -231,5 +222,10 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 }
 
 func (window *Window) GetProjectionMatrix() mgl32.Mat4 {
-	return window.DefaultRenderContext().Projection
+	// return window.DefaultRenderContext().Projection
+	return window.context.Projection
+}
+
+func (window *Window) SetProjectionMatrix(projection mgl32.Mat4) {
+	window.context.Projection = projection
 }

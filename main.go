@@ -87,7 +87,6 @@ func main() {
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
 		item.InventorySlot{laserGunItemTypeId, 1, 0}
 
-
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 	tilePaletteSelector = ui.
@@ -187,7 +186,6 @@ func Tick(dt float32) {
 }
 
 func Draw(window *glfw.Window, program uint32, VAO uint32) {
-	win.UpdateProjectionMatrix()
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -223,7 +221,7 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	ui.DrawDialogueBoxes(camCtx)
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
-	win.UpdateProjectionMatrix()
+
 	inventory := item.GetInventoryById(inventoryId)
 	if isInventoryGridVisible {
 		inventory.DrawGrid(baseCtx)
@@ -304,9 +302,11 @@ func mouseButtonCallback(
 	screenY := float32(mouseY-float64(win.Height)/2) * -1
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
-	if didSelectPaleteTile { return }
+	if didSelectPaleteTile {
+		return
+	}
 
-	if (tilePaletteSelector.IsMultiTileSelected()) {
+	if tilePaletteSelector.IsMultiTileSelected() {
 		didPlaceMultiTile := CurrentPlanet.TryPlaceMultiTile(
 			screenX, screenY,
 			world.Layer(tilePaletteSelector.LayerIndex),
@@ -329,7 +329,7 @@ func mouseButtonCallback(
 	}
 
 	item.GetInventoryById(inventoryId).
-		TryUseItem(screenX,screenY, Cam, CurrentPlanet, cat)
+		TryUseItem(screenX, screenY, Cam, CurrentPlanet, cat)
 }
 
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
