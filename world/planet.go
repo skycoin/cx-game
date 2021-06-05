@@ -78,6 +78,10 @@ func (planet *Planet) GetTileIndex(x, y int) int {
 	return y*int(planet.Width) + x
 }
 
+func (planet *Planet) GetTile(x,y int, layer Layer) *Tile {
+	return &planet.GetLayer(layer)[planet.GetTileIndex(x,y)]
+}
+
 func (planet *Planet) GetAllTilesUnique() []Tile {
 	tiles := []Tile{}
 	seenTiles := map[Tile]bool{}
@@ -96,7 +100,7 @@ func (planet *Planet) TryPlaceTile(
 	layer Layer,
 	tile Tile,
 	cam *camera.Camera,
-) {
+) bool {
 	// click relative to camera
 	camCoords := mgl32.Vec4{x / render.PixelsPerTile, y / render.PixelsPerTile, 0, 1}
 	// click relative to world
@@ -107,19 +111,21 @@ func (planet *Planet) TryPlaceTile(
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
 		planetLayer := planet.GetLayer(layer)
 		if len(planetLayer) == 0 {
-			return
+			return false
 		}
 		if planetLayer[tileIdx].TileType == TileTypeChild ||
 		 	planetLayer[tileIdx].TileType == TileTypeMulti {
 			planet.RemoveParentTile(planetLayer,tileIdx)
 		}
 		planetLayer[tileIdx] = tile
+		return true
 	}
+	return false
 }
 
 func (planet *Planet) TryPlaceMultiTile(
 		x,y float32, layer Layer, multiTile MultiTile, cam *camera.Camera,
-) {
+) bool {
 	// click relative to camera
 	camCoords := mgl32.Vec4{x / render.PixelsPerTile, y / render.PixelsPerTile, 0, 1}
 	// click relative to world
@@ -130,14 +136,16 @@ func (planet *Planet) TryPlaceMultiTile(
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
 		planetLayer := planet.GetLayer(layer)
 		if len(planetLayer) == 0 {
-			return
+			return false
 		}
 		if planetLayer[tileIdx].TileType == TileTypeChild ||
 		    planetLayer[tileIdx].TileType == TileTypeMulti {
 			planet.RemoveParentTile(planetLayer,tileIdx)
 		}
 		planet.PlaceMultiTile(int(tileX),int(tileY),layer,multiTile)
+		return true
 	}
+	return false
 }
 
 // note that multi-tiles are assumed to be rectangular
@@ -303,4 +311,13 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 	// save array
 	planet.collidingLines = lines
 	return planet.collidingLines
+}
+
+func (planet *Planet) DamageTile(x,y int, layer Layer) {
+	tileIdx := planet.GetTileIndex(x,y)
+	tile := &planet.GetLayer(layer)[tileIdx]
+	tile.Durability--
+	if tile.Durability <= 0 {
+		*tile = NewEmptyTile()
+	}
 }

@@ -42,10 +42,10 @@ const worldItemSize = 0.5
 
 type WorldItem struct {
 	physics.Body
-	ItemTypeId uint32
+	ItemTypeId ItemTypeID
 }
 
-func NewWorldItem(ItemTypeId uint32) *WorldItem {
+func NewWorldItem(ItemTypeId ItemTypeID) *WorldItem {
 	item := WorldItem{
 		Body: physics.Body{
 			Size: physics.Vec2{X: worldItemSize, Y: worldItemSize},
