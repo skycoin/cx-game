@@ -34,6 +34,7 @@ func NewWindow(width, height int, resizable bool) Window {
 		Program:   program,
 		VAO:       makeVao(),
 	}
+	window.context = window.DefaultRenderContext()
 
 	return window
 }
