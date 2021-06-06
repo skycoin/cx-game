@@ -134,6 +134,7 @@ func (camera *Camera) updateProjection() {
 func (camera *Camera) Tick(dt float32) {
 	if firstTick {
 		camera.updateProjection()
+		firstTick = false
 	}
 	// if not zooming nothing to do here
 	if !zooming {
