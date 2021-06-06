@@ -31,6 +31,8 @@ const laserDuration = 1.0 // time in seconds that a laser lasts
 var lasers []Laser = []Laser{}
 var laserShader *utility.Shader
 const segmentLength = 0.8
+// number of times the laser texture animates throughout its life
+const laserAnimSpeed = 0.8
 
 func InitLasers() {
 	laserShader = utility.NewShader(
@@ -113,6 +115,9 @@ func DrawLaser(laser Laser, ctx render.Context) {
 
 	world := ctx.World.Mul4(laser.transform)
 	laserShader.SetMat4("world", &world)
+
+	laserShader.SetVec2F("offset", alpha*laserAnimSpeed, 0)
+	laserShader.SetVec2F("scale", laser.length, 1)
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
