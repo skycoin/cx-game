@@ -82,14 +82,16 @@ func CreateLaser(from, to mgl32.Vec2) {
 	disp := to.Sub(from)
 	right := mgl32.Vec2 { 1, 0 }
 	angle := - cxmath.AngleTo(right,disp)
+	length := disp.Len()
 	transform := mgl32.Ident4().
 		Mul4(mgl32.Translate3D(from.X(),from.Y(),0)).
-		Mul4(mgl32.HomogRotate3DZ(angle))
+		Mul4(mgl32.HomogRotate3DZ(angle)).
+		Mul4(mgl32.Scale3D(length,1,1))
 
 	laser := Laser {
 		transform: transform,
 		ttl: laserDuration,
-		length: disp.Len(),
+		length: length,
 	}
 	lasers = append(lasers,laser)
 }
@@ -106,30 +108,12 @@ func TickLasers(dt float32) {
 }
 
 func DrawLaser(laser Laser, ctx render.Context) {
-	laserShader.SetFloat("start",0)
-	laserShader.SetFloat("stop",1)
 	alpha := laser.ttl / laserDuration
 	laserShader.SetVec4F("color", 1,1,1, alpha)
 
-	lastX := float32(0)
-	for x:=float32(0); x<laser.length-1; x+=segmentLength {
-		world := ctx.World.
-			Mul4(laser.transform).
-			Mul4(mgl32.Translate3D(x,0,0))
-		laserShader.SetMat4("world", &world)
-		// 1 quad = 2 (3d) verts = 6 floats
-		// texture has already been bound by configureGlForLaser()
-		gl.DrawArrays(gl.TRIANGLES, 0, 6)
-		lastX = x
-	}
-	// last segment is special case; we want to draw EXACTLY up to the length
-	x := lastX + segmentLength
-	world := ctx.World.
-		Mul4(laser.transform).
-		Mul4(mgl32.Translate3D(x,0,0))
+	world := ctx.World.Mul4(laser.transform)
 	laserShader.SetMat4("world", &world)
 
-	laserShader.SetFloat("stop", laser.length - x)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
 
