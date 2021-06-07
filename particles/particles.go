@@ -1,6 +1,9 @@
 package particles
 
 import (
+	"log"
+	"math/rand"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 
 	"github.com/skycoin/cx-game/render"
@@ -12,16 +15,18 @@ type Particle struct {
 	ID               int32
 	ParticleMetaType int32
 	Type             int32
-	Sprite           int32
+	Sprite           uint32
 	Size             int32
-	PosX             int32
-	PosY             int32
+	PosX             float32
+	PosY             float32
 	VelocityX        float32
 	VelocityY        float32
 	TimeToLive       float32
 }
 var particles = []Particle{}
 var particleShader *utility.Shader
+const initialVelocityScale = 3
+const tileChunkLifetime = 1
 
 func InitParticles() {
 	particleShader = utility.NewShader(
@@ -61,5 +66,17 @@ func DrawParticles(ctx render.Context) {
 }
 
 func DrawParticle(particle Particle, ctx render.Context) {
-	
+	log.Print("drawing particle")
+}
+
+func CreateTileChunk(x,y float32, TileSpriteID uint32) {
+	particle := Particle {
+		ID: rand.Int31(),
+		PosX: x, PosY: y,
+		VelocityX: (rand.Float32()-0.5)*initialVelocityScale,
+		VelocityY: (rand.Float32()-0.5)*initialVelocityScale,
+		Sprite: TileSpriteID,
+		TimeToLive: tileChunkLifetime,
+	}
+	particles = append(particles, particle)
 }
