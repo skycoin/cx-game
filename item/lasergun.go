@@ -18,9 +18,11 @@ func UseLaserGun(info ItemUseInfo) {
 			info.ScreenY / render.PixelsPerTile, 0, 1 }
 	// click relative to world
 	worldCoords := info.Camera.GetTransform().Mul4x1(camCoords)
+	// adding 0.5 here because raytrace assumes top left coords,
+	// but player and tile positions are stored using centered coords
 	positions := cxmath.Raytrace(
-		float64(info.Player.Pos.X),float64(info.Player.Pos.Y),
-		float64(worldCoords.X()),float64(worldCoords.Y()))
+		float64(info.Player.Pos.X)+0.5,float64(info.Player.Pos.Y)+0.5,
+		float64(worldCoords.X())+0.5,float64(worldCoords.Y()) + 0.5 )
 
 	particles.CreateLaser(
 		mgl32.Vec2{ info.Player.Pos.X, info.Player.Pos.Y},
