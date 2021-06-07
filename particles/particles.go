@@ -9,6 +9,7 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/physics/verlet"
 )
 
 type Particle struct {
@@ -16,19 +17,16 @@ type Particle struct {
 	ParticleMetaType int32
 	Type             int32
 	Sprite           uint32
-	Size             int32
-	// should position instead be stored as matrix
-	// such that particles can spin??
-	PosX             float32
-	PosY             float32
-	VelocityX        float32
-	VelocityY        float32
+	Size             float32
+	Verlet           verlet.Verlet2
 	TimeToLive       float32
 }
 var particles = []Particle{}
 var particleShader *utility.Shader
 const initialVelocityScale = 3
 const tileChunkLifetime = 1
+const chunkSize = 0.2
+const gravity = 2
 
 func InitParticles() {
 	particleShader = utility.NewShader(
@@ -47,6 +45,17 @@ func TickParticles(dt float32) {
 		}
 	}
 	particles = newParticles
+	// move remaining particles
+	for idx,_ := range particles {
+		particle := &particles[idx]
+		particle.Tick(dt)
+	}
+}
+
+// perform verlet integration to animate particles
+func (p *Particle) Tick(dt float32) {
+	// TODO apply non-zero acceleration
+	p.Verlet.Integrate(dt,mgl32.Vec2{0,0})
 }
 
 func configureGlForParticles() {
@@ -80,10 +89,11 @@ func DrawTopParticles(ctx render.Context) {
 	DrawChunkParticles(ctx)
 }
 
-func (p Particle) GetTransform() mgl32.Mat4 {
-	size := float32(p.Size)
+func (particle Particle) GetTransform() mgl32.Mat4 {
+	pos := particle.Verlet.Position
+	size := float32(particle.Size)
 	return mgl32.Ident4().
-		Mul4(mgl32.Translate3D(p.PosX,p.PosY,0)).
+		Mul4(mgl32.Translate3D(pos.X(),pos.Y(),0)).
 		Mul4(mgl32.Scale3D(size,size,1))
 }
 
@@ -110,10 +120,14 @@ func DrawChunkParticle(particle Particle, ctx render.Context) {
 func CreateTileChunk(x,y float32, TileSpriteID uint32) {
 	particle := Particle {
 		ID: rand.Int31(),
-		PosX: x, PosY: y,
-		Size: 1,
-		VelocityX: (rand.Float32()-0.5)*initialVelocityScale,
-		VelocityY: (rand.Float32()-0.5)*initialVelocityScale,
+		Size: chunkSize,
+		Verlet: verlet.Verlet2 {
+			Position: mgl32.Vec2 { x,y },
+			Velocity: mgl32.Vec2 {
+				(rand.Float32()-0.5)*initialVelocityScale,
+				(rand.Float32()-0.5)*initialVelocityScale,
+			},
+		},
 		Sprite: TileSpriteID,
 		TimeToLive: tileChunkLifetime,
 	}
