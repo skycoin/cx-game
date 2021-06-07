@@ -1,9 +1,9 @@
 package particles
 
 import (
-	"log"
 	"math/rand"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/gl/v4.1-core/gl"
 
 	"github.com/skycoin/cx-game/render"
@@ -17,6 +17,8 @@ type Particle struct {
 	Type             int32
 	Sprite           uint32
 	Size             int32
+	// should position instead be stored as matrix
+	// such that particles can spin??
 	PosX             float32
 	PosY             float32
 	VelocityX        float32
@@ -53,20 +55,50 @@ func configureGlForParticles() {
 	// bits of tile are still pixel art; use nearest interpolation
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+	gl.ActiveTexture(gl.TEXTURE0)
 
 	gl.BindVertexArray(spriteloader.QuadVao);
 }
 
-func DrawParticles(ctx render.Context) {
-	DrawLasers(ctx)
+func DrawChunkParticles(ctx render.Context) {
 	configureGlForParticles()
+	particleShader.Use()
+	// particles share both shader and projection matrix - set it only once
+	particleShader.SetMat4("projection", &ctx.Projection)
 	for _,particle := range particles {
-		DrawParticle(particle,ctx)
+		DrawChunkParticle(particle,ctx)
 	}
 }
 
-func DrawParticle(particle Particle, ctx render.Context) {
-	log.Print("drawing particle")
+func DrawParticles(ctx render.Context) {
+	DrawLasers(ctx)
+	DrawChunkParticles(ctx)
+}
+
+func (p Particle) GetTransform() mgl32.Mat4 {
+	size := float32(p.Size)
+	return mgl32.Ident4().
+		Mul4(mgl32.Translate3D(p.PosX,p.PosY,0)).
+		Mul4(mgl32.Scale3D(size,size,1))
+}
+
+func DrawChunkParticle(particle Particle, ctx render.Context) {
+	metadata := spriteloader.GetSpriteMetadata(particle.Sprite)
+	particleShader.SetUint("tex", metadata.GpuTex)
+	gl.BindTexture(gl.TEXTURE_2D, metadata.GpuTex)
+
+	alpha := particle.TimeToLive / laserDuration
+	particleShader.SetVec4F("color", 1,1,1, alpha)
+
+	world := ctx.World.Mul4(particle.GetTransform())
+	particleShader.SetMat4("world", &world)
+
+	// TODO apply offset and scale to achieve a view 
+	// of only the 2x2 chunk of the tile we are interested in
+	particleShader.SetVec2F("offset", 0,0)
+	particleShader.SetVec2F("scale", 1,1)
+
+	gl.DrawArrays(gl.TRIANGLES,0,6) // draw quad
 }
 
 func CreateTileChunk(x,y float32, TileSpriteID uint32) {
