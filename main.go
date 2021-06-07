@@ -202,10 +202,10 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	starmap.Draw()
 	CurrentPlanet.Draw(Cam,world.BgLayer)
 	CurrentPlanet.Draw(Cam,world.MidLayer)
-	// draw particles between mid and top layers.
-	// this works quite well for weapon particle effects
-	particles.DrawParticles(camCtx)
+	// draw lasers between mid and top layers.
+	particles.DrawMidTopParticles(camCtx)
 	CurrentPlanet.Draw(Cam,world.TopLayer)
+	particles.DrawTopParticles(camCtx)
 	if worldItem != nil {
 		worldItem.Draw(Cam)
 	}

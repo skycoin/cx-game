@@ -70,8 +70,13 @@ func DrawChunkParticles(ctx render.Context) {
 	}
 }
 
-func DrawParticles(ctx render.Context) {
+// draw particles between mid and top layers
+func DrawMidTopParticles(ctx render.Context) {
 	DrawLasers(ctx)
+}
+
+// draw particles over top layer
+func DrawTopParticles(ctx render.Context) {
 	DrawChunkParticles(ctx)
 }
 
@@ -88,6 +93,7 @@ func DrawChunkParticle(particle Particle, ctx render.Context) {
 	gl.BindTexture(gl.TEXTURE_2D, metadata.GpuTex)
 
 	alpha := particle.TimeToLive / laserDuration
+	alpha = 1
 	particleShader.SetVec4F("color", 1,1,1, alpha)
 
 	world := ctx.World.Mul4(particle.GetTransform())
@@ -105,6 +111,7 @@ func CreateTileChunk(x,y float32, TileSpriteID uint32) {
 	particle := Particle {
 		ID: rand.Int31(),
 		PosX: x, PosY: y,
+		Size: 1,
 		VelocityX: (rand.Float32()-0.5)*initialVelocityScale,
 		VelocityY: (rand.Float32()-0.5)*initialVelocityScale,
 		Sprite: TileSpriteID,
