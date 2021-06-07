@@ -26,6 +26,9 @@ var particleShader *utility.Shader
 const initialVelocityScale = 3
 const tileChunkLifetime = 1
 const chunkSize = 0.2
+// let a "chip" represent the event where a tile is damaged.
+// each time a tile is damaged, this many chunks are emitted
+const chunksPerChip = 5
 const gravity = 2
 
 func InitParticles() {
@@ -117,19 +120,21 @@ func DrawChunkParticle(particle Particle, ctx render.Context) {
 	gl.DrawArrays(gl.TRIANGLES,0,6) // draw quad
 }
 
-func CreateTileChunk(x,y float32, TileSpriteID uint32) {
-	particle := Particle {
-		ID: rand.Int31(),
-		Size: chunkSize,
-		Verlet: verlet.Verlet2 {
-			Position: mgl32.Vec2 { x,y },
-			Velocity: mgl32.Vec2 {
-				(rand.Float32()-0.5)*initialVelocityScale,
-				(rand.Float32()-0.5)*initialVelocityScale,
+func CreateTileChunks(x,y float32, TileSpriteID uint32) {
+	for i:=0; i<chunksPerChip; i++ {
+		particle := Particle {
+			ID: rand.Int31(),
+			Size: chunkSize,
+			Verlet: verlet.Verlet2 {
+				Position: mgl32.Vec2 { x,y },
+				Velocity: mgl32.Vec2 {
+					(rand.Float32()-0.5)*initialVelocityScale,
+					(rand.Float32()-0.5)*initialVelocityScale,
+				},
 			},
-		},
-		Sprite: TileSpriteID,
-		TimeToLive: tileChunkLifetime,
+			Sprite: TileSpriteID,
+			TimeToLive: tileChunkLifetime,
+		}
+		particles = append(particles, particle)
 	}
-	particles = append(particles, particle)
 }

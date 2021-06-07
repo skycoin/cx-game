@@ -315,7 +315,7 @@ func (planet *Planet) DamageTile(x,y int, layer Layer) {
 	tileIdx := planet.GetTileIndex(x,y)
 	tile := &planet.GetLayer(layer)[tileIdx]
 	// TODO create tile chunk from collision point rather than tile center
-	particles.CreateTileChunk(float32(x),float32(y),tile.SpriteID)
+	particles.CreateTileChunks(float32(x),float32(y),tile.SpriteID)
 	tile.Durability--
 	if tile.Durability <= 0 {
 		*tile = NewEmptyTile()
