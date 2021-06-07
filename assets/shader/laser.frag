@@ -6,5 +6,5 @@ uniform vec4 color;
 uniform vec2 scale;
 uniform vec2 offset;
 void main() {
-	frag_colour = texture(tex,scale*(tCoord+offset)) * color;
+	frag_colour = texture(tex,scale*tCoord+offset) * color;
 }

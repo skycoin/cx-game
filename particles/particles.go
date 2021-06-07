@@ -2,6 +2,7 @@ package particles
 
 import (
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/utility"
 )
 
 type Particle struct {
@@ -16,8 +17,12 @@ type Particle struct {
 	VelocityY        float32
 	TimeToLive       int32
 }
+var particles = []Particle{}
+var particleShader *utility.Shader
 
 func InitParticles() {
+	particleShader = utility.NewShader(
+		"./assets/shader/simple.vert", "./assets/shader/particle.frag" )
 	InitLasers()
 }
 

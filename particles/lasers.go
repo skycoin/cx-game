@@ -1,9 +1,5 @@
 package particles
 
-// NOTE laser rendering can probably be optimized by
-// creating a large VAO that renders 20-50 segments
-// and then using a single draw call per laser
-
 import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -32,7 +28,7 @@ var lasers []Laser = []Laser{}
 var laserShader *utility.Shader
 const segmentLength = 0.8
 // number of times the laser texture animates throughout its life
-const laserAnimSpeed = 0.8
+const laserAnimSpeed = 6
 
 func InitLasers() {
 	laserShader = utility.NewShader(
