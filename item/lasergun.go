@@ -7,6 +7,7 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/particles"
 )
 
 func UseLaserGun(info ItemUseInfo) {
@@ -17,9 +18,16 @@ func UseLaserGun(info ItemUseInfo) {
 			info.ScreenY / render.PixelsPerTile, 0, 1 }
 	// click relative to world
 	worldCoords := info.Camera.GetTransform().Mul4x1(camCoords)
+	// adding 0.5 here because raytrace assumes top left coords,
+	// but player and tile positions are stored using centered coords
 	positions := cxmath.Raytrace(
-		float64(info.Player.Pos.X),float64(info.Player.Pos.Y),
-		float64(worldCoords.X()),float64(worldCoords.Y()))
+		float64(info.Player.Pos.X)+0.5,float64(info.Player.Pos.Y)+0.5,
+		float64(worldCoords.X())+0.5,float64(worldCoords.Y()) + 0.5 )
+
+	particles.CreateLaser(
+		mgl32.Vec2{ info.Player.Pos.X, info.Player.Pos.Y},
+		worldCoords.Vec2(),
+	)
 
 	for _,pos := range positions {
 		tile := info.Planet.GetTile(int(pos.X),int(pos.Y),world.TopLayer)
@@ -31,8 +39,10 @@ func UseLaserGun(info ItemUseInfo) {
 }
 
 func RegisterLaserGunItemType() ItemTypeID {
-	// TODO use "lasergun" instead of "redblip" once we have asset
-	laserGunItemType := NewItemType(spriteloader.GetSpriteIdByName("RedBlip"))
+	// TODO use proper asset
+	laserGunSpriteId :=spriteloader.LoadSingleSprite(
+			"./assets/item/lasergun-temp.png","lasergun")
+	laserGunItemType := NewItemType(laserGunSpriteId)
 	laserGunItemType.Use = UseLaserGun
 	laserGunItemType.Name = "Laser Gun"
 	return AddItemType(laserGunItemType)

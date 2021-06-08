@@ -31,6 +31,24 @@ type Sprite struct {
 	x, y          int
 }
 
+// fetch internal sprite data for using custom OpenGL rendering
+type SpriteMetadata struct {
+	GpuTex uint32
+	PosX, PosY int
+	ScaleX, ScaleY float32
+}
+func GetSpriteMetadata(spriteID uint32) SpriteMetadata {
+	sprite := sprites[spriteID]
+	spritesheet := spritesheets[sprite.spriteSheetId]
+	return SpriteMetadata {
+		GpuTex: spritesheet.tex,
+		PosX: sprite.x,
+		PosY: sprite.y,
+		ScaleX: spritesheet.xScale,
+		ScaleY: spritesheet.yScale,
+	}
+}
+
 var spritesheets = []Spritesheet{}
 var sprites = []Sprite{}
 var spriteIdsByName = make(map[string]int)

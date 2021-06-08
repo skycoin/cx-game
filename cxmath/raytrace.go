@@ -2,22 +2,20 @@ package cxmath
 
 import (
 	"math"
-	"github.com/skycoin/cx-game/physics"
 )
 
 // http://playtechs.blogspot.com/2007/03/raytracing-on-grid.html
-type Point struct {X,Y int}
 type GridLine struct {
-	increment physics.Vec2i
+	increment Vec2i
 	n int
 	next float64
 	dt float64
 }
 
-func setupGridLine(x int,x0,x1,dx,dt_dx float64, axis physics.Vec2i) GridLine {
+func setupGridLine(x int,x0,x1,dx,dt_dx float64, axis Vec2i) GridLine {
 	if dx==0 {
 		return GridLine {
-			increment: physics.Vec2i{},
+			increment: Vec2i{},
 			next: dt_dx,
 			n: 0,
 			dt: dt_dx,
@@ -49,7 +47,7 @@ func getCloserGridLine(xLines, yLines *GridLine) *GridLine {
 	}
 }
 
-func Raytrace(x0,y0, x1,y1 float64) []physics.Vec2i {
+func Raytrace(x0,y0, x1,y1 float64) []Vec2i {
 	dx := math.Abs(x1-x0)
 	dy := math.Abs(y1-y0)
 
@@ -60,13 +58,13 @@ func Raytrace(x0,y0, x1,y1 float64) []physics.Vec2i {
 	dt_dy := 1.0 / dy
 
 
-	xLines := setupGridLine(x,x0,x1,dx,dt_dx,physics.Vec2i{1,0})
-	yLines := setupGridLine(y,y0,y1,dy,dt_dy,physics.Vec2i{0,1})
+	xLines := setupGridLine(x,x0,x1,dx,dt_dx,Vec2i{1,0})
+	yLines := setupGridLine(y,y0,y1,dy,dt_dy,Vec2i{0,1})
 
 	n := 1 + xLines.n + yLines.n
 
-	pos := physics.Vec2i{int32(x0),int32(y0)}
-	points := make([]physics.Vec2i,n)
+	pos := Vec2i{int32(x0),int32(y0)}
+	points := make([]Vec2i,n)
 	for i:=0; i<n; i++ {
 		points[i] = pos
 		closerLine := getCloserGridLine(&xLines,&yLines)

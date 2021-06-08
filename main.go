@@ -13,6 +13,7 @@ import (
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
 	"github.com/skycoin/cx-game/enemies"
+	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
@@ -127,6 +128,7 @@ func Init() {
 	item.InitWorldItem()
 	ui.InitTextRendering()
 	enemies.InitBasicEnemies()
+	particles.InitParticles()
 
 	cat = models.NewCat()
 	fps = models.NewFps(false)
@@ -161,6 +163,7 @@ func Tick(dt float32) {
 		)
 	}
 	ui.TickDialogueBoxes(dt)
+	particles.TickParticles(dt)
 
 	if worldItem != nil {
 		pickupItem := worldItem.Tick(CurrentPlanet, dt, cat.Pos)
@@ -197,7 +200,12 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	camCtx := baseCtx.PushView(Cam.GetView())
 
 	starmap.Draw()
-	CurrentPlanet.Draw(Cam)
+	CurrentPlanet.Draw(Cam,world.BgLayer)
+	CurrentPlanet.Draw(Cam,world.MidLayer)
+	// draw lasers between mid and top layers.
+	particles.DrawMidTopParticles(camCtx)
+	CurrentPlanet.Draw(Cam,world.TopLayer)
+	particles.DrawTopParticles(camCtx)
 	if worldItem != nil {
 		worldItem.Draw(Cam)
 	}
@@ -224,6 +232,7 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
 	win.UpdateProjectionMatrix()
+
 	inventory := item.GetInventoryById(inventoryId)
 	if isInventoryGridVisible {
 		inventory.DrawGrid(baseCtx)
