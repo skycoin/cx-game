@@ -8,6 +8,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/starmap"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
@@ -15,6 +16,7 @@ import (
 	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
+	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
@@ -87,7 +89,6 @@ func main() {
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
 		item.InventorySlot{laserGunItemTypeId, 1, 0}
 
-
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 	tilePaletteSelector = ui.
@@ -108,6 +109,8 @@ func main() {
 	worldItem.Pos.X = cat.Pos.X - 3
 	worldItem.Pos.Y = cat.Pos.Y + 2
 
+	sound.LoadSound("player_jump", "jump.wav")
+
 	var dt, lastFrame float32
 	lastFrame = float32(glfw.GetTime())
 
@@ -122,11 +125,13 @@ func main() {
 }
 
 func Init() {
+	sound.Init()
 	spriteloader.InitSpriteloader(&win)
 	spriteloader.DEBUG = false
 	item.InitWorldItem()
 	ui.InitTextRendering()
 	enemies.InitBasicEnemies()
+	particles.InitParticles()
 
 	cat = models.NewCat()
 	fps = models.NewFps(false)
@@ -138,6 +143,7 @@ func Init() {
 }
 
 func Tick(dt float32) {
+	sound.Update()
 	Cam.Tick(dt)
 	fps.Tick()
 	if spacePressed {
@@ -149,6 +155,7 @@ func Tick(dt float32) {
 				0,
 			),
 		)
+		sound.PlaySound("player_jump")
 	}
 	if catIsScratching {
 		ui.PlaceDialogueBox(
@@ -161,6 +168,7 @@ func Tick(dt float32) {
 		)
 	}
 	ui.TickDialogueBoxes(dt)
+	particles.TickParticles(dt)
 
 	if worldItem != nil {
 		pickupItem := worldItem.Tick(CurrentPlanet, dt, cat.Pos)
@@ -187,7 +195,6 @@ func Tick(dt float32) {
 }
 
 func Draw(window *glfw.Window, program uint32, VAO uint32) {
-	win.UpdateProjectionMatrix()
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -197,7 +204,12 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	camCtx := baseCtx.PushView(Cam.GetView())
 
 	starmap.Draw()
-	CurrentPlanet.Draw(Cam)
+	CurrentPlanet.Draw(Cam, world.BgLayer)
+	CurrentPlanet.Draw(Cam, world.MidLayer)
+	// draw lasers between mid and top layers.
+	particles.DrawMidTopParticles(camCtx)
+	CurrentPlanet.Draw(Cam, world.TopLayer)
+	particles.DrawTopParticles(camCtx)
 	if worldItem != nil {
 		worldItem.Draw(Cam)
 	}
@@ -223,7 +235,7 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	ui.DrawDialogueBoxes(camCtx)
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
-	win.UpdateProjectionMatrix()
+
 	inventory := item.GetInventoryById(inventoryId)
 	if isInventoryGridVisible {
 		inventory.DrawGrid(baseCtx)
@@ -304,9 +316,11 @@ func mouseButtonCallback(
 	screenY := float32(mouseY-float64(win.Height)/2) * -1
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
-	if didSelectPaleteTile { return }
+	if didSelectPaleteTile {
+		return
+	}
 
-	if (tilePaletteSelector.IsMultiTileSelected()) {
+	if tilePaletteSelector.IsMultiTileSelected() {
 		didPlaceMultiTile := CurrentPlanet.TryPlaceMultiTile(
 			screenX, screenY,
 			world.Layer(tilePaletteSelector.LayerIndex),
@@ -329,7 +343,7 @@ func mouseButtonCallback(
 	}
 
 	item.GetInventoryById(inventoryId).
-		TryUseItem(screenX,screenY, Cam, CurrentPlanet, cat)
+		TryUseItem(screenX, screenY, Cam, CurrentPlanet, cat)
 }
 
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {

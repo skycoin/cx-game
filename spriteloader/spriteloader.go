@@ -31,6 +31,24 @@ type Sprite struct {
 	x, y          int
 }
 
+// fetch internal sprite data for using custom OpenGL rendering
+type SpriteMetadata struct {
+	GpuTex uint32
+	PosX, PosY int
+	ScaleX, ScaleY float32
+}
+func GetSpriteMetadata(spriteID uint32) SpriteMetadata {
+	sprite := sprites[spriteID]
+	spritesheet := spritesheets[sprite.spriteSheetId]
+	return SpriteMetadata {
+		GpuTex: spritesheet.tex,
+		PosX: sprite.x,
+		PosY: sprite.y,
+		ScaleX: spritesheet.xScale,
+		ScaleY: spritesheet.yScale,
+	}
+}
+
 var spritesheets = []Spritesheet{}
 var sprites = []Sprite{}
 var spriteIdsByName = make(map[string]int)
@@ -66,8 +84,10 @@ func LoadSpriteSheet(fname string) int {
 func LoadSpriteSheetByColRow(fname string, row int, col int) int {
 	_, img, _ := LoadPng(fname)
 
-	fmt.Println("xScale: ", float32(img.Bounds().Dx()/col)/float32(img.Bounds().Dx()))
-	fmt.Println("yScale: ", float32(img.Bounds().Dy()/row)/float32(img.Bounds().Dy()))
+	if DEBUG {
+		fmt.Println("xScale: ", float32(img.Bounds().Dx()/col)/float32(img.Bounds().Dx()))
+		fmt.Println("yScale: ", float32(img.Bounds().Dy()/row)/float32(img.Bounds().Dy()))
+	}
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(img.Bounds().Dx()/col) / float32(img.Bounds().Dx()),
 		yScale: float32(img.Bounds().Dy()/row) / float32(img.Bounds().Dy()),
@@ -135,7 +155,7 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId int) {
 	DrawSpriteQuadContext(render.Context{
 		World:      worldTransform,
-		Projection: Window.DefaultRenderContext().Projection,
+		Projection: Window.GetProjectionMatrix(),
 	}, spriteId)
 }
 
@@ -177,10 +197,10 @@ func DrawSpriteQuadContext(ctx render.Context, spriteId int) {
 		1, false, &ctx.World[0],
 	)
 
-	// gl.UniformMatrix4fv(
-	// 	gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
-	// 	1, false, &ctx.Projection[0],
-	// )
+	gl.UniformMatrix4fv(
+		gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
+		1, false, &ctx.Projection[0],
+	)
 
 	gl.BindVertexArray(QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)

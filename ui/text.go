@@ -5,10 +5,9 @@ package ui
 // and draws a different set of triangles depending on the character.
 
 import (
-	"log"
-	//	"math"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
@@ -95,7 +94,6 @@ func initFontVbo() {
 		vertexAttributes[i+4] = bottom
 		i += 5
 	}
-	log.Print(vertexAttributes[6*5 : 6*5+6*5])
 
 	gl.GenBuffers(1, &vbo)
 	gl.GenVertexArrays(1, &vao)

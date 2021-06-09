@@ -5,8 +5,8 @@ import (
 )
 
 type Context struct {
-	World mgl32.Mat4
-	Size mgl32.Vec2
+	World      mgl32.Mat4
+	Size       mgl32.Vec2
 	Projection mgl32.Mat4
 }
 
@@ -27,6 +27,7 @@ func (ctx Context) MVP() mgl32.Mat4 {
 }
 
 const PixelsPerTile = 32
+
 func (window Window) DefaultRenderContext() Context {
 	w := float32(window.Width)
 	h := float32(window.Height)
@@ -35,9 +36,9 @@ func (window Window) DefaultRenderContext() Context {
 		-h/2/PixelsPerTile, h/2/PixelsPerTile,
 		-1, 1000,
 	)
-	return Context {
-		World: mgl32.Ident4(),
-		Size: mgl32.Vec2 { w/PixelsPerTile,h/PixelsPerTile },
+	return Context{
+		World:      mgl32.Ident4(),
+		Size:       mgl32.Vec2{w / PixelsPerTile, h / PixelsPerTile},
 		Projection: projectTransform,
 	}
 }

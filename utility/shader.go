@@ -33,6 +33,8 @@ func NewShader(vertexPath, fragmentPath string) *Shader {
 		log.Fatal(err)
 	}
 
+	log.Printf("compiling shader with vert=%s and frag=%s",
+		vertexPath,fragmentPath)
 	return NewShaderFromSource(string(vertexSource), string(fragmentSource))
 }
 
@@ -76,6 +78,9 @@ func (s *Shader) SetBool(name string, value bool) {
 }
 func (s *Shader) SetInt(name string, value int32) {
 	gl.Uniform1i(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), value)
+}
+func (s *Shader) SetUint(name string, value uint32) {
+	gl.Uniform1ui(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), value)
 }
 func (s *Shader) SetFloat(name string, value float32) {
 	gl.Uniform1f(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), value)
