@@ -1,7 +1,6 @@
 package camera
 
 import (
-	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/utility"
@@ -18,6 +17,7 @@ var (
 	zoomTarget   float32 = 1 // zoom value to end on
 	zoomCurrent  float32     // zoom value to start from
 	zoomProgress float32     // current zoom progress (from 0 to 1)
+	firstTick    bool    = true
 )
 
 type Camera struct {
@@ -89,7 +89,6 @@ func (camera *Camera) SetCameraZoomTarget(zoomOffset float32) {
 }
 
 //zooms on current position
-
 func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
 	if !zooming {
 		zooming = true
@@ -104,8 +103,12 @@ func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
 		// }
 		offset = 0.5 * zoomOffset
 
-		zoomTarget = zoomCurrent + offset
+		zoomTarget = zoomCurrent + offset/2
 		zoomTarget = utility.Clamp(zoomTarget, 0.5, 3)
+
+		if zoomTarget == zoomCurrent {
+			zooming = false
+		}
 	}
 }
 
@@ -121,12 +124,18 @@ func (camera Camera) GetTransform() mgl32.Mat4 {
 }
 
 func (camera *Camera) updateProjection() {
+	// projection := camera.GetProjectionMatrix()
+	// gl.UseProgram(camera.window.Program)
+	// gl.UniformMatrix4fv(gl.GetUniformLocation(camera.window.Program, gl.Str("projection\x00")), 1, false, &projection[0])
 	projection := camera.GetProjectionMatrix()
-	gl.UseProgram(camera.window.Program)
-	gl.UniformMatrix4fv(gl.GetUniformLocation(camera.window.Program, gl.Str("projection\x00")), 1, false, &projection[0])
+	camera.window.SetProjectionMatrix(projection)
 }
 
 func (camera *Camera) Tick(dt float32) {
+	if firstTick {
+		camera.updateProjection()
+		firstTick = false
+	}
 	// if not zooming nothing to do here
 	if !zooming {
 		return
