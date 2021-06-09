@@ -8,6 +8,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/starmap"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
@@ -15,6 +16,7 @@ import (
 	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
+	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
@@ -107,6 +109,8 @@ func main() {
 	worldItem.Pos.X = cat.Pos.X - 3
 	worldItem.Pos.Y = cat.Pos.Y + 2
 
+	sound.LoadSound("player_jump", "jump.wav")
+
 	var dt, lastFrame float32
 	lastFrame = float32(glfw.GetTime())
 
@@ -121,11 +125,13 @@ func main() {
 }
 
 func Init() {
+	sound.Init()
 	spriteloader.InitSpriteloader(&win)
 	spriteloader.DEBUG = false
 	item.InitWorldItem()
 	ui.InitTextRendering()
 	enemies.InitBasicEnemies()
+	particles.InitParticles()
 
 	cat = models.NewCat()
 	fps = models.NewFps(false)
@@ -137,6 +143,7 @@ func Init() {
 }
 
 func Tick(dt float32) {
+
 	Cam.Tick(dt)
 	fps.Tick()
 	if spacePressed {
@@ -148,6 +155,7 @@ func Tick(dt float32) {
 				0,
 			),
 		)
+		sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
 	}
 	if catIsScratching {
 		ui.PlaceDialogueBox(
@@ -160,6 +168,7 @@ func Tick(dt float32) {
 		)
 	}
 	ui.TickDialogueBoxes(dt)
+	particles.TickParticles(dt)
 
 	if worldItem != nil {
 		pickupItem := worldItem.Tick(CurrentPlanet, dt, cat.Pos)
@@ -181,6 +190,9 @@ func Tick(dt float32) {
 	}
 	enemies.TickBasicEnemies(CurrentPlanet, dt, cat, catIsScratching)
 
+	sound.SetListenerPosition(cat.Pos)
+	//has to be after listener position is updated
+	sound.Update()
 	spacePressed = false
 	catIsScratching = false
 }
@@ -195,7 +207,12 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	camCtx := baseCtx.PushView(Cam.GetView())
 
 	starmap.Draw()
-	CurrentPlanet.Draw(Cam)
+	CurrentPlanet.Draw(Cam, world.BgLayer)
+	CurrentPlanet.Draw(Cam, world.MidLayer)
+	// draw lasers between mid and top layers.
+	particles.DrawMidTopParticles(camCtx)
+	CurrentPlanet.Draw(Cam, world.TopLayer)
+	particles.DrawTopParticles(camCtx)
 	if worldItem != nil {
 		worldItem.Draw(Cam)
 	}
@@ -272,6 +289,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyLeftShift {
 			catIsScratching = true
 		}
+		if k == glfw.KeyM {
+			sound.ToggleMute()
+		}
 		inventory := item.GetInventoryById(inventoryId)
 		inventory.TrySelectSlot(k)
 	} else if a == glfw.Release {
@@ -298,8 +318,8 @@ func mouseButtonCallback(
 		return
 	}
 
-	screenX := float32(mouseX - float64(win.Width)/2)
-	screenY := float32(mouseY-float64(win.Height)/2) * -1
+	screenX := float32(mouseX-float64(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
+	screenY := (float32(mouseY-float64(win.Height)/2) * -1) / Cam.Zoom
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
 	if didSelectPaleteTile {
@@ -342,8 +362,6 @@ func windowSizeCallback(window *glfw.Window, width, height int) {
 	win.Width = width
 	win.Height = height
 }
-
-var yOffset float32 = 0
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {
 	Cam.SetCameraZoomPosition(float32(yOff))

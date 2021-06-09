@@ -8,9 +8,9 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/camera"
-	//"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/particles"
 )
 
 type Layer int
@@ -65,10 +65,8 @@ func (planet *Planet) DrawLayer(tiles []Tile, cam *camera.Camera) {
 	}
 }
 
-func (planet *Planet) Draw(cam *camera.Camera) {
-	planet.DrawLayer(planet.Layers.Background, cam)
-	planet.DrawLayer(planet.Layers.Mid, cam)
-	planet.DrawLayer(planet.Layers.Top, cam)
+func (planet *Planet) Draw(cam *camera.Camera, layer Layer) {
+	planet.DrawLayer(planet.GetLayer(layer), cam)
 }
 
 func (planet *Planet) GetTileIndex(x, y int) int {
@@ -316,6 +314,8 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 func (planet *Planet) DamageTile(x,y int, layer Layer) {
 	tileIdx := planet.GetTileIndex(x,y)
 	tile := &planet.GetLayer(layer)[tileIdx]
+	// TODO create tile chunk from collision point rather than tile center
+	particles.CreateTileChunks(float32(x),float32(y),tile.SpriteID)
 	tile.Durability--
 	if tile.Durability <= 0 {
 		*tile = NewEmptyTile()
