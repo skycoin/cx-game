@@ -51,7 +51,7 @@ func (camera *Camera) MoveCam(x, y float32, dTime float32) {
 }
 
 func (camera *Camera) GetView() mgl32.Mat4 {
-	return mgl32.Translate3D(-camera.X, -camera.Y, camera.Zoom)
+	return mgl32.Translate3D(-camera.X, -camera.Y, -camera.Zoom)
 }
 
 func (camera *Camera) GetProjectionMatrix() mgl32.Mat4 {

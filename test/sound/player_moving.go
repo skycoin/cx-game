@@ -9,15 +9,14 @@ import (
 
 func main() {
 	sound.Init()
-
 	sound.LoadSound("boo", "boo.wav")
-
 	enemyPos := physics.Vec2{-3, 2}
-	// sound.Play3DSound("bloop", physics.Vec2{-3, 2})
-	// sound.PlaySound("piano")
-	sound.Play2DSound("boo", &enemyPos, true)
+	sound.Play2DSound("boo", &enemyPos, sound.SoundOptions{
+		IsStatic: true,
+		Gain:     3.5,
+		Pitch:    1.5,
+	})
 
-	//imitate game loop
 	pos := physics.Vec2{-6, 0}
 
 	for {
