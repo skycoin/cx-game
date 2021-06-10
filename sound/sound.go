@@ -2,7 +2,6 @@ package sound
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"path"
@@ -30,6 +29,13 @@ type SoundSource struct {
 	Alive          bool
 }
 
+type SoundOptions struct {
+	IsStatic bool
+	Looped   bool
+	Gain     float32
+	Pitch    float32
+}
+
 const (
 	max_sources int     = 10
 	z           float32 = 0
@@ -46,6 +52,8 @@ var (
 	sources []*openal.Source
 
 	soundSources []*SoundSource
+
+	muted bool = false
 )
 
 //initialize openal
@@ -70,18 +78,31 @@ func Init() {
 	events = make(map[string]*openal.Buffer)
 }
 
-// update sound source positions
+//close openal
+func Close() {
+	for _, source := range sources {
+		source.Delete()
+	}
+
+	for _, buffer := range events {
+		buffer.Delete()
+	}
+
+	context.Destroy()
+	device.CloseDevice()
+}
+
+// update sound source  positions
 func Update() {
 	var listenerPos openal.Vector
 	Listener.GetPosition(&listenerPos)
 
-	fmt.Println("SS LEN c", len(soundSources))
 	for _, soundSource := range soundSources {
 		vec := openal.Vector{}
 		vec2 := openal.Vector{}
 		soundSource.Source.GetPosition(&vec)
 		Listener.GetPosition(&vec2)
-		fmt.Println(vec, "    ", vec2)
+		// fmt.Println(vec, "    ", vec2)
 		if soundSource.Source.State() == openal.Playing {
 			if !soundSource.TwoDimensional {
 				soundSource.Source.SetPosition(&listenerPos)
@@ -102,18 +123,27 @@ func Update() {
 }
 
 //play simple sound
-func PlaySound(event_name string) {
+func PlaySound(event_name string, options ...SoundOptions) uint32 {
 	source := getFreeSource()
 	if source == nil {
 		printDebug("NO AVAILABLE SOURCES")
-		return
+		return 0
 	}
 	buffer, ok := events[event_name]
 	if !ok {
 		printDebug("NO SUCH EVENT")
-		return
+		return 0
 	}
 	source.SetBuffer(*buffer)
+	if len(options) > 0 {
+		if options[0].Gain != 0 {
+			source.SetGain(options[0].Gain)
+		}
+		if options[0].Pitch != 0 {
+			source.SetPitch(options[0].Pitch)
+		}
+		source.SetLooping(options[0].Looped)
+	}
 
 	var listenerPos openal.Vector
 	Listener.GetPosition(&listenerPos)
@@ -126,25 +156,39 @@ func PlaySound(event_name string) {
 		Source:         source,
 		Alive:          true,
 	})
+
+	return uint32(*source)
 }
 
-//only mono audio format audio will be positioned
-func Play2DSound(event_name string, position *physics.Vec2, isStatic bool) {
+//Play sound placed in space. Pass in optional sound options struct
+func Play2DSound(event_name string, position *physics.Vec2, options ...SoundOptions) uint32 {
 	source := getFreeSource()
 	if source == nil {
 		printDebug("NO AVAILABLE SOURCES")
-		return
+		return 0
 	}
 
 	buffer, ok := events[event_name]
 	if !ok {
 		printDebug("NO SUCH EVENT")
-		return
+		return 0
 	}
 
 	source.SetBuffer(*buffer)
 	source.Set3f(openal.AlPosition, position.X, position.Y, z)
-	// if not static, update sources position in gorouting for the duration of the sound
+
+	isStatic := false
+	if len(options) > 0 {
+		if options[0].Gain != 0 {
+			source.SetGain(options[0].Gain)
+		}
+		if options[0].Pitch != 0 {
+			source.SetPitch(options[0].Pitch)
+		}
+		source.SetLooping(options[0].Looped)
+		isStatic = options[0].IsStatic
+	}
+
 	if !isStatic {
 		go func() {
 			for source.State().String() == "Playing" {
@@ -153,6 +197,9 @@ func Play2DSound(event_name string, position *physics.Vec2, isStatic bool) {
 			}
 		}()
 	}
+
+	// if not static, update sources position in gorouting for the duration of the sound
+
 	source.Play()
 
 	soundSources = append(soundSources, &SoundSource{
@@ -160,6 +207,17 @@ func Play2DSound(event_name string, position *physics.Vec2, isStatic bool) {
 		Source:         source,
 		Alive:          true,
 	})
+
+	return uint32(*source)
+}
+
+func StopSound(sourceInt uint32) {
+	if sourceInt == 0 {
+		printDebug("Wrong source ID!")
+	}
+	source := openal.Source(sourceInt)
+	source.Stop()
+	checkError()
 }
 
 //register sound event. If relative path is given, its base is considered ./assets/sound
@@ -182,10 +240,12 @@ func LoadSound(event_name string, filename string) error {
 	return nil
 }
 
+//set speaker position
 func SetListenerPosition(position physics.Vec2) {
 	Listener.Set3f(openal.AlPosition, position.X, position.Y, z)
 }
 
+//get free sound source, and if not, return nil
 func getFreeSource() *openal.Source {
 	for _, source := range sources {
 		state := source.State().String()
@@ -197,12 +257,12 @@ func getFreeSource() *openal.Source {
 }
 
 func printDebug(messages ...interface{}) {
-
 	if !DEBUG {
 		log.Println(messages...)
 	}
 }
 
+//create new buffer from file
 func NewBuffer(filename string) (*openal.Buffer, error) {
 
 	if path.Dir(filename) == "." {
@@ -231,6 +291,16 @@ func SetVolume(value float32) {
 	clampedValue := utility.Clamp(value, 0, 100)
 
 	Listener.SetGain(clampedValue / 100)
+}
+
+func ToggleMute() {
+	if !muted {
+		muted = true
+		SetVolume(0)
+	} else {
+		muted = false
+		SetVolume(100)
+	}
 }
 
 func checkError() bool {

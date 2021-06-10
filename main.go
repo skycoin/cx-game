@@ -143,7 +143,7 @@ func Init() {
 }
 
 func Tick(dt float32) {
-	sound.Update()
+
 	Cam.Tick(dt)
 	fps.Tick()
 	if spacePressed {
@@ -155,7 +155,7 @@ func Tick(dt float32) {
 				0,
 			),
 		)
-		sound.PlaySound("player_jump")
+		sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
 	}
 	if catIsScratching {
 		ui.PlaceDialogueBox(
@@ -190,6 +190,9 @@ func Tick(dt float32) {
 	}
 	enemies.TickBasicEnemies(CurrentPlanet, dt, cat, catIsScratching)
 
+	sound.SetListenerPosition(cat.Pos)
+	//has to be after listener position is updated
+	sound.Update()
 	spacePressed = false
 	catIsScratching = false
 }
@@ -286,6 +289,9 @@ func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.Modif
 		if k == glfw.KeyLeftShift {
 			catIsScratching = true
 		}
+		if k == glfw.KeyM {
+			sound.ToggleMute()
+		}
 		inventory := item.GetInventoryById(inventoryId)
 		inventory.TrySelectSlot(k)
 	} else if a == glfw.Release {
@@ -312,8 +318,8 @@ func mouseButtonCallback(
 		return
 	}
 
-	screenX := float32(mouseX - float64(win.Width)/2)
-	screenY := float32(mouseY-float64(win.Height)/2) * -1
+	screenX := float32(mouseX-float64(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
+	screenY := (float32(mouseY-float64(win.Height)/2) * -1) / Cam.Zoom
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
 	if didSelectPaleteTile {
@@ -356,8 +362,6 @@ func windowSizeCallback(window *glfw.Window, width, height int) {
 	win.Width = width
 	win.Height = height
 }
-
-var yOffset float32 = 0
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {
 	Cam.SetCameraZoomPosition(float32(yOff))
