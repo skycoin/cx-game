@@ -27,7 +27,7 @@ var playerStrikeRange = float32(1)
 
 func TickBasicEnemies(
 	world *world.Planet, dt float32,
-	player *models.Cat, playerIsAttacking bool,
+	player *models.Player, playerIsAttacking bool,
 ) {
 	nextEnemies := []BasicEnemy{}
 	for idx, _ := range basicEnemies {
@@ -68,7 +68,7 @@ func sign(x float32) float32 {
 }
 
 func (enemy *BasicEnemy) Tick(
-	world *world.Planet, dt float32, player *models.Cat,
+	world *world.Planet, dt float32, player *models.Player,
 	playerIsAttacking bool,
 ) bool {
 	enemy.Vel.X = basicEnemyMovSpeed * sign(player.Pos.X-enemy.Pos.X)

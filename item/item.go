@@ -20,7 +20,7 @@ type ItemUseInfo struct {
 	ScreenY float32
 	Camera *camera.Camera
 	Planet *world.Planet
-	Player *models.Cat
+	Player *models.Player
 }
 
 var itemTypes = []ItemType{}

@@ -201,7 +201,7 @@ func (inventory *Inventory) SelectedItemSlot() *InventorySlot {
 
 func (inventory *Inventory) TryUseItem(
 		screenX,screenY float32, cam *camera.Camera,
-		planet *world.Planet, player *models.Cat,
+		planet *world.Planet, player *models.Player,
 ) bool {
 	itemSlot := inventory.SelectedItemSlot()
 	// don't use empty items
