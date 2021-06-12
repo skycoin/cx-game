@@ -113,9 +113,7 @@ func (selector *TilePaletteSelector) Draw(ctx render.Context) {
 
 	selectorCtx := ctx.PushLocal(selector.Transform)
 	bgCtx := selectorCtx.PushLocal(cxmath.Scale(float32(1+padding)))
-
-	spriteloader.
-		DrawSpriteQuadContext(bgCtx, selector.redPixelSpriteId)
+	utility.DrawColorQuad(bgCtx, mgl32.Vec4{1,0,0,1})
 
 	if selector.SelectedTileIndex >= 0 {
 		utility.DrawColorQuad(render.Context {
