@@ -64,9 +64,6 @@ const selectorSize = 5
 
 func MakeTilePaleteSelector(width,height int) TilePaletteSelector {
 
-	spriteloader.LoadSingleSprite("./assets/blue_pixel.png", "blue-pixel")
-	spriteloader.LoadSingleSprite("./assets/red_pixel.png", "red-pixel")
-
 	return TilePaletteSelector{
 		Layers:            NewPaleteLayers(width*height),
 		Width:             width,
