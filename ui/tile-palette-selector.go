@@ -21,8 +21,6 @@ type TilePaletteSelector struct {
 	Height            int
 	SelectedTileIndex int
 	LayerIndex        int
-	bluePixelSpriteId int
-	redPixelSpriteId  int
 	multiTiles        map[layerIndexPair]world.MultiTile
 }
 
@@ -75,8 +73,6 @@ func MakeTilePaleteSelector(width,height int) TilePaletteSelector {
 		Height:            height,
 		SelectedTileIndex: -1,
 		LayerIndex:        -1,
-		bluePixelSpriteId: spriteloader.GetSpriteIdByName("blue-pixel"),
-		redPixelSpriteId:  spriteloader.GetSpriteIdByName("red-pixel"),
 		multiTiles:        make(map[layerIndexPair]world.MultiTile),
 	}
 }
