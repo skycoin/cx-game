@@ -3,6 +3,8 @@ package physics
 import (
 	"math"
 
+	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -51,7 +53,7 @@ func (body *Body) isCollidingLeft(planet *world.Planet, newpos Vec2) bool {
 	top := int(round32(body.Pos.Y + body.Size.Y/2 - eps))
 	for y := bottom; y <= top; y++ {
 		tile := planet.GetTopLayerTile(bounds.leftTile, y)
-		if tile.TileType != world.TileTypeNone {
+		if tile!=nil && tile.TileType != world.TileTypeNone {
 			return true
 		}
 	}
@@ -68,7 +70,7 @@ func (body *Body) isCollidingRight(planet *world.Planet, newpos Vec2) bool {
 	top := int(round32(body.Pos.Y + body.Size.Y/2 - eps))
 	for y := bottom; y <= top; y++ {
 		tile := planet.GetTopLayerTile(bounds.rightTile, y)
-		if tile.TileType != world.TileTypeNone {
+		if tile!=nil && tile.TileType != world.TileTypeNone {
 			return true
 		}
 	}
@@ -85,7 +87,7 @@ func (body *Body) isCollidingTop(planet *world.Planet, newpos Vec2) bool {
 	right := int(round32(body.Pos.X + body.Size.X/2 - eps))
 	for x := left; x <= right; x++ {
 		tile := planet.GetTopLayerTile(x, bounds.topTile)
-		if tile.TileType != world.TileTypeNone {
+		if tile!=nil && tile.TileType != world.TileTypeNone {
 			return true
 		}
 	}
@@ -102,7 +104,7 @@ func (body *Body) isCollidingBottom(planet *world.Planet, newpos Vec2) bool {
 	right := int(round32(body.Pos.X + body.Size.X/2 - eps))
 	for x := left; x <= right; x++ {
 		tile := planet.GetTopLayerTile(x, bounds.bottomTile)
-		if tile.TileType != world.TileTypeNone {
+		if tile!=nil && tile.TileType != world.TileTypeNone {
 			return true
 		}
 	}
@@ -155,7 +157,9 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 		}...)
 	}
 
-	body.Pos = newPos
+	newPosMgl32 := mgl32.Vec2 { newPos.X, newPos.Y }
+	wrapped := planet.WrapAround(newPosMgl32)
+	body.Pos = Vec2 { wrapped.X(), wrapped.Y() }
 }
 
 func (body *Body) GetBBoxLines() []float32 {

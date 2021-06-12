@@ -22,3 +22,10 @@ func atan2f32(y,x float32) float32 {
 func AngleTo(v1,v2 mgl32.Vec2) float32 {
 	return atan2f32(v1.Y(),v1.X()) - atan2f32(v2.Y(),v2.X())
 }
+
+// non negative solution to x % d  
+func PositiveModulo(x, b int) int {
+  x = x % b
+  if x >= 0 { return x }
+  return x + b
+}
