@@ -31,7 +31,7 @@ func UseLaserGun(info ItemUseInfo) {
 
 	for _,pos := range positions {
 		tile := info.Planet.GetTile(int(pos.X),int(pos.Y),world.TopLayer)
-		if tile.TileType != world.TileTypeNone {
+		if tile!=nil && tile.TileType != world.TileTypeNone {
 			info.Planet.DamageTile(int(pos.X), int(pos.Y), world.TopLayer)
 			return
 		}

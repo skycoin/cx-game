@@ -187,6 +187,7 @@ func Tick(dt float32) {
 		player.Tick(false, false, false, CurrentPlanet, dt)
 	} else {
 		player.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
+		Cam.SetCameraPosition(player.Pos.X,player.Pos.Y)
 	}
 	enemies.TickBasicEnemies(CurrentPlanet, dt, player, catIsScratching)
 
@@ -217,7 +218,7 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 		worldItem.Draw(Cam)
 	}
 	enemies.DrawBasicEnemies(Cam)
-	player.Draw(Cam)
+	player.Draw(Cam, CurrentPlanet)
 
 	// tile - air line (green)
 	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(

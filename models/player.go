@@ -3,6 +3,8 @@ package models
 import (
 	"image"
 
+	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/spriteloader"
@@ -32,16 +34,14 @@ func NewPlayer() *Player {
 	return &player
 }
 
-func (player *Player) Draw(cam *camera.Camera) {
+func (player *Player) Draw(cam *camera.Camera, planet *world.Planet) {
 
-	x := player.Pos.X - cam.X
-	y := player.Pos.Y - cam.Y
-	if !cam.IsInBoundsF(player.Pos.X, player.Pos.Y) {
-		return
-	}
+	disp := planet.ShortestDisplacement(
+		mgl32.Vec2 { cam.X, cam.Y },
+		mgl32.Vec2 { player.Pos.X, player.Pos.Y } )
 
 	spriteloader.DrawSpriteQuad(
-		x, y,
+		disp.X(), disp.Y(),
 		player.Size.X, player.Size.Y, player.spriteId,
 	)
 }
