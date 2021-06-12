@@ -6,6 +6,7 @@ import (
 
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/render"
 )
@@ -117,11 +118,12 @@ func (selector *TilePaletteSelector) Draw(ctx render.Context) {
 		DrawSpriteQuadContext(bgCtx, selector.redPixelSpriteId)
 
 	if selector.SelectedTileIndex >= 0 {
-		selectedTransform := selector.
-			worldTransformForTileAtIndex(selector.SelectedTileIndex)
-
-		spriteloader.
-			DrawSpriteQuadMatrix(selectedTransform, selector.bluePixelSpriteId)
+		utility.DrawColorQuad(render.Context {
+			World: selector.
+				worldTransformForTileAtIndex(selector.SelectedTileIndex),
+			Projection:
+				ctx.Projection,
+		}, mgl32.Vec4{0,0,1,1})
 	}
 
 	tiles := selector.Layers[selector.LayerIndex]
