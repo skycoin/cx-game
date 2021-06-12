@@ -3,7 +3,7 @@ package sound
 import (
 	"os"
 
-	"github.com/ikemen-engine/go-openal/openal"
+	"github.com/ted537/go-openal/openal"
 	"github.com/mjibson/go-dsp/wav"
 )
 

@@ -7,7 +7,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/ikemen-engine/go-openal/openal"
+	"github.com/ted537/go-openal/openal"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/utility"
 )
