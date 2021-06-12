@@ -132,6 +132,10 @@ func (camera *Camera) updateProjection() {
 }
 
 func (camera *Camera) Tick(dt float32) {
+	// TODO optimize this later if necessary
+	// always update the projection matrix in case window got resized
+	camera.updateProjection()
+
 	if firstTick {
 		camera.updateProjection()
 		firstTick = false
