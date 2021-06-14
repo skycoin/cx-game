@@ -84,7 +84,7 @@ func NewCatBlack(lwin *render.Window, lwindow *glfw.Window) *CatBlack {
 		SpriteSheetId: lspriteSheetId,
 		Walk: func() {
 			fmt.Println("Walk")
-			go play(walkSprite, 11, lwindow, lspriteSheetId)
+			play(walkSprite, 11, lwindow, lspriteSheetId)
 		},
 		Sit: func() {
 			fmt.Println("Sit")
