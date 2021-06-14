@@ -7,9 +7,9 @@ import (
 	"path"
 	"time"
 
-	"github.com/ted537/go-openal/openal"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/utility"
+	"github.com/ted537/go-openal/openal"
 )
 
 /* in OpenAL, there are 3 types of entities: Listener, Source and Buffer
@@ -143,6 +143,10 @@ func PlaySound(event_name string, options ...SoundOptions) uint32 {
 			source.SetPitch(options[0].Pitch)
 		}
 		source.SetLooping(options[0].Looped)
+	} else { //restore default
+		source.SetGain(1.0)
+		source.SetPitch(1.0)
+		source.SetLooping(false)
 	}
 
 	var listenerPos openal.Vector
@@ -187,6 +191,10 @@ func Play2DSound(event_name string, position *physics.Vec2, options ...SoundOpti
 		}
 		source.SetLooping(options[0].Looped)
 		isStatic = options[0].IsStatic
+	} else { //restore default
+		source.SetGain(1.0)
+		source.SetPitch(1.0)
+		source.SetLooping(false)
 	}
 
 	if !isStatic {
