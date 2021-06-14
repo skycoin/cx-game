@@ -6,6 +6,7 @@ import (
 
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/render"
 )
@@ -20,8 +21,6 @@ type TilePaletteSelector struct {
 	Height            int
 	SelectedTileIndex int
 	LayerIndex        int
-	bluePixelSpriteId int
-	redPixelSpriteId  int
 	multiTiles        map[layerIndexPair]world.MultiTile
 }
 
@@ -65,17 +64,12 @@ const selectorSize = 5
 
 func MakeTilePaleteSelector(width,height int) TilePaletteSelector {
 
-	spriteloader.LoadSingleSprite("./assets/blue_pixel.png", "blue-pixel")
-	spriteloader.LoadSingleSprite("./assets/red_pixel.png", "red-pixel")
-
 	return TilePaletteSelector{
 		Layers:            NewPaleteLayers(width*height),
 		Width:             width,
 		Height:            height,
 		SelectedTileIndex: -1,
 		LayerIndex:        -1,
-		bluePixelSpriteId: spriteloader.GetSpriteIdByName("blue-pixel"),
-		redPixelSpriteId:  spriteloader.GetSpriteIdByName("red-pixel"),
 		multiTiles:        make(map[layerIndexPair]world.MultiTile),
 	}
 }
@@ -112,16 +106,15 @@ func (selector *TilePaletteSelector) Draw(ctx render.Context) {
 
 	selectorCtx := ctx.PushLocal(selector.Transform)
 	bgCtx := selectorCtx.PushLocal(cxmath.Scale(float32(1+padding)))
-
-	spriteloader.
-		DrawSpriteQuadContext(bgCtx, selector.redPixelSpriteId)
+	utility.DrawColorQuad(bgCtx, mgl32.Vec4{1,0,0,1})
 
 	if selector.SelectedTileIndex >= 0 {
-		selectedTransform := selector.
-			worldTransformForTileAtIndex(selector.SelectedTileIndex)
-
-		spriteloader.
-			DrawSpriteQuadMatrix(selectedTransform, selector.bluePixelSpriteId)
+		utility.DrawColorQuad(render.Context {
+			World: selector.
+				worldTransformForTileAtIndex(selector.SelectedTileIndex),
+			Projection:
+				ctx.Projection,
+		}, mgl32.Vec4{0,0,1,1})
 	}
 
 	tiles := selector.Layers[selector.LayerIndex]

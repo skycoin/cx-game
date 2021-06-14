@@ -35,10 +35,10 @@ const (
 )
 
 var (
-	Cam *camera.Camera
-	win render.Window
-	cat *models.Cat
-	fps *models.Fps
+	Cam    *camera.Camera
+	win    render.Window
+	player *models.Player
+	fps    *models.Fps
 
 	CurrentPlanet      *world.Planet
 	DrawCollisionBoxes = false
@@ -100,14 +100,14 @@ func main() {
 	Cam.Y = 5
 	Cam.SetCameraPosition(Cam.X, Cam.Y)
 	Cam.SetCameraZoomPosition(0)
-	cat.Pos.X = float32(spawnX)
-	cat.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
-	enemies.SpawnBasicEnemy(cat.Pos.X+6, cat.Pos.Y)
-	enemies.SpawnBasicEnemy(cat.Pos.X-6, cat.Pos.Y)
+	player.Pos.X = float32(spawnX)
+	player.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
+	enemies.SpawnBasicEnemy(player.Pos.X+6, player.Pos.Y)
+	enemies.SpawnBasicEnemy(player.Pos.X-6, player.Pos.Y)
 
 	worldItem = item.NewWorldItem(debugItemTypeId)
-	worldItem.Pos.X = cat.Pos.X - 3
-	worldItem.Pos.Y = cat.Pos.Y + 2
+	worldItem.Pos.X = player.Pos.X - 3
+	worldItem.Pos.Y = player.Pos.Y + 2
 
 	sound.LoadSound("player_jump", "jump.wav")
 
@@ -133,7 +133,7 @@ func Init() {
 	enemies.InitBasicEnemies()
 	particles.InitParticles()
 
-	cat = models.NewCat()
+	player = models.NewPlayer()
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
 	CurrentPlanet = world.NewDevPlanet()
@@ -150,8 +150,8 @@ func Tick(dt float32) {
 		ui.PlaceDialogueBox(
 			"*jump*", ui.AlignRight, 1,
 			mgl32.Translate3D(
-				cat.Pos.X,
-				cat.Pos.Y,
+				player.Pos.X,
+				player.Pos.Y,
 				0,
 			),
 		)
@@ -161,8 +161,8 @@ func Tick(dt float32) {
 		ui.PlaceDialogueBox(
 			"*scratch", ui.AlignLeft, 1,
 			mgl32.Translate3D(
-				cat.Pos.X,
-				cat.Pos.Y,
+				player.Pos.X,
+				player.Pos.Y,
 				0,
 			),
 		)
@@ -171,7 +171,7 @@ func Tick(dt float32) {
 	particles.TickParticles(dt)
 
 	if worldItem != nil {
-		pickupItem := worldItem.Tick(CurrentPlanet, dt, cat.Pos)
+		pickupItem := worldItem.Tick(CurrentPlanet, dt, player.Pos)
 		if pickupItem {
 			item.GetInventoryById(inventoryId).
 				TryAddItem(worldItem.ItemTypeId)
@@ -184,13 +184,14 @@ func Tick(dt float32) {
 			boolToFloat(upPressed)-boolToFloat(downPressed),
 			dt,
 		)
-		cat.Tick(false, false, false, CurrentPlanet, dt)
+		player.Tick(false, false, false, CurrentPlanet, dt)
 	} else {
-		cat.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
+		player.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
+		Cam.SetCameraPosition(player.Pos.X,player.Pos.Y)
 	}
-	enemies.TickBasicEnemies(CurrentPlanet, dt, cat, catIsScratching)
+	enemies.TickBasicEnemies(CurrentPlanet, dt, player, catIsScratching)
 
-	sound.SetListenerPosition(cat.Pos)
+	sound.SetListenerPosition(player.Pos)
 	//has to be after listener position is updated
 	sound.Update()
 	spacePressed = false
@@ -217,20 +218,20 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 		worldItem.Draw(Cam)
 	}
 	enemies.DrawBasicEnemies(Cam)
-	cat.Draw(Cam)
+	player.Draw(Cam, CurrentPlanet)
 
 	// tile - air line (green)
 	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
-		int(cat.Pos.X), int(cat.Pos.Y))
+		int(player.Pos.X), int(player.Pos.Y))
 	if len(collidingTileLines) > 2 {
 		Cam.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0}, baseCtx)
 	}
 
 	// body bounding box (blue)
-	Cam.DrawLines(cat.GetBBoxLines(), []float32{0.0, 0.0, 1.0}, baseCtx)
+	Cam.DrawLines(player.GetBBoxLines(), []float32{0.0, 0.0, 1.0}, baseCtx)
 
 	// colliding line from body (red)
-	collidingLines := cat.GetCollidingLines()
+	collidingLines := player.GetCollidingLines()
 	if len(collidingLines) > 2 {
 		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0}, baseCtx)
 	}
@@ -349,7 +350,7 @@ func mouseButtonCallback(
 	}
 
 	item.GetInventoryById(inventoryId).
-		TryUseItem(screenX, screenY, Cam, CurrentPlanet, cat)
+		TryUseItem(screenX, screenY, Cam, CurrentPlanet, player)
 }
 
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
