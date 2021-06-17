@@ -182,8 +182,9 @@ func Tick(dt float32) {
 	}
 	if isFreeCam {
 		Cam.MoveCam(dt)
+		player.Tick(false, CurrentPlanet, dt)
 	} else {
-		player.Tick(CurrentPlanet, dt)
+		player.Tick(true, CurrentPlanet, dt)
 		Cam.SetCameraPosition(player.Pos.X, player.Pos.Y)
 	}
 	enemies.TickBasicEnemies(CurrentPlanet, dt, player, catIsScratching)

@@ -9,6 +9,7 @@ import (
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -47,20 +48,16 @@ func (player *Player) Draw(cam *camera.Camera, planet *world.Planet) {
 	)
 }
 
-func boolToFloat(x bool) float32 {
-	if x {
-		return 1
-	} else {
-		return 0
-	}
-}
-
-func (player *Player) Tick(planet *world.Planet, dt float32) {
-	player.Vel.X = (boolToFloat(input.GetButton("right")) - boolToFloat(input.GetButton("left"))) * player.movSpeed
+func (player *Player) Tick(controlled bool, planet *world.Planet, dt float32) {
 	player.Vel.Y -= physics.Gravity * dt
 
-	if input.GetButton("jump") {
-		player.Vel.Y = player.jumpSpeed
+	if controlled {
+		player.Vel.X = (utility.BoolToFloat(input.GetButton("right")) - utility.BoolToFloat(input.GetButton("left"))) * player.movSpeed
+		if input.GetButton("jump") {
+			player.Vel.Y = player.jumpSpeed
+		}
+	} else {
+		player.Vel.X = 0
 	}
 
 	player.Move(planet, dt)

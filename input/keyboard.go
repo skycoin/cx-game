@@ -4,12 +4,20 @@ import (
 	"log"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/utility"
 )
 
 var (
 	KeysPressed    map[glfw.Key]bool
 	ButtonsToKeys  map[string]glfw.Key
 	lastKeyPressed glfw.Key
+)
+
+type Axis int
+
+const (
+	HORIZONTAL Axis = iota
+	VERTICAL
 )
 
 func keyCallback(w *glfw.Window, key glfw.Key, s int, action glfw.Action, mk glfw.ModifierKey) {
@@ -37,7 +45,7 @@ func GetButton(button string) bool {
 	}
 	pressed, ok := KeysPressed[key]
 	if !ok {
-		log.Printf("ERROR!")
+		// log.Printf("ERROR!")
 		return false
 	}
 	return pressed
@@ -45,4 +53,13 @@ func GetButton(button string) bool {
 
 func GetLastKey() glfw.Key {
 	return lastKeyPressed
+}
+
+func GetAxis(axis Axis) float32 {
+	if axis == HORIZONTAL {
+		return utility.BoolToFloat(GetButton("right")) - utility.BoolToFloat(GetButton("left"))
+	} else { // VERTICAL
+		return utility.BoolToFloat(GetButton("up")) - utility.BoolToFloat(GetButton("down"))
+	}
+
 }

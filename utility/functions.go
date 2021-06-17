@@ -12,7 +12,7 @@ func Clamp(value, min, max float32) float32 {
 	return value
 }
 
-func boolToFloat(x bool) float32 {
+func BoolToFloat(x bool) float32 {
 	if x {
 		return 1
 	} else {

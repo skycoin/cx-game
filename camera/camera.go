@@ -46,10 +46,8 @@ func NewCamera(window *render.Window) *Camera {
 
 //Updates Camera Positions
 func (camera *Camera) MoveCam(dTime float32) {
-	x := 
-
-	camera.X += x * dTime * camera.movSpeed
-	camera.Y += y * dTime * camera.movSpeed
+	camera.X += input.GetAxis(input.HORIZONTAL) * dTime * camera.movSpeed
+	camera.Y += input.GetAxis(input.VERTICAL) * dTime * camera.movSpeed
 	camera.UpdateFrustum()
 }
 

@@ -21,6 +21,8 @@ func Init(window *glfw.Window) {
 
 	MapKeyToButton("right", glfw.KeyD)
 	MapKeyToButton("left", glfw.KeyA)
+	MapKeyToButton("up", glfw.KeyW)
+	MapKeyToButton("down", glfw.KeyS)
 	MapKeyToButton("jump", glfw.KeySpace)
 	MapKeyToButton("mute", glfw.KeyM)
 	MapKeyToButton("freecam", glfw.KeyF2)
