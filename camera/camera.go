@@ -2,6 +2,7 @@ package camera
 
 import (
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/utility"
 )
@@ -44,7 +45,9 @@ func NewCamera(window *render.Window) *Camera {
 }
 
 //Updates Camera Positions
-func (camera *Camera) MoveCam(x, y float32, dTime float32) {
+func (camera *Camera) MoveCam(dTime float32) {
+	x := 
+
 	camera.X += x * dTime * camera.movSpeed
 	camera.Y += y * dTime * camera.movSpeed
 	camera.UpdateFrustum()
