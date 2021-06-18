@@ -8,6 +8,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/starmap"
 
@@ -70,8 +71,7 @@ func main() {
 
 	Init()
 	window := win.Window
-	window.SetKeyCallback(keyCallBack)
-	window.SetCursorPosCallback(cursorPosCallback)
+
 	window.SetMouseButtonCallback(mouseButtonCallback)
 	window.SetScrollCallback(scrollCallback)
 	window.SetSizeCallback(windowSizeCallback)
@@ -119,12 +119,14 @@ func main() {
 		dt = currTime - lastFrame
 		lastFrame = currTime
 
+		ProcessInput()
 		Tick(dt)
 		Draw(window, program, win.VAO)
 	}
 }
 
 func Init() {
+	input.Init(win.Window)
 	sound.Init()
 	spriteloader.InitSpriteloader(&win)
 	spriteloader.DEBUG = false
@@ -143,30 +145,8 @@ func Init() {
 }
 
 func Tick(dt float32) {
-
 	Cam.Tick(dt)
 	fps.Tick()
-	if spacePressed {
-		ui.PlaceDialogueBox(
-			"*jump*", ui.AlignRight, 1,
-			mgl32.Translate3D(
-				player.Pos.X,
-				player.Pos.Y,
-				0,
-			),
-		)
-		sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
-	}
-	if catIsScratching {
-		ui.PlaceDialogueBox(
-			"*scratch", ui.AlignLeft, 1,
-			mgl32.Translate3D(
-				player.Pos.X,
-				player.Pos.Y,
-				0,
-			),
-		)
-	}
 	ui.TickDialogueBoxes(dt)
 	particles.TickParticles(dt)
 
@@ -179,23 +159,19 @@ func Tick(dt float32) {
 		}
 	}
 	if isFreeCam {
-		Cam.MoveCam(
-			boolToFloat(rightPressed)-boolToFloat(leftPressed),
-			boolToFloat(upPressed)-boolToFloat(downPressed),
-			dt,
-		)
-		player.Tick(false, false, false, CurrentPlanet, dt)
+		Cam.MoveCam(dt)
+		player.Tick(false, CurrentPlanet, dt)
 	} else {
-		player.Tick(leftPressed, rightPressed, spacePressed, CurrentPlanet, dt)
-		Cam.SetCameraPosition(player.Pos.X,player.Pos.Y)
+		player.Tick(true, CurrentPlanet, dt)
+		Cam.SetCameraPosition(player.Pos.X, player.Pos.Y)
 	}
 	enemies.TickBasicEnemies(CurrentPlanet, dt, player, catIsScratching)
 
 	sound.SetListenerPosition(player.Pos)
 	//has to be after listener position is updated
 	sound.Update()
-	spacePressed = false
 	catIsScratching = false
+
 }
 
 func Draw(window *glfw.Window, program uint32, VAO uint32) {
@@ -252,63 +228,47 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	window.SwapBuffers()
 }
 
-func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
-	if a == glfw.Press {
-		if k == glfw.KeyEscape {
-			w.SetShouldClose(true)
+func ProcessInput() {
+	if input.GetButtonDown("jump") {
+		if !player.Jump() {
+			return
 		}
-		if k == glfw.KeyW {
-			upPressed = true
-		}
-		if k == glfw.KeyS {
-			downPressed = true
-		}
-		if k == glfw.KeyA {
-			leftPressed = true
-		}
-		if k == glfw.KeyD {
-			rightPressed = true
-		}
-		if k == glfw.KeySpace {
-			spacePressed = true
-		}
-		if k == glfw.KeyQ {
-			Cam.Zoom += 0.5
-		}
-		if k == glfw.KeyZ {
-			Cam.Zoom -= 0.5
-		}
-		if k == glfw.KeyF2 {
-			isFreeCam = !isFreeCam
-		}
-		if k == glfw.KeyF3 {
-			tilePaletteSelector.CycleLayer()
-		}
-		if k == glfw.KeyI {
-			isInventoryGridVisible = !isInventoryGridVisible
-		}
-		if k == glfw.KeyLeftShift {
-			catIsScratching = true
-		}
-		if k == glfw.KeyM {
-			sound.ToggleMute()
-		}
-		inventory := item.GetInventoryById(inventoryId)
-		inventory.TrySelectSlot(k)
-	} else if a == glfw.Release {
-		if k == glfw.KeyW {
-			upPressed = false
-		}
-		if k == glfw.KeyS {
-			downPressed = false
-		}
-		if k == glfw.KeyA {
-			leftPressed = false
-		}
-		if k == glfw.KeyD {
-			rightPressed = false
-		}
+		ui.PlaceDialogueBox(
+			"*jump*", ui.AlignRight, 1,
+			mgl32.Translate3D(
+				player.Pos.X,
+				player.Pos.Y,
+				0,
+			),
+		)
+		sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
 	}
+	if input.GetButtonDown("scratch") {
+		ui.PlaceDialogueBox(
+			"*scratch", ui.AlignLeft, 1,
+			mgl32.Translate3D(
+				player.Pos.X,
+				player.Pos.Y,
+				0,
+			),
+		)
+		catIsScratching = true
+	}
+	if input.GetButtonDown("mute") {
+		sound.ToggleMute()
+	}
+	if input.GetButtonDown("freecam") {
+		isFreeCam = !isFreeCam
+	}
+	if input.GetButtonDown("cycle-palette") {
+		tilePaletteSelector.CycleLayer()
+	}
+	if input.GetButtonDown("inventory-grid") {
+		isInventoryGridVisible = !isInventoryGridVisible
+	}
+
+	inventory := item.GetInventoryById(inventoryId)
+	inventory.TrySelectSlot(input.GetLastKey())
 }
 
 func mouseButtonCallback(
@@ -319,8 +279,8 @@ func mouseButtonCallback(
 		return
 	}
 
-	screenX := float32(mouseX-float64(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
-	screenY := (float32(mouseY-float64(win.Height)/2) * -1) / Cam.Zoom
+	screenX := float32(input.GetMouseX()-float64(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
+	screenY := (float32(input.GetMouseY()-float64(win.Height)/2) * -1) / Cam.Zoom
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
 	if didSelectPaleteTile {
@@ -353,11 +313,6 @@ func mouseButtonCallback(
 		TryUseItem(screenX, screenY, Cam, CurrentPlanet, player)
 }
 
-func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
-	mouseX = xpos
-	mouseY = ypos
-}
-
 func windowSizeCallback(window *glfw.Window, width, height int) {
 	gl.Viewport(0, 0, int32(width), int32(height))
 	win.Width = width
@@ -366,12 +321,4 @@ func windowSizeCallback(window *glfw.Window, width, height int) {
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {
 	Cam.SetCameraZoomPosition(float32(yOff))
-}
-
-func boolToFloat(x bool) float32 {
-	if x {
-		return 1
-	} else {
-		return 0
-	}
 }
