@@ -49,6 +49,9 @@ func play(action int, fcount int, lwindow *glfw.Window, lspriteSheetId int) {
 			spriteloader.LoadSprite(lspriteSheetId, "blackcat", action, j)
 			spriteId := spriteloader.GetSpriteIdByName("blackcat")
 			fmt.Println("spriteId. ", spriteId, " j. ", j)
+			if err := gl.Init(); err != nil {
+				panic(err)
+			}
 			gl.ClearColor(1, 1, 1, 1)
 			gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 			spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
