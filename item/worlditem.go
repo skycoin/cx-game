@@ -52,6 +52,7 @@ func NewWorldItem(ItemTypeId ItemTypeID) *WorldItem {
 		},
 		ItemTypeId: ItemTypeId,
 	}
+	physics.RegisterBody(&item.Body)
 	return &item
 }
 
@@ -84,7 +85,7 @@ func (item *WorldItem) Tick(
 		item.Vel = item.Vel.Add(attractForce)
 	}
 
-	item.Move(planet, dt)
+	//item.Move(planet, dt)
 	didPickup := itemToPlayerDistSqr < pickupRadius*pickupRadius
 	if didPickup {
 		speaker.Play(bloopStreamer)

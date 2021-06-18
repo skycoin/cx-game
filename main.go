@@ -22,6 +22,7 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/physics"
 )
 
 func init() {
@@ -119,7 +120,6 @@ func main() {
 		dt = currTime - lastFrame
 		lastFrame = currTime
 
-		ProcessInput()
 		Tick(dt)
 		Draw(window, program, win.VAO)
 	}
@@ -144,7 +144,26 @@ func Init() {
 	starmap.Generate(256, 0.04, 8)
 }
 
+func FixedTick() {
+	ProcessInput()
+	if !isFreeCam {
+		player.FixedTick(true, CurrentPlanet)
+	}
+
+}
+
 func Tick(dt float32) {
+	// TODO account for the scenario where multiple physics ticks are required
+	if physics.WillTick(dt) {
+		FixedTick()
+	}
+	physics.Simulate(dt,CurrentPlanet)
+	if isFreeCam {
+		Cam.MoveCam(dt)
+	} else {
+		playerPos := player.InterpolatedTransform.Col(3).Vec2()
+		Cam.SetCameraPosition(playerPos.X(), playerPos.Y())
+	}
 	Cam.Tick(dt)
 	fps.Tick()
 	ui.TickDialogueBoxes(dt)
@@ -158,20 +177,12 @@ func Tick(dt float32) {
 			worldItem = nil
 		}
 	}
-	if isFreeCam {
-		Cam.MoveCam(dt)
-		player.Tick(false, CurrentPlanet, dt)
-	} else {
-		player.Tick(true, CurrentPlanet, dt)
-		Cam.SetCameraPosition(player.Pos.X, player.Pos.Y)
-	}
 	enemies.TickBasicEnemies(CurrentPlanet, dt, player, catIsScratching)
 
 	sound.SetListenerPosition(player.Pos)
 	//has to be after listener position is updated
 	sound.Update()
 	catIsScratching = false
-
 }
 
 func Draw(window *glfw.Window, program uint32, VAO uint32) {
@@ -230,18 +241,18 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 
 func ProcessInput() {
 	if input.GetButtonDown("jump") {
-		if !player.Jump() {
-			return
+		didJump := player.Jump()
+		if didJump {
+			ui.PlaceDialogueBox(
+				"*jump*", ui.AlignRight, 1,
+				mgl32.Translate3D(
+					player.Pos.X,
+					player.Pos.Y,
+					0,
+				),
+			)
+			sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
 		}
-		ui.PlaceDialogueBox(
-			"*jump*", ui.AlignRight, 1,
-			mgl32.Translate3D(
-				player.Pos.X,
-				player.Pos.Y,
-				0,
-			),
-		)
-		sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
 	}
 	if input.GetButtonDown("scratch") {
 		ui.PlaceDialogueBox(

@@ -32,14 +32,19 @@ func NewPlayer() *Player {
 		jumpSpeed: 12.0,
 		spriteId:  spriteId,
 	}
+	physics.RegisterBody(&player.Body)
+
 	return &player
 }
 
 func (player *Player) Draw(cam *camera.Camera, planet *world.Planet) {
 
+	worldTransform := player.InterpolatedTransform
+	worldPos := worldTransform.Col(3).Vec2()
+
 	disp := planet.ShortestDisplacement(
 		mgl32.Vec2{cam.X, cam.Y},
-		mgl32.Vec2{player.Pos.X, player.Pos.Y})
+		worldPos )
 
 	spriteloader.DrawSpriteQuad(
 		disp.X(), disp.Y(),
@@ -47,19 +52,17 @@ func (player *Player) Draw(cam *camera.Camera, planet *world.Planet) {
 	)
 }
 
-func (player *Player) Tick(controlled bool, planet *world.Planet, dt float32) {
-	player.Vel.Y -= physics.Gravity * dt
+func (player *Player) FixedTick(controlled bool, planet *world.Planet) {
+	player.Vel.Y -= physics.Gravity * physics.TimeStep
 
 	if controlled {
 		player.Vel.X = input.GetAxis(input.HORIZONTAL) * player.movSpeed
 	} else {
 		player.Vel.X = 0
 	}
-
-	player.Move(planet, dt)
 }
 
-func (player *Player) Jump() bool {
+func (player *Player) Jump() (didJump bool) {
 	if player.Vel.Y != 0 {
 		return false
 	}

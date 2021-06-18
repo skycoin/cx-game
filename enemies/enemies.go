@@ -20,7 +20,7 @@ func InitBasicEnemies() {
 // TODO load an actual sprite here
 var basicEnemySpriteId int
 var basicEnemyMovSpeed = float32(1)
-var basicEnemies = []BasicEnemy{}
+var basicEnemies = []*BasicEnemy{}
 
 // TODO create a system to handle projectiles, melee attacks, etc
 var playerStrikeRange = float32(1)
@@ -29,12 +29,12 @@ func TickBasicEnemies(
 	world *world.Planet, dt float32,
 	player *models.Player, playerIsAttacking bool,
 ) {
-	nextEnemies := []BasicEnemy{}
+	nextEnemies := []*BasicEnemy{}
 	for idx, _ := range basicEnemies {
-		enemy := &basicEnemies[idx]
+		enemy := basicEnemies[idx]
 		stillAlive := enemy.Tick(world, dt, player, playerIsAttacking)
 		if stillAlive {
-			nextEnemies = append(nextEnemies, *enemy)
+			nextEnemies = append(nextEnemies, enemy)
 		}
 	}
 	basicEnemies = nextEnemies
@@ -49,12 +49,14 @@ func DrawBasicEnemies(cam *camera.Camera) {
 }
 
 func SpawnBasicEnemy(x, y float32) {
-	basicEnemies = append(basicEnemies, BasicEnemy{
+	enemy := BasicEnemy{
 		Body: physics.Body{
 			Size: physics.Vec2{X: 2.0, Y: 2.0},
 			Pos:  physics.Vec2{X: x, Y: y},
 		},
-	})
+	}
+	physics.RegisterBody(&enemy.Body)
+	basicEnemies = append(basicEnemies, &enemy)
 }
 
 func sign(x float32) float32 {
@@ -73,7 +75,7 @@ func (enemy *BasicEnemy) Tick(
 ) bool {
 	enemy.Vel.X = basicEnemyMovSpeed * sign(player.Pos.X-enemy.Pos.X)
 	enemy.Vel.Y -= physics.Gravity * dt
-	enemy.Move(world, dt)
+	//enemy.Move(world, dt)
 
 	playerIsCloseEnoughToStrike :=
 		player.Pos.Sub(enemy.Pos).LengthSqr() <
