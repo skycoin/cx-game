@@ -51,6 +51,8 @@ github.com/shurcooL/sanitized_anchor_name v1.0.0 h1:PdmoCO6wvbs+7yrJyMORt4/BmY5I
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/ted537/go-openal v0.0.0-20210612191231-b4e5a97bd455 h1:VV4+E+mS4r194+MH1dT5LdsH6iYMYhWyw8RlCDO55hE=
 github.com/ted537/go-openal v0.0.0-20210612191231-b4e5a97bd455/go.mod h1:1VJdMqISUnAh9nS3I1qZbWRsblj6pXVFEohb+II/E2c=
+github.com/ted537/go-openal v0.0.0-20210618203930-fa36a2aaf89e h1:DHN8FjvIaCUy8UVrK4axWNv8UmkWFAd77YDteaHm6hs=
+github.com/ted537/go-openal v0.0.0-20210618203930-fa36a2aaf89e/go.mod h1:1VJdMqISUnAh9nS3I1qZbWRsblj6pXVFEohb+II/E2c=
 github.com/urfave/cli/v2 v2.3.0 h1:qph92Y649prgesehzOrQjdWyxFOp/QVM+6imKHad91M=
 github.com/urfave/cli/v2 v2.3.0/go.mod h1:LJmUH05zAU44vOAcrfzZQKsZbVcdbOG8rtL3/XcUArI=
 golang.org/x/exp v0.0.0-20180710024300-14dda7b62fcd h1:nLIcFw7GiqKXUS7HiChg6OAYWgASB2H97dZKd1GhDSs=
