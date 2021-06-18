@@ -20,7 +20,7 @@ cx-game requires Golang version of `1.13+`
 Install dependencies with
 ```
 sudo apt update
-sudo apt install -y glade xvfb libxinerama-dev libxcursor-dev libxrandr-dev libgl1-mesa-dev libxi-dev libperl-dev libcairo2-dev libpango1.0-dev libglib2.0-dev libopenal-dev libxxf86vm-dev make
+sudo apt install -y glade xvfb libxinerama-dev libxcursor-dev libxrandr-dev libgl1-mesa-dev libxi-dev libperl-dev libcairo2-dev libpango1.0-dev libglib2.0-dev libopenal-dev libxxf86vm-dev libasound2-dev make
 
 ```
 ### Install Go
