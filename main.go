@@ -145,30 +145,8 @@ func Init() {
 }
 
 func Tick(dt float32) {
-
 	Cam.Tick(dt)
 	fps.Tick()
-	if spacePressed {
-		ui.PlaceDialogueBox(
-			"*jump*", ui.AlignRight, 1,
-			mgl32.Translate3D(
-				player.Pos.X,
-				player.Pos.Y,
-				0,
-			),
-		)
-		sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
-	}
-	if catIsScratching {
-		ui.PlaceDialogueBox(
-			"*scratch", ui.AlignLeft, 1,
-			mgl32.Translate3D(
-				player.Pos.X,
-				player.Pos.Y,
-				0,
-			),
-		)
-	}
 	ui.TickDialogueBoxes(dt)
 	particles.TickParticles(dt)
 
@@ -192,6 +170,8 @@ func Tick(dt float32) {
 	sound.SetListenerPosition(player.Pos)
 	//has to be after listener position is updated
 	sound.Update()
+	catIsScratching = false
+
 }
 
 func Draw(window *glfw.Window, program uint32, VAO uint32) {
@@ -249,32 +229,46 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 }
 
 func ProcessInput() {
-	if input.GetButton("mute") {
+	if input.GetButtonDown("jump") {
+		if !player.Jump() {
+			return
+		}
+		ui.PlaceDialogueBox(
+			"*jump*", ui.AlignRight, 1,
+			mgl32.Translate3D(
+				player.Pos.X,
+				player.Pos.Y,
+				0,
+			),
+		)
+		sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
+	}
+	if input.GetButtonDown("scratch") {
+		ui.PlaceDialogueBox(
+			"*scratch", ui.AlignLeft, 1,
+			mgl32.Translate3D(
+				player.Pos.X,
+				player.Pos.Y,
+				0,
+			),
+		)
+		catIsScratching = true
+	}
+	if input.GetButtonDown("mute") {
 		sound.ToggleMute()
 	}
-	if input.GetButton("freecam") {
+	if input.GetButtonDown("freecam") {
 		isFreeCam = !isFreeCam
 	}
-	if input.GetButton("cycle-palette") {
+	if input.GetButtonDown("cycle-palette") {
 		tilePaletteSelector.CycleLayer()
 	}
+	if input.GetButtonDown("inventory-grid") {
+		isInventoryGridVisible = !isInventoryGridVisible
+	}
+
 	inventory := item.GetInventoryById(inventoryId)
 	inventory.TrySelectSlot(input.GetLastKey())
-}
-
-func keyCallBack(w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey) {
-	if a == glfw.Press {
-		if k == glfw.KeyI {
-			isInventoryGridVisible = !isInventoryGridVisible
-		}
-		if k == glfw.KeyLeftShift {
-			catIsScratching = true
-		}
-		if k == glfw.KeyM {
-			sound.ToggleMute()
-		}
-
-	}
 }
 
 func mouseButtonCallback(
