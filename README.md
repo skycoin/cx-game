@@ -120,6 +120,10 @@ Following [this](https://golang.org/doc/install) for more.
 * Select **Architecture = x86_64** as show in the picture. ![Alt Text](.github/images/mingw.png)
 * Now go to the installed directory and run **mingw-w64.bat** to add mingw to PATH.
 
+#### Install `OpenAL`
+* Download and extract zip archive from [openal.org][openal.org]
+* Run the installer
+
 ### Usage
 Opening terminal
 1. Click the Start menu.
@@ -159,3 +163,4 @@ Please make sure to update tests as appropriate.
 [git-scm]:https://git-scm.com/download/win
 [sublimetext]:https://www.sublimetext.com/3
 [mingw_online]:https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/mingw-w64-install.exe
+[openal.org]:https://openal.org/downloads/
