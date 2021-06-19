@@ -296,7 +296,7 @@ func NewBuffer(filename string) (*openal.Buffer, error) {
 
 // from 0 to 100
 func SetVolume(value float32) {
-	clampedValue := utility.Clamp(value, 0, 100)
+	clampedValue := utility.ClampF(value, 0, 100)
 
 	Listener.SetGain(clampedValue / 100)
 }

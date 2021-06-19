@@ -7,18 +7,21 @@ import (
 	"github.com/skycoin/cx-game/utility"
 )
 
-type zoomStatus int
-
 var (
 	//variables for smooth zooming over time
 	zooming      bool    = false // flag for to know if zooming is occuring
 	zoomDuration float32 = 0.6   // in seconds
+	zoomProgress float32
 
 	// variables for interpolation
-	zoomTarget   float32 = 1 // zoom value to end on
-	zoomCurrent  float32     // zoom value to start from
-	zoomProgress float32     // current zoom progress (from 0 to 1)
-	firstTick    bool    = true
+	zoomTarget  float32 = 1 // zoom value to end on
+	zoomCurrent float32     // zoom value to start from
+	// current zoom progress (from 0 to 1)
+
+	currentZoomIndex int = 1
+
+	zoomLevels = []float32{0.75, 1, 1.75}
+	// firstTick    bool    = true
 )
 
 type Camera struct {
@@ -93,20 +96,12 @@ func (camera *Camera) SetCameraZoomTarget(zoomOffset float32) {
 func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
 	if !zooming {
 		zooming = true
-		zoomCurrent = camera.Zoom
+		zoomCurrent = zoomLevels[currentZoomIndex]
 
-		//find better values for better zooming
-		var offset float32
-		// if zoomCurrent == 1 || zoomCurrent == 2.25 {
-		// 	offset = 0.75 * zoomOffset
-		// } else {
-		// 	offset = 1.25 * zoomOffset
-		// }
-		offset = 0.5 * zoomOffset
+		currentZoomIndex = utility.ClampI(currentZoomIndex+int(zoomOffset), 0, len(zoomLevels)-1)
+		nextZoomIndex := currentZoomIndex
 
-		zoomTarget = zoomCurrent + offset/2
-		zoomTarget = utility.Clamp(zoomTarget, 0.5, 3)
-
+		zoomTarget = zoomLevels[nextZoomIndex]
 		if zoomTarget == zoomCurrent {
 			zooming = false
 		}
@@ -137,10 +132,10 @@ func (camera *Camera) Tick(dt float32) {
 	// always update the projection matrix in case window got resized
 	camera.updateProjection()
 
-	if firstTick {
-		camera.updateProjection()
-		firstTick = false
-	}
+	// if firstTick {
+	// 	camera.updateProjection()
+	// 	firstTick = false
+	// }
 	// if not zooming nothing to do here
 	if !zooming {
 		return

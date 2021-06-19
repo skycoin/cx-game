@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"image"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -44,7 +45,7 @@ func (player *Player) Draw(cam *camera.Camera, planet *world.Planet) {
 
 	disp := planet.ShortestDisplacement(
 		mgl32.Vec2{cam.X, cam.Y},
-		worldPos )
+		worldPos)
 
 	spriteloader.DrawSpriteQuad(
 		disp.X(), disp.Y(),
@@ -63,9 +64,10 @@ func (player *Player) FixedTick(controlled bool, planet *world.Planet) {
 }
 
 func (player *Player) Jump() (didJump bool) {
-	if player.Vel.Y != 0 {
-		return false
+	if player.Collisions.Below {
+		player.Vel.Y = player.jumpSpeed
+		return true
 	}
-	player.Vel.Y += player.jumpSpeed
-	return true
+
+	return false
 }

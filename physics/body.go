@@ -12,18 +12,19 @@ import (
 const eps = 0.05
 
 type Body struct {
-	Pos            Vec2
-	Vel            Vec2
-	Size           Vec2
+	Pos  Vec2
+	Vel  Vec2
+	Size Vec2
 
-	PreviousTransform mgl32.Mat4
+	PreviousTransform     mgl32.Mat4
 	InterpolatedTransform mgl32.Mat4
 
+	Collisions     CollisionInfo
 	collidingLines []float32
 }
 
 func (body Body) Transform() mgl32.Mat4 {
-	return mgl32.Translate3D(body.Pos.X,body.Pos.Y,0)
+	return mgl32.Translate3D(body.Pos.X, body.Pos.Y, 0)
 }
 
 func (body *Body) SavePreviousTransform() {
@@ -31,7 +32,7 @@ func (body *Body) SavePreviousTransform() {
 }
 
 func (body *Body) UpdateInterpolatedTransform(alpha float32) {
-	prevPart := body.PreviousTransform.Mul(1-alpha)
+	prevPart := body.PreviousTransform.Mul(1 - alpha)
 	nextPart := body.Transform().Mul(alpha)
 	body.InterpolatedTransform = prevPart.Add(nextPart)
 }
@@ -71,7 +72,7 @@ func (body *Body) isCollidingLeft(planet *world.Planet, newpos Vec2) bool {
 	top := int(round32(body.Pos.Y + body.Size.Y/2 - eps))
 	for y := bottom; y <= top; y++ {
 		tile := planet.GetTopLayerTile(bounds.leftTile, y)
-		if tile!=nil && tile.TileType != world.TileTypeNone {
+		if tile != nil && tile.TileType != world.TileTypeNone {
 			return true
 		}
 	}
@@ -88,7 +89,7 @@ func (body *Body) isCollidingRight(planet *world.Planet, newpos Vec2) bool {
 	top := int(round32(body.Pos.Y + body.Size.Y/2 - eps))
 	for y := bottom; y <= top; y++ {
 		tile := planet.GetTopLayerTile(bounds.rightTile, y)
-		if tile!=nil && tile.TileType != world.TileTypeNone {
+		if tile != nil && tile.TileType != world.TileTypeNone {
 			return true
 		}
 	}
@@ -105,7 +106,7 @@ func (body *Body) isCollidingTop(planet *world.Planet, newpos Vec2) bool {
 	right := int(round32(body.Pos.X + body.Size.X/2 - eps))
 	for x := left; x <= right; x++ {
 		tile := planet.GetTopLayerTile(x, bounds.topTile)
-		if tile!=nil && tile.TileType != world.TileTypeNone {
+		if tile != nil && tile.TileType != world.TileTypeNone {
 			return true
 		}
 	}
@@ -122,7 +123,7 @@ func (body *Body) isCollidingBottom(planet *world.Planet, newpos Vec2) bool {
 	right := int(round32(body.Pos.X + body.Size.X/2 - eps))
 	for x := left; x <= right; x++ {
 		tile := planet.GetTopLayerTile(x, bounds.bottomTile)
-		if tile!=nil && tile.TileType != world.TileTypeNone {
+		if tile != nil && tile.TileType != world.TileTypeNone {
 			return true
 		}
 	}
@@ -131,6 +132,7 @@ func (body *Body) isCollidingBottom(planet *world.Planet, newpos Vec2) bool {
 
 func (body *Body) Move(planet *world.Planet, dt float32) {
 	body.collidingLines = []float32{}
+	body.Collisions.Reset()
 
 	if body.Vel.IsZero() {
 		return
@@ -139,6 +141,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
 	if body.isCollidingLeft(planet, newPos) {
+		body.Collisions.Left = true
 		body.Vel.X = 0
 		newPos.X = float32(body.bounds(newPos).leftTile) + 0.5 + body.Size.X/2
 
@@ -148,6 +151,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 		}...)
 	}
 	if body.isCollidingRight(planet, newPos) {
+		body.Collisions.Right = true
 		body.Vel.X = 0
 		newPos.X = float32(body.bounds(newPos).rightTile) - 0.5 - body.Size.X/2
 
@@ -157,6 +161,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 		}...)
 	}
 	if body.isCollidingTop(planet, newPos) {
+		body.Collisions.Above = true
 		body.Vel.Y = 0
 		newPos.Y = float32(body.bounds(newPos).topTile) - 0.5 - body.Size.Y/2
 
@@ -166,6 +171,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 		}...)
 	}
 	if body.isCollidingBottom(planet, newPos) {
+		body.Collisions.Below = true
 		body.Vel.Y = 0
 		newPos.Y = float32(body.bounds(newPos).bottomTile) + 0.5 + body.Size.Y/2
 
@@ -175,9 +181,9 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 		}...)
 	}
 
-	newPosMgl32 := mgl32.Vec2 { newPos.X, newPos.Y }
+	newPosMgl32 := mgl32.Vec2{newPos.X, newPos.Y}
 	wrapped := planet.WrapAround(newPosMgl32)
-	body.Pos = Vec2 { wrapped.X(), wrapped.Y() }
+	body.Pos = Vec2{wrapped.X(), wrapped.Y()}
 }
 
 func (body *Body) GetBBoxLines() []float32 {
