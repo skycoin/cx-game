@@ -2,18 +2,13 @@
 package item
 
 import (
-	"log"
-	"os"
-	"time"
-
 	"github.com/faiface/beep"
-	"github.com/faiface/beep/speaker"
-	"github.com/faiface/beep/wav"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/physics"
+	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/world"
 )
@@ -24,16 +19,18 @@ const bloopVolume = 1
 
 func InitWorldItem() {
 	// setup bloop sound
-	file, err := os.Open("./assets/sound/bloop.wav")
-	if err != nil {
-		log.Fatal(err)
-	}
-	streamer, format, err := wav.Decode(file)
-	bloopStreamer = streamer
-	if err != nil {
-		log.Fatal(err)
-	}
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+	// file, err := os.Open("./assets/sound/bloop.wav")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer file.Close()
+	// streamer, format, err := wav.Decode(file)
+	// bloopStreamer = streamer
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+	sound.LoadSound("bloop", "bloop.wav")
 }
 
 const pickupRadius = 0.2
@@ -88,7 +85,7 @@ func (item *WorldItem) Tick(
 	//item.Move(planet, dt)
 	didPickup := itemToPlayerDistSqr < pickupRadius*pickupRadius
 	if didPickup {
-		speaker.Play(bloopStreamer)
+		sound.PlaySound("bloop")
 	}
 	return didPickup
 }

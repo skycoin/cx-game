@@ -18,11 +18,11 @@ import (
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/particles"
+	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/physics"
 )
 
 func init() {
@@ -76,7 +76,6 @@ func main() {
 	window.SetMouseButtonCallback(mouseButtonCallback)
 	window.SetScrollCallback(scrollCallback)
 	window.SetSizeCallback(windowSizeCallback)
-	program := win.Program
 
 	inventoryId = item.NewInventory(10, 8)
 
@@ -97,10 +96,8 @@ func main() {
 
 	//init cam and cat positions
 	spawnX := int(20)
-	Cam.X = float32(spawnX)
-	Cam.Y = 5
-	Cam.SetCameraPosition(Cam.X, Cam.Y)
-	Cam.SetCameraZoomPosition(0)
+	Cam.SetCameraPosition(float32(spawnX), 5)
+	// Cam.SetCameraZoomPosition(0)
 	player.Pos.X = float32(spawnX)
 	player.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 	enemies.SpawnBasicEnemy(player.Pos.X+6, player.Pos.Y)
@@ -121,7 +118,7 @@ func main() {
 		lastFrame = currTime
 
 		Tick(dt)
-		Draw(window, program, win.VAO)
+		Draw()
 	}
 }
 
@@ -157,7 +154,7 @@ func Tick(dt float32) {
 	if physics.WillTick(dt) {
 		FixedTick()
 	}
-	physics.Simulate(dt,CurrentPlanet)
+	physics.Simulate(dt, CurrentPlanet)
 	if isFreeCam {
 		Cam.MoveCam(dt)
 	} else {
@@ -185,7 +182,7 @@ func Tick(dt float32) {
 	catIsScratching = false
 }
 
-func Draw(window *glfw.Window, program uint32, VAO uint32) {
+func Draw() {
 	gl.ClearColor(1, 1, 1, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -236,7 +233,7 @@ func Draw(window *glfw.Window, program uint32, VAO uint32) {
 	tilePaletteSelector.Draw(baseCtx)
 
 	glfw.PollEvents()
-	window.SwapBuffers()
+	win.Window.SwapBuffers()
 }
 
 func ProcessInput() {
