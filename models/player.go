@@ -54,7 +54,6 @@ func (player *Player) Draw(cam *camera.Camera, planet *world.Planet) {
 }
 
 func (player *Player) FixedTick(controlled bool, planet *world.Planet) {
-	fmt.Println(player.Vel.Y)
 	player.Vel.Y -= physics.Gravity * physics.TimeStep
 
 	if controlled {
