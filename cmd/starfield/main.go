@@ -439,7 +439,7 @@ func genPerlin(width, height int, noiseConfig *noiseSettings) [][]float32 {
 				noiseConfig.Lacunarity,
 				noiseConfig.Octaves,
 			)
-			result = utility.Clamp(result-min/(max-min), 0.0, 1.0)
+			result = utility.ClampF(result-min/(max-min), 0.0, 1.0)
 			grid[y] = append(grid[y], result)
 		}
 
