@@ -26,7 +26,16 @@ type Player struct {
 	MovementType    MovementType
 }
 
+type MovementType uint
+
+const (
+	NORMAL MovementType = iota
+	WALL_SLIDING
+	FLYING
+)
+
 var (
+	maxVerticalSpeed           float32 = 5
 	minJumpSpeed, maxJumpSpeed float32
 	maxAdditionalJumps         uint = 1
 	jumpCounter                uint
@@ -133,5 +142,37 @@ func (player *Player) ToggleFlying() {
 		player.MovementType = NORMAL
 	} else {
 		player.MovementType = FLYING
+	}
+}
+
+//states - running
+func (player *Player) ApplyMovementConstraints() {
+	switch player.MovementType {
+	case NORMAL: // moving | idle
+		//sprite normal
+	case WALL_SLIDING: // wall slide
+		player.Vel.Y = cxmath.Max(player.Vel.Y, -6)
+		player.AdditionalJumps = maxAdditionalJumps
+	case FLYING: // flying
+
+		if input.GetAxis(input.VERTICAL) == 0 {
+			player.Vel.Y = -3
+		} else {
+			player.Vel.Y = input.GetAxis(input.VERTICAL) * maxVerticalSpeed
+			// player.Vel.Y = utility.ClampF(player.Vel.Y, -maxVerticalSpeed, maxVerticalSpeed)
+		}
+	}
+}
+
+func (m MovementType) String() string {
+	switch m {
+	case NORMAL:
+		return "moving"
+	case WALL_SLIDING:
+		return "wall sliding"
+	case FLYING:
+		return "flying"
+	default:
+		return "unknown"
 	}
 }
