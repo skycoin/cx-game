@@ -146,6 +146,8 @@ func Init() {
 func FixedTick() {
 	if !isFreeCam {
 		player.FixedTick(true, CurrentPlanet)
+	} else {
+		player.FixedTick(false, CurrentPlanet)
 	}
 }
 

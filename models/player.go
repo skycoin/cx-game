@@ -98,7 +98,9 @@ func (player *Player) FixedTick(controlled bool, planet *world.Planet) {
 	}
 	player.Vel.Y -= physics.Gravity * physics.TimeStep
 
-	player.Vel.X += input.GetAxis(input.HORIZONTAL) * player.acceleration
+	if controlled {
+		player.Vel.X += input.GetAxis(input.HORIZONTAL) * player.acceleration
+	}
 	if player.Vel.X != 0 {
 		friction := cxmath.Sign(player.Vel.X) * -1 * player.acceleration * player.meta.DynamicFriction
 		if cxmath.Abs(player.Vel.X) <= player.acceleration*player.meta.DynamicFriction && input.GetAxis(input.HORIZONTAL) == 0 {
@@ -109,7 +111,7 @@ func (player *Player) FixedTick(controlled bool, planet *world.Planet) {
 
 	}
 	player.Vel.X = utility.ClampF(player.Vel.X, -player.meta.MovementSpeed, player.meta.MovementSpeed)
-	player.ApplyMovementConstraints()
+	player.ApplyMovementConstraints(controlled)
 }
 
 func (player *Player) Jump() bool {
@@ -146,7 +148,7 @@ func (player *Player) ToggleFlying() {
 }
 
 //states - running
-func (player *Player) ApplyMovementConstraints() {
+func (player *Player) ApplyMovementConstraints(controlled bool) {
 	switch player.MovementType {
 	case NORMAL: // moving | idle
 		//sprite normal
@@ -155,7 +157,7 @@ func (player *Player) ApplyMovementConstraints() {
 		player.AdditionalJumps = maxAdditionalJumps
 	case FLYING: // flying
 
-		if input.GetAxis(input.VERTICAL) == 0 {
+		if input.GetAxis(input.VERTICAL) == 0 || !controlled {
 			player.Vel.Y = -3
 		} else {
 			player.Vel.Y = input.GetAxis(input.VERTICAL) * maxVerticalSpeed
