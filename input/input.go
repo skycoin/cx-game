@@ -23,7 +23,9 @@ var (
 func Init(window *glfw.Window) {
 	KeysPressed = make(map[glfw.Key]bool)
 	KeysPressedDown = make(map[glfw.Key]bool)
+	KeysPressedUp = make(map[glfw.Key]bool)
 	ButtonsToKeys = make(map[string]glfw.Key)
+
 	mouseCoords = &MouseCoords{}
 
 	window_ = window
@@ -36,4 +38,18 @@ func Init(window *glfw.Window) {
 func registerCallbacks() {
 	window_.SetKeyCallback(keyCallback)
 	window_.SetCursorPosCallback(cursorPosCallback)
+}
+
+func registerKeyMaps() {
+	MapKeyToButton("right", glfw.KeyD)
+	MapKeyToButton("left", glfw.KeyA)
+	MapKeyToButton("up", glfw.KeyW)
+	MapKeyToButton("down", glfw.KeyS)
+	MapKeyToButton("jump", glfw.KeySpace)
+	MapKeyToButton("mute", glfw.KeyM)
+	MapKeyToButton("freecam", glfw.KeyF2)
+	MapKeyToButton("cycle-palette", glfw.KeyF3)
+	MapKeyToButton("scratch", glfw.KeyLeftShift)
+	MapKeyToButton("inventory-grid", glfw.KeyI)
+	MapKeyToButton("fly", glfw.KeyT)
 }
