@@ -24,18 +24,22 @@ func UseLaserGun(info ItemUseInfo) {
 		float64(info.Player.Pos.X)+0.5,float64(info.Player.Pos.Y)+0.5,
 		float64(worldCoords.X())+0.5,float64(worldCoords.Y()) + 0.5 )
 
-	particles.CreateLaser(
-		mgl32.Vec2{ info.Player.Pos.X, info.Player.Pos.Y},
-		worldCoords.Vec2(),
-	)
-
+	playerPos := mgl32.Vec2{ info.Player.Pos.X, info.Player.Pos.Y}
 	for _,pos := range positions {
-		tile := info.Planet.GetTile(int(pos.X),int(pos.Y),world.TopLayer)
-		if tile!=nil && tile.TileType != world.TileTypeNone {
+		if info.Planet.TileIsSolid(int(pos.X),int(pos.Y)) {
+			direction := worldCoords.Vec2().Sub(playerPos).Normalize()
+			length := pos.Vec2().Sub(playerPos).Len() + 0.5
+			targetPos := playerPos.Add(direction.Mul(length))
+
+			particles.CreateLaser(playerPos, targetPos)
+
 			info.Planet.DamageTile(int(pos.X), int(pos.Y), world.TopLayer)
 			return
 		}
 	}
+
+	// hit nothing - visual effect only
+	particles.CreateLaser(playerPos, worldCoords.Vec2() )
 }
 
 func RegisterLaserGunItemType() ItemTypeID {
