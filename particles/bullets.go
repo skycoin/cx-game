@@ -10,7 +10,7 @@ import (
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/physics/collision"
+	"github.com/skycoin/cx-game/physics"
 )
 
 type Bullet struct {
@@ -84,7 +84,7 @@ func TickBullets(dt float32) {
 		bullet.transform = bullet.transform.Mul4(
 			mgl32.Translate3D(bullet.velocity.X()*dt, bullet.velocity.Y()*dt, 0) )
 
-		collision,collided := collision.Check(bullet.WorldTransform())
+		collision,collided := physics.CheckCollision(bullet.WorldTransform())
 		_ = collision
 		if collided {
 			log.Print("bullet hit something")

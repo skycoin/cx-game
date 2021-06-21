@@ -1,7 +1,7 @@
 package physics
 
 import (
-	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/world/worldcollider"
 )
 
 var bodies = []*Body {}
@@ -17,7 +17,7 @@ const TimeStep float32 = 1.0/30
 
 type TickInfo struct {
 	Dt float32
-	Planet *world.Planet
+	WorldCollider worldcollider.WorldCollider
 }
 
 var prevTime,nextTime = float32(0),float32(0)
@@ -30,13 +30,13 @@ func WillTick(dt float32) bool {
 }
 
 // run the necessary number of physics ticks for a given time delta
-func Simulate(dt float32, planet *world.Planet) {
+func Simulate(dt float32, worldcollider worldcollider.WorldCollider) {
 	now += dt
 	// run physics ticks until the current time lies between
 	// the previous physics state and the next physics state.
 	// Then, we can interpolate
 	for nextTime<now {
-		tick(planet)
+		tick(worldcollider)
 	}
 
 	// physics simulation is done; save interpolated values for rendering
@@ -46,13 +46,13 @@ func Simulate(dt float32, planet *world.Planet) {
 	}
 }
 
-func tick(planet *world.Planet) {
+func tick(worldcollider worldcollider.WorldCollider) {
 	prevTime = nextTime
 	nextTime += TimeStep
 
 	for idx,_ := range bodies {
 		bodies[idx].SavePreviousTransform()
-		bodies[idx].Move(planet, TimeStep)
+		bodies[idx].Move(worldcollider, TimeStep)
 	}
 }
 

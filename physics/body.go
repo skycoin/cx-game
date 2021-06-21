@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/world/worldcollider"
 )
 
 // epsilon parameter for values that are "close enough"
@@ -62,7 +62,7 @@ func round32(x float32) float32 {
 	return float32(math.Round(float64(x)))
 }
 
-func (body *Body) isCollidingLeft(planet *world.Planet, newpos Vec2) bool {
+func (body *Body) isCollidingLeft(collider worldcollider.WorldCollider, newpos Vec2) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving left
 	if body.Vel.X >= 0 {
@@ -71,15 +71,14 @@ func (body *Body) isCollidingLeft(planet *world.Planet, newpos Vec2) bool {
 	bottom := int(round32(body.Pos.Y - body.Size.Y/2 + eps))
 	top := int(round32(body.Pos.Y + body.Size.Y/2 - eps))
 	for y := bottom; y <= top; y++ {
-		tile := planet.GetTopLayerTile(bounds.leftTile, y)
-		if tile != nil && tile.TileType != world.TileTypeNone {
+		if collider.TileIsSolid(bounds.leftTile, y) {
 			return true
 		}
 	}
 	return false
 }
 
-func (body *Body) isCollidingRight(planet *world.Planet, newpos Vec2) bool {
+func (body *Body) isCollidingRight(collider worldcollider.WorldCollider, newpos Vec2) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving right
 	if body.Vel.X <= 0 {
@@ -88,15 +87,14 @@ func (body *Body) isCollidingRight(planet *world.Planet, newpos Vec2) bool {
 	bottom := int(round32(body.Pos.Y - body.Size.Y/2 + eps))
 	top := int(round32(body.Pos.Y + body.Size.Y/2 - eps))
 	for y := bottom; y <= top; y++ {
-		tile := planet.GetTopLayerTile(bounds.rightTile, y)
-		if tile != nil && tile.TileType != world.TileTypeNone {
+		if collider.TileIsSolid(bounds.rightTile, y) {
 			return true
 		}
 	}
 	return false
 }
 
-func (body *Body) isCollidingTop(planet *world.Planet, newpos Vec2) bool {
+func (body *Body) isCollidingTop(collider worldcollider.WorldCollider, newpos Vec2) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving up
 	if body.Vel.Y <= 0 {
@@ -105,15 +103,14 @@ func (body *Body) isCollidingTop(planet *world.Planet, newpos Vec2) bool {
 	left := int(round32(body.Pos.X - body.Size.X/2 + eps))
 	right := int(round32(body.Pos.X + body.Size.X/2 - eps))
 	for x := left; x <= right; x++ {
-		tile := planet.GetTopLayerTile(x, bounds.topTile)
-		if tile != nil && tile.TileType != world.TileTypeNone {
+		if collider.TileIsSolid(x, bounds.topTile) {
 			return true
 		}
 	}
 	return false
 }
 
-func (body *Body) isCollidingBottom(planet *world.Planet, newpos Vec2) bool {
+func (body *Body) isCollidingBottom(collider worldcollider.WorldCollider, newpos Vec2) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving down
 	if body.Vel.Y >= 0 {
@@ -122,15 +119,14 @@ func (body *Body) isCollidingBottom(planet *world.Planet, newpos Vec2) bool {
 	left := int(round32(body.Pos.X - body.Size.X/2 + eps))
 	right := int(round32(body.Pos.X + body.Size.X/2 - eps))
 	for x := left; x <= right; x++ {
-		tile := planet.GetTopLayerTile(x, bounds.bottomTile)
-		if tile != nil && tile.TileType != world.TileTypeNone {
+		if collider.TileIsSolid(x, bounds.bottomTile) {
 			return true
 		}
 	}
 	return false
 }
 
-func (body *Body) Move(planet *world.Planet, dt float32) {
+func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	body.collidingLines = []float32{}
 	body.Collisions.Reset()
 
@@ -140,7 +136,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
-	if body.isCollidingLeft(planet, newPos) {
+	if body.isCollidingLeft(collider, newPos) {
 		body.Collisions.Left = true
 		body.Vel.X = 0
 		newPos.X = float32(body.bounds(newPos).leftTile) + 0.5 + body.Size.X/2
@@ -150,7 +146,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 			newPos.X - body.Size.X/2, newPos.Y + body.Size.Y/2, 0.0,
 		}...)
 	}
-	if body.isCollidingRight(planet, newPos) {
+	if body.isCollidingRight(collider, newPos) {
 		body.Collisions.Right = true
 		body.Vel.X = 0
 		newPos.X = float32(body.bounds(newPos).rightTile) - 0.5 - body.Size.X/2
@@ -160,7 +156,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 			newPos.X + body.Size.X/2, newPos.Y + body.Size.Y/2, 0.0,
 		}...)
 	}
-	if body.isCollidingTop(planet, newPos) {
+	if body.isCollidingTop(collider, newPos) {
 		body.Collisions.Above = true
 		body.Vel.Y = 0
 		newPos.Y = float32(body.bounds(newPos).topTile) - 0.5 - body.Size.Y/2
@@ -170,7 +166,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 			newPos.X + body.Size.X/2, newPos.Y + body.Size.Y/2, 0.0,
 		}...)
 	}
-	if body.isCollidingBottom(planet, newPos) {
+	if body.isCollidingBottom(collider, newPos) {
 		body.Collisions.Below = true
 		body.Vel.Y = 0
 		newPos.Y = float32(body.bounds(newPos).bottomTile) + 0.5 + body.Size.Y/2
@@ -182,7 +178,7 @@ func (body *Body) Move(planet *world.Planet, dt float32) {
 	}
 
 	newPosMgl32 := mgl32.Vec2{newPos.X, newPos.Y}
-	wrapped := planet.WrapAround(newPosMgl32)
+	wrapped := collider.WrapAround(newPosMgl32)
 	body.Pos = Vec2{wrapped.X(), wrapped.Y()}
 }
 
