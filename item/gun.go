@@ -7,11 +7,14 @@ import (
 )
 
 const bulletSpeed float32 = 40
+const offsetFromPlayer float32 = 0.5
 
 func UseGun(info ItemUseInfo) {
 	target := info.WorldCoords()
-	velocity := target.Sub(info.PlayerCoords()).Normalize().Mul(bulletSpeed)
-	particles.CreateBullet( info.PlayerCoords(), velocity )
+	direction := target.Sub(info.PlayerCoords()).Normalize()
+	origin := info.PlayerCoords().Add(direction.Mul(offsetFromPlayer))
+	velocity := direction.Mul(bulletSpeed)
+	particles.CreateBullet( origin, velocity )
 }
 
 func RegisterGunItemType() ItemTypeID {
