@@ -1,6 +1,7 @@
 package particles
 
 import (
+	"log"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -9,6 +10,7 @@ import (
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/physics/collision"
 )
 
 type Bullet struct {
@@ -37,8 +39,12 @@ func CreateBullet( origin mgl32.Vec2, velocity mgl32.Vec2 ) {
 	})
 }
 
+func (bullet Bullet) WorldTransform() mgl32.Mat4 {
+	return bullet.transform.Mul4(cxmath.Scale(1.0/4))
+}
+
 func (bullet Bullet) draw(ctx render.Context) {
-	world := ctx.World.Mul4(bullet.transform).Mul4(cxmath.Scale(1.0/4))
+	world := bullet.WorldTransform()
 	bulletShader.SetMat4("world", &world)
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
@@ -78,7 +84,13 @@ func TickBullets(dt float32) {
 		bullet.transform = bullet.transform.Mul4(
 			mgl32.Translate3D(bullet.velocity.X()*dt, bullet.velocity.Y()*dt, 0) )
 
-		newBullets = append(newBullets,bullet)
+		collision,collided := collision.Check(bullet.WorldTransform())
+		_ = collision
+		if collided {
+			log.Print("bullet hit something")
+		} else {
+			newBullets = append(newBullets,bullet)
+		}
 	}
 	bullets = newBullets
 }
