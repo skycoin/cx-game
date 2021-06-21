@@ -1,7 +1,6 @@
 package particles
 
 import (
-	"log"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -9,6 +8,7 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/cxmath"
 )
 
 type Bullet struct {
@@ -31,7 +31,6 @@ func InitBullets() {
 }
 
 func CreateBullet( origin mgl32.Vec2, velocity mgl32.Vec2 ) {
-	log.Print("creating bullet")
 	bullets = append(bullets, Bullet {
 		transform: mgl32.Translate3D(origin.X(), origin.Y(), 0),
 		velocity: velocity,
@@ -39,8 +38,7 @@ func CreateBullet( origin mgl32.Vec2, velocity mgl32.Vec2 ) {
 }
 
 func (bullet Bullet) draw(ctx render.Context) {
-	log.Printf("drawing bullet at %v", bullet.transform.Col(3).Vec2())
-	world := ctx.World.Mul4(bullet.transform)
+	world := ctx.World.Mul4(bullet.transform).Mul4(cxmath.Scale(1.0/4))
 	bulletShader.SetMat4("world", &world)
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
@@ -61,7 +59,6 @@ func configureGlForBullet() {
 }
 
 func DrawBullets(ctx render.Context) {
-	log.Print("drawing bullets")
 	bulletShader.Use()
 	bulletShader.SetMat4("projection", &ctx.Projection)
 	configureGlForBullet()

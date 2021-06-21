@@ -1,7 +1,6 @@
 package item
 
 import (
-	"log"
 
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/particles"
@@ -10,7 +9,6 @@ import (
 const bulletSpeed float32 = 40
 
 func UseGun(info ItemUseInfo) {
-	log.Print("trying to shoot gun")
 	target := info.WorldCoords()
 	velocity := target.Sub(info.PlayerCoords()).Normalize().Mul(bulletSpeed)
 	particles.CreateBullet( info.PlayerCoords(), velocity )
