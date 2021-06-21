@@ -35,6 +35,7 @@ func InitParticles() {
 	particleShader = utility.NewShader(
 		"./assets/shader/simple.vert", "./assets/shader/particle.frag" )
 	InitLasers()
+	InitBullets()
 }
 
 func TickParticles(dt float32) {
@@ -85,6 +86,7 @@ func DrawChunkParticles(ctx render.Context) {
 // draw particles between mid and top layers
 func DrawMidTopParticles(ctx render.Context) {
 	DrawLasers(ctx)
+	DrawBullets(ctx)
 }
 
 // draw particles over top layer
