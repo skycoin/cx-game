@@ -10,6 +10,7 @@ import (
 
 type BasicEnemy struct {
 	physics.Body
+	Health int
 }
 
 func InitBasicEnemies() {
@@ -32,9 +33,11 @@ func TickBasicEnemies(
 	nextEnemies := []*BasicEnemy{}
 	for idx, _ := range basicEnemies {
 		enemy := basicEnemies[idx]
-		stillAlive := enemy.Tick(world, dt, player, playerIsAttacking)
-		if stillAlive {
+		enemy.Tick(world, dt, player, playerIsAttacking)
+		if enemy.Health > 0 {
 			nextEnemies = append(nextEnemies, enemy)
+		} else {
+			enemy.Deleted = true
 		}
 	}
 	basicEnemies = nextEnemies
@@ -54,6 +57,10 @@ func SpawnBasicEnemy(x, y float32) {
 			Size: physics.Vec2{X: 2.0, Y: 2.0},
 			Pos:  physics.Vec2{X: x, Y: y},
 		},
+		Health: 5,
+	}
+	enemy.Damage = func(damage int) {
+		enemy.Health -= 1
 	}
 	physics.RegisterBody(&enemy.Body)
 	basicEnemies = append(basicEnemies, &enemy)

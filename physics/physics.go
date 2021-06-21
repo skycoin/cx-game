@@ -50,9 +50,14 @@ func tick(worldcollider worldcollider.WorldCollider) {
 	prevTime = nextTime
 	nextTime += TimeStep
 
-	for idx,_ := range bodies {
-		bodies[idx].SavePreviousTransform()
-		bodies[idx].Move(worldcollider, TimeStep)
+	newBodies := []*Body{}
+	for _,body := range bodies {
+		body.SavePreviousTransform()
+		body.Move(worldcollider, TimeStep)
+		if !body.Deleted {
+			newBodies = append(newBodies, body)
+		}
 	}
+	bodies = newBodies
 }
 

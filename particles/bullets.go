@@ -1,8 +1,6 @@
 package particles
 
 import (
-	"log"
-
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/gl/v4.1-core/gl"
 
@@ -12,6 +10,8 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/physics"
 )
+
+const bulletDamage = 1
 
 type Bullet struct {
 	transform mgl32.Mat4
@@ -87,7 +87,9 @@ func TickBullets(dt float32) {
 		collision,collided := physics.CheckCollision(bullet.WorldTransform())
 		_ = collision
 		if collided {
-			log.Print("bullet hit something")
+			if collision.Body.Damage!=nil {
+				collision.Body.Damage(bulletDamage)
+			}
 		} else {
 			newBullets = append(newBullets,bullet)
 		}

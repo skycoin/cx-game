@@ -4,7 +4,9 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-type Collision struct {}
+type Collision struct {
+	Body *Body
+}
 
 func (body *Body) CollidesWith(other mgl32.Mat4) bool {
 	// TODO something better
@@ -16,7 +18,7 @@ func (body *Body) CollidesWith(other mgl32.Mat4) bool {
 func CheckCollision(transform mgl32.Mat4) (collision Collision, collided bool) {
 	for _,body := range bodies {
 		if body.CollidesWith(transform) {
-			return Collision{}, true
+			return Collision{Body:body}, true
 		}
 	}
 	return Collision{}, false

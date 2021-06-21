@@ -11,6 +11,8 @@ import (
 // epsilon parameter for values that are "close enough"
 const eps = 0.05
 
+
+type DamageFunc func(damage int)
 type Body struct {
 	Pos  Vec2
 	Vel  Vec2
@@ -21,6 +23,9 @@ type Body struct {
 
 	Collisions     CollisionInfo
 	collidingLines []float32
+
+	Damage DamageFunc
+	Deleted bool
 }
 
 func (body Body) Transform() mgl32.Mat4 {
