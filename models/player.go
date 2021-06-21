@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"image"
 
 	"github.com/go-gl/mathgl/mgl32"
