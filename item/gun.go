@@ -7,10 +7,13 @@ import (
 	"github.com/skycoin/cx-game/particles"
 )
 
+const bulletSpeed float32 = 40
+
 func UseGun(info ItemUseInfo) {
 	log.Print("trying to shoot gun")
 	target := info.WorldCoords()
-	particles.CreateBullet( info.PlayerCoords(), target )
+	velocity := target.Sub(info.PlayerCoords()).Normalize().Mul(bulletSpeed)
+	particles.CreateBullet( info.PlayerCoords(), velocity )
 }
 
 func RegisterGunItemType() ItemTypeID {

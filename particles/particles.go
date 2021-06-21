@@ -40,6 +40,7 @@ func InitParticles() {
 
 func TickParticles(dt float32) {
 	TickLasers(dt)
+	TickBullets(dt)
 	// age and kill particles
 	newParticles := []Particle{}
 	for _,laser := range particles {

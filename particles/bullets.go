@@ -74,4 +74,14 @@ func DrawBullets(ctx render.Context) {
 	bulletShader.StopUsing()
 }
 
-//func TickBullets(ctx 
+func TickBullets(dt float32) {
+	newBullets := []Bullet{}
+	for _,bullet := range bullets {
+		//bullet.ttl -= dt
+		bullet.transform = bullet.transform.Mul4(
+			mgl32.Translate3D(bullet.velocity.X()*dt, bullet.velocity.Y()*dt, 0) )
+
+		newBullets = append(newBullets,bullet)
+	}
+	bullets = newBullets
+}
