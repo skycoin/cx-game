@@ -117,6 +117,7 @@ func main() {
 		dt = currTime - lastFrame
 		lastFrame = currTime
 
+		ProcessInput()
 		Tick(dt)
 		Draw()
 	}
@@ -139,14 +140,15 @@ func Init() {
 
 	starmap.Init(&win)
 	starmap.Generate(256, 0.04, 8)
+
 }
 
 func FixedTick() {
-	ProcessInput()
 	if !isFreeCam {
 		player.FixedTick(true, CurrentPlanet)
+	} else {
+		player.FixedTick(false, CurrentPlanet)
 	}
-
 }
 
 func Tick(dt float32) {
@@ -179,6 +181,7 @@ func Tick(dt float32) {
 	sound.SetListenerPosition(player.Pos)
 	//has to be after listener position is updated
 	sound.Update()
+	// input.Reset()
 	catIsScratching = false
 }
 
@@ -203,6 +206,12 @@ func Draw() {
 	}
 	enemies.DrawBasicEnemies(Cam)
 	player.Draw(Cam, CurrentPlanet)
+
+	// ui.DrawString(fmt.Sprintf("%f   %f", player.Vel.X, player.Vel.Y), mgl32.Vec4{1, 1, 1, 1}, ui.AlignCenter, win.DefaultRenderContext())
+
+	// ctx := win.DefaultRenderContext()
+	// ctx = ctx.PushLocal(mgl32.Translate3D(1, 1, 0))
+	// ui.DrawString(player.MovementType.String(), mgl32.Vec4{1, 1, 1, 1}, ui.AlignCenter, ctx)
 
 	// tile - air line (green)
 	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
@@ -251,6 +260,10 @@ func ProcessInput() {
 			sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
 		}
 	}
+	if input.GetButtonDown("fly") {
+		player.ToggleFlying()
+	}
+
 	if input.GetButtonDown("scratch") {
 		ui.PlaceDialogueBox(
 			"*scratch", ui.AlignLeft, 1,

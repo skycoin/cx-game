@@ -9,7 +9,8 @@ type AgentMeta struct {
 	PosY             float32
 	MomentumX        float32
 	MomentumY        float32
-	JumpHeight       float32
+	MinJumpHeight    float32
+	MaxJumpHeight    float32
 	// StaticFriction float32
 	DynamicFriction float32
 }
