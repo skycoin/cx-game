@@ -17,11 +17,11 @@ func (planet *Planet) placeTileOnTop(x int, tile Tile) {
 	planet.Layers.Top[tileIdx] = tile
 }
 
-func (planet *Planet) placeLayer(tile Tile, scale float32) {
+func (planet *Planet) placeLayer(tile Tile, depth,noiseScale float32) {
 	perlin := perlin.NewPerlin2D(rand.Int63(), int(planet.Width), 4, 256)
 	for x:=int32(0); x<planet.Width; x++ {
-		noise := perlin.Noise(float32(x), 0, persistence, lacunarity, 8)
-		height := int((noise+1) * scale)
+		noiseSample := perlin.Noise(float32(x), 0, persistence, lacunarity, 8)
+		height := int(depth+noiseSample*noiseScale)
 		for i:=0; i<height; i++ {
 			planet.placeTileOnTop(int(x),tile)
 		}
@@ -51,9 +51,9 @@ func GeneratePlanet() *Planet {
 		SpriteID: uint32(spriteloader.GetSpriteIdByName("Bedrock")),
 	}
 
-	planet.placeLayer(bedrock, 4)
-	planet.placeLayer(stone, 4)
-	planet.placeLayer(dirt, 4)
+	planet.placeLayer(bedrock, 4,1)
+	planet.placeLayer(stone, 4,1)
+	planet.placeLayer(dirt, 4,1)
 	
 	return planet
 }
