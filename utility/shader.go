@@ -69,6 +69,10 @@ func (s *Shader) Use() {
 	gl.UseProgram(s.ID)
 }
 
+func (s *Shader) StopUsing() {
+	gl.UseProgram(0)
+}
+
 func (s *Shader) SetBool(name string, value bool) {
 	intval := 0
 	if value {

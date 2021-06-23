@@ -85,9 +85,10 @@ func main() {
 		item.AddItemType(debugItemType)
 
 	inventory := item.GetInventoryById(inventoryId)
-	laserGunItemTypeId := item.RegisterLaserGunItemType()
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
-		item.InventorySlot{laserGunItemTypeId, 1, 0}
+		item.InventorySlot{item.LaserGunItemTypeID, 1, 0}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(2, 7)] =
+		item.InventorySlot{item.GunItemTypeID, 1, 0}
 
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
@@ -132,6 +133,7 @@ func Init() {
 	ui.InitTextRendering()
 	enemies.InitBasicEnemies()
 	particles.InitParticles()
+	item.RegisterItemTypes()
 
 	player = models.NewPlayer()
 	fps = models.NewFps(false)
