@@ -138,7 +138,8 @@ func Init() {
 	player = models.NewPlayer()
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
-	CurrentPlanet = world.NewDevPlanet()
+	//CurrentPlanet = world.NewDevPlanet()
+	CurrentPlanet = world.GeneratePlanet()
 
 	starmap.Init(&win)
 	starmap.Generate(256, 0.04, 8)
