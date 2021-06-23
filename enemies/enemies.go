@@ -54,7 +54,7 @@ func DrawBasicEnemies(cam *camera.Camera) {
 func SpawnBasicEnemy(x, y float32) {
 	enemy := BasicEnemy{
 		Body: physics.Body{
-			Size: physics.Vec2{X: 2.0, Y: 2.0},
+			Size: physics.Vec2{X: 3.0, Y: 3.0},
 			Pos:  physics.Vec2{X: x, Y: y},
 		},
 		Health: 5,
