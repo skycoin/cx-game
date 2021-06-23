@@ -1,36 +1,30 @@
-package main
+package starfield
 
 import (
 	"fmt"
 	"log"
 	"math"
 	"math/rand"
-	"os"
 	"path/filepath"
-	"runtime"
 	"time"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/skycoin/cx-game/models"
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/starmap"
 	"github.com/skycoin/cx-game/utility"
-	"github.com/urfave/cli/v2"
 )
-
-//Press TAB to shuffle stars
-
-// A/D for moving
 
 func init() {
 	// seed rand so stars will be random each program run
 	rand.Seed(time.Now().UnixNano())
-	//lock thread so drawing will be only in main thread, otherwise there will be errors
-	runtime.LockOSThread()
 }
+
+var (
+	p *models.Player
+)
 
 type noiseSettings struct {
 	Size     int
@@ -101,112 +95,52 @@ var (
 	gaussianAmount int
 	//star options (pixelsize)
 	starConfig *starSettings = &starSettings{
-		// Pixel_Size:            1,
-		// StarSeparationEnabled: false,
-		// Gaussian_Percentage:   25,
-		// Gaussian_Angle:        45,
-		// Gaussian_Offset_X:     0,
-		// Gaussian_Offset_Y:     0,
-		// Gaussian_Sigma_X:      0.3,
-		// Gaussian_Sigma_Y:      0.2,
-		// Gaussian_Constant:     1,
+		Pixel_Size:          1,
+		Gaussian_Percentage: 25,
+		Gaussian_Angle:      45,
+		Gaussian_Offset_X:   0,
+		Gaussian_Offset_Y:   0,
+		Gaussian_Sigma_X:    0.3,
+		Gaussian_Sigma_Y:    0.2,
+		Gaussian_Constant:   1,
+		Intensity_Period:    3,
 	}
 
 	//perlin options
 	noiseConfig *noiseSettings = &noiseSettings{
-		// Size:     1024,
-		// Scale:    0.04,
-		// Levels:   8,
-		// Contrast: 1.0,
+		Size:     1024,
+		Scale:    0.04,
+		Levels:   8,
+		Contrast: 1.0,
 
-		// Seed:        1,
-		// X:           512,
-		// Xs:          4,
-		// Gradmax:     256,
-		// Persistance: 0.5,
-		// Lacunarity:  2,
-		// Octaves:     8,
+		Seed:        1,
+		X:           512,
+		Xs:          4,
+		Gradmax:     256,
+		Persistance: 0.5,
+		Lacunarity:  2,
+		Octaves:     8,
 	}
-
-	//stop auto moving stars
-	pauseAutoMove bool
 
 	//variable for star move speed
-	speed        float32 = 25
-	rightPressed bool
-	leftPressed  bool
+	speed  float32 = 3
+	shader *utility.Shader
 )
 
-func main() {
-	//parse command line arguments and flags
-	initArgs()
-	//start goroutines to check reloaded files and update 	configurations
-	initReloadConfig()
-
-	// initialize both glfw and gl libraries, setting up the window and shader program
-	window := render.NewWindow(cliConfig.Width, cliConfig.Height, true)
-	defer glfw.Terminate()
-	glfwWindow := window.Window
-	glfwWindow.SetKeyCallback(keyCallback)
-	shader := utility.NewShader("./cmd/starfield/shaders/main/vertex.glsl", "./cmd/starfield/shaders/main/fragment.glsl")
+//create random stars
+func InitStarField(window *render.Window, player *models.Player) {
+	p = player
+	shader = utility.NewShader("./assets/shader/starfield/shader.vert", "./assets/shader/starfield/shader.frag")
 	shader.Use()
 
-	spriteloader.InitSpriteloader(&window)
-	spriteloader.DEBUG = false
-
-	//ENABLE BLENDING
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-	// ortho := mgl32.Ortho2D(0, float32(cliConfig.Width), 0, float32(cliConfig.Height))
-	// shader.SetMat4("ortho", &ortho)
-	//init  stars
-	initStarField()
-
-	if cliConfig.Background == 1 {
-		starmap.SettingsFile = "./cmd/starfield/config/starmap.yaml"
-		starmap.Init(&window)
-		starmap.Generate(256, 0.08, 3)
-	}
-
-	//bind gradient 1d textures
 	for i := 1; i < 12; i++ {
 		tex := getGradient(uint(i))
 		gl.ActiveTexture(gl.TEXTURE0 + uint32(i))
 		gl.BindTexture(gl.TEXTURE_1D, tex)
 	}
 
-	lastFrame := float32(glfw.GetTime())
-	dt := float32(0)
-
-	//set up its own projection
-	ortho := mgl32.Ortho2D(0, float32(window.Width), 0, float32(window.Height))
-	shader.SetMat4("projection", &ortho)
-
-	//main loop
-	for !glfwWindow.ShouldClose() {
-		//deltatime
-		currFrame := float32(glfw.GetTime())
-		dt = currFrame - lastFrame
-		lastFrame = currFrame
-
-		//clearing buffers
-		gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
-		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-
-		if cliConfig.Background == 1 {
-			starmap.Draw()
-		}
-
-		updateStarField(dt)
-		drawStarField(shader)
-
-		glfw.PollEvents()
-		glfwWindow.SwapBuffers()
-	}
-}
-
-//create random stars
-func initStarField() {
+	spriteloader.InitSpriteloader(window)
+	spriteloader.DEBUG = false
 
 	perlinMap = genPerlin(cliConfig.Starfield_Width, cliConfig.Starfield_Height, noiseConfig)
 
@@ -216,6 +150,9 @@ func initStarField() {
 	// file2 := "cmd/starfield/stars_2.png"
 	star1SpriteSheetId := spriteloader.LoadSpriteSheet(file1)
 	star2SpriteSheetId := spriteloader.LoadSpriteSheet(file2)
+
+	ortho := mgl32.Ortho2D(0, float32(window.Width), 0, float32(window.Height))
+	shader.SetMat4("projection", &ortho)
 
 	//load all sprites from spritesheet
 	for y := 0; y < 4; y++ {
@@ -258,24 +195,15 @@ func initStarField() {
 
 }
 
-//regenerates positions of stars
-func regenStarField() {
-	gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
-	for _, star := range stars {
-		star.X, star.Y = getStarPosition(star.IsGaussian)
-		star.Size = float32(starConfig.Pixel_Size) * getRandomSize()
-	}
-}
-
 //updates position of each star at each game iteration
-func updateStarField(dt float32) {
+func UpdateStarField(dt float32) {
 
 	for _, star := range stars {
 		// star.X = float32(math.Mod(float64(star.X+(speed*dt)), coords*2))
-		if rightPressed {
+		if p.IsMoving("right") {
 			star.X += speed * dt * star.Depth
 		}
-		if leftPressed {
+		if p.IsMoving("left") {
 			star.X -= speed * dt * star.Depth
 		}
 		if star.X > float32(cliConfig.Starfield_Width) {
@@ -286,7 +214,10 @@ func updateStarField(dt float32) {
 }
 
 //draws stars via drawquad function
-func drawStarField(shader *utility.Shader) {
+func DrawStarField() {
+
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	shader.Use()
 	for _, star := range stars {
 		if star.IsGaussian {
@@ -298,7 +229,6 @@ func drawStarField(shader *utility.Shader) {
 		shader.SetFloat("intensity", getIntensity(star.Intensity))
 		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, star.Size, star.Size, star.SpriteId, shader.ID)
 	}
-
 }
 
 func getIntensity(intensity float32) float32 {
@@ -318,11 +248,6 @@ func getIntensity(intensity float32) float32 {
 }
 func getRandomSize() float32 {
 	return (1 + 3*rand.Float32()/2)
-}
-
-//function to shuffle stars on the background
-func shuffle() {
-	regenStarField()
 }
 
 //get gradient file given id from 1-11 (see assets folder)
@@ -475,147 +400,4 @@ func gaussianTheta(x32, y32 float32) float32 {
 	c := math.Pow(math.Sin(theta), 2)/(2*math.Pow(sigmaX, 2)) + math.Pow(math.Cos(theta), 2)/(2*math.Pow(sigmaY, 2))
 	result := A * math.Exp(-(a*math.Pow(x-x0, 2) + 2*b*(x-x0)*(y-y0) + c*math.Pow(y-y0, 2)))
 	return float32(result)
-}
-
-// Convenient function to convert angle in degrees to radians
-//  angle - angle in degrees
-
-//callback function to register key events
-func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glfw.ModifierKey) {
-	if a == glfw.Press {
-		switch k {
-		case glfw.KeyEscape:
-			w.SetShouldClose(true)
-		case glfw.KeyTab:
-			shuffle()
-		case glfw.KeyS:
-			if mk == glfw.ModShift {
-				saveResult()
-			}
-		case glfw.KeyP:
-			pauseAutoMove = !pauseAutoMove
-		case glfw.KeyA:
-			leftPressed = true
-		case glfw.KeyLeft:
-			leftPressed = true
-		case glfw.KeyD:
-			rightPressed = true
-		case glfw.KeyRight:
-			rightPressed = true
-		}
-
-	} else if a == glfw.Release {
-		switch k {
-		case glfw.KeyA:
-			leftPressed = false
-		case glfw.KeyLeft:
-			leftPressed = false
-		case glfw.KeyD:
-			rightPressed = false
-		case glfw.KeyRight:
-			rightPressed = false
-		}
-	}
-
-}
-
-func saveResult(){
-	
-}
-
-//function to parse cli flags
-func initArgs() {
-
-	app := cli.NewApp()
-	app.Name = "starfield-cli"
-	app.Description = "starfield example"
-	app.Flags = []cli.Flag{
-		&cli.IntFlag{
-			Name:        "background",
-			Aliases:     []string{"bg", "b"},
-			Usage:       "background to use",
-			Value:       cliConfig.Background,
-			Destination: &cliConfig.Background,
-		},
-		&cli.IntFlag{
-			Name:        "stars",
-			Aliases:     []string{"star"},
-			Usage:       "number of stars to draw",
-			Value:       cliConfig.StarAmount,
-			Destination: &cliConfig.StarAmount,
-		},
-		&cli.IntFlag{
-			Name:        "width",
-			Usage:       "Resolution width",
-			Value:       cliConfig.Width,
-			Destination: &cliConfig.Width,
-		},
-		&cli.IntFlag{
-			Name:        "height",
-			Usage:       "Resolution height",
-			Value:       cliConfig.Height,
-			Destination: &cliConfig.Height,
-		},
-		&cli.IntFlag{
-			Name:        "swidth",
-			Aliases:     []string{"starfield_width", "starfieldw"},
-			Usage:       "Starfield width",
-			Value:       cliConfig.Starfield_Width,
-			Destination: &cliConfig.Starfield_Width,
-		},
-		&cli.IntFlag{
-			Name:        "sheight",
-			Aliases:     []string{"starfield_height", "starfieldh"},
-			Usage:       "Starfield height",
-			Value:       cliConfig.Starfield_Width,
-			Destination: &cliConfig.Starfield_Height,
-		},
-	}
-	app.After = func(c *cli.Context) error {
-		command := c.Args().First()
-		if command == "help" {
-			os.Exit(0)
-		}
-		return nil
-	}
-	app.Action = func(c *cli.Context) error {
-		return nil
-	}
-	app.Run(os.Args)
-}
-
-//yaml reload function
-func initReloadConfig() {
-	starConfigReloaded := make(chan struct{})
-	perlinConfigReloaded := make(chan struct{})
-	done := make(chan struct{})
-	go utility.CheckAndReload("./cmd/starfield/config/star.yaml", &starConfig, starConfigReloaded)
-	go utility.CheckAndReload("./cmd/starfield/config/perlin.yaml", &noiseConfig, perlinConfigReloaded)
-	go func() {
-		var isStarConfigFirstLoad, isPerlinConfigFirstLoad bool = true, true
-		for {
-			select {
-			case <-starConfigReloaded:
-				gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
-				if isStarConfigFirstLoad {
-					done <- struct{}{}
-					isStarConfigFirstLoad = false
-				} else {
-					regenStarField()
-				}
-			case <-perlinConfigReloaded:
-
-				if isPerlinConfigFirstLoad {
-					done <- struct{}{}
-					isPerlinConfigFirstLoad = false
-				} else {
-					regenStarField()
-				}
-			}
-		}
-
-	}()
-	<-done
-	<-done
-	close(done)
 }

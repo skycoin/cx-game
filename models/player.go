@@ -166,6 +166,20 @@ func (player *Player) ApplyMovementConstraints(controlled bool) {
 	}
 }
 
+func (player *Player) IsMoving(direction string) bool {
+	switch direction {
+	case "left":
+		if player.Vel.X < 0 {
+			return true
+		}
+	case "right":
+		if player.Vel.X > 0 {
+			return true
+		}
+	}
+	return false
+}
+
 func (m MovementType) String() string {
 	switch m {
 	case NORMAL:

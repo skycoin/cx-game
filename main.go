@@ -10,6 +10,7 @@ import (
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/sound"
+	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/starmap"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
@@ -136,6 +137,7 @@ func Init() {
 	item.RegisterItemTypes()
 
 	player = models.NewPlayer()
+	starfield.InitStarField(&win, player)
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
 	//CurrentPlanet = world.NewDevPlanet()
@@ -184,12 +186,14 @@ func Tick(dt float32) {
 	sound.SetListenerPosition(player.Pos)
 	//has to be after listener position is updated
 	sound.Update()
+
+	starfield.UpdateStarField(dt)
 	// input.Reset()
 	catIsScratching = false
 }
 
 func Draw() {
-	gl.ClearColor(1, 1, 1, 1)
+	gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	baseCtx := win.DefaultRenderContext()
@@ -197,7 +201,8 @@ func Draw() {
 	//
 	camCtx := baseCtx.PushView(Cam.GetView())
 
-	starmap.Draw()
+	// starmap.Draw()
+	starfield.DrawStarField()
 	CurrentPlanet.Draw(Cam, world.BgLayer)
 	CurrentPlanet.Draw(Cam, world.MidLayer)
 	// draw lasers between mid and top layers.
