@@ -2,7 +2,6 @@
 package item
 
 import (
-	"github.com/faiface/beep"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/camera"
@@ -13,28 +12,13 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
-var bloopStreamer beep.StreamSeeker
-
-const bloopVolume = 1
-
 func InitWorldItem() {
-	// setup bloop sound
-	// file, err := os.Open("./assets/sound/bloop.wav")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer file.Close()
-	// streamer, format, err := wav.Decode(file)
-	// bloopStreamer = streamer
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
 	sound.LoadSound("bloop", "bloop.wav")
 }
 
-const pickupRadius = 0.2
-const attractRadius = 2
+const pickupRadius = 3
+const attractRadius = 4
+const attractForceMag = 3
 const worldItemSize = 0.5
 
 type WorldItem struct {
@@ -42,15 +26,41 @@ type WorldItem struct {
 	ItemTypeId ItemTypeID
 }
 
-func NewWorldItem(ItemTypeId ItemTypeID) *WorldItem {
+var worldItems = []*WorldItem{}
+
+func CreateWorldItem(itemTypeId ItemTypeID , pos mgl32.Vec2) {
 	item := WorldItem{
 		Body: physics.Body{
 			Size: physics.Vec2{X: worldItemSize, Y: worldItemSize},
+			Pos: physics.Vec2{X: pos.X(), Y: pos.Y()},
 		},
-		ItemTypeId: ItemTypeId,
+		ItemTypeId: itemTypeId,
 	}
 	physics.RegisterBody(&item.Body)
-	return &item
+	worldItems = append(worldItems, &item)
+}
+
+func TickWorldItems(
+		planet *world.Planet, dt float32, playerPos physics.Vec2,
+) (forPlayer []*WorldItem) {
+	newWorldItems := []*WorldItem{}
+	forPlayer = []*WorldItem{}
+	for _,item := range worldItems {
+		pickedUp := item.Tick(planet, dt, playerPos)
+		if pickedUp {
+			forPlayer = append(forPlayer, item)
+		} else {
+			newWorldItems = append(newWorldItems, item)
+		}
+	}
+	worldItems = newWorldItems
+	return forPlayer
+}
+
+func DrawWorldItems(cam *camera.Camera) {
+	for _,item := range worldItems {
+		item.Draw(cam)
+	}
 }
 
 func (item WorldItem) Draw(cam *camera.Camera) {
@@ -73,12 +83,14 @@ func (item *WorldItem) Tick(
 	planet *world.Planet, dt float32,
 	playerPos physics.Vec2,
 ) bool {
-	item.Vel.Y -= physics.Gravity * dt
+	item.Vel.Y -= physics.Gravity * dt / 2
 
 	itemToPlayerDisplacement := playerPos.Sub(item.Pos)
 	itemToPlayerDistSqr := itemToPlayerDisplacement.LengthSqr()
 	if itemToPlayerDistSqr < attractRadius*attractRadius {
-		attractForce := itemToPlayerDisplacement.Mult(1 / itemToPlayerDisplacement.LengthSqr())
+		attractDirection := itemToPlayerDisplacement.
+			Mult(1 / itemToPlayerDisplacement.LengthSqr())
+		attractForce := attractDirection.Mult(attractForceMag * dt )
 		item.Vel = item.Vel.Add(attractForce)
 	}
 

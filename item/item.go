@@ -59,3 +59,27 @@ func AddItemType(itemType ItemType) ItemTypeID {
 func GetItemTypeById(id ItemTypeID) *ItemType {
 	return &itemTypes[id]
 }
+
+func GetItemTypeIdForTile(tile world.Tile) ItemTypeID{
+	// TODO optimize
+	for idx,itemType := range itemTypes {
+		if itemType.SpriteID == int(tile.SpriteID) {
+			return ItemTypeID(idx)
+		}
+	}
+
+	itemType := NewItemType(int(tile.SpriteID))
+	itemType.Name = tile.Name
+	itemType.Use = func(info ItemUseInfo) {
+		worldCoords := info.WorldCoords()
+		x := int(worldCoords.X())
+		y := int(worldCoords.Y())
+		if !info.Planet.TileIsSolid(x,y) {
+			info.Slot.Quantity--
+			tileIdx := info.Planet.GetTileIndex(x,y)
+			info.Planet.Layers.Top[tileIdx] = tile
+		}
+	}
+	AddItemType(itemType)
+	return ItemTypeID(len(itemTypes)-1)
+}

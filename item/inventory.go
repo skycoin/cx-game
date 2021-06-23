@@ -26,6 +26,7 @@ type Inventory struct {
 	Width, Height int
 	Slots []InventorySlot
 	SelectedBarSlotIndex int
+	GridHoldingIndex int
 }
 
 var inventories = []Inventory{}
@@ -42,13 +43,29 @@ func NewInventory(width, height int) uint32 {
 	return uint32(len(inventories)-1)
 }
 
+func NewDevInventory() uint32 {
+	inventoryId := NewInventory(10, 8)
+	inventory := GetInventoryById(inventoryId)
+	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 0)] =
+		InventorySlot{LaserGunItemTypeID, 1, 0}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(2, 0)] =
+		InventorySlot{GunItemTypeID, 1, 0}
+
+	return inventoryId
+}
+
 func GetInventoryById(id uint32) *Inventory {
 	return &inventories[id]
 }
 
 func (inventory Inventory) getBarSlots() []InventorySlot {
-	start := inventory.Width*(inventory.Height-1)
-	return inventory.Slots[start:]
+	return inventory.Slots[:inventory.Width]
+}
+
+func (inventory Inventory) getGridTransform() mgl32.Mat4 {
+	return mgl32.Ident4().
+		Mul4(mgl32.Translate3D(0,0.5,0)).
+		Mul4(mgl32.Scale3D(gridScale,gridScale,gridScale))
 }
 
 var gridScale float32 = 1.5
@@ -56,15 +73,13 @@ var gridScale float32 = 1.5
 var itemSize float32 = 0.8
 var borderSize float32 = 0.1
 func (inventory Inventory) DrawGrid(ctx render.Context) {
-	gridTransform :=
-		mgl32.Translate3D(0,0.5,0).
-		Mul4(mgl32.Scale3D(gridScale,gridScale,gridScale))
+	gridTransform := inventory.getGridTransform()
 
 	w := float32(inventory.Width)
 	h := float32(inventory.Height)
 
-	// draw all rows but last
-	for y:=0;y<inventory.Height-1;y++ {
+	// draw all rows but first
+	for y:=1;y<inventory.Height;y++ {
 		for x:=0;x<inventory.Width;x++ {
 			xRender := float32(x) - w / 2
 			yRender := h / 2 - float32(y)
@@ -79,10 +94,10 @@ func (inventory Inventory) DrawGrid(ctx render.Context) {
 	}
 
 	// draw last row a little further down
-	y := inventory.Height-1
+	y := 0
 	for x:=0;x<inventory.Width;x++ {
 		xRender := float32(x) - w / 2
-		yRender := h / 2 - float32(y) - 1
+		yRender := h / 2 - float32(inventory.Height) - 1
 		slot := inventory.Slots[y*inventory.Width+x]
 		slotTransform := gridTransform.
 			Mul4(mgl32.Translate3D(xRender,yRender,0))
@@ -193,10 +208,7 @@ func (inventory *Inventory) TrySelectSlot(k glfw.Key) bool {
 }
 
 func (inventory *Inventory) SelectedItemSlot() *InventorySlot {
-	globalIdx :=
-		inventory.SelectedBarSlotIndex +
-		inventory.Width*(inventory.Height-1)
-	return &inventory.Slots[globalIdx]
+	return &inventory.Slots[inventory.SelectedBarSlotIndex]
 }
 
 func (inventory *Inventory) TryUseItem(
@@ -216,4 +228,85 @@ func (inventory *Inventory) TryUseItem(
 		Player: player,
 	})
 	return true
+}
+
+func (inventory *Inventory) getGridClickPosition(
+		screenX,screenY float32,
+) (idx int, ok bool) {
+	camCoords := mgl32.Vec4 {
+		screenX / render.PixelsPerTile,
+		screenY / render.PixelsPerTile,
+		0, 1 }
+
+	centered := inventory.getGridTransform().Inv().Mul4x1(camCoords).Vec2()
+	// convert from centered to top-left origin
+	w := float32(inventory.Width)
+	h := float32(len(inventory.Slots)) / w
+	anchored := centered.Add(mgl32.Vec2 { w/2, h/2 })
+
+	gridX := int(anchored.X()+0.5)
+	gridY := int(anchored.Y()+0.5)
+
+	idx = -1
+	clickIsOnGrid :=
+		gridX >=0 && gridX < inventory.Width &&
+		// y=1 is a filler row - doesn't count
+		gridY >=0 && gridY <= int(h) && gridY != 1
+
+	if clickIsOnGrid {
+		idx = inventory.SlotIdxForPosition(gridX,gridY)
+	}
+
+	return idx,clickIsOnGrid
+}
+
+func (inventory *Inventory) TryClickSlot(
+		screenX,screenY float32, cam *camera.Camera,
+		planet *world.Planet, player *models.Player,
+) bool {
+	idx,ok := inventory.getGridClickPosition(screenX,screenY)
+	if ok {
+		inventory.TrySelectGridSlot(idx)
+	}
+	
+	return ok
+}
+
+func (inventory *Inventory) TryMoveSlot(
+		screenX,screenY float32, cam *camera.Camera,
+		planet *world.Planet, player *models.Player,
+) bool {
+	idx,ok := inventory.getGridClickPosition(screenX,screenY)
+	if ok {
+		inventory.TryMoveGridSlot(idx)
+	}
+	
+	return false
+}
+
+func (inventory *Inventory) TrySelectGridSlot(idx int) {
+	slot := &inventory.Slots[idx]
+	if slot.Quantity>0 {
+		inventory.GridHoldingIndex = idx
+	}
+}
+
+func (inventory *Inventory) TryMoveGridSlot(idx int) {
+	to := &inventory.Slots[idx]
+	if to.Quantity==0 && inventory.GridHoldingIndex>=0 {
+		from := &inventory.Slots[inventory.GridHoldingIndex]
+		*to = *from
+		from.Quantity=0
+	}
+}
+
+func (inventory *Inventory) SlotIdxForPosition(x,y int) int {
+	// y=0 actually refers to last row - should probably fix this later
+	if y==0 {
+		//y+=inventory.Height-1
+	} else {
+		y=inventory.Height-y // other rows are offset due to the gap
+	}
+
+	return y*inventory.Width + x
 }

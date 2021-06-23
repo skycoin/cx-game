@@ -24,7 +24,14 @@ func UseLaserGun(info ItemUseInfo) {
 
 			particles.CreateLaser(playerPos, targetPos)
 
-			info.Planet.DamageTile(int(pos.X), int(pos.Y), world.TopLayer)
+			tile,destroyed :=
+				info.Planet.DamageTile(int(pos.X), int(pos.Y), world.TopLayer)
+
+			if destroyed {
+				itemTypeId := GetItemTypeIdForTile(tile)
+				CreateWorldItem(itemTypeId, pos.Vec2())
+			}
+
 			return
 		}
 	}
