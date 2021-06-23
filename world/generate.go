@@ -11,7 +11,6 @@ import (
 const persistence = 0.5
 const lacunarity = 2
 
-const heightScale = 4
 func (planet *Planet) placeTileOnTop(x int, tile Tile) {
 	y := planet.GetHeight(x) + 1
 	tileIdx := planet.GetTileIndex(x, y)
@@ -19,7 +18,7 @@ func (planet *Planet) placeTileOnTop(x int, tile Tile) {
 }
 
 func (planet *Planet) placeLayer(tile Tile, scale float32) {
-	perlin := perlin.NewPerlin2D(rand.Int63(), 512, 4, 256)
+	perlin := perlin.NewPerlin2D(rand.Int63(), int(planet.Width), 4, 256)
 	for x:=int32(0); x<planet.Width; x++ {
 		noise := perlin.Noise(float32(x), 0, persistence, lacunarity, 8)
 		height := int((noise+1) * scale)
