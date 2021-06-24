@@ -34,8 +34,8 @@ func init() {
 }
 
 const (
-	WINDOW_WIDTH  = 1600
-	WINDOW_HEIGHT = 900
+	WINDOW_WIDTH  = 800
+	WINDOW_HEIGHT = 600
 )
 
 var (
@@ -199,7 +199,6 @@ func Draw() {
 
 	baseCtx := win.DefaultRenderContext()
 	baseCtx.Projection = Cam.GetProjectionMatrix()
-	//
 	camCtx := baseCtx.PushView(Cam.GetView())
 
 	ui.DrawString("test", mgl32.Vec4{1, 1, 1, 1}, ui.AlignCenter, win.DefaultRenderContext())
@@ -216,12 +215,6 @@ func Draw() {
 	}
 	enemies.DrawBasicEnemies(Cam)
 	player.Draw(Cam, CurrentPlanet)
-
-	// ui.DrawString(fmt.Sprintf("%f   %f", player.Vel.X, player.Vel.Y), mgl32.Vec4{1, 1, 1, 1}, ui.AlignCenter, win.DefaultRenderContext())
-
-	// ctx := win.DefaultRenderContext()
-	// ctx = ctx.PushLocal(mgl32.Translate3D(1, 1, 0))
-	// ui.DrawString(player.MovementType.String(), mgl32.Vec4{1, 1, 1, 1}, ui.AlignCenter, ctx)
 
 	// tile - air line (green)
 	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
@@ -245,11 +238,11 @@ func Draw() {
 
 	inventory := item.GetInventoryById(inventoryId)
 	if isInventoryGridVisible {
-		inventory.DrawGrid(baseCtx)
+		inventory.DrawGrid(win.DefaultRenderContext())
 	} else {
-		inventory.DrawBar(baseCtx)
+		inventory.DrawBar(win.DefaultRenderContext())
 	}
-	tilePaletteSelector.Draw(baseCtx)
+	tilePaletteSelector.Draw(win.DefaultRenderContext())
 
 	glfw.PollEvents()
 	win.Window.SwapBuffers()

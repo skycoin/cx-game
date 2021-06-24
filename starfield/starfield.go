@@ -5,7 +5,6 @@ import (
 	"log"
 	"math"
 	"math/rand"
-	"os"
 	"path/filepath"
 	"time"
 
@@ -170,9 +169,6 @@ func InitStarField(window *render.Window, player *models.Player) {
 		}
 	}
 	gaussianDepth := rand.Float32()
-	file, _ := os.Create("star_positions.txt")
-	defer file.Close()
-
 	for i := 0; i < windowConfig.StarAmount; i++ {
 		spriteName := fmt.Sprintf("stars-%d-%d", rand.Intn(2)+1, rand.Intn(16))
 		star := &Star{
@@ -193,7 +189,6 @@ func InitStarField(window *render.Window, player *models.Player) {
 			star.GradientValue = rand.Float32()
 			star.IsGaussian = false
 		}
-		fmt.Fprintln(file, star.X, "    ", star.Y)
 		stars = append(stars, star)
 	}
 
