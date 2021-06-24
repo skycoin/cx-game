@@ -3,10 +3,10 @@
 pixel_size: 2
 star_separation_enabled: 0 # not working
 gaussian_percentage: 25
-gaussian_angle: -35
-gaussian_offset_x: 0.3
-gaussian_offset_y: 0.4
+gaussian_angle: 55
+gaussian_offset_x: 0.2
+gaussian_offset_y: 0.3
 gaussian_sigma_x: 0.1
 gaussian_sigma_y: 0.4
-gaussian_constant: 0.7 #min 0.6
+gaussian_constant: 0.5 #min 0.6
 intensity_period: 3 #in seconds

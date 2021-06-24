@@ -56,7 +56,7 @@ type starSettings struct {
 	Intensity_Period        float32
 }
 
-type WindowSettings struct {
+type StarFieldSettings struct {
 	StarAmount       int
 	Width            int
 	Height           int
@@ -79,25 +79,22 @@ type Star struct {
 var (
 	stars []*Star
 
-	perlinMap [][]float32
+	perlinMap    [][]float32
+	perlinSpread float32 = 0.8
 	//cli options
-	windowConfig *WindowSettings = &WindowSettings{
-		StarAmount: 500,
-		// Width:            800,
-		// Height:           600,
-		// Starfield_Width:  1200,
-		// Starfield_Height: 900,
+	windowConfig *StarFieldSettings = &StarFieldSettings{
+		StarAmount: 1500,
 	}
 	gaussianAmount int
 	//star options (pixelsize)
 	starConfig *starSettings = &starSettings{
 		Star_size:           2,
-		Gaussian_Percentage: 25,
+		Gaussian_Percentage: 70,
 		Gaussian_Angle:      45,
-		Gaussian_Offset_X:   0,
-		Gaussian_Offset_Y:   0,
-		Gaussian_Sigma_X:    0.3,
-		Gaussian_Sigma_Y:    0.2,
+		Gaussian_Offset_X:   0.3,
+		Gaussian_Offset_Y:   0.2,
+		Gaussian_Sigma_X:    0.4,
+		Gaussian_Sigma_Y:    0.1,
 		Gaussian_Constant:   1,
 		Intensity_Period:    0.5,
 	}
@@ -196,13 +193,7 @@ func InitStarField(window *render.Window, player *models.Player) {
 
 //updates position of each star at each game iteration
 func UpdateStarField(dt float32) {
-	// framecounter++
-	// if framecounter%20 != 0 {
-	// 	return
-	// }
 	for _, star := range stars {
-		// star.X = float32(math.Mod(float64(star.X+(speed*dt)), coords*2))	framecounter++
-
 		if p.IsMoving("left") {
 			star.X += speed * dt * star.Depth
 		}
@@ -218,8 +209,9 @@ func UpdateStarField(dt float32) {
 		if star.X > float32(windowConfig.Starfield_Width) {
 			star.X = 0
 		}
-		star.X += 6 * dt * star.Depth * (rand.Float32() - 0.5)
+		star.X += 7 * dt * star.Depth * (rand.Float32() - 0.5)
 	}
+
 }
 
 //draws stars via drawquad function
@@ -297,13 +289,11 @@ func getStarPosition(isGaussian bool, depth int) (float32, float32) {
 		for {
 			x := rand.Intn(windowConfig.Starfield_Width)
 			y := rand.Intn(windowConfig.Starfield_Height)
-			perlinProb := perlinMap[x][y]
-			deleteChance := (1 - perlinProb)
-			if deleteChance > 0.5 {
+			prob := perlinMap[x][y]
+			deleteChance := (1 - prob)
+			if deleteChance > perlinSpread {
 				continue
 			}
-			// xPos, yPos = convertIntToSpriteCoords(x, y, 0, cliConfig.Width, 0, cliConfig.Height)
-			// fmt.Println(x, "         ", y)
 			xPos, yPos = float32(x), float32(y)
 			break
 		}
@@ -320,15 +310,15 @@ func getStarPosition(isGaussian bool, depth int) (float32, float32) {
 }
 
 func starPositionInConflict(xPos, yPos float32) bool {
-	// mindistance := 10.3
+	mindistance := 00.3
 
-	// for _, star := range stars {
+	for _, star := range stars {
 
-	// 	if math.Abs(float64(star.X-xPos)) < mindistance ||
-	// 		math.Abs(float64(star.Y-yPos)) < mindistance {
-	// 		return true
-	// 	}
-	// }
+		if math.Abs(float64(star.X-xPos)) < mindistance ||
+			math.Abs(float64(star.Y-yPos)) < mindistance {
+			return true
+		}
+	}
 	return false
 }
 

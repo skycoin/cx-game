@@ -201,7 +201,6 @@ func Draw() {
 	baseCtx.Projection = Cam.GetProjectionMatrix()
 	camCtx := baseCtx.PushView(Cam.GetView())
 
-	ui.DrawString("test", mgl32.Vec4{1, 1, 1, 1}, ui.AlignCenter, win.DefaultRenderContext())
 	// starmap.Draw()
 	starfield.DrawStarField()
 	CurrentPlanet.Draw(Cam, world.BgLayer)
@@ -295,16 +294,22 @@ func ProcessInput() {
 	inventory.TrySelectSlot(input.GetLastKey())
 }
 
+type mouseDraws struct {
+	xpos float32
+	ypos float32
+}
+
 func mouseButtonCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
 	// we only care about mousedown events for now
 	if a != glfw.Press {
 		return
+
 	}
 
-	screenX := float32(input.GetMouseX()-float64(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
-	screenY := (float32(input.GetMouseY()-float64(win.Height)/2) * -1) / Cam.Zoom
+	screenX := float32(((input.GetMouseX()-float64(widthOffset))/float64(scale) - float64(win.Width)/2)) / Cam.Zoom // adjust mouse position with zoom
+	screenY := float32(((input.GetMouseY()-float64(heightOffset))/float64(scale)-float64(win.Height)/2)*-1) / Cam.Zoom
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
 	if didSelectPaleteTile {
@@ -337,19 +342,28 @@ func mouseButtonCallback(
 		TryUseItem(screenX, screenY, Cam, CurrentPlanet, player)
 }
 
+var (
+	widthOffset, heightOffset int32
+	scale                     float32 = 1
+)
+
 func windowSizeCallback(window *glfw.Window, width, height int) {
 
 	// gl.Viewport(0, 0, int32(width), int32(height))
 	scaleToFitWidth := float32(width) / float32(win.Width)
 	scaleToFitHeight := float32(height) / float32(win.Height)
+	scale = cxmath.Min(scaleToFitHeight, scaleToFitWidth)
 
-	scale := cxmath.Min(scaleToFitHeight, scaleToFitWidth)
-	gl.Viewport(int32((float32(width)-float32(win.Width)*scale)/2), int32((float32(height)-float32(win.Height)*scale)/2), int32(float32(win.Width)*scale), int32(float32(win.Height)*scale))
+	widthOffset = int32((float32(width) - float32(win.Width)*scale) / 2)
+	heightOffset = int32((float32(height) - float32(win.Height)*scale) / 2)
+	//correct mouse offsets
+	input.UpdateMouseCoords(widthOffset, heightOffset, scale)
+
+	gl.Viewport(widthOffset, heightOffset, int32(float32(win.Width)*scale), int32(float32(win.Height)*scale))
 	// win.Width = width
 	// win.Height = height
 }
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {
 	Cam.SetCameraZoomPosition(float32(yOff))
-
 }
