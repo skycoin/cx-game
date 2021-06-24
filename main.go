@@ -12,7 +12,6 @@ import (
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/starfield"
-	"github.com/skycoin/cx-game/starmap"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
@@ -57,7 +56,6 @@ var (
 	spacePressed   bool
 	mouseX, mouseY float64
 
-	isFreeCam = false
 	//unused
 	isTileSelectorVisible  = false
 	isInventoryGridVisible = false
@@ -138,19 +136,18 @@ func Init() {
 	item.RegisterItemTypes()
 
 	player = models.NewPlayer()
-	starfield.InitStarField(&win, player)
+
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
 	//CurrentPlanet = world.NewDevPlanet()
 	CurrentPlanet = world.GeneratePlanet()
 
-	starmap.Init(&win)
-	starmap.Generate(256, 0.04, 8)
+	starfield.InitStarField(&win, player, Cam)
 
 }
 
 func FixedTick() {
-	if !isFreeCam {
+	if !Cam.IsFreeCam() {
 		player.FixedTick(true, CurrentPlanet)
 	} else {
 		player.FixedTick(false, CurrentPlanet)
@@ -163,7 +160,7 @@ func Tick(dt float32) {
 		FixedTick()
 	}
 	physics.Simulate(dt, CurrentPlanet)
-	if isFreeCam {
+	if Cam.IsFreeCam() {
 		Cam.MoveCam(dt)
 	} else {
 		playerPos := player.InterpolatedTransform.Col(3).Vec2()
@@ -201,7 +198,6 @@ func Draw() {
 	baseCtx.Projection = Cam.GetProjectionMatrix()
 	camCtx := baseCtx.PushView(Cam.GetView())
 
-	// starmap.Draw()
 	starfield.DrawStarField()
 	CurrentPlanet.Draw(Cam, world.BgLayer)
 	CurrentPlanet.Draw(Cam, world.MidLayer)
@@ -281,7 +277,7 @@ func ProcessInput() {
 		sound.ToggleMute()
 	}
 	if input.GetButtonDown("freecam") {
-		isFreeCam = !isFreeCam
+		Cam.ToggleFreeCam()
 	}
 	if input.GetButtonDown("cycle-palette") {
 		tilePaletteSelector.CycleLayer()
@@ -289,7 +285,12 @@ func ProcessInput() {
 	if input.GetButtonDown("inventory-grid") {
 		isInventoryGridVisible = !isInventoryGridVisible
 	}
-
+	if input.GetKeyDown(glfw.KeyL) {
+		starfield.SwitchBackgrounds(starfield.BACKGROUND_NEBULA)
+	}
+	if input.GetKeyDown(glfw.KeyO) {
+		starfield.SwitchBackgrounds(starfield.BACKGROUND_VOID)
+	}
 	inventory := item.GetInventoryById(inventoryId)
 	inventory.TrySelectSlot(input.GetLastKey())
 }

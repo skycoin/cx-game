@@ -10,10 +10,13 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/models"
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/starmap"
 	"github.com/skycoin/cx-game/utility"
 )
 
@@ -23,7 +26,9 @@ func init() {
 }
 
 var (
-	p *models.Player
+	p          *models.Player
+	Cam        *camera.Camera
+	background Background
 )
 
 type noiseSettings struct {
@@ -120,9 +125,14 @@ var (
 	shader *utility.Shader
 )
 
+func SwitchBackgrounds(bg Background) {
+	background = bg
+}
+
 //create random stars
-func InitStarField(window *render.Window, player *models.Player) {
+func InitStarField(window *render.Window, player *models.Player, cam *camera.Camera) {
 	p = player
+	Cam = cam
 	shader = utility.NewShader("./assets/shader/starfield/shader.vert", "./assets/shader/starfield/shader.frag")
 	shader.Use()
 
@@ -188,36 +198,37 @@ func InitStarField(window *render.Window, player *models.Player) {
 		}
 		stars = append(stars, star)
 	}
-
+	starmap.Init(window)
+	starmap.Generate(256, 0.04, 8)
 }
 
 //updates position of each star at each game iteration
 func UpdateStarField(dt float32) {
+	var dirX, dirY float32 = 0, 0
+	if Cam.Vel.X() != 0 {
+		dirX = cxmath.Sign(Cam.Vel.X())
+	}
+	if Cam.Vel.Y() != 0 {
+		dirY = cxmath.Sign(Cam.Vel.Y())
+	}
 	for _, star := range stars {
-		if p.IsMoving("left") {
-			star.X += speed * dt * star.Depth
-		}
-		if p.IsMoving("right") {
-			star.X -= speed * dt * star.Depth
-		}
-		if p.IsMoving("up") {
-			star.Y -= speed * dt * star.Depth
-		}
-		if p.IsMoving("down") {
-			star.Y += speed * dt * star.Depth
-		}
+		star.X += -dirX * speed * dt * star.Depth
+		star.Y += -dirY * speed * dt * star.Depth
+
 		if star.X > float32(windowConfig.Starfield_Width) {
 			star.X = 0
 		}
 		star.X += 7 * dt * star.Depth * (rand.Float32() - 0.5)
 	}
-
 }
 
 //draws stars via drawquad function
 func DrawStarField() {
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	if background == BACKGROUND_NEBULA {
+		starmap.Draw()
+	}
 	shader.Use()
 	for _, star := range stars {
 		if star.IsGaussian {

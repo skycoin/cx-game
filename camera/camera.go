@@ -22,28 +22,51 @@ var (
 
 	zoomLevels = []float32{0.75, 1, 1.75}
 	// firstTick    bool    = true
+	focus_area focusArea
 )
 
 type Camera struct {
-	X        float32
-	Y        float32
-	Zoom     float32
-	movSpeed float32
-	window   *render.Window
-	Frustum  Frustum
+	X          float32
+	Y          float32
+	Vel        mgl32.Vec2
+	Zoom       float32
+	movSpeed   float32
+	window     *render.Window
+	Frustum    Frustum
+	focus_area focusArea
+	freeCam    bool
+}
+
+type focusArea struct {
+	center mgl32.Vec2
+	left   float32
+	right  float32
+	top    float32
+	bottom float32
 }
 
 //Initiates Camera Instances given the window
 func NewCamera(window *render.Window) *Camera {
+	size := mgl32.Vec2{3, 5}
+	xPos := float32(0)
+	yPos := float32(0)
 	cam := Camera{
 		//take X,Y pos as a center to frustrum
-		X:        0,
-		Y:        0,
+		X:        xPos,
+		Y:        yPos,
+		Vel:      mgl32.Vec2{0, 0},
 		Zoom:     1,
 		movSpeed: 5,
 		window:   window,
+		focus_area: focusArea{
+			center: mgl32.Vec2{xPos, yPos},
+			left:   xPos - size.X()/2,
+			right:  xPos + size.X()/2,
+			top:    yPos + size.Y()/2,
+			bottom: yPos - size.Y()/2,
+		},
+		freeCam: false,
 	}
-
 	return &cam
 }
 
@@ -76,9 +99,36 @@ func (camera *Camera) SetCameraCenter() {
 
 //sets camera for current position
 func (camera *Camera) SetCameraPosition(x, y float32) {
-	camera.X = x
-	camera.Y = y
+	camera.updateFocusArea(x, y)
 	camera.UpdateFrustum()
+}
+
+func (camera *Camera) updateFocusArea(x, y float32) {
+	var shiftX, shiftY float32
+	if x < camera.focus_area.left {
+		shiftX = x - camera.focus_area.left
+	} else if x > camera.focus_area.right {
+		shiftX = x - camera.focus_area.right
+	}
+	if y < camera.focus_area.bottom {
+		shiftY = y - camera.focus_area.bottom
+	} else if y > camera.focus_area.top {
+		shiftY = y - camera.focus_area.top
+	}
+	camera.focus_area.left += shiftX
+	camera.focus_area.right += shiftX
+	camera.focus_area.bottom += shiftY
+	camera.focus_area.top += shiftY
+	camera.focus_area.center = mgl32.Vec2{
+		(camera.focus_area.left + camera.focus_area.right) / 2,
+		(camera.focus_area.top + camera.focus_area.bottom) / 2,
+	}
+
+	camera.Vel[0] = camera.focus_area.center.X() - camera.X
+	camera.Vel[1] = camera.focus_area.center.Y() - camera.Y
+
+	camera.X = camera.focus_area.center.X()
+	camera.Y = camera.focus_area.center.Y()
 }
 
 //sets camera for target position
@@ -150,4 +200,16 @@ func (camera *Camera) Tick(dt float32) {
 		zooming = false
 		zoomProgress = 0
 	}
+}
+
+func (camera *Camera) IsFreeCam() bool {
+	return camera.freeCam
+}
+
+func (camera *Camera) ToggleFreeCam() {
+
+	camera.freeCam = !camera.freeCam
+
+	//reset velocity for now
+	camera.Vel = mgl32.Vec2{}
 }
