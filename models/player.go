@@ -176,6 +176,14 @@ func (player *Player) IsMoving(direction string) bool {
 		if player.Vel.X > 0 {
 			return true
 		}
+	case "up":
+		if player.Vel.Y > 0 {
+			return true
+		}
+	case "down":
+		if player.Vel.Y < 0 {
+			return true
+		}
 	}
 	return false
 }

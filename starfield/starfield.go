@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -43,9 +44,8 @@ type noiseSettings struct {
 	GradFile string
 }
 
-//via yaml set pixel_size
 type starSettings struct {
-	Pixel_Size              int
+	Star_size               int
 	Star_Separation_Enabled int
 	Gaussian_Percentage     int
 	Gaussian_Angle          int
@@ -54,12 +54,10 @@ type starSettings struct {
 	Gaussian_Sigma_X        float32
 	Gaussian_Sigma_Y        float32
 	Gaussian_Constant       float32
-	Intensity_Period        int
+	Intensity_Period        float32
 }
 
-//via cli set bg, star_amount, window width and height
-type cliSettings struct {
-	Background       int
+type WindowSettings struct {
 	StarAmount       int
 	Width            int
 	Height           int
@@ -84,18 +82,17 @@ var (
 
 	perlinMap [][]float32
 	//cli options
-	cliConfig *cliSettings = &cliSettings{
-		StarAmount:       500,
-		Background:       0,
-		Width:            800,
-		Height:           600,
-		Starfield_Width:  1200,
-		Starfield_Height: 900,
+	windowConfig *WindowSettings = &WindowSettings{
+		StarAmount: 500,
+		// Width:            800,
+		// Height:           600,
+		// Starfield_Width:  1200,
+		// Starfield_Height: 900,
 	}
 	gaussianAmount int
 	//star options (pixelsize)
 	starConfig *starSettings = &starSettings{
-		Pixel_Size:          1,
+		Star_size:           2,
 		Gaussian_Percentage: 25,
 		Gaussian_Angle:      45,
 		Gaussian_Offset_X:   0,
@@ -103,7 +100,7 @@ var (
 		Gaussian_Sigma_X:    0.3,
 		Gaussian_Sigma_Y:    0.2,
 		Gaussian_Constant:   1,
-		Intensity_Period:    3,
+		Intensity_Period:    0.5,
 	}
 
 	//perlin options
@@ -123,7 +120,7 @@ var (
 	}
 
 	//variable for star move speed
-	speed  float32 = 3
+	speed  float32 = 4
 	shader *utility.Shader
 )
 
@@ -139,10 +136,14 @@ func InitStarField(window *render.Window, player *models.Player) {
 		gl.BindTexture(gl.TEXTURE_1D, tex)
 	}
 
+	windowConfig.Width = window.Width
+	windowConfig.Height = window.Height
+	windowConfig.Starfield_Width = int(float32(windowConfig.Width) * 1.3)
+	windowConfig.Starfield_Height = int(float32(windowConfig.Width) * 1.3)
 	spriteloader.InitSpriteloader(window)
 	spriteloader.DEBUG = false
 
-	perlinMap = genPerlin(cliConfig.Starfield_Width, cliConfig.Starfield_Height, noiseConfig)
+	perlinMap = genPerlin(windowConfig.Starfield_Width, windowConfig.Starfield_Height, noiseConfig)
 
 	file1 := "./assets/starfield/stars/planets.png"
 	file2 := file1
@@ -169,27 +170,30 @@ func InitStarField(window *render.Window, player *models.Player) {
 		}
 	}
 	gaussianDepth := rand.Float32()
-	for i := 0; i < cliConfig.StarAmount; i++ {
+	file, _ := os.Create("star_positions.txt")
+	defer file.Close()
+
+	for i := 0; i < windowConfig.StarAmount; i++ {
 		spriteName := fmt.Sprintf("stars-%d-%d", rand.Intn(2)+1, rand.Intn(16))
 		star := &Star{
 			//bad generation position, TODO
 			SpriteId:  spriteloader.GetSpriteIdByName(spriteName),
 			Intensity: rand.Float32(),
 			Depth:     rand.Float32(),
-			Size:      float32(starConfig.Pixel_Size) * getRandomSize(),
+			Size:      float32(starConfig.Star_size) * getRandomSize(),
 		}
 
 		if i < gaussianAmount {
-			star.X, star.Y = getStarPosition(true)
+			star.X, star.Y = getStarPosition(true, 1)
 			star.GradientValue = 0.9
 			star.Depth = gaussianDepth
 			star.IsGaussian = true
 		} else {
-			star.X, star.Y = getStarPosition(false)
+			star.X, star.Y = getStarPosition(false, 1)
 			star.GradientValue = rand.Float32()
 			star.IsGaussian = false
 		}
-
+		fmt.Fprintln(file, star.X, "    ", star.Y)
 		stars = append(stars, star)
 	}
 
@@ -197,25 +201,34 @@ func InitStarField(window *render.Window, player *models.Player) {
 
 //updates position of each star at each game iteration
 func UpdateStarField(dt float32) {
-
+	// framecounter++
+	// if framecounter%20 != 0 {
+	// 	return
+	// }
 	for _, star := range stars {
-		// star.X = float32(math.Mod(float64(star.X+(speed*dt)), coords*2))
-		if p.IsMoving("right") {
+		// star.X = float32(math.Mod(float64(star.X+(speed*dt)), coords*2))	framecounter++
+
+		if p.IsMoving("left") {
 			star.X += speed * dt * star.Depth
 		}
-		if p.IsMoving("left") {
+		if p.IsMoving("right") {
 			star.X -= speed * dt * star.Depth
 		}
-		if star.X > float32(cliConfig.Starfield_Width) {
+		if p.IsMoving("up") {
+			star.Y -= speed * dt * star.Depth
+		}
+		if p.IsMoving("down") {
+			star.Y += speed * dt * star.Depth
+		}
+		if star.X > float32(windowConfig.Starfield_Width) {
 			star.X = 0
 		}
-		// star.X = star.X + dt
+		star.X += 6 * dt * star.Depth * (rand.Float32() - 0.5)
 	}
 }
 
 //draws stars via drawquad function
 func DrawStarField() {
-
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	shader.Use()
@@ -232,11 +245,7 @@ func DrawStarField() {
 }
 
 func getIntensity(intensity float32) float32 {
-
-	// t := time.Now()
-
-	// return myclamp(float32(math.Sin(float64(time.Now().UnixNano()))))
-	ttime := float64(time.Now().UnixNano() / (10000000 * int64(starConfig.Intensity_Period)))
+	ttime := float64(float32(time.Now().UnixNano()) / (10000000 * starConfig.Intensity_Period))
 
 	rad := math.Pi / 180 * ttime
 
@@ -246,6 +255,7 @@ func getIntensity(intensity float32) float32 {
 
 	return float32(result)
 }
+
 func getRandomSize() float32 {
 	return (1 + 3*rand.Float32()/2)
 }
@@ -270,9 +280,11 @@ func getGradient(gradientNumber uint) uint32 {
 	return tex
 }
 
+var max_depth = 5
+
 // Get Random Position for a star
 //  isGaussian - boolean to specify is star should be in a gaussian band
-func getStarPosition(isGaussian bool) (float32, float32) {
+func getStarPosition(isGaussian bool, depth int) (float32, float32) {
 
 	var xPos, yPos float32
 	if isGaussian {
@@ -287,10 +299,9 @@ func getStarPosition(isGaussian bool) (float32, float32) {
 			break
 		}
 	} else {
-
 		for {
-			x := rand.Intn(cliConfig.Starfield_Width)
-			y := rand.Intn(cliConfig.Starfield_Height)
+			x := rand.Intn(windowConfig.Starfield_Width)
+			y := rand.Intn(windowConfig.Starfield_Height)
 			perlinProb := perlinMap[x][y]
 			deleteChance := (1 - perlinProb)
 			if deleteChance > 0.5 {
@@ -305,29 +316,25 @@ func getStarPosition(isGaussian bool) (float32, float32) {
 
 	if starConfig.Star_Separation_Enabled > 0 {
 		if starPositionInConflict(xPos, yPos) {
-			return getStarPosition(isGaussian)
+			if depth < max_depth {
+				return getStarPosition(isGaussian, depth+1)
+			}
 		}
 	}
 	return xPos, yPos
 }
 
 func starPositionInConflict(xPos, yPos float32) bool {
-
 	// mindistance := 10.3
 
-	// for i, star := range stars {
-	// 	numtries[i] = numtries[i] + 1
-	// 	if numtries[i] > 50 {
-	// 		fmt.Println("TODO")
-	// 		return false
-	// 	}
+	// for _, star := range stars {
+
 	// 	if math.Abs(float64(star.X-xPos)) < mindistance ||
 	// 		math.Abs(float64(star.Y-yPos)) < mindistance {
 	// 		return true
 	// 	}
 	// }
 	return false
-
 }
 
 func convertToWorldCoords(xPos, yPos, minX, maxX, minY, maxY float32) (float32, float32) {
@@ -335,8 +342,8 @@ func convertToWorldCoords(xPos, yPos, minX, maxX, minY, maxY float32) (float32, 
 	diffY := maxY - minY
 	b := (xPos - minX) / diffX
 	c := (yPos - minY) / diffY
-	x := float32(cliConfig.Starfield_Width) * b
-	y := float32(cliConfig.Starfield_Height) * c
+	x := float32(windowConfig.Starfield_Width) * b
+	y := float32(windowConfig.Starfield_Height) * c
 	return x, y
 }
 

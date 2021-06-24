@@ -8,6 +8,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/starfield"
@@ -33,8 +34,8 @@ func init() {
 }
 
 const (
-	WINDOW_WIDTH  = 800
-	WINDOW_HEIGHT = 480
+	WINDOW_WIDTH  = 1600
+	WINDOW_HEIGHT = 900
 )
 
 var (
@@ -201,6 +202,7 @@ func Draw() {
 	//
 	camCtx := baseCtx.PushView(Cam.GetView())
 
+	ui.DrawString("test", mgl32.Vec4{1, 1, 1, 1}, ui.AlignCenter, win.DefaultRenderContext())
 	// starmap.Draw()
 	starfield.DrawStarField()
 	CurrentPlanet.Draw(Cam, world.BgLayer)
@@ -343,11 +345,18 @@ func mouseButtonCallback(
 }
 
 func windowSizeCallback(window *glfw.Window, width, height int) {
-	gl.Viewport(0, 0, int32(width), int32(height))
-	win.Width = width
-	win.Height = height
+
+	// gl.Viewport(0, 0, int32(width), int32(height))
+	scaleToFitWidth := float32(width) / float32(win.Width)
+	scaleToFitHeight := float32(height) / float32(win.Height)
+
+	scale := cxmath.Min(scaleToFitHeight, scaleToFitWidth)
+	gl.Viewport(int32((float32(width)-float32(win.Width)*scale)/2), int32((float32(height)-float32(win.Height)*scale)/2), int32(float32(win.Width)*scale), int32(float32(win.Height)*scale))
+	// win.Width = width
+	// win.Height = height
 }
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {
 	Cam.SetCameraZoomPosition(float32(yOff))
+
 }

@@ -243,12 +243,12 @@ func initStarField() {
 		}
 
 		if i < gaussianAmount {
-			star.X, star.Y = getStarPosition(true)
+			star.X, star.Y = getStarPosition(true, 1)
 			star.GradientValue = 0.9
 			star.Depth = gaussianDepth
 			star.IsGaussian = true
 		} else {
-			star.X, star.Y = getStarPosition(false)
+			star.X, star.Y = getStarPosition(false, 1)
 			star.GradientValue = rand.Float32()
 			star.IsGaussian = false
 		}
@@ -262,7 +262,7 @@ func initStarField() {
 func regenStarField() {
 	gaussianAmount = cliConfig.StarAmount * starConfig.Gaussian_Percentage / 100
 	for _, star := range stars {
-		star.X, star.Y = getStarPosition(star.IsGaussian)
+		star.X, star.Y = getStarPosition(star.IsGaussian, 1)
 		star.Size = float32(starConfig.Pixel_Size) * getRandomSize()
 	}
 }
@@ -347,7 +347,7 @@ func getGradient(gradientNumber uint) uint32 {
 
 // Get Random Position for a star
 //  isGaussian - boolean to specify is star should be in a gaussian band
-func getStarPosition(isGaussian bool) (float32, float32) {
+func getStarPosition(isGaussian bool, depth uint) (float32, float32) {
 
 	var xPos, yPos float32
 	if isGaussian {
@@ -379,8 +379,8 @@ func getStarPosition(isGaussian bool) (float32, float32) {
 	}
 
 	if starConfig.Star_Separation_Enabled > 0 {
-		if starPositionInConflict(xPos, yPos) {
-			return getStarPosition(isGaussian)
+		if starPositionInConflict(xPos, yPos) && depth < 5 {
+			return getStarPosition(isGaussian, depth+1)
 		}
 	}
 	return xPos, yPos
@@ -388,19 +388,14 @@ func getStarPosition(isGaussian bool) (float32, float32) {
 
 func starPositionInConflict(xPos, yPos float32) bool {
 
-	// mindistance := 10.3
+	mindistance := 10.0
 
-	// for i, star := range stars {
-	// 	numtries[i] = numtries[i] + 1
-	// 	if numtries[i] > 50 {
-	// 		fmt.Println("TODO")
-	// 		return false
-	// 	}
-	// 	if math.Abs(float64(star.X-xPos)) < mindistance ||
-	// 		math.Abs(float64(star.Y-yPos)) < mindistance {
-	// 		return true
-	// 	}
-	// }
+	for _, star := range stars {
+		if math.Abs(float64(star.X-xPos)) < mindistance ||
+			math.Abs(float64(star.Y-yPos)) < mindistance {
+			return true
+		}
+	}
 	return false
 
 }
@@ -519,8 +514,8 @@ func keyCallback(w *glfw.Window, k glfw.Key, scancode int, a glfw.Action, mk glf
 
 }
 
-func saveResult(){
-	
+func saveResult() {
+
 }
 
 //function to parse cli flags
