@@ -8,6 +8,7 @@ import (
 	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/spriteloader"
@@ -24,6 +25,7 @@ type Player struct {
 	AdditionalJumps uint
 	spriteId        int
 	MovementType    MovementType
+	XDirection float32 // 1 when facing right, -1 when facing left
 }
 
 type MovementType uint
@@ -57,6 +59,7 @@ func NewPlayer() *Player {
 			MaxJumpHeight:   7,
 			DynamicFriction: 0.55,
 		},
+		XDirection: 1, // start facing right
 	}
 	player.meta.DynamicFriction = utility.ClampF(player.meta.DynamicFriction, 0, 1)
 	minJumpSpeed = cxmath.Sqrt(2 * cxmath.Abs(physics.Gravity) * player.meta.MinJumpHeight)
@@ -77,7 +80,8 @@ func (player *Player) Draw(cam *camera.Camera, planet *world.Planet) {
 
 	spriteloader.DrawSpriteQuad(
 		disp.X(), disp.Y(),
-		player.Size.X, player.Size.Y, player.spriteId,
+		// player sprite actually faces left so throw an extra (-) here
+		-player.Size.X * player.XDirection, player.Size.Y, player.spriteId,
 	)
 }
 
@@ -99,7 +103,11 @@ func (player *Player) FixedTick(controlled bool, planet *world.Planet) {
 	player.Vel.Y -= physics.Gravity * physics.TimeStep
 
 	if controlled {
-		player.Vel.X += input.GetAxis(input.HORIZONTAL) * player.acceleration
+		inputXAxis := input.GetAxis(input.HORIZONTAL)
+		player.Vel.X += inputXAxis * player.acceleration
+		if inputXAxis != 0 {
+			player.XDirection = math32.Sign(inputXAxis)
+		}
 	}
 	if player.Vel.X != 0 {
 		friction := cxmath.Sign(player.Vel.X) * -1 * player.acceleration * player.meta.DynamicFriction
