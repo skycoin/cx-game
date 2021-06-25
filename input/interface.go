@@ -50,6 +50,15 @@ func GetButtonUp(button string) bool {
 	KeysPressedUp[key] = false
 	return pressed
 }
+func GetKey(key glfw.Key) bool {
+	return KeysPressed[key]
+}
+func GetKeyDown(key glfw.Key) bool {
+	return KeysPressedDown[key]
+}
+func GetKeyUp(key glfw.Key) bool {
+	return KeysPressedUp[key]
+}
 
 func GetLastKey() glfw.Key {
 	return lastKeyPressed

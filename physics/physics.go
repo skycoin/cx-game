@@ -60,4 +60,3 @@ func tick(worldcollider worldcollider.WorldCollider) {
 	}
 	bodies = newBodies
 }
-

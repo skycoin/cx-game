@@ -8,9 +8,10 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/sound"
-	"github.com/skycoin/cx-game/starmap"
+	"github.com/skycoin/cx-game/starfield"
 
 	//cv "github.com/skycoin/cx-game/cmd/spritetool"
 
@@ -33,7 +34,7 @@ func init() {
 
 const (
 	WINDOW_WIDTH  = 800
-	WINDOW_HEIGHT = 480
+	WINDOW_HEIGHT = 600
 )
 
 var (
@@ -55,7 +56,6 @@ var (
 	spacePressed   bool
 	mouseX, mouseY float64
 
-	isFreeCam = false
 	//unused
 	isTileSelectorVisible  = false
 	isInventoryGridVisible = false
@@ -121,18 +121,18 @@ func Init() {
 	item.RegisterItemTypes()
 
 	player = models.NewPlayer()
+
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
 	//CurrentPlanet = world.NewDevPlanet()
 	CurrentPlanet = world.GeneratePlanet()
 
-	starmap.Init(&win)
-	starmap.Generate(256, 0.04, 8)
+	starfield.InitStarField(&win, player, Cam)
 
 }
 
 func FixedTick() {
-	if !isFreeCam {
+	if !Cam.IsFreeCam() {
 		player.FixedTick(true, CurrentPlanet)
 	} else {
 		player.FixedTick(false, CurrentPlanet)
@@ -145,7 +145,7 @@ func Tick(dt float32) {
 		FixedTick()
 	}
 	physics.Simulate(dt, CurrentPlanet)
-	if isFreeCam {
+	if Cam.IsFreeCam() {
 		Cam.MoveCam(dt)
 	} else {
 		playerPos := player.InterpolatedTransform.Col(3).Vec2()
@@ -164,20 +164,21 @@ func Tick(dt float32) {
 	sound.SetListenerPosition(player.Pos)
 	//has to be after listener position is updated
 	sound.Update()
+
+	starfield.UpdateStarField(dt)
 	// input.Reset()
 	catIsScratching = false
 }
 
 func Draw() {
-	gl.ClearColor(1, 1, 1, 1)
+	gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	baseCtx := win.DefaultRenderContext()
 	baseCtx.Projection = Cam.GetProjectionMatrix()
-	//
 	camCtx := baseCtx.PushView(Cam.GetView())
 
-	starmap.Draw()
+	starfield.DrawStarField()
 	CurrentPlanet.Draw(Cam, world.BgLayer)
 	CurrentPlanet.Draw(Cam, world.MidLayer)
 	// draw lasers between mid and top layers.
@@ -192,12 +193,6 @@ func Draw() {
 	item.DrawWorldItems(Cam)
 	enemies.DrawBasicEnemies(Cam)
 	player.Draw(Cam, CurrentPlanet)
-
-	// ui.DrawString(fmt.Sprintf("%f   %f", player.Vel.X, player.Vel.Y), mgl32.Vec4{1, 1, 1, 1}, ui.AlignCenter, win.DefaultRenderContext())
-
-	// ctx := win.DefaultRenderContext()
-	// ctx = ctx.PushLocal(mgl32.Translate3D(1, 1, 0))
-	// ui.DrawString(player.MovementType.String(), mgl32.Vec4{1, 1, 1, 1}, ui.AlignCenter, ctx)
 
 	// tile - air line (green)
 	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
@@ -221,11 +216,11 @@ func Draw() {
 
 	inventory := item.GetInventoryById(inventoryId)
 	if isInventoryGridVisible {
-		inventory.DrawGrid(baseCtx)
+		inventory.DrawGrid(win.DefaultRenderContext())
 	} else {
-		inventory.DrawBar(baseCtx)
+		inventory.DrawBar(win.DefaultRenderContext())
 	}
-	tilePaletteSelector.Draw(baseCtx)
+	tilePaletteSelector.Draw(win.DefaultRenderContext())
 
 	glfw.PollEvents()
 	win.Window.SwapBuffers()
@@ -265,7 +260,7 @@ func ProcessInput() {
 		sound.ToggleMute()
 	}
 	if input.GetButtonDown("freecam") {
-		isFreeCam = !isFreeCam
+		Cam.ToggleFreeCam()
 	}
 	if input.GetButtonDown("cycle-palette") {
 		tilePaletteSelector.CycleLayer()
@@ -273,9 +268,19 @@ func ProcessInput() {
 	if input.GetButtonDown("inventory-grid") {
 		isInventoryGridVisible = !isInventoryGridVisible
 	}
-
+	if input.GetKeyDown(glfw.KeyL) {
+		starfield.SwitchBackgrounds(starfield.BACKGROUND_NEBULA)
+	}
+	if input.GetKeyDown(glfw.KeyO) {
+		starfield.SwitchBackgrounds(starfield.BACKGROUND_VOID)
+	}
 	inventory := item.GetInventoryById(inventoryId)
 	inventory.TrySelectSlot(input.GetLastKey())
+}
+
+type mouseDraws struct {
+	xpos float32
+	ypos float32
 }
 
 func mouseButtonCallback(
@@ -307,10 +312,11 @@ func mousePressCallback(
 	// we only care about mousedown events for now
 	if a != glfw.Press {
 		return
+
 	}
 
-	screenX := float32(input.GetMouseX()-float64(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
-	screenY := (float32(input.GetMouseY()-float64(win.Height)/2) * -1) / Cam.Zoom
+	screenX := float32(((input.GetMouseX()-float64(widthOffset))/float64(scale) - float64(win.Width)/2)) / Cam.Zoom // adjust mouse position with zoom
+	screenY := float32(((input.GetMouseY()-float64(heightOffset))/float64(scale)-float64(win.Height)/2)*-1) / Cam.Zoom
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
 	if didSelectPaleteTile {
@@ -350,10 +356,26 @@ func mousePressCallback(
 		TryUseItem(screenX, screenY, Cam, CurrentPlanet, player)
 }
 
+var (
+	widthOffset, heightOffset int32
+	scale                     float32 = 1
+)
+
 func windowSizeCallback(window *glfw.Window, width, height int) {
-	gl.Viewport(0, 0, int32(width), int32(height))
-	win.Width = width
-	win.Height = height
+
+	// gl.Viewport(0, 0, int32(width), int32(height))
+	scaleToFitWidth := float32(width) / float32(win.Width)
+	scaleToFitHeight := float32(height) / float32(win.Height)
+	scale = cxmath.Min(scaleToFitHeight, scaleToFitWidth)
+
+	widthOffset = int32((float32(width) - float32(win.Width)*scale) / 2)
+	heightOffset = int32((float32(height) - float32(win.Height)*scale) / 2)
+	//correct mouse offsets
+	input.UpdateMouseCoords(widthOffset, heightOffset, scale)
+
+	gl.Viewport(widthOffset, heightOffset, int32(float32(win.Width)*scale), int32(float32(win.Height)*scale))
+	// win.Width = width
+	// win.Height = height
 }
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {
