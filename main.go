@@ -77,18 +77,7 @@ func main() {
 	window.SetScrollCallback(scrollCallback)
 	window.SetSizeCallback(windowSizeCallback)
 
-	inventoryId = item.NewInventory(10, 8)
-
-	debugItemType :=
-		item.NewItemType(spriteloader.GetSpriteIdByName("Bedrock"))
-	debugItemTypeId :=
-		item.AddItemType(debugItemType)
-
-	inventory := item.GetInventoryById(inventoryId)
-	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 7)] =
-		item.InventorySlot{item.LaserGunItemTypeID, 1, 0}
-	inventory.Slots[inventory.ItemSlotIndexForPosition(2, 7)] =
-		item.InventorySlot{item.GunItemTypeID, 1, 0}
+	inventoryId = item.NewDevInventory()
 
 	worldTiles := CurrentPlanet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
@@ -103,10 +92,6 @@ func main() {
 	player.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
 	enemies.SpawnBasicEnemy(player.Pos.X+6, player.Pos.Y)
 	enemies.SpawnBasicEnemy(player.Pos.X-6, player.Pos.Y)
-
-	worldItem = item.NewWorldItem(debugItemTypeId)
-	worldItem.Pos.X = player.Pos.X - 3
-	worldItem.Pos.Y = player.Pos.Y + 2
 
 	sound.LoadSound("player_jump", "jump.wav")
 
@@ -170,14 +155,9 @@ func Tick(dt float32) {
 	fps.Tick()
 	ui.TickDialogueBoxes(dt)
 	particles.TickParticles(dt)
-
-	if worldItem != nil {
-		pickupItem := worldItem.Tick(CurrentPlanet, dt, player.Pos)
-		if pickupItem {
-			item.GetInventoryById(inventoryId).
-				TryAddItem(worldItem.ItemTypeId)
-			worldItem = nil
-		}
+	pickedUpItems := item.TickWorldItems(CurrentPlanet, dt, player.Pos)
+	for _,worldItem := range pickedUpItems {
+		item.GetInventoryById(inventoryId).TryAddItem(worldItem.ItemTypeId)
 	}
 	enemies.TickBasicEnemies(CurrentPlanet, dt, player, catIsScratching)
 
@@ -204,9 +184,12 @@ func Draw() {
 	particles.DrawMidTopParticles(camCtx)
 	CurrentPlanet.Draw(Cam, world.TopLayer)
 	particles.DrawTopParticles(camCtx)
+	/*
 	if worldItem != nil {
 		worldItem.Draw(Cam)
 	}
+	*/
+	item.DrawWorldItems(Cam)
 	enemies.DrawBasicEnemies(Cam)
 	player.Draw(Cam, CurrentPlanet)
 
@@ -298,6 +281,29 @@ func ProcessInput() {
 func mouseButtonCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
+	if a == glfw.Press {
+		mousePressCallback(w,b,a,mk)
+	}
+	if a == glfw.Release {
+		mouseReleaseCallback(w,b,a,mk)
+	}
+}
+
+func mouseReleaseCallback(
+	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
+) {
+	screenX := float32(input.GetMouseX()-float64(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
+	screenY := (float32(input.GetMouseY()-float64(win.Height)/2) * -1) / Cam.Zoom
+
+	if isInventoryGridVisible {
+		inventory := item.GetInventoryById(inventoryId)
+		inventory.TryMoveSlot(screenX, screenY, Cam, CurrentPlanet, player)
+	}
+}
+
+func mousePressCallback(
+	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
+) {
 	// we only care about mousedown events for now
 	if a != glfw.Press {
 		return
@@ -331,6 +337,13 @@ func mouseButtonCallback(
 		if didPlaceTile {
 			return
 		}
+	}
+
+	if isInventoryGridVisible {
+		inventory := item.GetInventoryById(inventoryId)
+		clickedSlot :=
+			inventory.TryClickSlot(screenX, screenY, Cam, CurrentPlanet, player)
+		if clickedSlot { return }
 	}
 
 	item.GetInventoryById(inventoryId).

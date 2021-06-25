@@ -349,19 +349,24 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 	return planet.collidingLines
 }
 
-func (planet *Planet) DamageTile(x,y int, layer Layer) {
+func (planet *Planet) DamageTile(
+		x,y int, layer Layer,
+) (tileCopy Tile, destroyed bool) {
 	tileIdx := planet.GetTileIndex(x,y)
 	if tileIdx < 0 {
 		// invalid tile; nothing to damage
 		return
 	}
 	tile := &planet.GetLayer(layer)[tileIdx]
+	_tileCopy := *tile
 	// TODO create tile chunk from collision point rather than tile center
 	particles.CreateTileChunks(float32(x),float32(y),tile.SpriteID)
 	tile.Durability--
-	if tile.Durability <= 0 {
+	_destroyed := tile.Durability <= 0
+	if _destroyed {
 		*tile = NewEmptyTile()
 	}
+	return _tileCopy, _destroyed
 }
 
 func (planet *Planet) WrapAround(pos mgl32.Vec2) mgl32.Vec2 {

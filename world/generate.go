@@ -41,14 +41,17 @@ func GeneratePlanet() *Planet {
 	dirt := Tile {
 		TileType: TileTypeNormal,
 		SpriteID: uint32(spriteloader.GetSpriteIdByName("Dirt")),
+		Name: "Dirt",
 	}
 	stone := Tile {
 		TileType: TileTypeNormal,
 		SpriteID: uint32(spriteloader.GetSpriteIdByName("Stone")),
+		Name: "Stone",
 	}
 	bedrock := Tile {
 		TileType: TileTypeNormal,
 		SpriteID: uint32(spriteloader.GetSpriteIdByName("Bedrock")),
+		Name: "Bedrock",
 	}
 
 	planet.placeLayer(bedrock, 4,1)
