@@ -25,7 +25,7 @@ var (
 
 func InitBullets() {
 	bulletShader = utility.NewShader(
-		"./assets/shader/simple.vert", "./assets/shader/color.frag" )
+		"./assets/shader/mvp.vert", "./assets/shader/color.frag" )
 	bulletShader.Use()
 	bulletShader.SetVec4F("colour",1,0,0,1)
 	bulletShader.StopUsing()
@@ -43,9 +43,9 @@ func (bullet Bullet) WorldTransform() mgl32.Mat4 {
 	return bullet.transform.Mul4(cxmath.Scale(1.0/4))
 }
 
-func (bullet Bullet) draw(ctx render.Context) {
-	world := bullet.WorldTransform()
-	bulletShader.SetMat4("world", &world)
+func (bullet Bullet) draw(ctx render.WorldContext) {
+	mvp := ctx.ModelToModelViewProjection(bullet.WorldTransform())
+	bulletShader.SetMat4("mvp", &mvp)
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
@@ -64,9 +64,10 @@ func configureGlForBullet() {
 	gl.BindVertexArray(spriteloader.QuadVao);
 }
 
-func DrawBullets(ctx render.Context) {
+func DrawBullets(ctx render.WorldContext) {
 	bulletShader.Use()
-	bulletShader.SetMat4("projection", &ctx.Projection)
+	projection := ctx.Projection()
+	bulletShader.SetMat4("projection", &projection)
 	configureGlForBullet()
 	// TODO add texture
 	// bulletShader.SetUint("tex", bulletShader.gpuTex)

@@ -378,3 +378,18 @@ func (planet *Planet) WrapAround(pos mgl32.Vec2) mgl32.Vec2 {
 	}
 	return pos
 }
+
+func (planet *Planet) WrapAroundOffset(before mgl32.Vec2) mgl32.Vec2 {
+	after := planet.WrapAround(before)
+	return after.Sub(before)
+}
+
+func (planet *Planet) MinimizeDistance(
+		from,to mgl32.Vec2,
+) (mgl32.Vec2,mgl32.Vec2) {
+	toCloser := mgl32.Vec2 { 
+		from.X()+ cxmath.NewModular(float32(planet.Width)).Disp(from.X(),to.X()),
+		to.Y(),
+	}
+	return from,toCloser
+}

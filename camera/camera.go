@@ -2,9 +2,11 @@ package camera
 
 import (
 	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/utility"
+	"github.com/skycoin/cx-game/cxmath"
 )
 
 var (
@@ -35,6 +37,7 @@ type Camera struct {
 	Frustum    Frustum
 	focus_area focusArea
 	freeCam    bool
+	PlanetWidth float32
 }
 
 type focusArea struct {
@@ -103,12 +106,14 @@ func (camera *Camera) SetCameraPosition(x, y float32) {
 	camera.UpdateFrustum()
 }
 
+// update focus area to include (x,y)
 func (camera *Camera) updateFocusArea(x, y float32) {
+	modular := cxmath.NewModular(camera.PlanetWidth)
 	var shiftX, shiftY float32
-	if x < camera.focus_area.left {
-		shiftX = x - camera.focus_area.left
-	} else if x > camera.focus_area.right {
-		shiftX = x - camera.focus_area.right
+	if modular.IsLeft(x,camera.focus_area.left) {
+		shiftX = modular.Disp(camera.focus_area.left,x)
+	} else if modular.IsRight(x,camera.focus_area.right) {
+		shiftX = modular.Disp(camera.focus_area.right,x)
 	}
 	if y < camera.focus_area.bottom {
 		shiftY = y - camera.focus_area.bottom

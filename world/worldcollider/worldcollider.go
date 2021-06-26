@@ -6,5 +6,5 @@ import (
 
 type WorldCollider interface {
 	TileIsSolid(x,y int) bool
-	WrapAround(rawPosition mgl32.Vec2) (wrappedPosition mgl32.Vec2)
+	WrapAroundOffset(rawPosition mgl32.Vec2) (wrappedPosition mgl32.Vec2)
 }

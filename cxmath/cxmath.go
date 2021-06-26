@@ -65,3 +65,8 @@ func Abs(a float32) float32 {
 func Sqrt(a float32) float32 {
 	return float32(math.Sqrt(float64(a)))
 }
+
+func LerpVec2(v1,v2 mgl32.Vec2, alpha float32) mgl32.Vec2 {
+	beta := 1-alpha
+	return v1.Mul(beta).Add(v2.Mul(alpha))
+}

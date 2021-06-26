@@ -85,7 +85,7 @@ func DrawChunkParticles(ctx render.Context) {
 }
 
 // draw particles between mid and top layers
-func DrawMidTopParticles(ctx render.Context) {
+func DrawMidTopParticles(ctx render.WorldContext) {
 	DrawLasers(ctx)
 	DrawBullets(ctx)
 }
