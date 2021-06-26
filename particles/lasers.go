@@ -35,7 +35,7 @@ const laserAnimSpeed = 6
 
 func InitLasers() {
 	laserShader = utility.NewShader(
-		"./assets/shader/simple.vert", "./assets/shader/laser.frag")
+		"./assets/shader/mvp.vert", "./assets/shader/laser.frag")
 
 	_, img, _ :=
 		spriteloader.LoadPng("./assets/projectile/laser_beam_core_00.png")
@@ -108,12 +108,12 @@ func TickLasers(dt float32) {
 	lasers = newLasers
 }
 
-func DrawLaser(laser Laser, ctx render.Context) {
+func DrawLaser(laser Laser, ctx render.WorldContext) {
 	alpha := laser.ttl / laserDuration
 	laserShader.SetVec4F("color", 1, 1, 1, alpha)
 
-	world := ctx.World.Mul4(laser.transform)
-	laserShader.SetMat4("world", &world)
+	mvp := ctx.ModelToModelViewProjection(laser.transform)
+	laserShader.SetMat4("mvp", &mvp)
 
 	laserShader.SetVec2F("offset", alpha*laserAnimSpeed, 0)
 	laserShader.SetVec2F("scale", laser.length, 1)
@@ -133,10 +133,11 @@ func configureGlForLaser() {
 	gl.BindVertexArray(laserTex.vao)
 }
 
-func DrawLasers(ctx render.Context) {
+func DrawLasers(ctx render.WorldContext) {
 	// only need to set up shader once for all lasers
 	laserShader.Use()
-	laserShader.SetMat4("projection", &ctx.Projection)
+	projection := ctx.Projection()
+	laserShader.SetMat4("projection", &projection)
 	laserShader.SetUint("tex", laserTex.gpuTex)
 	configureGlForLaser()
 

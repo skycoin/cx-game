@@ -21,6 +21,7 @@ import (
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/render/worldctx"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
@@ -126,6 +127,7 @@ func Init() {
 	Cam = camera.NewCamera(&win)
 	//CurrentPlanet = world.NewDevPlanet()
 	CurrentPlanet = world.GeneratePlanet()
+	Cam.PlanetWidth = float32(CurrentPlanet.Width)
 
 	starfield.InitStarField(&win, player, Cam)
 
@@ -177,12 +179,13 @@ func Draw() {
 	baseCtx := win.DefaultRenderContext()
 	baseCtx.Projection = Cam.GetProjectionMatrix()
 	camCtx := baseCtx.PushView(Cam.GetView())
+	worldCtx := worldctx.NewWorldRenderContext(Cam,CurrentPlanet)
 
 	starfield.DrawStarField()
 	CurrentPlanet.Draw(Cam, world.BgLayer)
 	CurrentPlanet.Draw(Cam, world.MidLayer)
 	// draw lasers between mid and top layers.
-	particles.DrawMidTopParticles(camCtx)
+	particles.DrawMidTopParticles(worldCtx)
 	CurrentPlanet.Draw(Cam, world.TopLayer)
 	particles.DrawTopParticles(camCtx)
 	/*

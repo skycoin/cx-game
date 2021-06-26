@@ -70,13 +70,9 @@ func NewPlayer() *Player {
 }
 
 func (player *Player) Draw(cam *camera.Camera, planet *world.Planet) {
-
-	worldTransform := player.InterpolatedTransform
-	worldPos := worldTransform.Col(3).Vec2()
-
 	disp := planet.ShortestDisplacement(
-		mgl32.Vec2{cam.X, cam.Y},
-		worldPos)
+		mgl32.Vec2{cam.X,cam.Y},
+		player.InterpolatedTransform.Col(3).Vec2() )
 
 	spriteloader.DrawSpriteQuad(
 		disp.X(), disp.Y(),

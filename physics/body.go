@@ -183,8 +183,12 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	}
 
 	newPosMgl32 := mgl32.Vec2{newPos.X, newPos.Y}
-	wrapped := collider.WrapAround(newPosMgl32)
-	body.Pos = Vec2{wrapped.X(), wrapped.Y()}
+	offset := collider.WrapAroundOffset(newPosMgl32)
+	newPosMgl32 = newPosMgl32.Add(offset)
+	body.Pos = Vec2{newPosMgl32.X(), newPosMgl32.Y()}
+	// move previous transform to avoid weird interpolation around boundaries
+	body.PreviousTransform = body.PreviousTransform.
+		Mul4(mgl32.Translate3D(offset.X(),offset.Y(),0))
 }
 
 func (body *Body) GetBBoxLines() []float32 {

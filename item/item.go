@@ -34,7 +34,8 @@ func (info ItemUseInfo) WorldCoords() mgl32.Vec2 {
 			info.ScreenY / render.PixelsPerTile, 0, 1 }
 	// click relative to world
 	worldCoords := info.Camera.GetTransform().Mul4x1(camCoords)
-	return worldCoords.Vec2()
+
+	return info.Planet.WrapAround(worldCoords.Vec2())
 }
 
 func (info ItemUseInfo) PlayerCoords() mgl32.Vec2 {

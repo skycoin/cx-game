@@ -50,3 +50,10 @@ func (window Window) DefaultRenderContext() Context {
 		Projection: projectTransform,
 	}
 }
+
+// use for rendering things that need to wrap around world
+type WorldContext interface {
+	Projection() mgl32.Mat4
+	ModelToModelView(model mgl32.Mat4) mgl32.Mat4
+	ModelToModelViewProjection(model mgl32.Mat4) mgl32.Mat4
+}
