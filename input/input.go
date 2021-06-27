@@ -52,4 +52,6 @@ func registerKeyMaps() {
 	MapKeyToButton("scratch", glfw.KeyLeftShift)
 	MapKeyToButton("inventory-grid", glfw.KeyI)
 	MapKeyToButton("fly", glfw.KeyT)
+	MapKeyToButton("crouch", glfw.KeyC)
+	MapKeyToButton("action", glfw.KeyE)
 }

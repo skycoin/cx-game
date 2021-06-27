@@ -11,7 +11,6 @@ import (
 // epsilon parameter for values that are "close enough"
 const eps = 0.05
 
-
 type DamageFunc func(damage int)
 type Body struct {
 	Pos  Vec2
@@ -24,7 +23,7 @@ type Body struct {
 	Collisions     CollisionInfo
 	collidingLines []float32
 
-	Damage DamageFunc
+	Damage  DamageFunc
 	Deleted bool
 }
 
@@ -131,7 +130,7 @@ func (body *Body) isCollidingBottom(collider worldcollider.WorldCollider, newpos
 	return false
 }
 
-func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
+func (body *Body) Tick(collider worldcollider.WorldCollider, dt float32) {
 	body.collidingLines = []float32{}
 	body.Collisions.Reset()
 
@@ -188,7 +187,7 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	body.Pos = Vec2{newPosMgl32.X(), newPosMgl32.Y()}
 	// move previous transform to avoid weird interpolation around boundaries
 	body.PreviousTransform = body.PreviousTransform.
-		Mul4(mgl32.Translate3D(offset.X(),offset.Y(),0))
+		Mul4(mgl32.Translate3D(offset.X(), offset.Y(), 0))
 }
 
 func (body *Body) GetBBoxLines() []float32 {
