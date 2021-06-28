@@ -24,6 +24,9 @@ type Tile struct {
 	OffsetX  int8
 	OffsetY  int8
 	Durability int8
+
+	IsBlob   bool
+	BlobSpriteID uint32
 }
 
 func NewEmptyTile() Tile {
