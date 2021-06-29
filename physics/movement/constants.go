@@ -1,0 +1,19 @@
+package movement
+
+const (
+	NORMAL MovementType = 1 << iota
+	CROUCHING
+	CLIMBING
+	WALL_SLIDING
+	FLYING
+	// HOVER
+	CAN_WALL_JUMP
+
+	DEFAULT_MOVE_SPEED float32 = 5
+	DEFAULT_MASS       float32 = 1
+	DEFAULT_FRICTION   float32 = 0.5
+	DEFAULT_JUMPHEIGHT float32 = 7
+
+	//movement sets, in a plug and play way
+	PLAYER_MOVEMENT_SET = NORMAL | CROUCHING | WALL_SLIDING | FLYING | CLIMBING | WALL_SLIDING | CAN_WALL_JUMP
+)

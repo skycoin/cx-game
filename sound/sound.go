@@ -37,7 +37,7 @@ type SoundOptions struct {
 }
 
 const (
-	max_sources int     = 10
+	max_sources int     = 25
 	z           float32 = 0
 	basePath    string  = "./assets/sound"
 )

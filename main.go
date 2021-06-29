@@ -134,11 +134,13 @@ func Init() {
 }
 
 func FixedTick() {
-	if !Cam.IsFreeCam() {
-		player.FixedTick(true, CurrentPlanet)
+	if Cam.IsFreeCam() {
+		player.Controlled = false
 	} else {
-		player.FixedTick(false, CurrentPlanet)
+		player.Controlled = true
 	}
+	player.FixedTick(CurrentPlanet)
+
 }
 
 func Tick(dt float32) {
@@ -158,7 +160,7 @@ func Tick(dt float32) {
 	ui.TickDialogueBoxes(dt)
 	particles.TickParticles(dt)
 	pickedUpItems := item.TickWorldItems(CurrentPlanet, dt, player.Pos)
-	for _,worldItem := range pickedUpItems {
+	for _, worldItem := range pickedUpItems {
 		item.GetInventoryById(inventoryId).TryAddItem(worldItem.ItemTypeId)
 	}
 	enemies.TickBasicEnemies(CurrentPlanet, dt, player, catIsScratching)
@@ -179,7 +181,7 @@ func Draw() {
 	baseCtx := win.DefaultRenderContext()
 	baseCtx.Projection = Cam.GetProjectionMatrix()
 	camCtx := baseCtx.PushView(Cam.GetView())
-	worldCtx := worldctx.NewWorldRenderContext(Cam,CurrentPlanet)
+	worldCtx := worldctx.NewWorldRenderContext(Cam, CurrentPlanet)
 
 	starfield.DrawStarField()
 	CurrentPlanet.Draw(Cam, world.BgLayer)
@@ -189,9 +191,9 @@ func Draw() {
 	CurrentPlanet.Draw(Cam, world.TopLayer)
 	particles.DrawTopParticles(camCtx)
 	/*
-	if worldItem != nil {
-		worldItem.Draw(Cam)
-	}
+		if worldItem != nil {
+			worldItem.Draw(Cam)
+		}
 	*/
 	item.DrawWorldItems(Cam)
 	enemies.DrawBasicEnemies(Cam)
@@ -290,10 +292,10 @@ func mouseButtonCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
 	if a == glfw.Press {
-		mousePressCallback(w,b,a,mk)
+		mousePressCallback(w, b, a, mk)
 	}
 	if a == glfw.Release {
-		mouseReleaseCallback(w,b,a,mk)
+		mouseReleaseCallback(w, b, a, mk)
 	}
 }
 
@@ -315,7 +317,6 @@ func mousePressCallback(
 	// we only care about mousedown events for now
 	if a != glfw.Press {
 		return
-
 	}
 
 	screenX := float32(((input.GetMouseX()-float64(widthOffset))/float64(scale) - float64(win.Width)/2)) / Cam.Zoom // adjust mouse position with zoom
@@ -352,7 +353,9 @@ func mousePressCallback(
 		inventory := item.GetInventoryById(inventoryId)
 		clickedSlot :=
 			inventory.TryClickSlot(screenX, screenY, Cam, CurrentPlanet, player)
-		if clickedSlot { return }
+		if clickedSlot {
+			return
+		}
 	}
 
 	item.GetInventoryById(inventoryId).
