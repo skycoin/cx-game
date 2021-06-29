@@ -170,8 +170,8 @@ func Tick(dt float32) {
 	sound.Update()
 
 	starfield.UpdateStarField(dt)
-	// input.Reset()
 	catIsScratching = false
+
 }
 
 func Draw() {
@@ -232,6 +232,12 @@ func Draw() {
 }
 
 func ProcessInput() {
+	if input.GetButtonDown("switch-helmet") {
+		player.SetHelmNext()
+	}
+	if input.GetButtonDown("switch-suit") {
+		player.SetSuitNext()
+	}
 	if input.GetButtonDown("jump") {
 		didJump := player.Jump()
 		if didJump {
