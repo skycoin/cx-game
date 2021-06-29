@@ -51,55 +51,55 @@ func NewPlanet(x, y int32) *Planet {
 	return &planet
 }
 
-// TODO pass a layer into this such that bg tiles can use blob tiling
-// right now we are (falsely) assuming that 
-// we are using this for just the top layer
-func (planet *Planet) GetNeighbours(x,y int) blob.Neighbours {
+func (planet *Planet) GetNeighbours(layer []Tile, x,y int) blob.Neighbours {
 	return blob.Neighbours {
-		Up: planet.TileIsSolid(x,y+1),
-		UpRight: planet.TileIsSolid(x+1,y+1),
-		Right: planet.TileIsSolid(x+1,y),
-		DownRight: planet.TileIsSolid(x+1,y-1),
-		Down: planet.TileIsSolid(x,y-1),
-		DownLeft: planet.TileIsSolid(x-1,y-1),
-		Left: planet.TileIsSolid(x-1,y),
-		UpLeft: planet.TileIsSolid(x-1,y+1),
+		Up: planet.TileExists(layer, x,y+1),
+		UpRight: planet.TileExists(layer, x+1,y+1),
+		Right: planet.TileExists(layer, x+1,y),
+		DownRight: planet.TileExists(layer, x+1,y-1),
+		Down: planet.TileExists(layer, x,y-1),
+		DownLeft: planet.TileExists(layer, x-1,y-1),
+		Left: planet.TileExists(layer, x-1,y),
+		UpLeft: planet.TileExists(layer, x-1,y+1),
 	}
 }
 
 func (planet *Planet) DrawLayer(tiles []Tile, cam *camera.Camera) {
-	for idx, tile := range tiles {
-		y := int32(idx) / planet.Width
-		x := int32(idx) % planet.Width
+	for _,pos := range cam.TilesInView() {
+		x := pos.X; y := pos.Y
+		idx := planet.GetTileIndex(int(x),int(y))
+		if idx >=0 {
+			tile := tiles[idx]
 
-		// FIXME temporarily disabling frustum check
-		// because of planet wrapping issues
-		if tile.TileType.ShouldRender() && (true || cam.IsInBounds(int(x),int(y))) {
-			if tile.IsBlob {
-				blobSpriteIdx :=
-					blob.ApplyBlobTiling(planet.GetNeighbours(int(x),int(y)))
-				//blobSpriteIdx = 1
-				blobSprites :=
-					blobsprites.GetBlobSpritesById(tile.BlobSpriteID)
-				tile.SpriteID = uint32(blobSprites[blobSpriteIdx])
+			// FIXME temporarily disabling frustum check
+			// because of planet wrapping issues
+			if tile.TileType.ShouldRender() && cam.IsInBounds(int(x),int(y)) {
+				if tile.IsBlob {
+					blobSpriteIdx :=blob.ApplyBlobTiling(
+						planet.GetNeighbours(tiles, int(x),int(y)),
+					)
+					blobSprites :=
+						blobsprites.GetBlobSpritesById(tile.BlobSpriteID)
+					tile.SpriteID = uint32(blobSprites[blobSpriteIdx])
+				}
+				spriteloader.DrawSpriteQuad(
+					float32(x)-cam.X, float32(y)-cam.Y,
+					1, 1,
+					int(tile.SpriteID),
+				)
+				// TODO replace this with something more performant
+				// draw extra versions to achieve wrap around
+				spriteloader.DrawSpriteQuad(
+					float32(x-planet.Width)-cam.X, float32(y)-cam.Y,
+					1, 1,
+					int(tile.SpriteID),
+				)
+				spriteloader.DrawSpriteQuad(
+					float32(x+planet.Width)-cam.X, float32(y)-cam.Y,
+					1, 1,
+					int(tile.SpriteID),
+				)
 			}
-			spriteloader.DrawSpriteQuad(
-				float32(x)-cam.X, float32(y)-cam.Y,
-				1, 1,
-				int(tile.SpriteID),
-			)
-			// TODO replace this with something more performant
-			// draw extra versions to achieve wrap around
-			spriteloader.DrawSpriteQuad(
-				float32(x-planet.Width)-cam.X, float32(y)-cam.Y,
-				1, 1,
-				int(tile.SpriteID),
-			)
-			spriteloader.DrawSpriteQuad(
-				float32(x+planet.Width)-cam.X, float32(y)-cam.Y,
-				1, 1,
-				int(tile.SpriteID),
-			)
 		}
 	}
 }
@@ -305,6 +305,13 @@ func (planet *Planet) GetTopLayerTile(x, y int) *Tile {
 func (planet *Planet) TileIsSolid(x,y int) bool {
 	tile := planet.GetTopLayerTile(x,y)
 	return tile!=nil && tile.TileType != TileTypeNone
+}
+
+func (planet *Planet) TileExists(layerTiles []Tile, x,y int) bool {
+	index := planet.GetTileIndex(x, y)
+	if index < 0 { return false }
+	tile := layerTiles[index]
+	return tile.TileType != TileTypeNone
 }
 
 func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {

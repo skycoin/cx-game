@@ -1,5 +1,9 @@
 package camera
 
+import (
+	"github.com/skycoin/cx-game/cxmath"
+)
+
 type Frustum struct {
 	Left   int
 	Right  int
@@ -35,4 +39,14 @@ func (camera *Camera) IsInBounds(x, y int) bool {
 
 func (camera *Camera) IsInBoundsF(x, y float32) bool {
 	return camera.IsInBounds(int(x), int(y))
+}
+
+func (camera *Camera) TilesInView() []cxmath.Vec2i {
+	positions := []cxmath.Vec2i{}
+	for y := camera.Frustum.Bottom; y <= camera.Frustum.Top; y++ {
+		for x := camera.Frustum.Left; x <= camera.Frustum.Right; x++ {
+			positions = append(positions, cxmath.Vec2i { int32(x),int32(y) } )
+		}
+	}
+	return positions
 }
