@@ -63,7 +63,7 @@ func (planet *Planet) placeBgTile(tile Tile, pos cxmath.Vec2i) {
 func GeneratePlanet() *Planet {
 	planet := NewPlanet(100, 100)
 	oreSheetId := spriteloader.
-		LoadSpriteSheetByColRow("./assets/tile/gems-ores-stone.png",8,8)
+		LoadSpriteSheetByColRow("./assets/tile/ores-stone.png",3,4)
 	spriteloader.
 		LoadSingleSprite("./assets/tile/dirt.png", "Dirt")
 	spriteloader.
@@ -72,9 +72,9 @@ func GeneratePlanet() *Planet {
 		LoadSingleSprite("./assets/tile/stone.png", "Stone")
 
 	spriteloader.
-		LoadSprite(oreSheetId, "Purple Ore", 1, 2)
+		LoadSprite(oreSheetId, "Big Gold", 2, 0)
 	spriteloader.
-		LoadSprite(oreSheetId, "Blue Ore", 3, 7)
+		LoadSprite(oreSheetId, "Ruby Pentagon", 2, 2)
 
 	dirtBlobSpritesId :=
 		blobsprites.LoadBlobSprites("./assets/tile/Tiles_1.png")
@@ -104,11 +104,11 @@ func GeneratePlanet() *Planet {
 	}
 	purpleOre := Tile {
 		TileType: TileTypeNormal,
-		SpriteID:  uint32(spriteloader.GetSpriteIdByName("Purple Ore")),
+		SpriteID:  uint32(spriteloader.GetSpriteIdByName("Big Gold")),
 	}
 	blueOre := Tile {
 		TileType: TileTypeNormal,
-		SpriteID: uint32(spriteloader.GetSpriteIdByName("Blue Ore")),
+		SpriteID: uint32(spriteloader.GetSpriteIdByName("Ruby Pentagon")),
 	}
 
 	planet.placeLayer([]Tile{bedrock}, 4,1)
