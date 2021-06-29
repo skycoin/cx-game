@@ -3,6 +3,7 @@ package agents
 type AgentMeta struct {
 	MovementSpeed    float32
 	PlayerControlled bool
+	AgentID          int
 	AgentType        int
 	AiControllerId   int
 	PosX             float32
