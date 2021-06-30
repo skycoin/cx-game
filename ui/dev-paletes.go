@@ -8,28 +8,30 @@ import (
 func NewDevTilePaleteSelector() TilePaletteSelector {
 	selector := MakeTilePaleteSelector(11,11)
 
+	/*
 	// solid tiles
 	selector.AddTile(
 		world.Tile {
-			TileType: world.TileTypeNormal,
+			TileCategory: world.TileCategoryNormal,
 			SpriteID: uint32(spriteloader.GetSpriteIdByName("Bedrock")),
 		},
 		0,1, world.TopLayer,
 	)
 	selector.AddTile(
 		world.Tile {
-			TileType: world.TileTypeNormal,
+			TileCategory: world.TileCategoryNormal,
 			SpriteID: uint32(spriteloader.GetSpriteIdByName("Stone")),
 		},
 		0,2, world.TopLayer,
 	)
 	selector.AddTile(
 		world.Tile {
-			TileType: world.TileTypeNormal,
+			TileCategory: world.TileCategoryNormal,
 			SpriteID: uint32(spriteloader.GetSpriteIdByName("Dirt")),
 		},
 		0,3, world.TopLayer,
 	)
+	*/
 
 	// mid-layer objects
 	// TODO: share texture resources between world and UI
@@ -39,7 +41,7 @@ func NewDevTilePaleteSelector() TilePaletteSelector {
 		LoadSprites(foregroundTilesSpritesheetId,"bluelab",6,3,15,3)
 	selector.AddMultiTile(
 		world.MultiTile {
-			Width: 10, Height: 1, TileType: world.TileTypeNormal,
+			Width: 10, Height: 1, TileCategory: world.TileCategoryNormal,
 			SpriteIDs: blueLabSpriteIds,
 			Name: "dev multi tile",
 		},

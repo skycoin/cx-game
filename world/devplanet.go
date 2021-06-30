@@ -30,7 +30,7 @@ func NewDevPlanet() *Planet {
 		for y := 4; y < 6; y++ {
 			tileIdx := planet.GetTileIndex(x, y)
 			planet.Layers.Top[tileIdx] = Tile{
-				TileType: TileTypeNormal,
+				TileCategory: TileCategoryNormal,
 				SpriteID: uint32(spriteloader.GetSpriteIdByName("Dirt")),
 			}
 		}
@@ -40,7 +40,7 @@ func NewDevPlanet() *Planet {
 		for y := 2; y < 4; y++ {
 			tileIdx := planet.GetTileIndex(x, y)
 			planet.Layers.Top[tileIdx] = Tile{
-				TileType: TileTypeNormal,
+				TileCategory: TileCategoryNormal,
 				SpriteID: uint32(spriteloader.GetSpriteIdByName("Stone")),
 			}
 		}
@@ -50,7 +50,7 @@ func NewDevPlanet() *Planet {
 		for y := 0; y < 2; y++ {
 			tileIdx := planet.GetTileIndex(x, y)
 			planet.Layers.Top[tileIdx] = Tile{
-				TileType: TileTypeNormal,
+				TileCategory: TileCategoryNormal,
 				SpriteID: uint32(spriteloader.GetSpriteIdByName("Bedrock")),
 			}
 		}
@@ -58,29 +58,29 @@ func NewDevPlanet() *Planet {
 
 	// DEBUG: tiles to test collision and physics
 	*planet.GetTopLayerTile(27, 7) = Tile{
-		TileType: TileTypeNormal,
+		TileCategory: TileCategoryNormal,
 		SpriteID: uint32(spriteloader.GetSpriteIdByName("Stone")),
 	}
 	*planet.GetTopLayerTile(25, 5) = Tile{
-		TileType: TileTypeNone,
+		TileCategory: TileCategoryNone,
 		SpriteID: uint32(spriteloader.GetSpriteIdByName("Dirt")),
 	}
 
 	// wall to test
 	for i := 6; i < 35; i++ {
 		*planet.GetTopLayerTile(10, i) = Tile{
-			TileType: TileTypeNormal,
+			TileCategory: TileCategoryNormal,
 			SpriteID: uint32(spriteloader.GetSpriteIdByName(("Stone"))),
 		}
 		*planet.GetTopLayerTile(5, i) = Tile{
-			TileType: TileTypeNormal,
+			TileCategory: TileCategoryNormal,
 			SpriteID: uint32(spriteloader.GetSpriteIdByName(("Stone"))),
 		}
 	}
 
 	devMultiTile := MultiTile{
 		Width: 10, Height: 1,
-		TileType:  TileTypeNormal,
+		TileCategory:  TileCategoryNormal,
 		SpriteIDs: blueLabSpriteIds,
 		Name:      "dev multi tile",
 	}

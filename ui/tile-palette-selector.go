@@ -61,7 +61,7 @@ func (selector *TilePaletteSelector) IsMultiTileSelected() bool {
 	if !selector.Visible() {
 		return false
 	}
-	return selector.SelectedTile().TileType == world.TileTypeMulti
+	return selector.SelectedTile().TileCategory == world.TileCategoryMulti
 }
 
 const selectorSize = 5
@@ -127,7 +127,7 @@ func (selector *TilePaletteSelector) Draw(ctx render.Context) {
 				Mul4(mgl32.Scale3D(1-spacing, 1-spacing, 1))
 
 			// TODO add a custom texture for drawing air
-			if tile.TileType != world.TileTypeNone {
+			if tile.TileCategory != world.TileCategoryNone {
 				spriteloader.DrawSpriteQuadContext(render.Context{
 					World:      tileWorldTransform,
 					Projection: ctx.Projection,
