@@ -32,7 +32,7 @@ func RegisterStoneTileType() {
 		spriteloader.LoadSingleSprite("./assets/tile/stone.png","Stone")
 	TileTypeIDs.Stone = RegisterTileType(TileType {
 		Name: "Stone",
-		Placer: DirectPlacer{spriteID:spriteID},
+		Placer: DirectPlacer{SpriteID:uint32(spriteID)},
 		Layer: TopLayer,
 	})
 }
@@ -42,7 +42,7 @@ func RegisterBedrockTileType() {
 		spriteloader.LoadSingleSprite("./assets/tile/bedrock.png","Stone")
 	TileTypeIDs.Bedrock = RegisterTileType(TileType {
 		Name: "Bedrock",
-		Placer: DirectPlacer(spriteID),
+		Placer: DirectPlacer{SpriteID:uint32(spriteID)},
 		Layer: TopLayer,
 		Invulnerable: true,
 	})

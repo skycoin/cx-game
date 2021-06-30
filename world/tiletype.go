@@ -10,12 +10,12 @@ type Placer interface {
 }
 
 type DirectPlacer struct {
-	spriteID uint32
+	SpriteID uint32
 }
 func (placer DirectPlacer) CreateTile(
 	tt TileType,opts TileCreationOptions,
 ) Tile {
-	return Tile { Name: tt.Name, SpriteID: placer.spriteID }
+	return Tile { Name: tt.Name, SpriteID: placer.SpriteID }
 }
 // nothing to update
 func (placer DirectPlacer) UpdateTile(
@@ -29,18 +29,18 @@ type TileType struct {
 }
 
 type TileCreationOptions struct {
-	neighbours blob.Neighbours
+	Neighbours blob.Neighbours
 }
 type TileUpdateOptions struct {
-	neighbours blob.Neighbours
-	tile *Tile
+	Neighbours blob.Neighbours
+	Tile *Tile
 }
 
 func (tt TileType) CreateTile(opts TileCreationOptions) Tile {
 	return tt.Placer.CreateTile(tt,opts)
 }
 
-func (tt TileType) UpdateTile(opts TileCreationOptions) {
+func (tt TileType) UpdateTile(opts TileUpdateOptions) {
 	tt.Placer.UpdateTile(tt,opts)
 }
 
