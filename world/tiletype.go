@@ -4,18 +4,44 @@ import (
 	"github.com/skycoin/cx-game/render/blob"
 )
 
-type TileCreator func(neighbours blob.Neighbours) Tile
-type TileUpdater func(tile *Tile, neighbours blob.Neighbours)
+type Placer interface {
+	CreateTile(TileType,TileCreationOptions) Tile
+	UpdateTile(TileType,TileUpdateOptions)
+}
+
+type DirectPlacer struct {
+	spriteID uint32
+}
+func (placer DirectPlacer) CreateTile(
+	tt TileType,opts TileCreationOptions,
+) Tile {
+	return Tile { Name: tt.Name, SpriteID: placer.spriteID }
+}
+// nothing to update
+func (placer DirectPlacer) UpdateTile(
+	tt TileType, opts TileUpdateOptions ) {}
+
 type TileType struct {
 	Name string
 	Layer Layer
-	CreateTile TileCreator
-	UpdateTile TileUpdater 
+	Placer Placer
 	Invulnerable bool
 }
 
-func NewTileType(name string, layer Layer, createTile TileCreator) TileType {
-	return TileType { Name: name, Layer: layer, CreateTile: createTile }
+type TileCreationOptions struct {
+	neighbours blob.Neighbours
+}
+type TileUpdateOptions struct {
+	neighbours blob.Neighbours
+	tile *Tile
+}
+
+func (tt TileType) CreateTile(opts TileCreationOptions) Tile {
+	return tt.Placer.CreateTile(tt,opts)
+}
+
+func (tt TileType) UpdateTile(opts TileCreationOptions) {
+	tt.Placer.UpdateTile(tt,opts)
 }
 
 type TileTypeID uint32

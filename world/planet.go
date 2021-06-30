@@ -175,10 +175,10 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x,y int) {
 	tileType,ok := GetTileTypeByID(tileTypeID)
 	if !ok { log.Fatalf("cannot find tile type for id [%v]",tileTypeID) }
 	tilesInLayer := planet.GetLayer(tileType.Layer)
-	tileIdx := planet.GetTileIndex(x,y)
-	neighbours := planet.GetNeighbours(tilesInLayer, x,y)
-	tile := tileType.CreateTile(neighbours)
-	tilesInLayer[tileIdx] = tile
+	tilesInLayer[planet.GetTileIndex(x,y)] =
+		tileType.CreateTile(TileCreationOptions{
+			neighbours: planet.GetNeighbours(tilesInLayer, x,y),
+		})
 	planet.updateSurroundingTiles(tilesInLayer, x,y)
 }
 
@@ -201,7 +201,9 @@ func (planet *Planet) updateTile(tilesInLayer []Tile, x,y int) {
 		tileType,ok := GetTileTypeByID(tile.TileTypeID)
 		if ok {
 			neighbours := planet.GetNeighbours(tilesInLayer, x,y)
-			tileType.UpdateTile(tile,neighbours)
+			tileType.UpdateTile(TileCreationOptions{
+				Tile: &tile, Neighbours: neighbours,
+			})
 		}
 	}
 }

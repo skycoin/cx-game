@@ -22,23 +22,6 @@ func (planet *Planet) placeTileOnTop(x int, tile Tile) int {
 }
 
 func (planet *Planet) placeLayer(
-	tiles []Tile, depth,noiseScale float32,
-) []cxmath.Vec2i {
-	positions := []cxmath.Vec2i {}
-	perlin := perlin.NewPerlin2D(rand.Int63(), int(planet.Width), xs, 256)
-	for x:=int32(0); x<planet.Width; x++ {
-		noiseSample := perlin.Noise(float32(x), 0, persistence, lacunarity, 8)
-		height := int(depth+noiseSample*noiseScale)
-		for i:=0; i<height; i++ {
-			tile := tiles[rand.Intn(len(tiles))]
-			y := planet.placeTileOnTop(int(x),tile)
-			positions = append(positions, cxmath.Vec2i { x,int32(y) } )
-		}
-	}
-	return positions
-}
-
-func (planet *Planet) placeLayerTileType(
 	tileTypeID TileTypeID, depth,noiseScale float32,
 ) []cxmath.Vec2i {
 	positions := []cxmath.Vec2i {}
@@ -74,85 +57,23 @@ func (planet *Planet) placeOres(tile Tile, threshold float32) {
 	}
 }
 
-func (planet *Planet) placeBgTile(tile Tile, pos cxmath.Vec2i) {
-	tileIdx := planet.GetTileIndex(int(pos.X),int(pos.Y))
-	planet.Layers.Mid[tileIdx] = tile
+func (planet *Planet) placeBgTile(tileTypeID TileTypeID, pos cxmath.Vec2i) {
+	planet.PlaceTileType(tileTypeID, int(pos.X),int(pos.Y))
 }
 
 
 func GeneratePlanet() *Planet {
 	planet := NewPlanet(100, 100)
-	//oreSheetId := spriteloader.
-//		LoadSpriteSheetByColRow("./assets/tile/ores-stone.png",3,4)
-	/*
-	spriteloader.
-		LoadSingleSprite("./assets/tile/dirt.png", "Dirt")
-	spriteloader.
-		LoadSingleSprite("./assets/tile/bedrock.png", "Bedrock")
-	spriteloader.
-		LoadSingleSprite("./assets/tile/stone.png", "Stone")
+	planet.placeLayer(TileTypeIDs.Air, 4,1)
+	stonePositions := planet.placeLayer(TileTypeIDs.Stone, 8,2)
+	dirtPositions := planet.placeLayer(TileTypeIDs.Dirt, 4,1)
 
-	spriteloader.
-		LoadSprite(oreSheetId, "Big Gold", 2, 0)
-	spriteloader.
-		LoadSprite(oreSheetId, "Ruby Pentagon", 2, 2)
-
-	dirtBlobSpritesId :=
-		blobsprites.LoadBlobSprites("./assets/tile/Tiles_1.png")
-	altDirtBlobSpritesId :=
-		blobsprites.LoadBlobSprites("./assets/tile/Tiles_1_v1.png")
-	dirtWallBlobSpritesId :=
-		blobsprites.LoadBlobSprites("./assets/tile/Wall_1.png")
-	
-	// TODO re-enable blob sprites
-	_ = dirtBlobSpritesId
-	_ = altDirtBlobSpritesId
-	_ = dirtWallBlobSpritesId
-
-	dirt := Tile {
-		TileCategory: TileCategoryNormal,
-		SpriteID: uint32(spriteloader.GetSpriteIdByName("Dirt")),
-		Name: "Dirt",
+	for _,pos := range dirtPositions {
+		planet.placeBgTile(TileTypeIDs.DirtWall, pos)
 	}
-	altDirt := dirt
-	_ = altDirt
-	stone := Tile {
-		TileCategory: TileCategoryNormal,
-		SpriteID: uint32(spriteloader.GetSpriteIdByName("Stone")),
-		Name: "Stone",
-	}
-	bedrock := Tile {
-		TileCategory: TileCategoryNormal,
-		SpriteID: uint32(spriteloader.GetSpriteIdByName("Bedrock")),
-		Name: "Bedrock",
-	}
-	purpleOre := Tile {
-		TileCategory: TileCategoryNormal,
-		SpriteID:  uint32(spriteloader.GetSpriteIdByName("Big Gold")),
-	}
-	blueOre := Tile {
-		TileCategory: TileCategoryNormal,
-		SpriteID: uint32(spriteloader.GetSpriteIdByName("Ruby Pentagon")),
+	for _,pos := range stonePositions {
+		planet.placeBgTile(TileTypeIDs.DirtWall, pos)
 	}
 
-	planet.placeLayer([]Tile{bedrock}, 4,1)
-	stonePositions := planet.placeLayer([]Tile{stone}, 8,2)
-
-	// todo make dirt wall look different
-	dirtWall := Tile {
-		TileCategory: TileCategoryNormal,
-		Name: "Dirt Wall",
-	}
-	*/
-	planet.placeLayerTileType(bedrockTileTypeID, 4,1)
-	stonePositions := planet.placeLayerTileType(stoneTileTypeID, 8,2)
-	dirtPositions := planet.placeLayerTileType(dirtTileTypeID, 4,1)
-
-	//for _,pos := range dirtPositions { planet.placeBgTile(dirtWall, pos) }
-	//for _,pos := range stonePositions { planet.placeBgTile(dirtWall, pos) }
-	_ = dirtPositions; _ = stonePositions
-	//jplanet.placeOres(purpleOre, 0.6)
-	//planet.placeOres(blueOre, 0.7)
-	
 	return planet
 }
