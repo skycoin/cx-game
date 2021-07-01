@@ -121,6 +121,7 @@ func Init() {
 	particles.InitParticles()
 	item.RegisterItemTypes()
 
+	models.Init()
 	player = models.NewPlayer()
 
 	fps = models.NewFps(false)

@@ -19,6 +19,9 @@ const (
 	DEFAULT_HELM = 24
 
 	DEFAULT_SUIT = 5
+
+	HELMETS_COUNT = 30
+	SUIT_COUNT    = 5
 )
 
 //
@@ -52,7 +55,7 @@ func loadOutfits() {
 	//load all outfits into internal spritesheet
 
 	//load helmets
-	for i := 0; i < 30; i++ {
+	for i := 0; i < HELMETS_COUNT; i++ {
 		x := i % 10 * 2
 		y := i/10*2 + i/10
 		spriteloader.LoadSprite(helmSpriteSheetId, fmt.Sprintf("helmet-%d-1", i+1), x+1, y)
@@ -62,7 +65,7 @@ func loadOutfits() {
 	}
 
 	//load suits
-	for i := 0; i < 5; i++ {
+	for i := 0; i < SUIT_COUNT; i++ {
 		x := i * 2
 		spriteloader.LoadSprite(suitSpriteSheetId, fmt.Sprintf("suit-%d-1", i+1), x+1, 1)
 		spriteloader.LoadSprite(suitSpriteSheetId, fmt.Sprintf("suit-%d-2", i+1), x, 1)
@@ -73,7 +76,7 @@ func loadOutfits() {
 
 func (player *Player) SetHelm(id int) {
 
-	if id <= 0 || id > 30 {
+	if id <= 0 || id > HELMETS_COUNT {
 		return
 	}
 	player.helmId = id
@@ -81,13 +84,22 @@ func (player *Player) SetHelm(id int) {
 		player.helmSpriteIds[i] = spriteloader.GetSpriteIdByName(fmt.Sprintf("helmet-%d-%d", id, i+1))
 	}
 }
+
+func (player *Player) SetHelmPrev() {
+	newHelmId := player.helmId%HELMETS_COUNT - 1
+	if newHelmId < 0 {
+		newHelmId += HELMETS_COUNT
+	}
+	player.SetHelm(newHelmId)
+}
+
 func (player *Player) SetHelmNext() {
-	player.SetHelm(player.helmId%30 + 1)
+	player.SetHelm(player.helmId%HELMETS_COUNT + 1)
 }
 
 func (player *Player) SetSuit(id int) {
 
-	if id <= 0 || id > 5 {
+	if id <= 0 || id > SUIT_COUNT {
 		return
 	}
 	player.suitId = id
@@ -96,6 +108,13 @@ func (player *Player) SetSuit(id int) {
 	}
 }
 
+func (player *Player) SetSuitPrev() {
+	newSuitId := player.helmId%SUIT_COUNT - 1
+	if newSuitId < 0 {
+		newSuitId += SUIT_COUNT
+	}
+	player.SetHelm(newSuitId)
+}
 func (player *Player) SetSuitNext() {
 	player.SetSuit(player.suitId%5 + 1)
 }
