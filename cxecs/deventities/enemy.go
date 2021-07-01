@@ -18,13 +18,16 @@ type Enemy struct {
 	components.RenderComponent
 	components.TransformComponent
 	components.VelocityComponent
+	components.HealthComponent
 }
 
 func NewEnemy() *Enemy {
 	enemy := &Enemy{ecs.NewBasic(),
 		components.RenderComponent{},
 		components.TransformComponent{},
-		components.VelocityComponent{}}
+		components.VelocityComponent{},
+		components.HealthComponent{},
+	}
 
 	enemy.RenderComponent.SpriteId = spriteloader.GetSpriteIdByName("enemy")
 
@@ -35,6 +38,9 @@ func NewEnemy() *Enemy {
 	xVel := (rand.Float32() - 0.5) * movSpeed
 	yVel := (rand.Float32() - 0.5) * movSpeed
 	enemy.Velocity = physics.Vec2{xVel, yVel}
+
+	enemy.Health_Max = rand.Intn(10) + 20
+	enemy.Health = enemy.Health_Max
 
 	return enemy
 

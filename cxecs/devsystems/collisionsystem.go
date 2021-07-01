@@ -1,11 +1,12 @@
 package systems
 
 import (
-	"fmt"
+	"math/rand"
 
 	"github.com/EngoEngine/ecs"
 	components "github.com/skycoin/cx-game/cxecs/devcomponents"
 	"github.com/skycoin/cx-game/cxecs/ecsconstants"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/physics"
 )
 
@@ -89,15 +90,26 @@ func (cs *CollisionSystem) collides(entity1, entity2 CollisionEntity) bool {
 
 	if entity1.Position.X-entity1.Size.X/2 < entity2.Position.X+entity2.Size.X/2 &&
 		entity1.Position.X+entity1.Size.X/2 > entity2.Position.X &&
-		entity1.Position.Y-entity1.Size.Y/2 < entity2.Position.Y+entity2.Size.Y &&
+		entity1.Position.Y-entity1.Size.Y/2 < entity2.Position.Y+entity2.Size.Y/2 &&
 		entity1.Position.Y+entity1.Size.Y/2 > entity2.Position.Y-entity1.Size.Y/2 {
 		return true
 	}
 	return false
 }
 
+var eps float32 = 0.1
+
 func (cs *CollisionSystem) resolve(entity1, entity2 CollisionEntity) {
-	fmt.Println("collided!")
+
+	// entity1VelocityOld := entity1.Velocity
+	// entity1.Velocity = entity1.Velocity.Mult(-1).Add(entity2.Velocity.Normalize())
+	// entity2.Velocity = entity2.Velocity.Mult(-1).Add(entity1VelocityOld.Normalize())
+	entity1.Velocity = entity1.Velocity.Mult(-1 * rand.Float32() * 2)
+	entity2.Velocity = entity2.Velocity.Mult(-1 * rand.Float32() * 2)
+	entity1.Position.X += cxmath.Sign(entity1.Velocity.X) * eps
+	entity1.Position.Y += cxmath.Sign(entity1.Velocity.Y) * eps
+	entity2.Position.X += cxmath.Sign(entity2.Velocity.X) * eps
+	entity2.Position.Y += cxmath.Sign(entity2.Velocity.Y) * eps
 }
 
 /*

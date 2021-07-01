@@ -1,8 +1,6 @@
 package systems
 
 import (
-	"fmt"
-
 	"github.com/EngoEngine/ecs"
 	components "github.com/skycoin/cx-game/cxecs/devcomponents"
 	"github.com/skycoin/cx-game/cxecs/ecsconstants"
@@ -62,37 +60,30 @@ func (wcs *WindowCollisionSystem) Update(dt float32) {
 
 func (wcs *WindowCollisionSystem) fixedUpdate() {
 	// n^2
-	for _, entity1 := range wcs.entities {
-		for _, entity2 := range wcs.entities {
-			if entity1.ID() != entity2.ID() {
-				if wcs.collides(entity1, entity2) {
-					wcs.resolve(entity1, entity2)
-				}
-			}
-		}
+	for _, entity := range wcs.entities {
+		wcs.resolveCollision(entity)
 	}
 }
-func (wcs *WindowCollisionSystem) collides(entity1, entity2 CollisionEntity) bool {
-	//aabb collision detection
 
-	// if player1.left < player2.right &&
-	// 	  player1.right > player2.left &&
-	// 	  player1.bottom < player2.top &&
-	//	  player1.top > player2.bottom
+func (wcs *WindowCollisionSystem) resolveCollision(entity CollisionEntity) {
 
-	// https://learnopengl.com/img/in-practice/breakout/collisions_overlap.png
+	if entity.Position.X-entity.Size.X <= -ecsconstants.GRID_WIDTH/2 { //left
+		entity.Position.X = -10 + entity.Size.X
+		entity.Velocity.X = -entity.Velocity.X
 
-	if entity1.Position.X-entity1.Size.X/2 < entity2.Position.X+entity2.Size.X/2 &&
-		entity1.Position.X+entity1.Size.X/2 > entity2.Position.X &&
-		entity1.Position.Y-entity1.Size.Y/2 < entity2.Position.Y+entity2.Size.Y &&
-		entity1.Position.Y+entity1.Size.Y/2 > entity2.Position.Y-entity1.Size.Y/2 {
-		return true
+	} else if entity.Position.X+entity.Size.X >= ecsconstants.GRID_WIDTH/2 { //right
+		entity.Position.X = 10 - entity.Size.X
+		entity.Velocity.X = -entity.Velocity.X
 	}
-	return false
-}
 
-func (wcs *WindowCollisionSystem) resolve(entity1, entity2 CollisionEntity) {
-	fmt.Println("collided!")
+	if entity.Position.Y-entity.Size.Y <= -ecsconstants.GRID_HEIGHT/2 { //bottom
+		entity.Position.Y = -7.5 + entity.Size.Y
+		entity.Velocity.Y = -entity.Velocity.Y
+	} else if entity.Position.Y+entity.Size.Y >= ecsconstants.GRID_HEIGHT/2 {
+		entity.Position.Y = 7.5 - entity.Size.Y
+		entity.Velocity.Y = -entity.Velocity.Y
+	}
+
 }
 
 /*
