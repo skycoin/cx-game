@@ -1,5 +1,5 @@
 package components
 
 type RenderComponent struct {
-	SpriteId float32
+	SpriteId int
 }

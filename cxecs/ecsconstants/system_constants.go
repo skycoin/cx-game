@@ -1,0 +1,7 @@
+package ecsconstants
+
+const (
+	COLLISION_SYSTEM_PRIORITY = 5
+	RENDER_SYSTEM_PRIORITY    = 3
+	MOVEMENT_SYSTEM_PRIORITY  = 2
+)

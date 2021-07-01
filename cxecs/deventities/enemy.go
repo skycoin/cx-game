@@ -4,7 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/EngoEngine/ecs"
-	"github.com/skycoin/cx-game/cxecs/components"
+	components "github.com/skycoin/cx-game/cxecs/devcomponents"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/spriteloader"
 )
@@ -26,7 +26,7 @@ func NewEnemy() *Enemy {
 		components.TransformComponent{},
 		components.VelocityComponent{}}
 
-	enemy.RenderComponent.SpriteId = float32(spriteloader.GetSpriteIdByName("enemy"))
+	enemy.RenderComponent.SpriteId = spriteloader.GetSpriteIdByName("enemy")
 
 	enemy.TransformComponent.Position = physics.Vec2{float32(rand.Intn(10) - 5), float32(rand.Intn(10) - 5)}
 

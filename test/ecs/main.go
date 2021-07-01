@@ -33,7 +33,7 @@ func main() {
 
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		Draw()
+		// Draw()
 		// spriteloader.DrawSpriteQuad(1, 1, 1, 1, spriteId)
 		Update(dt)
 
@@ -52,5 +52,6 @@ func Draw() {
 }
 
 func Update(dt float32) {
-	cxecs.Update(dt)
+	//draws as well
+	cxecs.UpdateDev(dt)
 }

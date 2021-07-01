@@ -2,7 +2,8 @@ package systems
 
 import (
 	"github.com/EngoEngine/ecs"
-	"github.com/skycoin/cx-game/cxecs/components"
+	components "github.com/skycoin/cx-game/cxecs/devcomponents"
+	"github.com/skycoin/cx-game/cxecs/ecsconstants"
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
@@ -24,7 +25,7 @@ func (rs *RenderSystem) Add(entity *ecs.BasicEntity, renderComponent *components
 	rs.entities = append(rs.entities, RenderEntity{entity, renderComponent, transformComponent})
 }
 
-func (rs RenderSystem) Remove(entity ecs.BasicEntity) {
+func (rs *RenderSystem) Remove(entity ecs.BasicEntity) {
 	delete := -1
 
 	for index, e := range rs.entities {
@@ -37,7 +38,12 @@ func (rs RenderSystem) Remove(entity ecs.BasicEntity) {
 		rs.entities = append(rs.entities[:delete], rs.entities[delete+1:]...)
 	}
 }
-func (rs RenderSystem) Update(dt float32) {
+
+func (rs *RenderSystem) Priority() int {
+	return ecsconstants.RENDER_SYSTEM_PRIORITY
+}
+
+func (rs *RenderSystem) Update(dt float32) {
 	// fmt.Println(len(rs.entities))
 	for _, entity := range rs.entities {
 		spriteloader.DrawSpriteQuad(
@@ -48,4 +54,5 @@ func (rs RenderSystem) Update(dt float32) {
 			int(entity.SpriteId),
 		)
 	}
+	// fmt.Println("render system")
 }
