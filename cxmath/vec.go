@@ -1,4 +1,4 @@
-package physics
+package cxmath
 
 import "math"
 
@@ -45,4 +45,3 @@ func (v1 Vec2) Normalize() Vec2 {
 
 	return v1
 }
-

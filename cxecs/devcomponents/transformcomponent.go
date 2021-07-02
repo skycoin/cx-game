@@ -1,8 +1,10 @@
 package components
 
-import "github.com/skycoin/cx-game/physics"
+import (
+	"github.com/skycoin/cx-game/cxmath"
+)
 
 type TransformComponent struct {
-	Position physics.Vec2
-	Size     physics.Vec2
+	Position cxmath.Vec2
+	Size     cxmath.Vec2
 }

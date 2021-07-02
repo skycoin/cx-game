@@ -2,6 +2,7 @@ package enemies
 
 import (
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/spriteloader"
@@ -54,8 +55,8 @@ func DrawBasicEnemies(cam *camera.Camera) {
 func SpawnBasicEnemy(x, y float32) {
 	enemy := BasicEnemy{
 		Body: physics.Body{
-			Size: physics.Vec2{X: 3.0, Y: 3.0},
-			Pos:  physics.Vec2{X: x, Y: y},
+			Size: cxmath.Vec2{X: 3.0, Y: 3.0},
+			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
 		Health: 5,
 	}

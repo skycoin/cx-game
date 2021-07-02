@@ -5,18 +5,18 @@ import (
 
 	"github.com/go-gl/mathgl/mgl32"
 
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/world/worldcollider"
 )
 
 // epsilon parameter for values that are "close enough"
 const eps = 0.05
 
-
 type DamageFunc func(damage int)
 type Body struct {
-	Pos  Vec2
-	Vel  Vec2
-	Size Vec2
+	Pos  cxmath.Vec2
+	Vel  cxmath.Vec2
+	Size cxmath.Vec2
 
 	PreviousTransform     mgl32.Mat4
 	InterpolatedTransform mgl32.Mat4
@@ -24,7 +24,7 @@ type Body struct {
 	Collisions     CollisionInfo
 	collidingLines []float32
 
-	Damage DamageFunc
+	Damage  DamageFunc
 	Deleted bool
 }
 
@@ -47,7 +47,7 @@ type bodyBounds struct {
 	leftTile, rightTile, topTile, bottomTile int
 }
 
-func (body Body) bounds(newpos Vec2) bodyBounds {
+func (body Body) bounds(newpos cxmath.Vec2) bodyBounds {
 	left := round32(newpos.X - body.Size.X/2)
 	leftTile := int(left)
 	right := round32(newpos.X + body.Size.X/2)
@@ -67,7 +67,7 @@ func round32(x float32) float32 {
 	return float32(math.Round(float64(x)))
 }
 
-func (body *Body) isCollidingLeft(collider worldcollider.WorldCollider, newpos Vec2) bool {
+func (body *Body) isCollidingLeft(collider worldcollider.WorldCollider, newpos cxmath.Vec2) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving left
 	if body.Vel.X >= 0 {
@@ -83,7 +83,7 @@ func (body *Body) isCollidingLeft(collider worldcollider.WorldCollider, newpos V
 	return false
 }
 
-func (body *Body) isCollidingRight(collider worldcollider.WorldCollider, newpos Vec2) bool {
+func (body *Body) isCollidingRight(collider worldcollider.WorldCollider, newpos cxmath.Vec2) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving right
 	if body.Vel.X <= 0 {
@@ -99,7 +99,7 @@ func (body *Body) isCollidingRight(collider worldcollider.WorldCollider, newpos 
 	return false
 }
 
-func (body *Body) isCollidingTop(collider worldcollider.WorldCollider, newpos Vec2) bool {
+func (body *Body) isCollidingTop(collider worldcollider.WorldCollider, newpos cxmath.Vec2) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving up
 	if body.Vel.Y <= 0 {
@@ -115,7 +115,7 @@ func (body *Body) isCollidingTop(collider worldcollider.WorldCollider, newpos Ve
 	return false
 }
 
-func (body *Body) isCollidingBottom(collider worldcollider.WorldCollider, newpos Vec2) bool {
+func (body *Body) isCollidingBottom(collider worldcollider.WorldCollider, newpos cxmath.Vec2) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving down
 	if body.Vel.Y >= 0 {
@@ -185,10 +185,10 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	newPosMgl32 := mgl32.Vec2{newPos.X, newPos.Y}
 	offset := collider.WrapAroundOffset(newPosMgl32)
 	newPosMgl32 = newPosMgl32.Add(offset)
-	body.Pos = Vec2{newPosMgl32.X(), newPosMgl32.Y()}
+	body.Pos = cxmath.Vec2{newPosMgl32.X(), newPosMgl32.Y()}
 	// move previous transform to avoid weird interpolation around boundaries
 	body.PreviousTransform = body.PreviousTransform.
-		Mul4(mgl32.Translate3D(offset.X(),offset.Y(),0))
+		Mul4(mgl32.Translate3D(offset.X(), offset.Y(), 0))
 }
 
 func (body *Body) GetBBoxLines() []float32 {
