@@ -8,6 +8,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/cxecs"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/sound"
@@ -121,6 +122,8 @@ func Init() {
 	particles.InitParticles()
 	item.RegisterItemTypes()
 
+	cxecs.Init()
+
 	player = models.NewPlayer()
 
 	fps = models.NewFps(false)
@@ -172,6 +175,8 @@ func Tick(dt float32) {
 	starfield.UpdateStarField(dt)
 	// input.Reset()
 	catIsScratching = false
+
+	cxecs.Update(dt)
 }
 
 func Draw() {
