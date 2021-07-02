@@ -7,6 +7,7 @@ import (
 	"path"
 	"time"
 
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/ted537/go-openal/openal"
@@ -249,7 +250,7 @@ func LoadSound(event_name string, filename string) error {
 }
 
 //set speaker position
-func SetListenerPosition(position physics.Vec2) {
+func SetListenerPosition(position cxmath.Vec2) {
 	Listener.Set3f(openal.AlPosition, position.X, position.Y, z)
 }
 

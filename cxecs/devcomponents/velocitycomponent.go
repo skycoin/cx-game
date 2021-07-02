@@ -1,7 +1,7 @@
 package components
 
-import "github.com/skycoin/cx-game/physics"
+import "github.com/skycoin/cx-game/cxmath"
 
 type VelocityComponent struct {
-	Velocity physics.Vec2
+	Velocity cxmath.Vec2
 }

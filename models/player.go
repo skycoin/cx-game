@@ -37,7 +37,7 @@ func NewPlayer() *Player {
 		"./assets/character/character.png", "player")
 	player := Player{
 		Body: physics.Body{
-			Size: physics.Vec2{X: 2, Y: 3},
+			Size: cxmath.Vec2{X: 2, Y: 3},
 		},
 		MovementComponent: movement.NewPlayerMovementComponent(),
 		spriteId:          spriteId,
