@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/ted537/go-openal/openal"
 )
@@ -166,7 +165,7 @@ func PlaySound(event_name string, options ...SoundOptions) uint32 {
 }
 
 //Play sound placed in space. Pass in optional sound options struct
-func Play2DSound(event_name string, position *physics.Vec2, options ...SoundOptions) uint32 {
+func Play2DSound(event_name string, position *cxmath.Vec2, options ...SoundOptions) uint32 {
 	source := getFreeSource()
 	if source == nil {
 		printDebug("NO AVAILABLE SOURCES")
