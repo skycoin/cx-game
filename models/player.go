@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/camera"
@@ -90,10 +88,8 @@ func (player *Player) FixedTick(planet *world.Planet) {
 			player.Vel.X = 0
 		} else {
 			player.Vel.X -= friction
-			// fmt.Println(player.Vel.X)
 		}
 	}
-	fmt.Println(player.Vel.X)
 	player.Vel.X = utility.ClampF(player.Vel.X, -player.MovementMeta.MovSpeed*player.ActiveMovementType.GetMovementSpeedModifier(), player.MovementMeta.MovSpeed*player.ActiveMovementType.GetMovementSpeedModifier())
 	player.MovementAfterTick(planet)
 }
