@@ -32,10 +32,7 @@ func (planet *Planet) placeLayer(
 		for i:=0; i<height; i++ {
 			y := planet.GetHeight(int(x)) + 1
 			planet.PlaceTileType(tileTypeID,int(x),int(y))
-			//tile := tiles[rand.Intn(len(tiles))]
-			//y := planet.placeTileOnTop(int(x),tile)
 			positions = append(positions, cxmath.Vec2i { x,int32(y) } )
-			//planet.placeTileType(int(x),int(y), 
 		}
 	}
 	return positions

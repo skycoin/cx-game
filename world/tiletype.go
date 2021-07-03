@@ -16,7 +16,12 @@ type DirectPlacer struct {
 func (placer DirectPlacer) CreateTile(
 	tt TileType,opts TileCreationOptions,
 ) Tile {
-	return Tile { Name: tt.Name, SpriteID: placer.SpriteID, TileTypeID: tt.ID }
+	return Tile {
+		Name: tt.Name,
+		SpriteID: placer.SpriteID,
+		TileTypeID: tt.ID,
+		TileCategory: TileCategoryNormal,
+	}
 }
 // nothing to update
 func (placer DirectPlacer) UpdateTile(

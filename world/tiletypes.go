@@ -65,7 +65,7 @@ func RegisterDirtWallTileType() {
 	TileTypeIDs.DirtWall = RegisterTileType(TileType {
 		Name: "Dirt Wall",
 		Placer: AutoPlacer{blobSpritesId: blobSpritesId},
-		Layer: TopLayer,
+		Layer: BgLayer,
 	})
 
 }
