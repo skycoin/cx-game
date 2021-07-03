@@ -4,46 +4,44 @@ import (
 	"fmt"
 )
 
-type TileType uint32
+type TileCategory uint32
 
 const (
-	TileTypeNone TileType = iota
-	TileTypeNormal
-	TileTypeMulti
-	TileTypeChild
+	TileCategoryNone TileCategory = iota
+	TileCategoryNormal
+	TileCategoryMulti
+	TileCategoryChild
 )
 
-func (tt TileType) ShouldRender() bool {
-	return tt!=TileTypeNone
+func (tt TileCategory) ShouldRender() bool {
+	return tt!=TileCategoryNone
 }
 
 type Tile struct {
 	SpriteID uint32
-	TileType TileType
+	TileCategory TileCategory
+	TileTypeID TileTypeID
 	Name     string
 	OffsetX  int8
 	OffsetY  int8
 	Durability int8
-
-	IsBlob   bool
-	BlobSpriteID uint32
 }
 
 func NewEmptyTile() Tile {
-	return Tile {TileType: TileTypeNone}
+	return Tile {TileCategory: TileCategoryNone}
 }
 
 type MultiTile struct {
 	Width     int
 	Height    int
-	TileType  TileType
+	TileCategory  TileCategory
 	SpriteIDs []uint32
 	Name      string
 }
 
 // gets the base/root/master tile which controls the multi-tile
 func (mt MultiTile) Root() Tile {
-	return Tile { SpriteID: mt.SpriteIDs[0], TileType: TileTypeMulti }
+	return Tile { SpriteID: mt.SpriteIDs[0], TileCategory: TileCategoryMulti }
 }
 
 func (mt MultiTile) Area() int {
@@ -57,7 +55,7 @@ func (mt MultiTile) Tiles() []Tile {
 		y := idx / mt.Width
 		x := idx % mt.Width
 		tiles[idx] = Tile {
-			TileType: TileTypeChild,
+			TileCategory: TileCategoryChild,
 			SpriteID: mt.SpriteIDs[idx],
 			Name: fmt.Sprintf("%s (child [%d,%d])",mt.Name,x,y),
 			OffsetX: int8(x),

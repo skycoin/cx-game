@@ -7,10 +7,11 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
-var allBlobSprites = make(map[uint32]([]uint32))
-var nextBlobSpriteId = uint32(1)
+type BlobSpritesID uint32
+var allBlobSprites = make(map[BlobSpritesID]([]uint32))
+var nextBlobSpriteId = BlobSpritesID(1)
 
-func LoadBlobSprites(fname string) uint32 {
+func LoadBlobSprites(fname string) BlobSpritesID {
 	spritesheetId := spriteloader.LoadSpriteSheetByColRow(
 		fname, blob.BlobSheetHeight, blob.BlobSheetWidth )
 	blobSprites := []uint32{}
@@ -27,6 +28,6 @@ func LoadBlobSprites(fname string) uint32 {
 	return blobSpriteId
 }
 
-func GetBlobSpritesById(blobSpriteID uint32) []uint32 {
-	return allBlobSprites[blobSpriteID]
+func GetBlobSpritesById(id BlobSpritesID) []uint32 {
+	return allBlobSprites[id]
 }

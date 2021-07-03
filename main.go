@@ -115,6 +115,7 @@ func Init() {
 	input.Init(win.Window)
 	sound.Init()
 	spriteloader.InitSpriteloader(&win)
+	world.RegisterTileTypes()
 	spriteloader.DEBUG = false
 	item.InitWorldItem()
 	ui.InitTextRendering()
