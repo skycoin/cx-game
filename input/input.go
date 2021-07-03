@@ -17,7 +17,15 @@ type MouseCoords struct {
 }
 
 var (
-	window_ *glfw.Window
+	window_      *glfw.Window
+	inputContext InputContext
+)
+
+type InputContext uint8
+
+const (
+	GAME InputContext = iota
+	SWITCH_COSTUME
 )
 
 func Init(window *glfw.Window) {
@@ -41,6 +49,7 @@ func registerCallbacks() {
 }
 
 func registerKeyMaps() {
+	SetInputContext(GAME)
 	MapKeyToButton("right", glfw.KeyD)
 	MapKeyToButton("left", glfw.KeyA)
 	MapKeyToButton("up", glfw.KeyW)
@@ -54,4 +63,14 @@ func registerKeyMaps() {
 	MapKeyToButton("fly", glfw.KeyT)
 	MapKeyToButton("crouch", glfw.KeyC)
 	MapKeyToButton("action", glfw.KeyE)
+	MapKeyToButton("switch-helmet", glfw.Key0)
+	MapKeyToButton("switch-suit", glfw.Key9)
+}
+
+func MapKeyToButton(button string, key glfw.Key) {
+	ButtonsToKeys[button] = key
+}
+
+func SetInputContext(ctx InputContext) {
+	inputContext = ctx
 }

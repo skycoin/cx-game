@@ -22,20 +22,18 @@ const (
 )
 
 func Reset() {
-	// for key := range KeysPressed {
-	// 	KeysPressed[key] = false
-	// }
 
 }
 
 var counter int
 
 func keyCallback(w *glfw.Window, key glfw.Key, s int, action glfw.Action, mk glfw.ModifierKey) {
-	for key := range KeysPressedDown {
-		KeysPressedDown[key] = false
+	for key := range KeysPressed {
+		delete(KeysPressedUp, key)
 	}
-	for key := range KeysPressedUp {
-		KeysPressedUp[key] = false
+
+	for key := range KeysPressedDown {
+		delete(KeysPressedDown, key)
 	}
 
 	if action == glfw.Press {
@@ -55,6 +53,3 @@ func keyCallback(w *glfw.Window, key glfw.Key, s int, action glfw.Action, mk glf
 
 }
 
-func MapKeyToButton(button string, key glfw.Key) {
-	ButtonsToKeys[button] = key
-}
