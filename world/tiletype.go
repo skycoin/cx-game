@@ -9,23 +9,26 @@ type Placer interface {
 	UpdateTile(TileType,TileUpdateOptions)
 }
 
+// place tiles for a tiletype which has a single sprite
 type DirectPlacer struct {
 	SpriteID uint32
 }
 func (placer DirectPlacer) CreateTile(
 	tt TileType,opts TileCreationOptions,
 ) Tile {
-	return Tile { Name: tt.Name, SpriteID: placer.SpriteID }
+	return Tile { Name: tt.Name, SpriteID: placer.SpriteID, TileTypeID: tt.ID }
 }
 // nothing to update
 func (placer DirectPlacer) UpdateTile(
 	tt TileType, opts TileUpdateOptions ) {}
 
+type TileTypeID uint32
 type TileType struct {
 	Name string
 	Layer Layer
 	Placer Placer
 	Invulnerable bool
+	ID TileTypeID
 }
 
 type TileCreationOptions struct {
@@ -44,15 +47,14 @@ func (tt TileType) UpdateTile(opts TileUpdateOptions) {
 	tt.Placer.UpdateTile(tt,opts)
 }
 
-type TileTypeID uint32
-
 // add the null tile type as first element such that tileTypes[0] is empty
 var tileTypes = make([]TileType,1)
 
 func RegisterTileType(tileType TileType) TileTypeID {
-	id := len(tileTypes)
+	id := TileTypeID(len(tileTypes))
+	tileType.ID = id
 	tileTypes = append(tileTypes, tileType)
-	return TileTypeID(id)
+	return id
 }
 
 func NextTileTypeID() TileTypeID {

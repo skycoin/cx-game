@@ -18,6 +18,7 @@ func RegisterTileTypes() {
 	RegisterDirtTileType()
 	RegisterStoneTileType()
 	RegisterBedrockTileType()
+	RegisterDirtWallTileType()
 }
 
 func RegisterEmptyTileType() {
