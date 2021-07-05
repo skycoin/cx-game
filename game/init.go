@@ -44,21 +44,14 @@ var (
 
 	catIsScratching bool
 
-	upPressed      bool
-	downPressed    bool
-	leftPressed    bool
-	rightPressed   bool
-	spacePressed   bool
-	mouseX, mouseY float64
-
-	//unused
-	isTileSelectorVisible  = false
 	isInventoryGridVisible = false
 	tilePaletteSelector    ui.TilePaletteSelector
 
-	worldItem *item.WorldItem
-
 	inventoryId uint32
+
+	//unused
+	isTileSelectorVisible = false
+	worldItem             *item.WorldItem
 )
 
 func Init() {
