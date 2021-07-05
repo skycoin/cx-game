@@ -10,6 +10,7 @@ type AutoPlacer struct {
 	name string
 	blobSpritesId blobsprites.BlobSpritesID
 	TileTypeID TileTypeID
+	TilingType blob.TilingType
 }
 
 func (ap AutoPlacer) blobSprites() []uint32 {
@@ -31,7 +32,7 @@ func (ap AutoPlacer) CreateTile(
 func (ap AutoPlacer) UpdateTile(
 		tt TileType, opts TileUpdateOptions,
 ) {
-	blobSpriteIdx := blob.ApplyBlobTiling(opts.Neighbours)
+	blobSpriteIdx := blob.ApplyTiling(ap.TilingType,opts.Neighbours)
 	*opts.Tile = Tile {
 		SpriteID: ap.blobSprites()[blobSpriteIdx],
 		Name: tt.Name,
