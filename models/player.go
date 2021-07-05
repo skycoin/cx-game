@@ -9,7 +9,6 @@ import (
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/physics/movement"
-	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/world"
 )
@@ -30,8 +29,6 @@ type Player struct {
 func NewPlayer() *Player {
 	// spriteId := spriteloader.LoadSingleSprite(
 	// 	"./assets/character/character.png", "player")
-	helmSpriteSheetId = spriteloader.LoadSpriteSheet("./assets/character/character-helmets.png")
-	suitSpriteSheetId = spriteloader.LoadSpriteSheet("./assets/character/character-suits.png")
 
 	player := Player{
 		Body: physics.Body{
@@ -43,10 +40,6 @@ func NewPlayer() *Player {
 		Controlled: true,
 	}
 
-	if !outfitsLoaded {
-		outfitsLoaded = true
-		loadOutfits()
-	}
 	player.SetHelm(DEFAULT_HELM)
 	player.SetSuit(DEFAULT_SUIT)
 
@@ -66,7 +59,19 @@ func (player *Player) Draw(cam *camera.Camera, planet *world.Planet) {
 
 }
 
+var accumulator float32
+
+func (player *Player) Update(dt float32, planet *world.Planet) {
+	accumulator += dt
+
+	for accumulator >= physics.TimeStep {
+		player.FixedTick(planet)
+		accumulator -= physics.TimeStep
+	}
+}
+
 func (player *Player) FixedTick(planet *world.Planet) {
+
 	//todo separate more logic
 	//
 	player.MovementBeforeTick()

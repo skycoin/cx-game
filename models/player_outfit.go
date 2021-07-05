@@ -10,7 +10,6 @@ import (
 var (
 	helmSpriteSheetId int
 	suitSpriteSheetId int
-	outfitsLoaded     = false
 )
 
 const (
@@ -53,6 +52,8 @@ func (player *Player) DrawOutfit(position mgl32.Vec2) {
 
 func loadOutfits() {
 	//load all outfits into internal spritesheet
+	helmSpriteSheetId = spriteloader.LoadSpriteSheet("./assets/character/character-helmets.png")
+	suitSpriteSheetId = spriteloader.LoadSpriteSheet("./assets/character/character-suits.png")
 
 	//load helmets
 	for i := 0; i < HELMETS_COUNT; i++ {
