@@ -1,6 +1,7 @@
 package world
 
 import (
+	"github.com/skycoin/cx-game/render/blob"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/spriteloader/blobsprites"
 )
@@ -11,6 +12,7 @@ var TileTypeIDs struct {
 	Stone TileTypeID
 	Bedrock TileTypeID
 	DirtWall TileTypeID
+	Pipe TileTypeID
 }
 
 func RegisterTileTypes() {
@@ -19,6 +21,7 @@ func RegisterTileTypes() {
 	RegisterStoneTileType()
 	RegisterBedrockTileType()
 	RegisterDirtWallTileType()
+	RegisterPipeTileType()
 }
 
 func RegisterEmptyTileType() {
@@ -51,21 +54,36 @@ func RegisterBedrockTileType() {
 
 func RegisterDirtTileType() {
 	blobSpritesId :=
-		blobsprites.LoadBlobSprites("./assets/tile/Tiles_1.png")
+		blobsprites.LoadFullBlobSprites("./assets/tile/Tiles_1.png")
 	TileTypeIDs.Dirt = RegisterTileType(TileType {
 		Name: "Dirt",
-		Placer: AutoPlacer{blobSpritesId: blobSpritesId},
+		Placer: AutoPlacer{
+			blobSpritesId: blobSpritesId, TilingType: blob.FullBlobTiling,
+		},
 		Layer: TopLayer,
 	})
 }
 
 func RegisterDirtWallTileType() {
 	blobSpritesId :=
-		blobsprites.LoadBlobSprites("./assets/tile/Wall_1.png")
+		blobsprites.LoadFullBlobSprites("./assets/tile/Wall_1.png")
 	TileTypeIDs.DirtWall = RegisterTileType(TileType {
 		Name: "Dirt Wall",
-		Placer: AutoPlacer{blobSpritesId: blobSpritesId},
+		Placer: AutoPlacer{
+			blobSpritesId: blobSpritesId, TilingType: blob.FullBlobTiling,
+		},
 		Layer: BgLayer,
 	})
+}
 
+func RegisterPipeTileType() {
+	blobSpritesId := blobsprites.
+		LoadSimpleBlobSprites("./assets/tile/VentilationPipes_1.png")
+	TileTypeIDs.Pipe = RegisterTileType(TileType {
+		Name: "Pipe",
+		Placer: AutoPlacer{
+			blobSpritesId: blobSpritesId, TilingType: blob.SimpleBlobTiling,
+		},
+		Layer: MidLayer,
+	})
 }
