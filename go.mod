@@ -9,6 +9,7 @@ require (
 	github.com/go-gl/mathgl v1.0.0
 	github.com/ikemen-engine/go-openal v0.0.0-20210605051602-c4be60fb463a
 	github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
+	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/seehuhn/mt19937 v1.0.0
 	github.com/ted537/go-openal v0.0.0-20210618203930-fa36a2aaf89e
 	github.com/urfave/cli/v2 v2.3.0

@@ -1,0 +1,170 @@
+{ "frames": {
+   "spiderDrill #Walk 0.aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Walk 1.aseprite": {
+    "frame": { "x": 64, "y": 0, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Walk 2.aseprite": {
+    "frame": { "x": 128, "y": 0, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Walk 3.aseprite": {
+    "frame": { "x": 192, "y": 0, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Walk 4.aseprite": {
+    "frame": { "x": 256, "y": 0, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Walk 5.aseprite": {
+    "frame": { "x": 320, "y": 0, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Walk 6.aseprite": {
+    "frame": { "x": 384, "y": 0, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Walk 7.aseprite": {
+    "frame": { "x": 448, "y": 0, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Idle 0.aseprite": {
+    "frame": { "x": 0, "y": 48, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Idle 1.aseprite": {
+    "frame": { "x": 64, "y": 48, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Idle 2.aseprite": {
+    "frame": { "x": 128, "y": 48, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Idle 3.aseprite": {
+    "frame": { "x": 192, "y": 48, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Hit.aseprite": {
+    "frame": { "x": 0, "y": 96, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Attack 0.aseprite": {
+    "frame": { "x": 0, "y": 144, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 75
+   },
+   "spiderDrill #Attack 1.aseprite": {
+    "frame": { "x": 64, "y": 144, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Attack 2.aseprite": {
+    "frame": { "x": 128, "y": 144, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 75
+   },
+   "spiderDrill #Attack 3.aseprite": {
+    "frame": { "x": 192, "y": 144, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   },
+   "spiderDrill #Attack 4.aseprite": {
+    "frame": { "x": 256, "y": 144, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 75
+   },
+   "spiderDrill #Death.aseprite": {
+    "frame": { "x": 0, "y": 192, "w": 64, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 48 },
+    "sourceSize": { "w": 64, "h": 48 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.3-beta4-x64",
+  "image": "spiderDrill_spritesheet.png",
+  "format": "RGBA8888",
+  "size": { "w": 512, "h": 240 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "Walk", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" },
+   { "name": "Idle", "from": 8, "to": 11, "direction": "forward", "color": "#000000ff" },
+   { "name": "Hit", "from": 12, "to": 12, "direction": "forward", "color": "#000000ff" },
+   { "name": "Attack", "from": 13, "to": 17, "direction": "forward", "color": "#000000ff" },
+   { "name": "Death", "from": 18, "to": 18, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}
