@@ -42,7 +42,11 @@ func (info ItemUseInfo) PlayerCoords() mgl32.Vec2 {
 	return mgl32.Vec2 { info.Player.Pos.X, info.Player.Pos.Y }
 }
 
-var itemTypes = []ItemType{}
+var tileTypeIDsToItemTypeIDs = make(map[world.TileTypeID]ItemTypeID)
+var itemTypes = make(map[ItemTypeID]*ItemType)
+
+var nextItemTypeID = ItemTypeID(1)
+
 func NewItemType(SpriteID int) ItemType {
 	return ItemType {
 		SpriteID: SpriteID,
@@ -52,35 +56,32 @@ func NewItemType(SpriteID int) ItemType {
 }
 
 func AddItemType(itemType ItemType) ItemTypeID {
-	id := ItemTypeID(len(itemTypes))
-	itemTypes = append(itemTypes, itemType)
+	id := nextItemTypeID
+	itemTypes[id] = &itemType
+	nextItemTypeID++
 	return id
 }
 
 func GetItemTypeById(id ItemTypeID) *ItemType {
-	return &itemTypes[id]
+	return itemTypes[id]
 }
 
-func GetItemTypeIdForTile(tile world.Tile) ItemTypeID{
-	// TODO optimize
-	for idx,itemType := range itemTypes {
-		if itemType.SpriteID == int(tile.SpriteID) {
-			return ItemTypeID(idx)
-		}
-	}
+func GetItemTypeIdForTile(tile world.Tile) ItemTypeID {
+	itemTypeID,ok := tileTypeIDsToItemTypeIDs[tile.TileTypeID]
+	if ok { return itemTypeID }
 
 	itemType := NewItemType(int(tile.SpriteID))
 	itemType.Name = tile.Name
 	itemType.Use = func(info ItemUseInfo) {
 		worldCoords := info.WorldCoords()
-		x := int(worldCoords.X())
-		y := int(worldCoords.Y())
+		x := int(worldCoords.X()+0.5)
+		y := int(worldCoords.Y()+0.5)
 		if !info.Planet.TileIsSolid(x,y) {
 			info.Slot.Quantity--
-			tileIdx := info.Planet.GetTileIndex(x,y)
-			info.Planet.Layers.Top[tileIdx] = tile
+			info.Planet.PlaceTileType(tile.TileTypeID,x,y)
 		}
 	}
-	AddItemType(itemType)
-	return ItemTypeID(len(itemTypes)-1)
+	itemTypeID = AddItemType(itemType)
+	tileTypeIDsToItemTypeIDs[tile.TileTypeID] = itemTypeID
+	return itemTypeID
 }

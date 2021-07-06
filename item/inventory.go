@@ -1,6 +1,7 @@
 package item;
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -50,6 +51,13 @@ func NewDevInventory() uint32 {
 		InventorySlot{LaserGunItemTypeID, 1, 0}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(2, 0)] =
 		InventorySlot{GunItemTypeID, 1, 0}
+
+	pipeTileType,ok := world.GetTileTypeByID(world.TileTypeIDs.Pipe)
+	if !ok { log.Fatal("Cannot find pipe tile type")}
+	pipeTile := pipeTileType.CreateTile(world.TileCreationOptions{})
+	pipeItemTypeID := GetItemTypeIdForTile(pipeTile)
+	inventory.Slots[inventory.ItemSlotIndexForPosition(2, 0)] =
+		InventorySlot{pipeItemTypeID, 20, 0}
 
 	return inventoryId
 }

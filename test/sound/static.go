@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/skycoin/cx-game/physics"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/sound"
 )
 
@@ -17,7 +17,7 @@ func main() {
 		time.Sleep(1500 * time.Millisecond)
 		sound.StopSound(soundId)
 	}()
-	pos := physics.Vec2{-5, 0}
+	pos := cxmath.Vec2{-5, 0}
 	for {
 		pos.X += 0.5
 		sound.SetListenerPosition(pos)

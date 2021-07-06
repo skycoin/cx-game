@@ -28,11 +28,11 @@ type WorldItem struct {
 
 var worldItems = []*WorldItem{}
 
-func CreateWorldItem(itemTypeId ItemTypeID , pos mgl32.Vec2) {
+func CreateWorldItem(itemTypeId ItemTypeID, pos mgl32.Vec2) {
 	item := WorldItem{
 		Body: physics.Body{
-			Size: physics.Vec2{X: worldItemSize, Y: worldItemSize},
-			Pos: physics.Vec2{X: pos.X(), Y: pos.Y()},
+			Size: cxmath.Vec2{X: worldItemSize, Y: worldItemSize},
+			Pos:  cxmath.Vec2{X: pos.X(), Y: pos.Y()},
 		},
 		ItemTypeId: itemTypeId,
 	}
@@ -41,11 +41,11 @@ func CreateWorldItem(itemTypeId ItemTypeID , pos mgl32.Vec2) {
 }
 
 func TickWorldItems(
-		planet *world.Planet, dt float32, playerPos physics.Vec2,
+	planet *world.Planet, dt float32, playerPos cxmath.Vec2,
 ) (forPlayer []*WorldItem) {
 	newWorldItems := []*WorldItem{}
 	forPlayer = []*WorldItem{}
-	for _,item := range worldItems {
+	for _, item := range worldItems {
 		pickedUp := item.Tick(planet, dt, playerPos)
 		if pickedUp {
 			forPlayer = append(forPlayer, item)
@@ -58,7 +58,7 @@ func TickWorldItems(
 }
 
 func DrawWorldItems(cam *camera.Camera) {
-	for _,item := range worldItems {
+	for _, item := range worldItems {
 		item.Draw(cam)
 	}
 }
@@ -81,7 +81,7 @@ func (item WorldItem) Draw(cam *camera.Camera) {
 
 func (item *WorldItem) Tick(
 	planet *world.Planet, dt float32,
-	playerPos physics.Vec2,
+	playerPos cxmath.Vec2,
 ) bool {
 	item.Vel.Y -= physics.Gravity * dt / 2
 
@@ -90,7 +90,7 @@ func (item *WorldItem) Tick(
 	if itemToPlayerDistSqr < attractRadius*attractRadius {
 		attractDirection := itemToPlayerDisplacement.
 			Mult(1 / itemToPlayerDisplacement.LengthSqr())
-		attractForce := attractDirection.Mult(attractForceMag * dt )
+		attractForce := attractDirection.Mult(attractForceMag * dt)
 		item.Vel = item.Vel.Add(attractForce)
 	}
 

@@ -21,7 +21,7 @@ func (ctx Context) PushLocal(local mgl32.Mat4) Context {
 }
 
 // push a view matrix onto the render context.
-// in the result, the projection matrix is really 
+// in the result, the projection matrix is really
 // a projection-view matrix
 func (ctx Context) PushView(view mgl32.Mat4) Context {
 	newCtx := ctx
@@ -49,6 +49,14 @@ func (window Window) DefaultRenderContext() Context {
 		Size:       mgl32.Vec2{w / PixelsPerTile, h / PixelsPerTile},
 		Projection: projectTransform,
 	}
+}
+
+func (window Window) ConvertScreenToTileCoords(x, y float32) mgl32.Vec2 {
+	//todo
+	return mgl32.Vec2{1, 1}
+}
+func (window Window) ConvertTileToScreenCoords(x, y float32) {
+	//todo
 }
 
 // use for rendering things that need to wrap around world

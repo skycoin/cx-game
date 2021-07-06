@@ -7,16 +7,17 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
-var allBlobSprites = make(map[uint32]([]uint32))
-var nextBlobSpriteId = uint32(1)
+type BlobSpritesID uint32
+var allBlobSprites = make(map[BlobSpritesID]([]uint32))
+var nextBlobSpriteId = BlobSpritesID(1)
 
-func LoadBlobSprites(fname string) uint32 {
+func LoadBlobSprites(fname string, w,h int) BlobSpritesID {
 	spritesheetId := spriteloader.LoadSpriteSheetByColRow(
-		fname, blob.BlobSheetHeight, blob.BlobSheetWidth )
+		fname, h, w )
 	blobSprites := []uint32{}
-	for idx:=0; idx < blob.BlobSheetWidth*blob.BlobSheetHeight; idx++ {
-		y := idx / blob.BlobSheetWidth
-		x := idx % blob.BlobSheetWidth
+	for idx:=0; idx < w*h; idx++ {
+		y := idx / w
+		x := idx % w
 		name := fmt.Sprint("blob_%d",idx)
 		blobSprites =
 			append(blobSprites,spriteloader.LoadSprite(spritesheetId,name,x,y))
@@ -27,6 +28,17 @@ func LoadBlobSprites(fname string) uint32 {
 	return blobSpriteId
 }
 
-func GetBlobSpritesById(blobSpriteID uint32) []uint32 {
-	return allBlobSprites[blobSpriteID]
+func LoadFullBlobSprites(fname string) BlobSpritesID {
+	return LoadBlobSprites(fname, blob.BlobSheetWidth, blob.BlobSheetHeight)
+}
+
+func LoadSimpleBlobSprites(fname string) BlobSpritesID {
+	return LoadBlobSprites(
+		fname,
+		blob.SimpleBlobSheetWidth, blob.SimpleBlobSheetHeight,
+	)
+}
+
+func GetBlobSpritesById(id BlobSpritesID) []uint32 {
+	return allBlobSprites[id]
 }

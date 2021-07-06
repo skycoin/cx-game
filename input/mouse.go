@@ -22,3 +22,4 @@ func UpdateMouseCoords(widthOff, heightOff int32, scl float32) {
 	widthOffset = widthOff
 	heightOffset = heightOff
 }
+
