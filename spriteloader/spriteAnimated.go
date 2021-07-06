@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -34,6 +35,8 @@ type SourceSize struct {
 
 type Frames struct {
 	Name             string
+	Action           string
+	Order            int
 	Frame            Frame            `json:"frames"`
 	Rotated          bool             `json:"rotated"`
 	Trimmed          bool             `json:"trimmed"`
@@ -78,19 +81,21 @@ func NewSpriteAnimated(fileName string) *SpriteAnimated {
 	data, _ := ioutil.ReadAll(bufio.NewReader(jsonFile))
 	var spriteAnimated SpriteAnimated
 	json.Unmarshal(data, &spriteAnimated)
-	// fmt.Println(spriteAnimated.Frames)
 
 	var frames []Frames
 	for key, value := range spriteAnimated.Frames {
 		var frame Frames
 		mapstructure.Decode(value, &frame)
-		frame.Name = key
-		// fmt.Print("value: ", value)
-		// fmt.Println(" --> ", frame)
+		sliceKey := strings.Fields(key, "/n")
+		fmt.Println(key, " --> ", sliceKey)
+		frame.Name = sliceKey[0]
+		frame.Action = sliceKey[1]
+		// frame.Order = sliceKey[2]
+		// fmt.Println("--> ", frame)
 		frames = append(frames, frame)
 	}
 	spriteAnimated.FrameArr = frames
-	fmt.Println(spriteAnimated)
+	// fmt.Println(spriteAnimated.FrameArr)
 
 	return &spriteAnimated
 }
