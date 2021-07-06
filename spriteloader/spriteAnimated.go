@@ -64,8 +64,9 @@ type Meta struct {
 }
 
 type SpriteAnimated struct {
-	Frames map[string]interface{} `json:"frames"`
-	Meta   Meta                   `json:"meta"`
+	Frames   map[string]interface{} `json:"frames"`
+	FrameArr []Frames
+	Meta     Meta `json:"meta"`
 }
 
 func NewSpriteAnimated(fileName string) *SpriteAnimated {
@@ -82,13 +83,14 @@ func NewSpriteAnimated(fileName string) *SpriteAnimated {
 	var frames []Frames
 	for key, value := range spriteAnimated.Frames {
 		var frame Frames
-		mapstructure.Decode(value, &frames)
+		mapstructure.Decode(value, &frame)
 		frame.Name = key
-		fmt.Print("value: ", value)
-		fmt.Println("--> ", frame)
+		// fmt.Print("value: ", value)
+		// fmt.Println(" --> ", frame)
 		frames = append(frames, frame)
 	}
-	// fmt.Println(frames)
+	spriteAnimated.FrameArr = frames
+	fmt.Println(spriteAnimated)
 
 	return &spriteAnimated
 }
