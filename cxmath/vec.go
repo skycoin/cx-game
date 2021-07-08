@@ -1,6 +1,9 @@
 package cxmath
 
-import "math"
+import (
+	"math"
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type Vec2 struct {
 	X, Y float32
@@ -44,4 +47,8 @@ func (v1 Vec2) Normalize() Vec2 {
 	}
 
 	return v1
+}
+
+func (v1 Vec2) Mgl32() mgl32.Vec2 {
+	return mgl32.Vec2 {v1.X,v1.Y}
 }
