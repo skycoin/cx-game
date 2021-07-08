@@ -7,11 +7,15 @@ import (
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/enemies/pathfinding"
 )
 
-type BasicEnemy struct {
+type Enemy struct {
 	physics.Body
+	SpriteID uint32
 	Health int
+	TimeSinceLastJump float32
+	PathfindingBehaviourID pathfinding.BehaviourID
 }
 
 func InitBasicEnemies() {
@@ -22,7 +26,9 @@ func InitBasicEnemies() {
 // TODO load an actual sprite here
 var basicEnemySpriteId int
 var basicEnemyMovSpeed = float32(1)
-var basicEnemies = []*BasicEnemy{}
+var basicEnemies = []*Enemy{}
+
+const enemyJumpVelocity = 15
 
 // TODO create a system to handle projectiles, melee attacks, etc
 var playerStrikeRange = float32(1)
@@ -31,7 +37,7 @@ func TickBasicEnemies(
 	world *world.Planet, dt float32,
 	player *models.Player, playerIsAttacking bool,
 ) {
-	nextEnemies := []*BasicEnemy{}
+	nextEnemies := []*Enemy{}
 	for idx, _ := range basicEnemies {
 		enemy := basicEnemies[idx]
 		enemy.Tick(world, dt, player, playerIsAttacking)
@@ -53,12 +59,14 @@ func DrawBasicEnemies(cam *camera.Camera) {
 }
 
 func SpawnBasicEnemy(x, y float32) {
-	enemy := BasicEnemy{
+	enemy := Enemy{
 		Body: physics.Body{
 			Size: cxmath.Vec2{X: 3.0, Y: 3.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
 		Health: 5,
+		SpriteID: uint32(basicEnemySpriteId),
+		PathfindingBehaviourID: pathfinding.WalkingBehaviourID,
 	}
 	enemy.Damage = func(damage int) {
 		enemy.Health -= 1
@@ -67,23 +75,34 @@ func SpawnBasicEnemy(x, y float32) {
 	basicEnemies = append(basicEnemies, &enemy)
 }
 
-func sign(x float32) float32 {
-	if x < 0 {
-		return -1
+func SpawnLeapingEnemy(x,y float32) {
+	enemy := Enemy{
+		Body: physics.Body{
+			Size: cxmath.Vec2{X:2.0, Y: 2.0},
+			Pos:  cxmath.Vec2{X: x, Y: y},
+		},
+		Health:5,
+		// TODO swap out sprite
+		SpriteID: uint32(basicEnemySpriteId),
+		PathfindingBehaviourID: pathfinding.LeapingBehaviourID,
 	}
-	if x > 0 {
-		return 1
-	}
-	return 0
+	physics.RegisterBody(&enemy.Body)
+	basicEnemies = append(basicEnemies, &enemy)
 }
 
-func (enemy *BasicEnemy) Tick(
+func (enemy Enemy) isStuck() bool {
+	return (enemy.Collisions.Left || enemy.Collisions.Right) &&
+		!enemy.Collisions.Below
+}
+
+func (enemy *Enemy) Tick(
 	world *world.Planet, dt float32, player *models.Player,
 	playerIsAttacking bool,
 ) bool {
-	enemy.Vel.X = basicEnemyMovSpeed * sign(player.Pos.X-enemy.Pos.X)
-	enemy.Vel.Y -= physics.Gravity * dt
-	//enemy.Move(world, dt)
+	enemy.PathfindingBehaviourID.Get().Follow(pathfinding.BehaviourContext{
+		Self: &enemy.Body,
+		PlayerPos: player.Pos.Mgl32(),
+	})
 
 	playerIsCloseEnoughToStrike :=
 		player.Pos.Sub(enemy.Pos).LengthSqr() <
@@ -93,7 +112,7 @@ func (enemy *BasicEnemy) Tick(
 	return stillAlive
 }
 
-func (enemy *BasicEnemy) Draw(cam *camera.Camera) {
+func (enemy *Enemy) Draw(cam *camera.Camera) {
 	camX := enemy.Pos.X - cam.X
 	camY := enemy.Pos.Y - cam.Y
 
