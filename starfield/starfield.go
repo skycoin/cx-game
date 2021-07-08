@@ -73,7 +73,7 @@ type Star struct {
 	X             float32
 	Y             float32
 	Size          float32
-	SpriteId      int
+	SpriteId      spriteloader.SpriteID
 	GradientValue float32
 	GradientId    int
 	Depth         float32

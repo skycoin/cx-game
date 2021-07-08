@@ -24,7 +24,7 @@ func InitBasicEnemies() {
 }
 
 // TODO load an actual sprite here
-var basicEnemySpriteId int
+var basicEnemySpriteId spriteloader.SpriteID
 var basicEnemyMovSpeed = float32(1)
 var basicEnemies = []*Enemy{}
 

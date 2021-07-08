@@ -11,6 +11,7 @@ import (
 	"github.com/skycoin/cx-game/physics/movement"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type Player struct {
@@ -21,8 +22,8 @@ type Player struct {
 	// ImageSize       image.Point
 	helmId        int
 	suitId        int
-	helmSpriteIds [4]int
-	suitSpriteIds [4]int
+	helmSpriteIds [4]spriteloader.SpriteID
+	suitSpriteIds [4]spriteloader.SpriteID
 	XDirection    float32 // 1 when facing right, -1 when facing left
 }
 
