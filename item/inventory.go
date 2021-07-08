@@ -149,7 +149,7 @@ func (inventory Inventory) DrawSlot(
 	// TODO write number for quantity
 	if slot.Quantity > 0 {
 		spriteId := itemTypes[slot.ItemTypeID].SpriteID
-		spriteloader.DrawSpriteQuadContext(itemCtx, int(spriteId))
+		spriteloader.DrawSpriteQuadContext(itemCtx, (spriteId))
 
 		textCtx := itemCtx.PushLocal(
 			mgl32.Translate3D(0.5,-0.05,0).

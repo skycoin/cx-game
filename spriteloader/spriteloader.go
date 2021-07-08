@@ -25,11 +25,14 @@ type Spritesheet struct {
 	tex            uint32
 	xScale, yScale float32
 }
+type SpritesheetID uint32
 
 type Sprite struct {
-	spriteSheetId int
+	spriteSheetId SpritesheetID
 	x, y          int
 }
+
+type SpriteID uint32
 
 // fetch internal sprite data for using custom OpenGL rendering
 type SpriteMetadata struct {
@@ -38,7 +41,7 @@ type SpriteMetadata struct {
 	ScaleX, ScaleY float32
 }
 
-func GetSpriteMetadata(spriteID uint32) SpriteMetadata {
+func GetSpriteMetadata(spriteID SpriteID) SpriteMetadata {
 	sprite := sprites[spriteID]
 	spritesheet := spritesheets[sprite.spriteSheetId]
 	return SpriteMetadata{
@@ -52,12 +55,12 @@ func GetSpriteMetadata(spriteID uint32) SpriteMetadata {
 
 var spritesheets = []Spritesheet{}
 var sprites = []Sprite{}
-var spriteIdsByName = make(map[string]int)
+var spriteIdsByName = make(map[string]SpriteID)
 
-func AddSpriteSheet(path string, il *ImgLoader) int {
+func AddSpriteSheet(path string, il *ImgLoader) SpritesheetID {
 	img := il.GetImg(path)
 	if img == nil {
-		return -1
+		log.Fatalf("Cannot find image at path %v",path)
 	}
 
 	spritesheets = append(spritesheets, Spritesheet{
@@ -66,10 +69,10 @@ func AddSpriteSheet(path string, il *ImgLoader) int {
 		tex:    MakeTexture(img),
 	})
 
-	return len(spritesheets) - 1
+	return SpritesheetID(len(spritesheets) - 1)
 }
 
-func LoadSpriteSheet(fname string) int {
+func LoadSpriteSheet(fname string) SpritesheetID {
 	_, img, _ := LoadPng(fname)
 
 	spritesheets = append(spritesheets, Spritesheet{
@@ -78,11 +81,11 @@ func LoadSpriteSheet(fname string) int {
 		tex:    MakeTexture(img),
 	})
 
-	return len(spritesheets) - 1
+	return SpritesheetID(len(spritesheets) - 1)
 }
 
 //Load spritesheet with rows and columns specified
-func LoadSpriteSheetByColRow(fname string, row int, col int) int {
+func LoadSpriteSheetByColRow(fname string, row int, col int) SpritesheetID {
 	_, img, _ := LoadPng(fname)
 
 	if DEBUG {
@@ -95,30 +98,30 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) int {
 		tex:    MakeTexture(img),
 	})
 
-	return len(spritesheets) - 1
+	return SpritesheetID(len(spritesheets) - 1)
 }
 
-func LoadSingleSprite(fname string, name string) int {
+func LoadSingleSprite(fname string, name string) SpriteID {
 	spritesheetId := LoadSpriteSheetByColRow(fname, 1, 1)
 	LoadSprite(spritesheetId, name, 0, 0)
 	return GetSpriteIdByName(name)
 }
 
 //Load sprite into internal sheet
-func LoadSprite(spriteSheetId int, name string, x, y int) uint32 {
+func LoadSprite(spriteSheetId SpritesheetID, name string, x, y int) SpriteID {
 	sprites = append(sprites, Sprite{spriteSheetId, x, y})
-	spriteId := len(sprites) - 1
+	spriteId := SpriteID(len(sprites) - 1)
 	spriteIdsByName[name] = spriteId
-	return uint32(spriteId)
+	return spriteId
 }
 
 // convenient for loading multi-tiles,
 // loads a rectangle of sprites from a spritesheet
 func LoadSprites(
-	spritesheetId int, name string,
+	spritesheetId SpritesheetID, name string,
 	left, top, right, bottom int,
-) []uint32 {
-	spriteIds := make([]uint32, (right-left+1)*(bottom-top+1))
+) []SpriteID {
+	spriteIds := make([]SpriteID, (right-left+1)*(bottom-top+1))
 	spriteIdIdx := 0
 	for x := left; x <= right; x++ {
 		for y := top; y <= bottom; y++ {
@@ -133,7 +136,7 @@ func LoadSprites(
 }
 
 //Get the id of loaded sprite by its registered name
-func GetSpriteIdByName(name string) int {
+func GetSpriteIdByName(name string) SpriteID {
 	spriteId, ok := spriteIdsByName[name]
 	if !ok {
 		log.Fatalf("sprite with name [%v] does not exist", name)
@@ -145,7 +148,7 @@ var SpriteRenderDistance float32 = 10
 
 //Draw sprite specified with spriteId at x,y position
 
-func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
+func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId SpriteID) {
 	worldTransform := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(xpos), float32(ypos), -SpriteRenderDistance),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
@@ -153,14 +156,14 @@ func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId int) {
 	DrawSpriteQuadMatrix(worldTransform, spriteId)
 }
 
-func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId int) {
+func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId SpriteID) {
 	DrawSpriteQuadContext(render.Context{
 		World:      worldTransform,
 		Projection: Window.GetProjectionMatrix(),
 	}, spriteId)
 }
 
-func DrawSpriteQuadContext(ctx render.Context, spriteId int) {
+func DrawSpriteQuadContext(ctx render.Context, spriteId SpriteID) {
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
 	// clarify responsibilities later
@@ -287,7 +290,10 @@ func MakeQuadVao() uint32 {
 }
 
 //temporary overloaded function
-func DrawSpriteQuadCustom(xpos, ypos, xwidth, yheight float32, spriteId int, program uint32) {
+func DrawSpriteQuadCustom(
+		xpos, ypos, xwidth, yheight float32,
+		spriteId SpriteID, program uint32,
+) {
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
 	// clarify responsibilities later

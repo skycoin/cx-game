@@ -8,13 +8,13 @@ import (
 )
 
 type BlobSpritesID uint32
-var allBlobSprites = make(map[BlobSpritesID]([]uint32))
+var allBlobSprites = make(map[BlobSpritesID]([]spriteloader.SpriteID))
 var nextBlobSpriteId = BlobSpritesID(1)
 
 func LoadBlobSprites(fname string, w,h int) BlobSpritesID {
 	spritesheetId := spriteloader.LoadSpriteSheetByColRow(
 		fname, h, w )
-	blobSprites := []uint32{}
+	blobSprites := []spriteloader.SpriteID{}
 	for idx:=0; idx < w*h; idx++ {
 		y := idx / w
 		x := idx % w
@@ -39,6 +39,6 @@ func LoadSimpleBlobSprites(fname string) BlobSpritesID {
 	)
 }
 
-func GetBlobSpritesById(id BlobSpritesID) []uint32 {
+func GetBlobSpritesById(id BlobSpritesID) []spriteloader.SpriteID {
 	return allBlobSprites[id]
 }
