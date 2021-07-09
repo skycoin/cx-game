@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
@@ -86,16 +89,26 @@ func NewSpriteAnimated(fileName string) *SpriteAnimated {
 	for key, value := range spriteAnimated.Frames {
 		var frame Frames
 		mapstructure.Decode(value, &frame)
-		sliceKey := strings.Fields(key, "/n")
-		fmt.Println(key, " --> ", sliceKey)
-		frame.Name = sliceKey[0]
-		frame.Action = sliceKey[1]
-		// frame.Order = sliceKey[2]
-		// fmt.Println("--> ", frame)
+		sliceKey := regexp.MustCompile("[^\\s]+")
+		sliceArr := sliceKey.FindAllString(key, -1)
+		frame.Name = sliceArr[0]
+		frame.Action = strings.Split(strings.ReplaceAll(sliceArr[1], "#", ""), ".")[0]
+		if len(sliceArr) > 2 {
+			i, err := strconv.Atoi(strings.Split(sliceArr[2], ".")[0])
+			if err != nil {
+				log.Fatal(err)
+			}
+			frame.Order = i
+		} else {
+			frame.Order = 0
+		}
+		// fmt.Println("----------------> ", key)
+		// fmt.Println("name: ", frame.Name)
+		// fmt.Println("Action: ", frame.Action)
+		// fmt.Println("Order: ", frame.Order)
 		frames = append(frames, frame)
 	}
 	spriteAnimated.FrameArr = frames
-	// fmt.Println(spriteAnimated.FrameArr)
 
 	return &spriteAnimated
 }
