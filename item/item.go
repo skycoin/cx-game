@@ -7,10 +7,11 @@ import (
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/models"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type ItemType struct {
-	SpriteID int
+	SpriteID spriteloader.SpriteID
 	Name string
 
 	Use func(ItemUseInfo)
@@ -47,7 +48,7 @@ var itemTypes = make(map[ItemTypeID]*ItemType)
 
 var nextItemTypeID = ItemTypeID(1)
 
-func NewItemType(SpriteID int) ItemType {
+func NewItemType(SpriteID spriteloader.SpriteID) ItemType {
 	return ItemType {
 		SpriteID: SpriteID,
 		Name: "untitled",
@@ -70,7 +71,7 @@ func GetItemTypeIdForTile(tile world.Tile) ItemTypeID {
 	itemTypeID,ok := tileTypeIDsToItemTypeIDs[tile.TileTypeID]
 	if ok { return itemTypeID }
 
-	itemType := NewItemType(int(tile.SpriteID))
+	itemType := NewItemType((tile.SpriteID))
 	itemType.Name = tile.Name
 	itemType.Use = func(info ItemUseInfo) {
 		worldCoords := info.WorldCoords()

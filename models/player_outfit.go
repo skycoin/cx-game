@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	helmSpriteSheetId int
-	suitSpriteSheetId int
+	helmSpriteSheetId spriteloader.SpritesheetID
+	suitSpriteSheetId spriteloader.SpritesheetID
 )
 
 const (

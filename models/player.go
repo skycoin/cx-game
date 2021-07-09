@@ -11,6 +11,7 @@ import (
 	"github.com/skycoin/cx-game/physics/movement"
 	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type Player struct {
@@ -21,8 +22,8 @@ type Player struct {
 	// ImageSize       image.Point
 	helmId        int
 	suitId        int
-	helmSpriteIds [4]int
-	suitSpriteIds [4]int
+	helmSpriteIds [4]spriteloader.SpriteID
+	suitSpriteIds [4]spriteloader.SpriteID
 	XDirection    float32 // 1 when facing right, -1 when facing left
 }
 
@@ -78,7 +79,11 @@ func (player *Player) FixedTick(planet *world.Planet) {
 
 	if player.Controlled {
 		inputXAxis := input.GetAxis(input.HORIZONTAL)
-		player.Vel.X += inputXAxis * player.MovementMeta.Acceleration * player.ActiveMovementType.GetMovementSpeedModifier()
+		player.Vel.X +=
+			inputXAxis *
+			player.MovementMeta.Acceleration *
+			player.ActiveMovementType.GetMovementSpeedModifier()
+
 		if inputXAxis != 0 {
 			player.XDirection = math32.Sign(inputXAxis)
 		}
@@ -88,18 +93,36 @@ func (player *Player) FixedTick(planet *world.Planet) {
 			player.Vel.Y = inputYAxis * maxVerticalSpeed
 		}
 	}
-	player.Vel.Y -= physics.Gravity * physics.TimeStep * player.ActiveMovementType.GetGravityModifier()
+	player.Vel.Y -=
+		physics.Gravity *
+		physics.TimeStep *
+		player.ActiveMovementType.GetGravityModifier()
 
 	if player.Vel.X != 0 {
-		friction := cxmath.Sign(player.Vel.X) * player.MovementMeta.Acceleration * player.MovementMeta.DynamicFriction * player.ActiveMovementType.GetFrictionModifier()
+		friction :=
+			cxmath.Sign(player.Vel.X) *
+			player.MovementMeta.Acceleration *
+			player.MovementMeta.DynamicFriction *
+			player.ActiveMovementType.GetFrictionModifier()
 
 		//to stop player from jiggling
-		if cxmath.Abs(player.Vel.X) <= player.MovementMeta.Acceleration*player.MovementMeta.DynamicFriction*player.ActiveMovementType.GetFrictionModifier() && input.GetAxis(input.HORIZONTAL) == 0 {
+		minVelocityToApplyFriction :=
+			player.MovementMeta.Acceleration *
+			player.MovementMeta.DynamicFriction *
+			player.ActiveMovementType.GetFrictionModifier()
+
+		if cxmath.Abs(player.Vel.X) <= minVelocityToApplyFriction &&
+				input.GetAxis(input.HORIZONTAL) == 0 {
 			player.Vel.X = 0
 		} else {
 			player.Vel.X -= friction
 		}
 	}
-	player.Vel.X = utility.ClampF(player.Vel.X, -player.MovementMeta.MovSpeed*player.ActiveMovementType.GetMovementSpeedModifier(), player.MovementMeta.MovSpeed*player.ActiveMovementType.GetMovementSpeedModifier())
+
+	maxAbsVelX :=
+		player.MovementMeta.MovSpeed *
+		player.ActiveMovementType.GetMovementSpeedModifier()
+
+	player.Vel.X = utility.ClampF(player.Vel.X, -maxAbsVelX, maxAbsVelX)
 	player.MovementAfterTick(planet)
 }

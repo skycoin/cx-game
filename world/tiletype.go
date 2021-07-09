@@ -2,6 +2,7 @@ package world
 
 import (
 	"github.com/skycoin/cx-game/render/blob"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type Placer interface {
@@ -11,7 +12,7 @@ type Placer interface {
 
 // place tiles for a tiletype which has a single sprite
 type DirectPlacer struct {
-	SpriteID uint32
+	SpriteID spriteloader.SpriteID
 }
 func (placer DirectPlacer) CreateTile(
 	tt TileType,opts TileCreationOptions,
