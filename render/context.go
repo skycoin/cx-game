@@ -12,6 +12,12 @@ type Context struct {
 	Projection mgl32.Mat4 // 4x4 projection matrix for world => screen
 }
 
+// from a (default) centered render context, anchor at window top left
+func CenterToTopLeft(ctx Context) Context {
+	return ctx.PushLocal(mgl32.
+		Translate3D(-ctx.Size.X()/2,+ctx.Size.Y()/2,0))
+}
+
 // push a local transformation onto the render context.
 // can use to build hierarchies.
 func (ctx Context) PushLocal(local mgl32.Mat4) Context {
