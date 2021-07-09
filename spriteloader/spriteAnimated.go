@@ -112,3 +112,7 @@ func NewSpriteAnimated(fileName string) *SpriteAnimated {
 
 	return &spriteAnimated
 }
+
+func Draw(action string) {
+
+}
