@@ -16,7 +16,7 @@ type Particle struct {
 	ID               int32
 	ParticleMetaType int32
 	Type             int32
-	Sprite           uint32
+	Sprite           spriteloader.SpriteID
 	Size             float32
 	Verlet           verlet.Verlet2
 	TimeToLive       float32
@@ -123,7 +123,7 @@ func DrawChunkParticle(particle Particle, ctx render.Context) {
 	gl.DrawArrays(gl.TRIANGLES,0,6) // draw quad
 }
 
-func CreateTileChunks(x,y float32, TileSpriteID uint32) {
+func CreateTileChunks(x,y float32, TileSpriteID spriteloader.SpriteID) {
 	for i:=0; i<chunksPerChip; i++ {
 		particle := Particle {
 			ID: rand.Int31(),

@@ -26,7 +26,7 @@ type CatBlack struct {
 	XVelocity, YVelocity float32
 	movSpeed             float32
 	jumpSpeed            float32
-	SpriteSheetId        int
+	SpriteSheetId        spriteloader.SpritesheetID
 }
 
 const (
@@ -38,8 +38,10 @@ const (
 
 var stopPlay chan bool
 
-// private method
-func play(action int, fcount int, lwindow *glfw.Window, lspriteSheetId int) {
+func play(
+		action int, fcount int, lwindow *glfw.Window, 
+		lspriteSheetId spriteloader.SpritesheetID,
+) {
 	stopPlay = make(chan bool)
 	j := 0
 	for {

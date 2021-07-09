@@ -78,19 +78,19 @@ func (planet *Planet) DrawLayer(tiles []Tile, cam *camera.Camera) {
 				spriteloader.DrawSpriteQuad(
 					float32(x)-cam.X, float32(y)-cam.Y,
 					1, 1,
-					int(tile.SpriteID),
+					(tile.SpriteID),
 				)
 				// TODO replace this with something more performant
 				// draw extra versions to achieve wrap around
 				spriteloader.DrawSpriteQuad(
 					float32(x-planet.Width)-cam.X, float32(y)-cam.Y,
 					1, 1,
-					int(tile.SpriteID),
+					(tile.SpriteID),
 				)
 				spriteloader.DrawSpriteQuad(
 					float32(x+planet.Width)-cam.X, float32(y)-cam.Y,
 					1, 1,
-					int(tile.SpriteID),
+					(tile.SpriteID),
 				)
 			}
 		}

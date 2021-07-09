@@ -51,7 +51,7 @@ func (rs *RenderSystem) Update(dt float32) {
 			entity.Position.Y,
 			entity.Size.X,
 			entity.Size.Y,
-			int(entity.SpriteId),
+			(entity.SpriteId),
 		)
 	}
 	// fmt.Println("render system")

@@ -3,6 +3,7 @@ package world
 import (
 	"github.com/skycoin/cx-game/render/blob"
 	"github.com/skycoin/cx-game/spriteloader/blobsprites"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 // place tiles for a given tiletype using an auto-tiling mechanism
@@ -13,7 +14,7 @@ type AutoPlacer struct {
 	TilingType blob.TilingType
 }
 
-func (ap AutoPlacer) blobSprites() []uint32 {
+func (ap AutoPlacer) blobSprites() []spriteloader.SpriteID {
 	return blobsprites.GetBlobSpritesById(ap.blobSpritesId)
 }
 
