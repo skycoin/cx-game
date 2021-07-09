@@ -60,7 +60,7 @@ var spriteIdsByName = make(map[string]SpriteID)
 func AddSpriteSheet(path string, il *ImgLoader) SpritesheetID {
 	img := il.GetImg(path)
 	if img == nil {
-		log.Fatalf("Cannot find image at path %v",path)
+		log.Fatalf("Cannot find image at path %v", path)
 	}
 
 	spritesheets = append(spritesheets, Spritesheet{
@@ -147,7 +147,7 @@ func GetSpriteIdByName(name string) SpriteID {
 var SpriteRenderDistance float32 = 10
 
 //Draw sprite specified with spriteId at x,y position
-
+//this function is for testing, will not be used later on
 func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId SpriteID) {
 	worldTransform := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(xpos), float32(ypos), -SpriteRenderDistance),
@@ -291,8 +291,8 @@ func MakeQuadVao() uint32 {
 
 //temporary overloaded function
 func DrawSpriteQuadCustom(
-		xpos, ypos, xwidth, yheight float32,
-		spriteId SpriteID, program uint32,
+	xpos, ypos, xwidth, yheight float32,
+	spriteId SpriteID, program uint32,
 ) {
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
