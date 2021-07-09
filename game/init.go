@@ -67,6 +67,7 @@ func Init() {
 	input.Init(win.Window)
 	sound.Init()
 	spriteloader.InitSpriteloader(&win)
+	ui.InitArc()
 	world.RegisterTileTypes()
 	spriteloader.DEBUG = false
 	item.InitWorldItem()
@@ -79,6 +80,7 @@ func Init() {
 
 	models.Init()
 	player = models.NewPlayer()
+	ui.InitHUD()
 
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)

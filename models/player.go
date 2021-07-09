@@ -10,6 +10,7 @@ import (
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/physics/movement"
 	"github.com/skycoin/cx-game/utility"
+	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/spriteloader"
 )
@@ -68,6 +69,15 @@ func (player *Player) Update(dt float32, planet *world.Planet) {
 	for accumulator >= physics.TimeStep {
 		player.FixedTick(planet)
 		accumulator -= physics.TimeStep
+	}
+}
+
+func (player *Player) GetHUDState() ui.HUDState {
+	// TODO tempoary
+	return ui.HUDState {
+		Health: 40, MaxHealth: 100,
+
+		Fullness: 0.3, Hydration: 0.4, Oxygen: 0.5, Fuel: 0.6,
 	}
 }
 

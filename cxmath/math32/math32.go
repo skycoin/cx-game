@@ -25,8 +25,7 @@ func Min(x,y float32) float32 {
 func Abs(x float32) float32 {
 	if x < 0 { x *= -1 }
 	return x
-}
-
+} 
 // return the value with the lesser magnitude.
 // result maintains original sign.
 func AbsMin(x,y float32) float32 {
@@ -39,4 +38,12 @@ func AbsMin(x,y float32) float32 {
 
 func Mod(x,y float32) float32 {
 	return float32(math.Mod(float64(x),float64(y)))
+}
+
+func Sin(x float32) float32 {
+	return float32(math.Sin(float64(x)))
+}
+
+func Cos(x float32) float32 {
+	return float32(math.Cos(float64(x)))
 }
