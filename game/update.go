@@ -1,7 +1,6 @@
 package game
 
 import (
-	"github.com/skycoin/cx-game/cxecs"
 	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
@@ -39,7 +38,6 @@ func Update(dt float32) {
 	starfield.UpdateStarField(dt)
 	catIsScratching = false
 
-	cxecs.Update(dt)
 }
 
 // type mouseDraws struct {
