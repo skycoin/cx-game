@@ -101,6 +101,19 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) SpritesheetID {
 	return SpritesheetID(len(spritesheets) - 1)
 }
 
+func LoadSpriteSheetByFrames(fname string, frames []Frames) SpritesheetID {
+	_, img, _ := LoadPng(fname)
+
+	fmt.Println("xScale: ", float32(frames[0].Frame.X)/float32(img.Bounds().Dx()))
+	fmt.Println("yScale: ", float32(frames[0].Frame.Y)/float32(img.Bounds().Dy()))
+	spritesheets = append(spritesheets, Spritesheet{
+		xScale: float32(frames[0].Frame.X) / float32(img.Bounds().Dx()),
+		yScale: float32(frames[0].Frame.Y) / float32(img.Bounds().Dy()),
+		tex:    MakeTexture(img),
+	})
+	return SpritesheetID(len(spritesheets) - 1)
+}
+
 func LoadSingleSprite(fname string, name string) SpriteID {
 	spritesheetId := LoadSpriteSheetByColRow(fname, 1, 1)
 	LoadSprite(spritesheetId, name, 0, 0)
