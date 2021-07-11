@@ -134,7 +134,18 @@ func NewSpriteAnimated(fileName string) *SpriteAnimated {
 	return &spriteAnimated
 }
 
+func filterByAction(action string, frames []Frames) []Frames {
+	result := []Frames{}
+	for i := range frames {
+		if frames[i].Action == action {
+			result = append(result, frames[i])
+		}
+	}
+	return result
+}
+
 func (spriteAnimated *SpriteAnimated) Play(lwindow *glfw.Window, action string) {
+	frames := filterByAction(action, spriteAnimated.FrameArr)
 	stopPlay = make(chan bool)
 	j := 0
 	for {
@@ -142,7 +153,7 @@ func (spriteAnimated *SpriteAnimated) Play(lwindow *glfw.Window, action string) 
 		default:
 			time.Sleep(100 * time.Millisecond)
 			LoadSprite(spriteAnimated.spriteSheetId, spriteAnimated.FrameArr[0].Name, action, j)
-			spriteId := GetSpriteIdByName("blackcat")
+			spriteId := GetSpriteIdByName(spriteAnimated.FrameArr[0].Name)
 			fmt.Println("spriteId. ", spriteId, " j. ", j)
 			if err := gl.Init(); err != nil {
 				panic(err)
@@ -153,7 +164,7 @@ func (spriteAnimated *SpriteAnimated) Play(lwindow *glfw.Window, action string) 
 			lwindow.SwapBuffers()
 			glfw.PollEvents()
 			j++
-			if j == fcount {
+			if j == len(frames) {
 				j = 0
 			}
 		case <-stopPlay:
