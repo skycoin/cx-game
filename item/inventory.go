@@ -56,7 +56,7 @@ func NewDevInventory() uint32 {
 	if !ok { log.Fatal("Cannot find pipe tile type")}
 	pipeTile := pipeTileType.CreateTile(world.TileCreationOptions{})
 	pipeItemTypeID := GetItemTypeIdForTile(pipeTile)
-	inventory.Slots[inventory.ItemSlotIndexForPosition(2, 0)] =
+	inventory.Slots[inventory.ItemSlotIndexForPosition(3, 0)] =
 		InventorySlot{pipeItemTypeID, 20, 0}
 
 	return inventoryId
@@ -149,7 +149,8 @@ func (inventory Inventory) DrawSlot(
 	// TODO write number for quantity
 	if slot.Quantity > 0 {
 		spriteId := itemTypes[slot.ItemTypeID].SpriteID
-		spriteloader.DrawSpriteQuadContext(itemCtx, (spriteId))
+		spriteloader.DrawSpriteQuadContext(
+			itemCtx, (spriteId), spriteloader.NewDrawOptions() )
 
 		textCtx := itemCtx.PushLocal(
 			mgl32.Translate3D(0.5,-0.05,0).

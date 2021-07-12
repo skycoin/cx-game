@@ -10,12 +10,31 @@ import (
 	"github.com/skycoin/cx-game/enemies/pathfinding"
 )
 
+const TimeBeforeFadeout = float32(1.0) // in seconds
+const TimeDuringFadeout = float32(1.0) // in seconds
+
 type Enemy struct {
 	physics.Body
 	SpriteID uint32
 	Health int
 	TimeSinceLastJump float32
 	PathfindingBehaviourID pathfinding.BehaviourID
+	TimeSinceDeath float32 // 
+}
+
+func (enemy *Enemy) Alpha() float32 {
+	if enemy.TimeSinceDeath < TimeBeforeFadeout { return 1 }
+	x := enemy.TimeSinceDeath - TimeBeforeFadeout
+	return 1 - x / TimeDuringFadeout
+}
+
+// the enemy is either alive or has recently died and is fading out
+func (enemy *Enemy) Exists() bool {
+	return enemy.Alpha() > 0
+}
+
+func (enemy *Enemy) IsAlive() bool {
+	return enemy.Health > 0
 }
 
 func InitBasicEnemies() {
@@ -41,7 +60,7 @@ func TickBasicEnemies(
 	for idx, _ := range basicEnemies {
 		enemy := basicEnemies[idx]
 		enemy.Tick(world, dt, player, playerIsAttacking)
-		if enemy.Health > 0 {
+		if enemy.Exists() {
 			nextEnemies = append(nextEnemies, enemy)
 		} else {
 			enemy.Deleted = true
@@ -98,27 +117,27 @@ func (enemy Enemy) isStuck() bool {
 func (enemy *Enemy) Tick(
 	world *world.Planet, dt float32, player *models.Player,
 	playerIsAttacking bool,
-) bool {
-	enemy.PathfindingBehaviourID.Get().Follow(pathfinding.BehaviourContext{
-		Self: &enemy.Body,
-		PlayerPos: player.Pos.Mgl32(),
-	})
-
-	playerIsCloseEnoughToStrike :=
-		player.Pos.Sub(enemy.Pos).LengthSqr() <
-			playerStrikeRange*playerStrikeRange
-
-	stillAlive := !playerIsAttacking || !playerIsCloseEnoughToStrike
-	return stillAlive
+) {
+	if enemy.IsAlive() {
+		enemy.PathfindingBehaviourID.Get().Follow(pathfinding.BehaviourContext{
+			Self: &enemy.Body,
+			PlayerPos: player.Pos.Mgl32(),
+		})
+	} else {
+		enemy.Body.Vel.X = 0
+		enemy.TimeSinceDeath += dt
+	}
 }
 
 func (enemy *Enemy) Draw(cam *camera.Camera) {
 	camX := enemy.Pos.X - cam.X
 	camY := enemy.Pos.Y - cam.Y
 
-	spriteloader.DrawSpriteQuad(
+	drawOpts := spriteloader.NewDrawOptions()
+	drawOpts.Alpha = enemy.Alpha()
+	spriteloader.DrawSpriteQuadOptions(
 		camX, camY,
 		enemy.Size.X, enemy.Size.Y,
-		basicEnemySpriteId,
+		basicEnemySpriteId, drawOpts,
 	)
 }

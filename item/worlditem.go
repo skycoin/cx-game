@@ -76,7 +76,10 @@ func (item WorldItem) Draw(cam *camera.Camera) {
 		z,
 	).Mul4(cxmath.Scale(worldItemSize))
 	modelView := view.Mul4(world)
-	spriteloader.DrawSpriteQuadMatrix(modelView, spriteId)
+	spriteloader.DrawSpriteQuadMatrix(
+		modelView, spriteId,
+		spriteloader.NewDrawOptions(),
+	)
 }
 
 func (item *WorldItem) Tick(
