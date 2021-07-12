@@ -64,6 +64,7 @@ func (bar HealthBar) Draw(ctx render.Context,hp,maxHP int) {
 				PushLocal(mgl32.Translate3D(x,-0.5,0)).
 				PushLocal(mgl32.Scale3D(healthBarDividerWidth,1,1)),
 			divider,
+			spriteloader.NewDrawOptions(),
 		)
 	}
 	bar.border.Draw(topLeftCtx,mgl32.Vec2{bar.Width,bar.Height})
@@ -91,7 +92,8 @@ func NewCircleIndicator(spriteID spriteloader.SpriteID) CircleIndicator {
 // x describes how full circle is
 func (indicator CircleIndicator) Draw(ctx render.Context,x float32) {
 	DrawArc(ctx.MVP(), x)
-	spriteloader.DrawSpriteQuadContext(ctx, indicator.spriteID)
+	spriteloader.DrawSpriteQuadContext(
+		ctx, indicator.spriteID, spriteloader.NewDrawOptions() )
 }
 
 // all values are normalized to [1,1] range
@@ -147,7 +149,8 @@ func (h HUD) Draw(state HUDState) {
 		// padding
 		PushLocal(mgl32.Translate3D(hudPadding,-hudPadding,0))
 
-	spriteloader.DrawSpriteQuadContext(ctx, h.hpIconSpriteID)
+	spriteloader.DrawSpriteQuadContext(
+		ctx, h.hpIconSpriteID, spriteloader.NewDrawOptions() )
 
 	h.Health.Draw(
 		ctx.PushLocal(
