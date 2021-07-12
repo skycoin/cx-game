@@ -2,6 +2,7 @@ package ui
 
 import (
 	"math"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 
@@ -80,7 +81,7 @@ var arcSprite spriteloader.SpriteID
 func InitArc() {
 	initArcVAO()
 	arcShader = utility.NewShader(
-		"./assets/shader/mvp.vert", "./assets/shader/tex.frag" )
+		"./assets/shader/mvp.vert", "./assets/shader/arc.frag" )
 	arcSprite = spriteloader.
 		LoadSingleSprite("./assets/hud/hud_status_fill.png","hud_status_fill")
 }
@@ -99,7 +100,10 @@ func DrawArc(mvp mgl32.Mat4, fullness float32) {
 	// Update this with a more robust strategy at some point.
 	arcShader.SetVec2F("offset",0,0)
 	arcShader.SetVec2F("scale",1,1)
+
+	arcShader.SetFloat("value",2*math.Pi*fullness)
+
 	gl.Disable(gl.DEPTH_TEST)
-	gl.BindVertexArray(arcVAO)
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(fullness*arcTriangles*3))
+	gl.BindVertexArray(spriteloader.QuadVao)
+	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
