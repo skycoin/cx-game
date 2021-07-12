@@ -143,6 +143,7 @@ func DrawHUD(state HUDState) {
 
 const hudPadding = 1
 const circleYOffset = float32(-1.2)
+const circlePadding = 1.2
 func (h HUD) Draw(state HUDState) {
 	y := circleYOffset
 	ctx := render.CenterToTopLeft(spriteloader.Window.DefaultRenderContext()).
@@ -163,9 +164,9 @@ func (h HUD) Draw(state HUDState) {
 		state.Fullness,
 	)
 	h.Hydration.Draw(
-		ctx.PushLocal(mgl32.Translate3D(1,y,0)),state.Hydration)
+		ctx.PushLocal(mgl32.Translate3D(1*circlePadding,y,0)),state.Hydration)
 	h.Oxygen.Draw(
-		ctx.PushLocal(mgl32.Translate3D(2,y,0)),state.Oxygen)
+		ctx.PushLocal(mgl32.Translate3D(2*circlePadding,y,0)),state.Oxygen)
 	h.Fuel.Draw(
-		ctx.PushLocal(mgl32.Translate3D(3,y,0)),state.Fuel)
+		ctx.PushLocal(mgl32.Translate3D(3*circlePadding,y,0)),state.Fuel)
 }
