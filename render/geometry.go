@@ -1,8 +1,6 @@
-package utility
+package render
 
 import (
-	"log"
-
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -19,7 +17,6 @@ type Vert struct {
 }
 
 func (g *Geometry) AddVert(v Vert) {
-	log.Printf("adding Vert: %+v",v)
 	g.data = append(g.data, v.X,v.Y,v.Z,v.U,v.V)
 }
 
