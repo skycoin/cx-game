@@ -1,12 +1,14 @@
 package ui
 
 import (
+	"log"
 	"fmt"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/ui/glfont"
 )
 
 const healthBarDividerWidth = float32(0.1)
@@ -17,8 +19,11 @@ type HealthBar struct {
 	Width,Height float32
 	Scale float32
 	HpPerTick int
+	Font *glfont.Font
 }
 func NewHealthBar() HealthBar {
+	font,err := glfont.LoadFont("./assets/font/GravityBold8.ttf", 24, 640, 480) 
+	if err!=nil { log.Fatal(err) }
 	return HealthBar{
 		filledDivider: spriteloader.LoadSingleSprite(
 			"./assets/hud/hud_hp_bar_div1.png", "hp-bar-vertical-divider" ),
@@ -36,6 +41,7 @@ func NewHealthBar() HealthBar {
 		),
 		Width: 8, Height: 1,
 		Scale: 0.5, HpPerTick: 25,
+		Font: font,
 	}
 }
 
@@ -62,10 +68,10 @@ func (bar HealthBar) Draw(ctx render.Context,hp,maxHP int) {
 	}
 	bar.border.Draw(topLeftCtx,mgl32.Vec2{bar.Width,bar.Height})
 	text := fmt.Sprintf("%d/%d",hp,maxHP)
-	DrawString(
-		text, mgl32.Vec4{1,1,1,1}, AlignRight,
-		ctx.PushLocal(mgl32.Translate3D(bar.Width*2,0,0)),
-	)
+	bar.Font.SetColor(1,1,1,1)
+	fs := float32(0.3) // font scale
+	x := 130 - bar.Font.Width(fs,text)
+	bar.Font.Printf(x,37,fs,text)
 	//utility.DrawColorQuad(ctx, mgl32.Vec4{1,0,0,1})
 	/*
 	spriteloader.DrawSpriteQuadContext(
