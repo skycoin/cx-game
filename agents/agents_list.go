@@ -1,8 +1,6 @@
 package agents
 
-import (
-	"github.com/skycoin/cx-game/physics"
-)
+import "github.com/skycoin/cx-game/constants"
 
 type AgentList struct {
 	Agents []*Agent
@@ -14,20 +12,22 @@ var (
 
 func NewAgentList() *AgentList {
 	return &AgentList{
-		Agents: make([]*Agent, MAX_AGENTS),
+		Agents: make([]*Agent, 0),
 	}
 }
 
 func NewDevAgentList() *AgentList {
 	agentList := NewAgentList()
-	agentList.CreateAgent(PLAYER)
-	agentList.CreateAgent(ENEMY_MOB)
+	agentList.CreateAgent(constants.AGENT_PLAYER)
+	agentList.CreateAgent(constants.AGENT_ENEMY_MOB)
 
 	return agentList
 }
-func (al *AgentList) CreateAgent(agentType AgentType) bool {
+
+//  agentType - constants.AGENT_*desired type*
+func (al *AgentList) CreateAgent(agentType int) bool {
 	//for now
-	if len(al.Agents) > MAX_AGENTS {
+	if len(al.Agents) > constants.MAX_AGENTS {
 		return false
 	}
 	agent := newAgent(agentType)
@@ -39,29 +39,7 @@ func (al *AgentList) DestroyAgent(agentId int32) bool {
 	if agentId < 0 || agentId >= int32(len(al.Agents)) {
 		return false
 	}
-	for i, v := range al.Agents {
-		if v.AgentID == agentId {
-			al.Agents = append(al.Agents[:i], al.Agents[i+1:]...)
-			return true
-		}
-	}
+
+	al.Agents = append(al.Agents[:agentId], al.Agents[agentId+1:]...)
 	return false
-}
-
-func (al *AgentList) Draw() {
-	for _, agent := range al.Agents {
-		agent.Draw()
-	}
-}
-
-func (al *AgentList) Tick(dt float32) {
-	accumulator += dt
-
-	//for physics
-	for accumulator >= physics.TimeStep {
-		for _, agent := range al.Agents {
-			agent.FixedTick()
-		}
-		accumulator -= physics.TimeStep
-	}
 }

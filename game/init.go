@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/item"
@@ -66,6 +67,7 @@ func Init() {
 	input.Init(win.Window)
 	sound.Init()
 	spriteloader.InitSpriteloader(&win)
+	components.Init()
 	ui.InitArc()
 	ui.InitFonts()
 	world.RegisterTileTypes()
