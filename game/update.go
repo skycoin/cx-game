@@ -14,7 +14,7 @@ import (
 func Update(dt float32) {
 	player.Update(dt, CurrentPlanet)
 	physics.Simulate(dt, CurrentPlanet)
-	components.Update(CurrentPlanet.WorldState,player)
+	components.Update(dt)
 	if Cam.IsFreeCam() {
 		player.Controlled = false
 		Cam.MoveCam(dt)

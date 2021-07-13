@@ -67,7 +67,6 @@ func Init() {
 	input.Init(win.Window)
 	sound.Init()
 	spriteloader.InitSpriteloader(&win)
-	components.Init()
 	ui.InitArc()
 	ui.InitFonts()
 	world.RegisterTileTypes()
@@ -87,6 +86,8 @@ func Init() {
 	//CurrentPlanet = world.NewDevPlanet()
 	CurrentPlanet = world.GeneratePlanet()
 	Cam.PlanetWidth = float32(CurrentPlanet.Width)
+
+	components.Init(CurrentPlanet, Cam, player)
 
 	starfield.InitStarField(&win, player, Cam)
 
