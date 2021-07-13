@@ -14,8 +14,9 @@ import (
 	"time"
 
 	"github.com/go-gl/gl/v2.1/gl"
-	"github.com/go-gl/glfw/v3.0/glfw"
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/mitchellh/mapstructure"
+	"github.com/skycoin/cx-game/render"
 )
 
 /*
@@ -84,7 +85,7 @@ var spriteAnimated SpriteAnimated
 var spriteId SpriteID
 var stopPlay chan bool
 
-func NewSpriteAnimated(fileName string) *SpriteAnimated {
+func NewSpriteAnimated(fileName string, lwin *render.Window) *SpriteAnimated {
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -110,16 +111,13 @@ func NewSpriteAnimated(fileName string) *SpriteAnimated {
 		} else {
 			frame.Order = 0
 		}
-		// fmt.Println("----------------> ", key)
-		// fmt.Println("name: ", frame.Name)
-		// fmt.Println("Action: ", frame.Action)
-		// fmt.Println("Order: ", frame.Order)
 		frames = append(frames, frame)
 	}
 	spriteAnimated.FrameArr = frames
 	// load sprite
+	InitSpriteloader(lwin)
 	// spriteAnimated.spriteSheetId = LoadSpriteSheetByFrames("./assets/"+spriteAnimated.Meta.Image, spriteAnimated.FrameArr)
-	spriteAnimated.spriteSheetId = LoadSpriteSheetByColRow("./assets/blackcat_sprite.png", 13, 4)
+	spriteAnimated.spriteSheetId = LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image, 5, 7)
 	// sorting frame by Action and Order
 	sort.SliceStable(spriteAnimated.FrameArr, func(i, j int) bool {
 		frI, frJ := spriteAnimated.FrameArr[i], spriteAnimated.FrameArr[j]
@@ -144,7 +142,7 @@ func filterByAction(action string, frames []Frames) []Frames {
 	return result
 }
 
-func (spriteAnimated *SpriteAnimated) Play(lwindow *glfw.Window, action string) {
+func (spriteAnimated *SpriteAnimated) Play(glwindow *glfw.Window, action string) {
 	frames := filterByAction(action, spriteAnimated.FrameArr)
 	stopPlay = make(chan bool)
 	j := 0
@@ -152,8 +150,8 @@ func (spriteAnimated *SpriteAnimated) Play(lwindow *glfw.Window, action string) 
 		select {
 		default:
 			time.Sleep(100 * time.Millisecond)
-			LoadSprite(spriteAnimated.spriteSheetId, spriteAnimated.FrameArr[0].Name, action, j)
-			spriteId := GetSpriteIdByName(spriteAnimated.FrameArr[0].Name)
+			LoadSprite(spriteAnimated.spriteSheetId, spriteAnimated.FrameArr[j].Name, 1, 1)
+			spriteId := GetSpriteIdByName(spriteAnimated.FrameArr[j].Name)
 			fmt.Println("spriteId. ", spriteId, " j. ", j)
 			if err := gl.Init(); err != nil {
 				panic(err)
@@ -161,7 +159,7 @@ func (spriteAnimated *SpriteAnimated) Play(lwindow *glfw.Window, action string) 
 			gl.ClearColor(1, 1, 1, 1)
 			gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 			DrawSpriteQuad(0, 0, 2, 1, spriteId)
-			lwindow.SwapBuffers()
+			glwindow.SwapBuffers()
 			glfw.PollEvents()
 			j++
 			if j == len(frames) {
