@@ -116,8 +116,8 @@ func NewSpriteAnimated(fileName string, lwin *render.Window) *SpriteAnimated {
 	spriteAnimated.FrameArr = frames
 	// load sprite
 	InitSpriteloader(lwin)
-	// spriteAnimated.spriteSheetId = LoadSpriteSheetByFrames("./assets/"+spriteAnimated.Meta.Image, spriteAnimated.FrameArr)
-	spriteAnimated.spriteSheetId = LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image, 5, 7)
+	spriteAnimated.spriteSheetId = LoadSpriteSheetByFrames("./assets/"+spriteAnimated.Meta.Image, spriteAnimated.FrameArr)
+	// spriteAnimated.spriteSheetId = LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image, 5, 7)
 	// sorting frame by Action and Order
 	sort.SliceStable(spriteAnimated.FrameArr, func(i, j int) bool {
 		frI, frJ := spriteAnimated.FrameArr[i], spriteAnimated.FrameArr[j]
