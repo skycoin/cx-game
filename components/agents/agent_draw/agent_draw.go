@@ -11,7 +11,7 @@ func DrawAgents(agentslist *agents.AgentList, cam *camera.Camera) {
 	sortedByDrawType := SortByType(agentsToDraw)
 
 	for k, v := range sortedByDrawType {
-		DrawFuncsArray[k](v)
+		DrawHandlerList[k](v)
 	}
 
 }
