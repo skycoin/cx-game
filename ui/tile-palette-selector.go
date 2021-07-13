@@ -131,7 +131,7 @@ func (selector *TilePaletteSelector) Draw(ctx render.Context) {
 				spriteloader.DrawSpriteQuadContext(render.Context{
 					World:      tileWorldTransform,
 					Projection: ctx.Projection,
-				}, (tile.SpriteID))
+				}, (tile.SpriteID), spriteloader.NewDrawOptions())
 			}
 		}
 	}

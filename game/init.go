@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/camera"
-	"github.com/skycoin/cx-game/cxecs"
 	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/item"
@@ -68,6 +67,7 @@ func Init() {
 	sound.Init()
 	spriteloader.InitSpriteloader(&win)
 	ui.InitArc()
+	ui.InitFonts()
 	world.RegisterTileTypes()
 	spriteloader.DEBUG = false
 	item.InitWorldItem()
@@ -75,8 +75,6 @@ func Init() {
 	enemies.InitBasicEnemies()
 	particles.InitParticles()
 	item.RegisterItemTypes()
-
-	cxecs.Init()
 
 	models.Init()
 	player = models.NewPlayer()

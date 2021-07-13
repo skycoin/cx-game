@@ -1,44 +1,82 @@
 package ui
 
 import (
+	"log"
 	"fmt"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/ui/glfont"
 )
 
+const healthBarDividerWidth = float32(0.1)
+
 type HealthBar struct {
-	verticalDivider spriteloader.SpriteID
-	horizontalDivider spriteloader.SpriteID
-	nineslice StretchingNineSlice
+	filledDivider,unfilledDivider spriteloader.SpriteID
+	border,fill StretchingNineSlice
+	Width,Height float32
+	Scale float32
+	HpPerTick int
+	Font *glfont.Font
 }
 func NewHealthBar() HealthBar {
+	font,err := glfont.LoadFont("./assets/font/GravityBold8.ttf", 24, 640, 480) 
+	if err!=nil { log.Fatal(err) }
 	return HealthBar{
-		verticalDivider: spriteloader.LoadSingleSprite(
+		filledDivider: spriteloader.LoadSingleSprite(
 			"./assets/hud/hud_hp_bar_div1.png", "hp-bar-vertical-divider" ),
-		horizontalDivider: spriteloader.LoadSingleSprite(
+		unfilledDivider: spriteloader.LoadSingleSprite(
 			"./assets/hud/hud_hp_bar_div2.png", "hp-bar-horizontal-divider" ),
-		nineslice: NewStretchingNineSlice(
+		border: NewStretchingNineSlice(
 			spriteloader.LoadSingleSprite(
 				"./assets/hud/hud_hp_bar_border.png", "hp-bar-border" ),
-			3,1, // w,h
+			NineSliceDims { 1.0/6.0,1.0/6.0,1.0/8.0,2.0/8.0 },
 		),
+		fill: NewStretchingNineSlice(
+			spriteloader.LoadSingleSprite(
+				"./assets/hud/hud_hp_bar_fill.png", "hp-bar-fill" ),
+			NineSliceDims { 1.0/5.0, 1.0/5.0, 1.0/5.0, 1.0/5.0 },
+		),
+		Width: 8, Height: 1,
+		Scale: 0.5, HpPerTick: 25,
+		Font: font,
 	}
 }
 
 func (bar HealthBar) Draw(ctx render.Context,hp,maxHP int) {
-	bar.nineslice.Draw(ctx.PushLocal(mgl32.Translate3D(-0.5,0.5,0)))
+	topLeftCtx := ctx.
+		PushLocal(mgl32.Translate3D(-0.5,0.5,0)).
+		PushLocal(cxmath.Scale(bar.Scale))
+	hpFrac := float32(hp) / float32(maxHP)
+	bar.fill.Draw(topLeftCtx,mgl32.Vec2{hpFrac*bar.Width, bar.Height})
+	for tick := 0 ; tick < maxHP; tick += bar.HpPerTick {
+		var divider spriteloader.SpriteID
+		if hp > tick {
+			divider = bar.filledDivider
+		} else {
+			divider = bar.unfilledDivider
+		}
+		x := bar.Width * float32(tick) / float32(maxHP)
+		spriteloader.DrawSpriteQuadContext(
+			topLeftCtx.
+				PushLocal(mgl32.Translate3D(x,-0.5,0)).
+				PushLocal(mgl32.Scale3D(healthBarDividerWidth,1,1)),
+			divider,
+			spriteloader.NewDrawOptions(),
+		)
+	}
+	bar.border.Draw(topLeftCtx,mgl32.Vec2{bar.Width,bar.Height})
 	text := fmt.Sprintf("%d/%d",hp,maxHP)
-	DrawString(
-		text, mgl32.Vec4{1,1,1,1}, AlignRight,
-		ctx.PushLocal(mgl32.Translate3D(bar.nineslice.Width*2,0,0)),
-	)
+	bar.Font.SetColor(1,1,1,1)
+	fs := float32(0.3) // font scale
+	x := 130 - bar.Font.Width(fs,text)
+	bar.Font.Printf(x,37,fs,text)
 	//utility.DrawColorQuad(ctx, mgl32.Vec4{1,0,0,1})
 	/*
 	spriteloader.DrawSpriteQuadContext(
-		ctx.PushLocal(mgl32.Scale3D(0.1,1,1)), bar.verticalDivider)
+		ctx.PushLocal(mgl32.Scale3D(0.1,1,1)), bar.filledDivider)
 	*/
 	// TODO
 }
@@ -54,7 +92,8 @@ func NewCircleIndicator(spriteID spriteloader.SpriteID) CircleIndicator {
 // x describes how full circle is
 func (indicator CircleIndicator) Draw(ctx render.Context,x float32) {
 	DrawArc(ctx.MVP(), x)
-	spriteloader.DrawSpriteQuadContext(ctx, indicator.spriteID)
+	spriteloader.DrawSpriteQuadContext(
+		ctx, indicator.spriteID, spriteloader.NewDrawOptions() )
 }
 
 // all values are normalized to [1,1] range
@@ -104,13 +143,15 @@ func DrawHUD(state HUDState) {
 
 const hudPadding = 1
 const circleYOffset = float32(-1.2)
+const circlePadding = 1.2
 func (h HUD) Draw(state HUDState) {
 	y := circleYOffset
 	ctx := render.CenterToTopLeft(spriteloader.Window.DefaultRenderContext()).
 		// padding
 		PushLocal(mgl32.Translate3D(hudPadding,-hudPadding,0))
 
-	spriteloader.DrawSpriteQuadContext(ctx, h.hpIconSpriteID)
+	spriteloader.DrawSpriteQuadContext(
+		ctx, h.hpIconSpriteID, spriteloader.NewDrawOptions() )
 
 	h.Health.Draw(
 		ctx.PushLocal(
@@ -123,9 +164,9 @@ func (h HUD) Draw(state HUDState) {
 		state.Fullness,
 	)
 	h.Hydration.Draw(
-		ctx.PushLocal(mgl32.Translate3D(1,y,0)),state.Hydration)
+		ctx.PushLocal(mgl32.Translate3D(1*circlePadding,y,0)),state.Hydration)
 	h.Oxygen.Draw(
-		ctx.PushLocal(mgl32.Translate3D(2,y,0)),state.Oxygen)
+		ctx.PushLocal(mgl32.Translate3D(2*circlePadding,y,0)),state.Oxygen)
 	h.Fuel.Draw(
-		ctx.PushLocal(mgl32.Translate3D(3,y,0)),state.Fuel)
+		ctx.PushLocal(mgl32.Translate3D(3*circlePadding,y,0)),state.Fuel)
 }

@@ -161,22 +161,35 @@ var SpriteRenderDistance float32 = 10
 
 //Draw sprite specified with spriteId at x,y position
 //this function is for testing, will not be used later on
-func DrawSpriteQuad(xpos, ypos, xwidth, yheight float32, spriteId SpriteID) {
+func DrawSpriteQuadOptions(
+		xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
+		opts DrawOptions,
+) {
 	worldTransform := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(xpos), float32(ypos), -SpriteRenderDistance),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
 	)
-	DrawSpriteQuadMatrix(worldTransform, spriteId)
+	DrawSpriteQuadMatrix(worldTransform, spriteId,opts)
 }
 
-func DrawSpriteQuadMatrix(worldTransform mgl32.Mat4, spriteId SpriteID) {
+func DrawSpriteQuad(
+		xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
+) {
+	DrawSpriteQuadOptions(xpos,ypos,xwidth,yheight,spriteId,NewDrawOptions())
+}
+
+func DrawSpriteQuadMatrix(
+		worldTransform mgl32.Mat4, spriteId SpriteID, opts DrawOptions,
+) {
 	DrawSpriteQuadContext(render.Context{
 		World:      worldTransform,
 		Projection: Window.GetProjectionMatrix(),
-	}, spriteId)
+	}, spriteId, opts)
 }
 
-func DrawSpriteQuadContext(ctx render.Context, spriteId SpriteID) {
+func DrawSpriteQuadContext(
+		ctx render.Context, spriteId SpriteID, opts DrawOptions,
+) {
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
 	// clarify responsibilities later
@@ -217,6 +230,12 @@ func DrawSpriteQuadContext(ctx render.Context, spriteId SpriteID) {
 	gl.UniformMatrix4fv(
 		gl.GetUniformLocation(Window.Program, gl.Str("projection\x00")),
 		1, false, &ctx.Projection[0],
+	)
+
+	color := opts.Color()
+	gl.Uniform4f(
+		gl.GetUniformLocation(Window.Program, gl.Str("color\x00")),
+		color.X(), color.Y(), color.Z(), color.W(),
 	)
 
 	gl.BindVertexArray(QuadVao)
@@ -372,4 +391,16 @@ func DrawSpriteQuadCustom(
 		gl.GetUniformLocation(program, gl.Str("texOffset\x00")),
 		0, 0,
 	)
+}
+
+type DrawOptions struct {
+	Alpha float32
+}
+
+func NewDrawOptions() DrawOptions {
+	return DrawOptions { Alpha: 1 }
+}
+
+func (opts DrawOptions) Color() mgl32.Vec4 {
+	return mgl32.Vec4 {1,1,1,opts.Alpha}
 }
