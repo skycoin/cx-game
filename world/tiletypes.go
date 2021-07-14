@@ -53,12 +53,14 @@ func RegisterBedrockTileType() {
 }
 
 func RegisterDirtTileType() {
-	blobSpritesId :=
-		blobsprites.LoadFullBlobSprites("./assets/tile/Tiles_1.png")
 	TileTypeIDs.Dirt = RegisterTileType(TileType {
 		Name: "Dirt",
 		Placer: AutoPlacer{
-			blobSpritesId: blobSpritesId, TilingType: blob.FullBlobTiling,
+			blobSpritesIDs: []blobsprites.BlobSpritesID{
+				blobsprites.LoadFullBlobSprites("./assets/tile/Tiles_1.png"),
+				blobsprites.LoadFullBlobSprites("./assets/tile/Tiles_1_v1.png"),
+			},
+			TilingType: blob.FullBlobTiling,
 		},
 		Layer: TopLayer,
 	})
@@ -70,7 +72,8 @@ func RegisterDirtWallTileType() {
 	TileTypeIDs.DirtWall = RegisterTileType(TileType {
 		Name: "Dirt Wall",
 		Placer: AutoPlacer{
-			blobSpritesId: blobSpritesId, TilingType: blob.FullBlobTiling,
+			blobSpritesIDs: []blobsprites.BlobSpritesID{blobSpritesId},
+			TilingType: blob.FullBlobTiling,
 		},
 		Layer: BgLayer,
 	})
@@ -82,7 +85,8 @@ func RegisterPipeTileType() {
 	TileTypeIDs.Pipe = RegisterTileType(TileType {
 		Name: "Pipe",
 		Placer: AutoPlacer{
-			blobSpritesId: blobSpritesId, TilingType: blob.SimpleBlobTiling,
+			blobSpritesIDs: []blobsprites.BlobSpritesID{blobSpritesId},
+			TilingType: blob.SimpleBlobTiling,
 		},
 		Layer: MidLayer,
 	})
