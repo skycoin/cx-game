@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
@@ -13,6 +14,7 @@ import (
 func Update(dt float32) {
 	player.Update(dt, CurrentPlanet)
 	physics.Simulate(dt, CurrentPlanet)
+	components.Update(dt)
 	if Cam.IsFreeCam() {
 		player.Controlled = false
 		Cam.MoveCam(dt)

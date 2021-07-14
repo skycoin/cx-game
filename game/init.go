@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/item"
@@ -82,6 +83,8 @@ func Init() {
 	//CurrentPlanet = world.NewDevPlanet()
 	CurrentPlanet = world.GeneratePlanet()
 	Cam.PlanetWidth = float32(CurrentPlanet.Width)
+
+	components.Init(CurrentPlanet, Cam, player)
 
 	starfield.InitStarField(&win, player, Cam)
 
