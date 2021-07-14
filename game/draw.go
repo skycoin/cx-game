@@ -66,6 +66,16 @@ func Draw() {
 	} else {
 		inventory.DrawBar(win.DefaultRenderContext())
 	}
+	if inventory.SelectedItemSlot().Quantity > 0 {
+		selectedItemCategory :=
+			inventory.SelectedItemSlot().ItemTypeID.Get().Category
+
+		if selectedItemCategory == item.BuildTool {
+			// TODO do this less often
+			inventory.PlacementGrid.Assemble(inventory.ItemTypeIDs())
+			inventory.PlacementGrid.Draw(win.DefaultRenderContext())
+		}
+	}
 	tilePaletteSelector.Draw(win.DefaultRenderContext())
 
 	glfw.PollEvents()

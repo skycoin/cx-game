@@ -23,11 +23,13 @@ type InventorySlot struct {
 	Durability uint32
 }
 
+type InventoryID uint32
 type Inventory struct {
 	Width, Height int
 	Slots []InventorySlot
 	SelectedBarSlotIndex int
 	GridHoldingIndex int
+	PlacementGrid PlacementGrid
 }
 
 var inventories = []Inventory{}
@@ -35,16 +37,17 @@ var bgColor = mgl32.Vec4{0.3,0.3,0.3,1}
 var borderColor = mgl32.Vec4{0.8,0.8,0.8,1}
 var selectedBorderColor = mgl32.Vec4{0.8,0,0,1}
 
-func NewInventory(width, height int) uint32 {
+func NewInventory(width, height int) InventoryID {
 	inventories = append(inventories, Inventory {
 		Width: width, Height: height,
 		Slots: make([]InventorySlot, width*height),
 		SelectedBarSlotIndex: 3,
+		PlacementGrid: NewPlacementGrid(),
 	})
-	return uint32(len(inventories)-1)
+	return InventoryID(len(inventories)-1)
 }
 
-func NewDevInventory() uint32 {
+func NewDevInventory() InventoryID {
 	inventoryId := NewInventory(10, 8)
 	inventory := GetInventoryById(inventoryId)
 	inventory.Slots[inventory.ItemSlotIndexForPosition(1, 0)] =
@@ -58,13 +61,33 @@ func NewDevInventory() uint32 {
 	pipeItemTypeID := GetItemTypeIdForTile(pipeTile)
 	inventory.Slots[inventory.ItemSlotIndexForPosition(3, 0)] =
 		InventorySlot{pipeItemTypeID, 20, 0}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(4, 0)] =
+		InventorySlot{BuildToolItemTypeID, 1, 0}
 
+	inventory.Slots[inventory.ItemSlotIndexForPosition(0,1)] = InventorySlot{
+		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Stone), 
+		1, 0,
+	}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(0,2)] = InventorySlot{
+		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Dirt), 
+		1, 0,
+	}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(0,3)] = InventorySlot{
+		GetItemTypeIdForTileTypeID(world.TileTypeIDs.DirtWall), 
+		1, 0,
+	}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(0,4)] = InventorySlot{
+		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Bedrock), 
+		1, 0,
+	}
 	return inventoryId
 }
 
-func GetInventoryById(id uint32) *Inventory {
+func GetInventoryById(id InventoryID) *Inventory {
 	return &inventories[id]
 }
+
+func (id InventoryID) Get() *Inventory { return &inventories[id] }
 
 func (inventory Inventory) getBarSlots() []InventorySlot {
 	return inventory.Slots[:inventory.Width]
@@ -74,6 +97,14 @@ func (inventory Inventory) getGridTransform() mgl32.Mat4 {
 	return mgl32.Ident4().
 		Mul4(mgl32.Translate3D(0,0.5,0)).
 		Mul4(mgl32.Scale3D(gridScale,gridScale,gridScale))
+}
+
+func (inventory Inventory) ItemTypeIDs() []ItemTypeID {
+	ids := []ItemTypeID{}
+	for _,slot := range inventory.Slots {
+		if slot.Quantity>0 { ids = append(ids, slot.ItemTypeID) }
+	}
+	return ids
 }
 
 var gridScale float32 = 1.5
@@ -199,6 +230,12 @@ func (inventory *Inventory) TryAddItem(ItemTypeID ItemTypeID) bool {
 		inventory.tryAddItemToFreeSlot(ItemTypeID) )
 }
 
+// X position of key along keyboard
+func numberKeyPosition(k glfw.Key) int {
+	if k==glfw.Key0 { return 9 }
+	return int(k-glfw.Key0)-1
+}
+
 // Select a slot from the inventory bar based on the key pressed.
 // slot layout matches keyboard layout.
 // (1,2,3,4,5,6,7,8,9,0)
@@ -207,11 +244,7 @@ func (inventory *Inventory) TrySelectSlot(k glfw.Key) bool {
 		return false
 	}
 
-	idx := int(k-glfw.Key0)-1
-	if idx == -1 {
-		idx = 9
-	}
-	inventory.SelectedBarSlotIndex = idx
+	inventory.SelectedBarSlotIndex = numberKeyPosition(k)
 
 	return true
 }
@@ -235,6 +268,7 @@ func (inventory *Inventory) TryUseItem(
 		ScreenX: screenX, ScreenY: screenY,
 		Camera: cam, Planet: planet,
 		Player: player,
+		Inventory: inventory,
 	})
 	return true
 }

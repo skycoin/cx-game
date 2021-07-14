@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func pointsEqual(got, expected []cxmath.Vec2i) bool {
+func pointsEqual(got, expected []Vec2i) bool {
 	if len(got) != len(expected) {
 		return false
 	}
@@ -22,7 +22,7 @@ func TestRaytrace(t *testing.T) {
 	x1 := 2.5
 	y1 := 3.5
 
-	expected := []cxmath.Vec2i{
+	expected := []Vec2i{
 		{0, 0}, {0, 1}, {1, 1}, {1, 2}, {2, 2}, {2, 3},
 	}
 	intersects := Raytrace(x0, y0, x1, y1)
