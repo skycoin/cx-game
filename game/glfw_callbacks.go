@@ -20,11 +20,18 @@ func mouseButtonCallback(
 	}
 }
 
+// mouse position relative to screen
+func screenPos() (float32,float32) {
+	screenX := float32(((input.GetMouseX()-float64(widthOffset))/float64(scale) - float64(win.Width)/2)) / Cam.Zoom // adjust mouse position with zoom
+	screenY := float32(((input.GetMouseY()-float64(heightOffset))/float64(scale)-float64(win.Height)/2)*-1) / Cam.Zoom
+	return screenX,screenY
+}
+
+
 func mouseReleaseCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
-	screenX := float32(input.GetMouseX()-float64(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
-	screenY := (float32(input.GetMouseY()-float64(win.Height)/2) * -1) / Cam.Zoom
+	screenX,screenY := screenPos()
 
 	if isInventoryGridVisible {
 		inventory := item.GetInventoryById(inventoryId)
@@ -40,8 +47,7 @@ func mousePressCallback(
 		return
 	}
 
-	screenX := float32(((input.GetMouseX()-float64(widthOffset))/float64(scale) - float64(win.Width)/2)) / Cam.Zoom // adjust mouse position with zoom
-	screenY := float32(((input.GetMouseY()-float64(heightOffset))/float64(scale)-float64(win.Height)/2)*-1) / Cam.Zoom
+	screenX,screenY := screenPos()
 
 	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
 	if didSelectPaleteTile {

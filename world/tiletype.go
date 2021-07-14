@@ -2,6 +2,7 @@ package world
 
 import (
 	"github.com/skycoin/cx-game/render/blob"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
@@ -40,8 +41,14 @@ type TileType struct {
 	Placer Placer
 	Invulnerable bool
 	ID TileTypeID
+	MaterialID MaterialID
+	Width,Height int32
 	Drops Drops
 	ItemSpriteID spriteloader.SpriteID
+}
+
+func (tt TileType) Size() cxmath.Vec2i {
+	return cxmath.Vec2i{tt.Width,tt.Height}
 }
 
 type TileCreationOptions struct {
@@ -66,6 +73,9 @@ var tileTypes = make([]TileType,1)
 func RegisterTileType(tileType TileType) TileTypeID {
 	id := TileTypeID(len(tileTypes))
 	tileType.ID = id
+	// fill in default size
+	if tileType.Width==0 { tileType.Width=1 }
+	if tileType.Height==0 { tileType.Height=1 }
 	tileType.ItemSpriteID = tileType.Placer.ItemSpriteID()
 	if tileType.Drops==nil { tileType.Drops=Drops{} }
 	tileTypes = append(tileTypes, tileType)

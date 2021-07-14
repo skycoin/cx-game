@@ -47,7 +47,7 @@ var (
 	isInventoryGridVisible = false
 	tilePaletteSelector    ui.TilePaletteSelector
 
-	inventoryId uint32
+	inventoryId item.InventoryID
 
 	//unused
 	isTileSelectorVisible = false
