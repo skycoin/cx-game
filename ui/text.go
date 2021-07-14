@@ -115,7 +115,7 @@ func initFontVbo() {
 
 }
 
-func InitTextRendering() {
+func initTextRendering() {
 	_, img, _ := spriteloader.LoadPng("assets/font/8bitoperator_jve.png")
 	fontTex = spriteloader.MakeTexture(img)
 

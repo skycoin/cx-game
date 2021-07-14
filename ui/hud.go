@@ -119,7 +119,7 @@ type HUD struct {
 }
 var hud HUD
 
-func InitHUD() {
+func initHUD() {
 	hud = HUD {
 		Health: NewHealthBar(),
 

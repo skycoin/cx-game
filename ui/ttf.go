@@ -23,7 +23,7 @@ func LoadFont(id FontID, fname string, scale int32) {
 	fonts[id] = font
 }
 
-func InitFonts() {
+func initFonts() {
 	LoadFont(DefaultFontID, "./assets/font/GravityBold8.ttf", 24)
 }
 
