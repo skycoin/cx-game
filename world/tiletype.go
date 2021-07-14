@@ -8,6 +8,7 @@ import (
 type Placer interface {
 	CreateTile(TileType,TileCreationOptions) Tile
 	UpdateTile(TileType,TileUpdateOptions)
+	ItemSpriteID() spriteloader.SpriteID
 }
 
 // place tiles for a tiletype which has a single sprite
@@ -28,6 +29,10 @@ func (placer DirectPlacer) CreateTile(
 func (placer DirectPlacer) UpdateTile(
 	tt TileType, opts TileUpdateOptions ) {}
 
+func (placer DirectPlacer) ItemSpriteID() spriteloader.SpriteID {
+	return placer.SpriteID
+}
+
 type TileTypeID uint32
 type TileType struct {
 	Name string
@@ -35,6 +40,8 @@ type TileType struct {
 	Placer Placer
 	Invulnerable bool
 	ID TileTypeID
+	Drops Drops
+	ItemSpriteID spriteloader.SpriteID
 }
 
 type TileCreationOptions struct {
@@ -59,6 +66,8 @@ var tileTypes = make([]TileType,1)
 func RegisterTileType(tileType TileType) TileTypeID {
 	id := TileTypeID(len(tileTypes))
 	tileType.ID = id
+	tileType.ItemSpriteID = tileType.Placer.ItemSpriteID()
+	if tileType.Drops==nil { tileType.Drops=Drops{} }
 	tileTypes = append(tileTypes, tileType)
 	return id
 }
@@ -74,4 +83,12 @@ func GetTileTypeByID(id TileTypeID) (TileType,bool) {
 	} else {
 		return TileType{},false
 	}
+}
+
+func (id TileTypeID) Get() *TileType {
+	return &tileTypes[id]
+}
+
+func AddDrop(id TileTypeID, drop Drop) {
+	tileTypes[id].Drops = append(tileTypes[id].Drops, drop)
 }

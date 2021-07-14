@@ -40,6 +40,14 @@ func CreateWorldItem(itemTypeId ItemTypeID, pos mgl32.Vec2) {
 	worldItems = append(worldItems, &item)
 }
 
+func CreateWorldItems(tiletypeID world.TileTypeID, origin mgl32.Vec2) {
+	drop := tiletypeID.Get().Drops.Drop()
+	for i := 0 ; i < drop.Count ; i++ {
+		// TODO add offsets and velocities
+		CreateWorldItem(ItemTypeID(drop.Item), origin)
+	}
+}
+
 func TickWorldItems(
 	planet *world.Planet, dt float32, playerPos cxmath.Vec2,
 ) (forPlayer []*WorldItem) {

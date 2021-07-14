@@ -41,3 +41,9 @@ func (ap AutoPlacer) UpdateTile(
 		TileTypeID: tt.ID,
 	}
 }
+
+func (ap AutoPlacer) ItemSpriteID() spriteloader.SpriteID {
+	// preview sprite is standalone tile - no neighbours
+	blobSpriteIdx := blob.ApplyTiling(ap.TilingType,blob.Neighbours{})
+	return ap.blobSprites()[blobSpriteIdx]
+}
