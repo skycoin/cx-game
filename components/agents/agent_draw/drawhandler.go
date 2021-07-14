@@ -25,11 +25,20 @@ func DrawHandler_2(agents []*agents.Agent) {
 
 func Init() {
 	spriteloader.LoadSingleSprite("./assets/enemies/basic-enemy.png", "basic-agent")
-	DrawHandlerList = append(DrawHandlerList, DrawHandler_1, DrawHandler_2)
+	RegisterDrawHandler(DrawHandler_1)
+	RegisterDrawHandler(DrawHandler_2)
 }
 
-func AddDrawHandler(newDrawHandler func([]*agents.Agent)) {
+func RegisterDrawHandler(newDrawHandler func([]*agents.Agent)) {
 	DrawHandlerList = append(DrawHandlerList, newDrawHandler)
+}
+
+func ChangeDrawHandler(id int, newDefinition func([]*agents.Agent)) {
+	if id < 0 || len(DrawHandlerList) >= id {
+		//logging maybe?
+		return
+	}
+	DrawHandlerList[id] = newDefinition
 }
 
 func GetDrawHandler(id int) func([]*agents.Agent) {
