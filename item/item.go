@@ -8,6 +8,7 @@ import (
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/ids"
 )
 
 type ItemType struct {
@@ -16,7 +17,8 @@ type ItemType struct {
 
 	Use func(ItemUseInfo)
 }
-type ItemTypeID uint32
+//type ItemTypeID uint32
+type ItemTypeID ids.ItemTypeID
 
 type ItemUseInfo struct {
 	Slot *InventorySlot
@@ -67,22 +69,27 @@ func GetItemTypeById(id ItemTypeID) *ItemType {
 	return itemTypes[id]
 }
 
-func GetItemTypeIdForTile(tile world.Tile) ItemTypeID {
-	itemTypeID,ok := tileTypeIDsToItemTypeIDs[tile.TileTypeID]
+func GetItemTypeIdForTileTypeID(id world.TileTypeID) ItemTypeID {
+	tiletype := id.Get()
+	itemTypeID,ok := tileTypeIDsToItemTypeIDs[id]
 	if ok { return itemTypeID }
 
-	itemType := NewItemType((tile.SpriteID))
-	itemType.Name = tile.Name
+	itemType := NewItemType((tiletype.ItemSpriteID))
+	itemType.Name = tiletype.Name
 	itemType.Use = func(info ItemUseInfo) {
 		worldCoords := info.WorldCoords()
 		x := int(worldCoords.X()+0.5)
 		y := int(worldCoords.Y()+0.5)
 		if !info.Planet.TileIsSolid(x,y) {
 			info.Slot.Quantity--
-			info.Planet.PlaceTileType(tile.TileTypeID,x,y)
+			info.Planet.PlaceTileType(id,x,y)
 		}
 	}
 	itemTypeID = AddItemType(itemType)
-	tileTypeIDsToItemTypeIDs[tile.TileTypeID] = itemTypeID
+	tileTypeIDsToItemTypeIDs[id] = itemTypeID
 	return itemTypeID
+}
+
+func GetItemTypeIdForTile(tile world.Tile) ItemTypeID {
+	return GetItemTypeIdForTileTypeID(tile.TileTypeID)
 }
