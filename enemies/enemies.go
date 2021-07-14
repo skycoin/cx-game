@@ -105,6 +105,9 @@ func SpawnLeapingEnemy(x,y float32) {
 		SpriteID: uint32(basicEnemySpriteId),
 		PathfindingBehaviourID: pathfinding.LeapingBehaviourID,
 	}
+	enemy.Damage = func(damage int) {
+		enemy.Health -= 1
+	}
 	physics.RegisterBody(&enemy.Body)
 	basicEnemies = append(basicEnemies, &enemy)
 }
@@ -124,6 +127,8 @@ func (enemy *Enemy) Tick(
 			PlayerPos: player.Pos.Mgl32(),
 		})
 	} else {
+		// dead men don't walk
+		enemy.PathfindingBehaviourID = pathfinding.FreeBehaviourID
 		enemy.Body.Vel.X = 0
 		enemy.TimeSinceDeath += dt
 	}
