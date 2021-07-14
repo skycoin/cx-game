@@ -4,6 +4,7 @@ import (
 	"testing"
 )
 
+// benchmark which way is better to pass a large struct - by pointer, interface or value
 func BenchmarkByValueLarge(b *testing.B) {
 	largeStruct := LargeStruct{Age: 15, Name: "John"}
 	for i := 0; i < b.N; i++ {

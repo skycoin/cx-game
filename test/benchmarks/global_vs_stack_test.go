@@ -4,6 +4,8 @@ import (
 	"testing"
 )
 
+// check which way is faster - passing by parameter or operating on global value
+
 func BenchmarkPassByParameter(b *testing.B) {
 	myUser := User{
 		age:  15,
