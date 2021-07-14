@@ -13,7 +13,7 @@ import (
 var arcShader *utility.Shader
 
 var arcSprite spriteloader.SpriteID
-func InitArc() {
+func initArc() {
 	arcShader = utility.NewShader(
 		"./assets/shader/mvp.vert", "./assets/shader/arc.frag" )
 	arcSprite = spriteloader.

@@ -66,19 +66,16 @@ func Init() {
 	input.Init(win.Window)
 	sound.Init()
 	spriteloader.InitSpriteloader(&win)
-	ui.InitArc()
-	ui.InitFonts()
-	world.RegisterTileTypes()
 	spriteloader.DEBUG = false
+	world.RegisterTileTypes()
 	item.InitWorldItem()
-	ui.InitTextRendering()
+	ui.Init()
 	enemies.InitBasicEnemies()
 	particles.InitParticles()
 	item.RegisterItemTypes()
 
 	models.Init()
 	player = models.NewPlayer()
-	ui.InitHUD()
 
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
