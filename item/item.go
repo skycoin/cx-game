@@ -8,15 +8,24 @@ import (
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/ids"
+)
+
+type Category uint32
+const (
+	Misc Category = iota
+	BuildTool
 )
 
 type ItemType struct {
 	SpriteID spriteloader.SpriteID
 	Name string
+	Category Category
 
 	Use func(ItemUseInfo)
 }
-type ItemTypeID uint32
+//type ItemTypeID uint32
+type ItemTypeID ids.ItemTypeID
 
 type ItemUseInfo struct {
 	Slot *InventorySlot
@@ -25,14 +34,19 @@ type ItemUseInfo struct {
 	Camera *camera.Camera
 	Planet *world.Planet
 	Player *models.Player
+	Inventory *Inventory
+}
+
+func (info ItemUseInfo) CamCoords() mgl32.Vec2{
+	return mgl32.Vec2{
+		info.ScreenX / render.PixelsPerTile,
+		info.ScreenY / render.PixelsPerTile,
+	}
 }
 
 func (info ItemUseInfo) WorldCoords() mgl32.Vec2 {
 	// click relative to camera
-	camCoords :=
-		mgl32.Vec4{
-			info.ScreenX / render.PixelsPerTile,
-			info.ScreenY / render.PixelsPerTile, 0, 1 }
+	camCoords := info.CamCoords().Vec4(0,1)
 	// click relative to world
 	worldCoords := info.Camera.GetTransform().Mul4x1(camCoords)
 
@@ -44,6 +58,7 @@ func (info ItemUseInfo) PlayerCoords() mgl32.Vec2 {
 }
 
 var tileTypeIDsToItemTypeIDs = make(map[world.TileTypeID]ItemTypeID)
+var itemTypeIDsToTileTypeIDs = make(map[ItemTypeID]world.TileTypeID)
 var itemTypes = make(map[ItemTypeID]*ItemType)
 
 var nextItemTypeID = ItemTypeID(1)
@@ -67,22 +82,37 @@ func GetItemTypeById(id ItemTypeID) *ItemType {
 	return itemTypes[id]
 }
 
-func GetItemTypeIdForTile(tile world.Tile) ItemTypeID {
-	itemTypeID,ok := tileTypeIDsToItemTypeIDs[tile.TileTypeID]
+func GetTileTypeIDForItemTypeID(itemtypeID ItemTypeID) (world.TileTypeID,bool) {
+	tiletypeID,ok := itemTypeIDsToTileTypeIDs[itemtypeID]
+	return tiletypeID,ok
+}
+
+func GetItemTypeIdForTileTypeID(id world.TileTypeID) ItemTypeID {
+	tiletype := id.Get()
+	itemTypeID,ok := tileTypeIDsToItemTypeIDs[id]
 	if ok { return itemTypeID }
 
-	itemType := NewItemType((tile.SpriteID))
-	itemType.Name = tile.Name
+	itemType := NewItemType((tiletype.ItemSpriteID))
+	itemType.Name = tiletype.Name
 	itemType.Use = func(info ItemUseInfo) {
 		worldCoords := info.WorldCoords()
 		x := int(worldCoords.X()+0.5)
 		y := int(worldCoords.Y()+0.5)
 		if !info.Planet.TileIsSolid(x,y) {
 			info.Slot.Quantity--
-			info.Planet.PlaceTileType(tile.TileTypeID,x,y)
+			info.Planet.PlaceTileType(id,x,y)
 		}
 	}
 	itemTypeID = AddItemType(itemType)
-	tileTypeIDsToItemTypeIDs[tile.TileTypeID] = itemTypeID
+	tileTypeIDsToItemTypeIDs[id] = itemTypeID
+	itemTypeIDsToTileTypeIDs[itemTypeID] = id
 	return itemTypeID
+}
+
+func GetItemTypeIdForTile(tile world.Tile) ItemTypeID {
+	return GetItemTypeIdForTileTypeID(tile.TileTypeID)
+}
+
+func (id ItemTypeID) Get() *ItemType {
+	return itemTypes[id]
 }

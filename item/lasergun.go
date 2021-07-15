@@ -30,8 +30,9 @@ func UseLaserGun(info ItemUseInfo) {
 				info.Planet.DamageTile(int(pos.X), int(pos.Y), world.TopLayer)
 
 			if destroyed {
-				itemTypeId := GetItemTypeIdForTile(tile)
-				CreateWorldItem(itemTypeId, pos.Vec2())
+				//itemTypeId := GetItemTypeIdForTile(tile)
+				CreateWorldItems(tile.TileTypeID, pos.Vec2())
+				//CreateWorldItem(itemTypeId, pos.Vec2())
 			}
 
 			return
