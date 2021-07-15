@@ -116,8 +116,8 @@ func NewSpriteAnimated(fileName string, lwin *render.Window) *SpriteAnimated {
 	spriteAnimated.FrameArr = frames
 	// load sprite
 	InitSpriteloader(lwin)
-	spriteAnimated.spriteSheetId = LoadSpriteSheetByFrames("./assets/"+spriteAnimated.Meta.Image, spriteAnimated.FrameArr)
-	// spriteAnimated.spriteSheetId = LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image, 5, 7)
+	// spriteAnimated.spriteSheetId = LoadSpriteSheetByFrames("./assets/"+spriteAnimated.Meta.Image, spriteAnimated.FrameArr)
+	spriteAnimated.spriteSheetId = LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image, 5, 7)
 	// sorting frame by Action and Order
 	sort.SliceStable(spriteAnimated.FrameArr, func(i, j int) bool {
 		frI, frJ := spriteAnimated.FrameArr[i], spriteAnimated.FrameArr[j]
@@ -152,13 +152,13 @@ func (spriteAnimated *SpriteAnimated) Play(glwindow *glfw.Window, action string)
 			time.Sleep(100 * time.Millisecond)
 			LoadSprite(spriteAnimated.spriteSheetId, spriteAnimated.FrameArr[j].Name, frames[j].Frame.X, frames[j].Frame.Y)
 			spriteId := GetSpriteIdByName(spriteAnimated.FrameArr[j].Name)
-			fmt.Println("spriteId. ", spriteId, " j. ", j)
+			// fmt.Println("spriteId. ", spriteId, " j. ", j)
 			if err := gl.Init(); err != nil {
 				panic(err)
 			}
 			gl.ClearColor(1, 1, 1, 1)
 			gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-			DrawSpriteQuad(0, 0, 5, 4, spriteId)
+			DrawSpriteQuad(0, 0, 3, 2, spriteId)
 			glwindow.SwapBuffers()
 			glfw.PollEvents()
 			j++
@@ -171,23 +171,3 @@ func (spriteAnimated *SpriteAnimated) Play(glwindow *glfw.Window, action string)
 		}
 	}
 }
-
-// func (spriteAnimated *SpriteAnimated) Draw() {
-
-// 	LoadSprite(spriteAnimated.spriteSheetId, "blackcat", 1, 1)
-// 	spriteId := GetSpriteIdByName("blackcat")
-// 	DrawSpriteQuad(0, 0, 2, 1, spriteId)
-
-// 	spriteloader.LoadSprite(lspriteSheetId, "blackcat", action, j)
-// 	spriteId := spriteloader.GetSpriteIdByName("blackcat")
-// 	fmt.Println("spriteId. ", spriteId, " j. ", j)
-// 	if err := gl.Init(); err != nil {
-// 		panic(err)
-// 	}
-// 	gl.ClearColor(1, 1, 1, 1)
-// 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-// 	spriteloader.DrawSpriteQuad(0, 0, 2, 1, spriteId)
-// 	lwindow.SwapBuffers()
-// 	glfw.PollEvents()
-
-// }
