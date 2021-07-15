@@ -150,7 +150,7 @@ func (spriteAnimated *SpriteAnimated) Play(glwindow *glfw.Window, action string)
 		select {
 		default:
 			time.Sleep(100 * time.Millisecond)
-			LoadSprite(spriteAnimated.spriteSheetId, spriteAnimated.FrameArr[j].Name, 1, 1)
+			LoadSprite(spriteAnimated.spriteSheetId, spriteAnimated.FrameArr[j].Name, frames[j].Frame.X, frames[j].Frame.Y)
 			spriteId := GetSpriteIdByName(spriteAnimated.FrameArr[j].Name)
 			fmt.Println("spriteId. ", spriteId, " j. ", j)
 			if err := gl.Init(); err != nil {
@@ -158,7 +158,7 @@ func (spriteAnimated *SpriteAnimated) Play(glwindow *glfw.Window, action string)
 			}
 			gl.ClearColor(1, 1, 1, 1)
 			gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-			DrawSpriteQuad(0, 0, 2, 1, spriteId)
+			DrawSpriteQuad(0, 0, 5, 4, spriteId)
 			glwindow.SwapBuffers()
 			glfw.PollEvents()
 			j++

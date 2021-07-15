@@ -33,7 +33,7 @@ func main() {
 	// cb = models.NewCatBlack(&win, window)
 	// cb.Walk()
 	spriteAnimated = spriteloader.NewSpriteAnimated("./assets/spiderDrill.json", &win)
-	spriteAnimated.Play(window, "")
+	spriteAnimated.Play(window, "Walk")
 	for !window.ShouldClose() {
 		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
