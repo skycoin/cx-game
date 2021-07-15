@@ -4,6 +4,7 @@ import (
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/agents/agent_ai"
 	"github.com/skycoin/cx-game/components/agents/agent_draw"
+	"github.com/skycoin/cx-game/components/agents/agent_health"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/world"
 )
@@ -21,6 +22,7 @@ func Init(planet *world.Planet, cam *camera.Camera, player *models.Player) {
 	currentCamera = cam
 	currentPlayer = player
 
+	agent_health.Init()
 	agent_draw.Init()
 	agent_ai.Init()
 }

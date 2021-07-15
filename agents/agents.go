@@ -5,14 +5,18 @@ import (
 )
 
 type Agent struct {
-	//physics state
-	PhysicsState physics.Body
-	//physics parameters
-	PhysicsParameters physics.PhysicsParameters
-	AiHandlerId    int
-	//movementstate
-	DrawFunctionUpdateId int
 	AgentType            int
+	AiHandlerId          int
+	PhysicsState         physics.Body
+	PhysicsParameters    physics.PhysicsParameters
+	DrawFunctionUpdateId int
+	HealthComponent      HealthComponent
+}
+
+type HealthComponent struct {
+	Health_amount int
+	Health_max    int
+	Died          bool
 }
 
 func newAgent(agentType int) *Agent {
@@ -41,4 +45,15 @@ func (a *Agent) SetSize(x, y float32) {
 func (a *Agent) SetVelocity(x, y float32) {
 	a.PhysicsState.Vel.X = x
 	a.PhysicsState.Vel.Y = y
+}
+
+func (a *Agent) TakeDamage(amount int) {
+	a.HealthComponent.Health_amount -= amount
+	if a.HealthComponent.Health_amount <= 0 {
+		a.HealthComponent.Died = true
+	}
+}
+
+func (a *Agent) Died() bool {
+	return a.HealthComponent.Died
 }
