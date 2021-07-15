@@ -4,13 +4,17 @@ import (
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/agents/agent_ai"
 	"github.com/skycoin/cx-game/components/agents/agent_draw"
+	"github.com/skycoin/cx-game/components/agents/agent_health"
 	"github.com/skycoin/cx-game/components/agents/agent_physics"
 	"github.com/skycoin/cx-game/world"
 )
 
 func Update(dt float32) {
-	//call various functions
+	//update health state first
+	agent_health.UpdateAgents(currentWorldState.AgentList)
+	//update physics state second
 	agent_physics.UpdateAgents(currentWorldState, currentPlanet)
+
 	agent_ai.UpdateAgents(currentWorldState.AgentList, currentPlayer)
 }
 
