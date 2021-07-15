@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/item"
@@ -46,7 +47,7 @@ var (
 	isInventoryGridVisible = false
 	tilePaletteSelector    ui.TilePaletteSelector
 
-	inventoryId uint32
+	inventoryId item.InventoryID
 
 	//unused
 	isTileSelectorVisible = false
@@ -66,25 +67,24 @@ func Init() {
 	input.Init(win.Window)
 	sound.Init()
 	spriteloader.InitSpriteloader(&win)
-	ui.InitArc()
-	ui.InitFonts()
-	world.RegisterTileTypes()
 	spriteloader.DEBUG = false
+	world.RegisterTileTypes()
 	item.InitWorldItem()
-	ui.InitTextRendering()
+	ui.Init()
 	enemies.InitBasicEnemies()
 	particles.InitParticles()
 	item.RegisterItemTypes()
 
 	models.Init()
 	player = models.NewPlayer()
-	ui.InitHUD()
 
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
 	//CurrentPlanet = world.NewDevPlanet()
 	CurrentPlanet = world.GeneratePlanet()
 	Cam.PlanetWidth = float32(CurrentPlanet.Width)
+
+	components.Init(CurrentPlanet, Cam, player)
 
 	starfield.InitStarField(&win, player, Cam)
 

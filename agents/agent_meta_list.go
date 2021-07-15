@@ -10,7 +10,3 @@ func NewAgentMetaList() AgentMetaList {
 		AgentMetas: make([]*AgentMeta, 128),
 	}
 }
-
-func (aml *AgentMetaList) AddMeta(agentType AgentType) {
-
-}

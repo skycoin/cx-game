@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
@@ -35,6 +36,7 @@ func Draw() {
 	*/
 	item.DrawWorldItems(Cam)
 	enemies.DrawBasicEnemies(Cam)
+	components.Draw(CurrentPlanet.WorldState, Cam)
 	player.Draw(Cam, CurrentPlanet)
 	ui.DrawHUD(player.GetHUDState())
 
@@ -63,6 +65,16 @@ func Draw() {
 		inventory.DrawGrid(win.DefaultRenderContext())
 	} else {
 		inventory.DrawBar(win.DefaultRenderContext())
+	}
+	if inventory.SelectedItemSlot().Quantity > 0 {
+		selectedItemCategory :=
+			inventory.SelectedItemSlot().ItemTypeID.Get().Category
+
+		if selectedItemCategory == item.BuildTool {
+			// TODO do this less often
+			inventory.PlacementGrid.Assemble(inventory.ItemTypeIDs())
+			inventory.PlacementGrid.Draw(win.DefaultRenderContext())
+		}
 	}
 	tilePaletteSelector.Draw(win.DefaultRenderContext())
 
