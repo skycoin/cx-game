@@ -42,7 +42,7 @@ func CreateWorldItem(itemTypeId ItemTypeID, pos mgl32.Vec2) {
 
 func CreateWorldItems(tiletypeID world.TileTypeID, origin mgl32.Vec2) {
 	drop := tiletypeID.Get().Drops.Drop()
-	for i := 0 ; i < drop.Count ; i++ {
+	for i := 0; i < drop.Count; i++ {
 		// TODO add offsets and velocities
 		CreateWorldItem(ItemTypeID(drop.Item), origin)
 	}
@@ -94,7 +94,7 @@ func (item *WorldItem) Tick(
 	planet *world.Planet, dt float32,
 	playerPos cxmath.Vec2,
 ) bool {
-	item.Vel.Y -= physics.Gravity * dt / 2
+	// item.Vel.Y -= physics.Gravity * dt / 2
 
 	itemToPlayerDisplacement := playerPos.Sub(item.Pos)
 	itemToPlayerDistSqr := itemToPlayerDisplacement.LengthSqr()
