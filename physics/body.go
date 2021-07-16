@@ -223,4 +223,6 @@ func (body *Body) GetCollidingLines() []float32 {
 	return collidingLines
 }
 
-
+func (body *Body) IsOnGround() bool {
+	return body.Collisions.Below
+}
