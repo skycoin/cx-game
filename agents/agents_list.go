@@ -35,8 +35,8 @@ func (al *AgentList) CreateAgent(agentType int) bool {
 	return true
 }
 
-func (al *AgentList) DestroyAgent(agentId int32) bool {
-	if agentId < 0 || agentId >= int32(len(al.Agents)) {
+func (al *AgentList) DestroyAgent(agentId int) bool {
+	if agentId < 0 || agentId >= len(al.Agents) {
 		return false
 	}
 
