@@ -7,7 +7,6 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/physics/verlet"
 )
@@ -22,7 +21,7 @@ type Particle struct {
 	TimeToLive       float32
 }
 var particles = []Particle{}
-var particleShader *utility.Shader
+var particleShader *render.Shader
 const initialVelocityScale = 3
 const tileChunkLifetime = 1
 const chunkSize = 0.2
@@ -32,7 +31,7 @@ const chunksPerChip = 5
 const gravity = 2
 
 func InitParticles() {
-	particleShader = utility.NewShader(
+	particleShader = render.NewShader(
 		"./assets/shader/simple.vert", "./assets/shader/particle.frag" )
 	InitLasers()
 	InitBullets()
@@ -71,7 +70,7 @@ func configureGlForParticles() {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 	gl.ActiveTexture(gl.TEXTURE0)
 
-	gl.BindVertexArray(spriteloader.QuadVao);
+	gl.BindVertexArray(render.QuadVao);
 }
 
 func DrawChunkParticles(ctx render.Context) {

@@ -24,6 +24,8 @@ func NewWindow(width, height int, resizable bool) Window {
 	glfwWindow := initGlfw(width, height, resizable)
 	program := initOpenGL()
 
+	InitQuadVao()
+
 	//temporary, to set projection matrix
 
 	window := Window{
@@ -108,38 +110,9 @@ func initOpenGL() uint32 {
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	log.Println("OpenGL version", version)
 
-	var vertexShaderSource string
-	var fragmentShaderSource string
-
-	vertexShaderSource = `
-	#version 410
-	layout (location=0) in vec3 position;
-	layout (location=1) in vec2 texcoord;
-	out vec2 tCoord;
-	uniform mat4 projection;
-	uniform mat4 world;
-	uniform mat4 view;
-	uniform vec2 texScale;
-	uniform vec2 texOffset;
-	void main() {
-		gl_Position = projection  *  world * vec4(position, 1.0);
-		tCoord = (texcoord+texOffset) * texScale;
-	}
-	` + "\x00"
-	//gl_Position = vec4(position, 10.0, 1.0) * camera * projection;
-
-	fragmentShaderSource = `
-	#version 410
-	in vec2 tCoord;
-	out vec4 frag_colour;
-	uniform sampler2D ourTexture;
-	uniform vec4 color;
-	void main() {
-			frag_colour = texture(ourTexture, tCoord) * color;
-	}
-	` + "\x00"
-
-	prog := CreateProgram(vertexShaderSource, fragmentShaderSource)
+	shader := NewShader(
+		"./assets/shader/default.vert", "./assets/shader/default.frag" )
+	prog := shader.ID
 
 	gl.UseProgram(prog)
 	gl.Uniform2f(
@@ -151,29 +124,10 @@ func initOpenGL() uint32 {
 		1, 1, 1, 1,
 	)
 
-	// line opengl program
-	vertexShaderSource = `
-	#version 330 core
-	layout (location = 0) in vec3 aPos;
-	uniform mat4 uProjection;
-	uniform mat4 uWorld;
 
-	void main()
-	{
-	   gl_Position = uProjection * vec4(aPos, 1.0);
-	}` + "\x00"
-
-	fragmentShaderSource = `
-	#version 330 core
-	out vec4 FragColor;
-	uniform vec3 uColor;
-
-	void main()
-	{
-	   FragColor = vec4(uColor, 1.0f);
-	}` + "\x00"
-
-	lineProgram = CreateProgram(vertexShaderSource, fragmentShaderSource)
+	lineShader := NewShader(
+		"./assets/shader/line.vert", "./assets/shader/line.frag" )
+	lineProgram = lineShader.ID
 
 	return prog
 }

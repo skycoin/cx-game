@@ -6,7 +6,6 @@ import (
 
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/utility"
 )
 
 func newStretchingNineSliceVao() (tex uint32, verts int32) {
@@ -35,7 +34,7 @@ type StretchingNineSlice struct {
 	vao uint32
 	verts int32
 	dims NineSliceDims
-	shader *utility.Shader
+	shader *render.Shader
 }
 
 func NewStretchingNineSlice(
@@ -44,7 +43,7 @@ func NewStretchingNineSlice(
 	vao,verts := newStretchingNineSliceVao()
 	return StretchingNineSlice {
 		sprite: sprite, vao: vao, verts: verts, dims: dims,
-		shader: utility.NewShader(
+		shader: render.NewShader(
 			"./assets/shader/nineslice.vert",
 			"./assets/shader/nineslice.frag",
 		),

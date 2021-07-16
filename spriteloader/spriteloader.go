@@ -17,7 +17,6 @@ var Window *render.Window
 // call this before loading any spritesheets
 func InitSpriteloader(_window *render.Window) {
 	Window = _window
-	QuadVao = MakeQuadVao()
 	spriteLoaderIsInitialized = true
 }
 
@@ -225,7 +224,7 @@ func DrawSpriteQuadContext(
 		color.X(), color.Y(), color.Z(), color.W(),
 	)
 
-	gl.BindVertexArray(QuadVao)
+	gl.BindVertexArray(render.QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
 	// restore texScale and texOffset to defaults
@@ -281,7 +280,6 @@ var quadVertexAttributes = []float32{
 	-0.5, 0.5, 0, 0, 0,
 }
 
-var QuadVao uint32
 
 func MakeQuadVao() uint32 {
 	var vbo uint32
@@ -365,7 +363,7 @@ func DrawSpriteQuadCustom(
 		1, false, &projectTransform[0],
 	)
 
-	gl.BindVertexArray(QuadVao)
+	gl.BindVertexArray(render.QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
 	// restore texScale and texOffset to defaults
