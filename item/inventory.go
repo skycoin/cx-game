@@ -30,6 +30,8 @@ type Inventory struct {
 	SelectedBarSlotIndex int
 	GridHoldingIndex int
 	PlacementGrid PlacementGrid
+
+	IsOpen bool
 }
 
 var inventories = []Inventory{}
@@ -307,6 +309,7 @@ func (inventory *Inventory) TryClickSlot(
 		screenX,screenY float32, cam *camera.Camera,
 		planet *world.Planet, player *models.Player,
 ) bool {
+	if !inventory.IsOpen { return false }
 	idx,ok := inventory.getGridClickPosition(screenX,screenY)
 	if ok {
 		inventory.TrySelectGridSlot(idx)
@@ -315,10 +318,11 @@ func (inventory *Inventory) TryClickSlot(
 	return ok
 }
 
-func (inventory *Inventory) TryMoveSlot(
+func (inventory *Inventory) OnReleaseMouse(
 		screenX,screenY float32, cam *camera.Camera,
 		planet *world.Planet, player *models.Player,
 ) bool {
+	if !inventory.IsOpen { return false }
 	idx,ok := inventory.getGridClickPosition(screenX,screenY)
 	if ok {
 		inventory.TryMoveGridSlot(idx)
@@ -352,4 +356,17 @@ func (inventory *Inventory) SlotIdxForPosition(x,y int) int {
 	}
 
 	return y*inventory.Width + x
+}
+
+func (inv *Inventory) Draw(ctx render.Context) {
+	if inv.IsOpen { inv.DrawGrid(ctx) } else { inv.DrawBar(ctx) }
+	slot := inv.SelectedItemSlot()
+	if slot.Quantity > 0 {
+		category := slot.ItemTypeID.Get().Category
+		if category == BuildTool {
+			// TODO do this less often
+			inv.PlacementGrid.Assemble(inv.ItemTypeIDs())
+			inv.PlacementGrid.Draw(ctx)
+		}
+	}
 }

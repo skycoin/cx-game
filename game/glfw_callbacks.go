@@ -33,10 +33,8 @@ func mouseReleaseCallback(
 ) {
 	screenX,screenY := screenPos()
 
-	if isInventoryGridVisible {
-		inventory := item.GetInventoryById(inventoryId)
-		inventory.TryMoveSlot(screenX, screenY, Cam, CurrentPlanet, player)
-	}
+	inventory := item.GetInventoryById(inventoryId)
+	inventory.OnReleaseMouse(screenX, screenY, Cam, CurrentPlanet, player)
 }
 
 func mousePressCallback(
@@ -76,14 +74,10 @@ func mousePressCallback(
 		}
 	}
 
-	if isInventoryGridVisible {
-		inventory := item.GetInventoryById(inventoryId)
-		clickedSlot :=
-			inventory.TryClickSlot(screenX, screenY, Cam, CurrentPlanet, player)
-		if clickedSlot {
-			return
-		}
-	}
+	inventory := item.GetInventoryById(inventoryId)
+	clickedSlot :=
+		inventory.TryClickSlot(screenX, screenY, Cam, CurrentPlanet, player)
+	if clickedSlot { return }
 
 	item.GetInventoryById(inventoryId).
 		TryUseItem(screenX, screenY, Cam, CurrentPlanet, player)
