@@ -61,21 +61,7 @@ func Draw() {
 	// restore original projection matrix
 
 	inventory := item.GetInventoryById(inventoryId)
-	if isInventoryGridVisible {
-		inventory.DrawGrid(win.DefaultRenderContext())
-	} else {
-		inventory.DrawBar(win.DefaultRenderContext())
-	}
-	if inventory.SelectedItemSlot().Quantity > 0 {
-		selectedItemCategory :=
-			inventory.SelectedItemSlot().ItemTypeID.Get().Category
-
-		if selectedItemCategory == item.BuildTool {
-			// TODO do this less often
-			inventory.PlacementGrid.Assemble(inventory.ItemTypeIDs())
-			inventory.PlacementGrid.Draw(win.DefaultRenderContext())
-		}
-	}
+	inventory.Draw(win.DefaultRenderContext())
 	tilePaletteSelector.Draw(win.DefaultRenderContext())
 
 	glfw.PollEvents()

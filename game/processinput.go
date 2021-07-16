@@ -56,7 +56,8 @@ func ProcessInput() {
 		tilePaletteSelector.CycleLayer()
 	}
 	if input.GetButtonDown("inventory-grid") {
-		isInventoryGridVisible = !isInventoryGridVisible
+		inventory := item.GetInventoryById(inventoryId)
+		inventory.IsOpen = !inventory.IsOpen
 	}
 	if input.GetKeyDown(glfw.KeyL) {
 		starfield.SwitchBackgrounds(starfield.BACKGROUND_NEBULA)
