@@ -44,7 +44,6 @@ var (
 
 	catIsScratching bool
 
-	isInventoryGridVisible = false
 	tilePaletteSelector    ui.TilePaletteSelector
 
 	inventoryId item.InventoryID

@@ -1,9 +1,7 @@
 // super simple shader for drawing colors directly.
 // intended for UI.
-package utility;
+package render;
 import (
-	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 )
@@ -16,7 +14,7 @@ func NewColorShader() *Shader {
 }
 var colorShader *Shader
 
-func DrawColorQuad(ctx render.Context, colour mgl32.Vec4) {
+func DrawColorQuad(ctx Context, colour mgl32.Vec4) {
 	if colorShader==nil {
 		colorShader = NewColorShader()
 	}
@@ -30,6 +28,6 @@ func DrawColorQuad(ctx render.Context, colour mgl32.Vec4) {
 	mvp := ctx.MVP()
 	colorShader.SetMat4("mvp",&mvp)
 	// draw
-	gl.BindVertexArray(spriteloader.QuadVao)
+	gl.BindVertexArray(QuadVao)
 	gl.DrawArrays(gl.TRIANGLES,0,6)
 }

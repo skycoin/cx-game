@@ -3,10 +3,10 @@ package constants
 type AgentType int
 
 const (
-	MAX_AGENTS = 64
+	MAX_AGENTS int = 64
 
-	AGENT_PLAYER = iota
-	AGENT_NEUTRAL_MOB
+	AGENT_UNDEFINED AgentType = iota
+	AGENT_PLAYER 
 	AGENT_FRIENDLY_MOB
 	AGENT_ENEMY_MOB
 )

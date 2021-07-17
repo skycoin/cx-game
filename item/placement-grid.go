@@ -6,7 +6,6 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32i"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/spriteloader"
 )
@@ -115,9 +114,9 @@ func (ig PlacementGrid) DrawSlot(
 ) {
 	slotCtx := ctx.PushLocal(positionedTileTypeID.Transform())
 	// draw border	
-	utility.DrawColorQuad(slotCtx,borderColor)
+	render.DrawColorQuad(slotCtx,borderColor)
 	bgCtx := slotCtx.PushLocal(cxmath.Scale(1-borderSize))
-	utility.DrawColorQuad(bgCtx,bgColor)
+	render.DrawColorQuad(bgCtx,bgColor)
 	// draw tiletype on top of bg
 	itemCtx := slotCtx.PushLocal(cxmath.Scale(itemSize))
 	spriteloader.DrawSpriteQuadContext(itemCtx,

@@ -3,15 +3,16 @@ package agent_draw
 import (
 	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/constants"
 )
 
 func DrawAgents(agentslist *agents.AgentList, cam *camera.Camera) {
 	agentsToDraw := FrustumCull(agentslist.Agents, cam)
 
-	sortedByDrawType := SortByType(agentsToDraw)
+	bins := BinByDrawHandlerID(agentsToDraw)
 
-	for k, v := range sortedByDrawType {
-		DrawHandlerList[k](v)
+	for drawHandlerID, agents := range bins {
+		GetDrawHandler(drawHandlerID)(agents)
 	}
 
 }
@@ -27,12 +28,13 @@ func FrustumCull(agentlist []*agents.Agent, cam *camera.Camera) []*agents.Agent 
 	return agentsToDraw
 }
 
-func SortByType(agentlist []*agents.Agent) map[int][]*agents.Agent {
-	sortedMap := make(map[int][]*agents.Agent)
+func BinByDrawHandlerID(agentlist []*agents.Agent) map[constants.DrawHandlerID][]*agents.Agent {
+	bins := make(map[constants.DrawHandlerID][]*agents.Agent)
 
 	for _, agent := range agentlist {
-		sortedMap[agent.DrawFunctionUpdateId] = append(sortedMap[agent.DrawFunctionUpdateId], agent)
+		bins[agent.DrawHandlerID] =
+			append(bins[agent.DrawHandlerID], agent)
 	}
 
-	return sortedMap
+	return bins
 }

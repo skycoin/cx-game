@@ -158,17 +158,11 @@ func DrawStringLeftAligned(
 	// use the default program with support
 	// for scaled / offset texture lookups
 	// TODO dedicate a program just for this
-	program := spriteloader.Window.Program
-	gl.UseProgram(program)
+	shader := spriteloader.SpriteShader()
+	shader.Use()
 	// this line only needs to occur once if we have a dedicated program
-	gl.Uniform1ui(
-		gl.GetUniformLocation(program, gl.Str("ourTexture\x00")),
-		fontTex,
-	)
-	gl.Uniform4f(
-		gl.GetUniformLocation(program, gl.Str("color\x00")),
-		color[0], color[1], color[2], color[3],
-	)
+	shader.SetUint("ourTexture",fontTex)
+	shader.SetVec4("color",&color)
 
 	// center it
 	pos := mgl32.Vec2{}
@@ -179,14 +173,8 @@ func DrawStringLeftAligned(
 				Mul4(mgl32.Translate3D(pos.X(), pos.Y(), 0)).
 				Mul4(cxmath.Scale(fontScale))
 
-			gl.UniformMatrix4fv(
-				gl.GetUniformLocation(program, gl.Str("world\x00")),
-				1, false, &letterTransform[0],
-			)
-			gl.UniformMatrix4fv(
-				gl.GetUniformLocation(program, gl.Str("projection\x00")),
-				1, false, &ctx.Projection[0],
-			)
+			shader.SetMat4("world",&letterTransform)
+			shader.SetMat4("projection",&ctx.Projection)
 			gl.BindVertexArray(vao)
 			glStart := 6 * charData.index
 			gl.DrawArrays(gl.TRIANGLES, int32(glStart), 6)
@@ -196,10 +184,7 @@ func DrawStringLeftAligned(
 	}
 
 	// restore default color
-	gl.Uniform4f(
-		gl.GetUniformLocation(program, gl.Str("color\x00")),
-		1, 1, 1, 1,
-	)
+	shader.SetVec4F("color",1,1,1,1)
 }
 
 func DrawStringRightAligned(
