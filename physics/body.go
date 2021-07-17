@@ -135,9 +135,7 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	body.collidingLines = []float32{}
 	body.Collisions.Reset()
 
-	if body.Vel.IsZero() {
-		return
-	}
+	body.Vel.Y -= Gravity * dt
 
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
@@ -223,4 +221,6 @@ func (body *Body) GetCollidingLines() []float32 {
 	return collidingLines
 }
 
-
+func (body *Body) IsOnGround() bool {
+	return body.Collisions.Below
+}

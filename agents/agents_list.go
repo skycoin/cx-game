@@ -6,10 +6,6 @@ type AgentList struct {
 	Agents []*Agent
 }
 
-var (
-	accumulator float32
-)
-
 func NewAgentList() *AgentList {
 	return &AgentList{
 		Agents: make([]*Agent, 0),

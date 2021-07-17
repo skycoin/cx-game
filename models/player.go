@@ -9,10 +9,10 @@ import (
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/physics/movement"
-	"github.com/skycoin/cx-game/utility"
-	"github.com/skycoin/cx-game/ui"
-	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/ui"
+	"github.com/skycoin/cx-game/utility"
+	"github.com/skycoin/cx-game/world"
 )
 
 type Player struct {
@@ -74,7 +74,7 @@ func (player *Player) Update(dt float32, planet *world.Planet) {
 
 func (player *Player) GetHUDState() ui.HUDState {
 	// TODO tempoary
-	return ui.HUDState {
+	return ui.HUDState{
 		Health: 40, MaxHealth: 100,
 
 		Fullness: 0.3, Hydration: 0.4, Oxygen: 0.5, Fuel: 0.6,
@@ -91,8 +91,8 @@ func (player *Player) FixedTick(planet *world.Planet) {
 		inputXAxis := input.GetAxis(input.HORIZONTAL)
 		player.Vel.X +=
 			inputXAxis *
-			player.MovementMeta.Acceleration *
-			player.ActiveMovementType.GetMovementSpeedModifier()
+				player.MovementMeta.Acceleration *
+				player.ActiveMovementType.GetMovementSpeedModifier()
 
 		if inputXAxis != 0 {
 			player.XDirection = math32.Sign(inputXAxis)
@@ -103,26 +103,26 @@ func (player *Player) FixedTick(planet *world.Planet) {
 			player.Vel.Y = inputYAxis * maxVerticalSpeed
 		}
 	}
-	player.Vel.Y -=
-		physics.Gravity *
-		physics.TimeStep *
-		player.ActiveMovementType.GetGravityModifier()
+	// player.Vel.Y -=
+	// 	physics.Gravity *
+	// 	physics.TimeStep *
+	// 	player.ActiveMovementType.GetGravityModifier()
 
 	if player.Vel.X != 0 {
 		friction :=
 			cxmath.Sign(player.Vel.X) *
-			player.MovementMeta.Acceleration *
-			player.MovementMeta.DynamicFriction *
-			player.ActiveMovementType.GetFrictionModifier()
+				player.MovementMeta.Acceleration *
+				player.MovementMeta.DynamicFriction *
+				player.ActiveMovementType.GetFrictionModifier()
 
 		//to stop player from jiggling
 		minVelocityToApplyFriction :=
 			player.MovementMeta.Acceleration *
-			player.MovementMeta.DynamicFriction *
-			player.ActiveMovementType.GetFrictionModifier()
+				player.MovementMeta.DynamicFriction *
+				player.ActiveMovementType.GetFrictionModifier()
 
 		if cxmath.Abs(player.Vel.X) <= minVelocityToApplyFriction &&
-				input.GetAxis(input.HORIZONTAL) == 0 {
+			input.GetAxis(input.HORIZONTAL) == 0 {
 			player.Vel.X = 0
 		} else {
 			player.Vel.X -= friction
@@ -131,7 +131,7 @@ func (player *Player) FixedTick(planet *world.Planet) {
 
 	maxAbsVelX :=
 		player.MovementMeta.MovSpeed *
-		player.ActiveMovementType.GetMovementSpeedModifier()
+			player.ActiveMovementType.GetMovementSpeedModifier()
 
 	player.Vel.X = utility.ClampF(player.Vel.X, -maxAbsVelX, maxAbsVelX)
 	player.MovementAfterTick(planet)
