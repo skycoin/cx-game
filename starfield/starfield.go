@@ -122,7 +122,7 @@ var (
 
 	//variable for star move speed
 	speed  float32 = 4
-	shader *utility.Shader
+	shader *render.Shader
 )
 
 func SwitchBackgrounds(bg Background) {
@@ -133,7 +133,7 @@ func SwitchBackgrounds(bg Background) {
 func InitStarField(window *render.Window, player *models.Player, cam *camera.Camera) {
 	p = player
 	Cam = cam
-	shader = utility.NewShader("./assets/shader/starfield/shader.vert", "./assets/shader/starfield/shader.frag")
+	shader = render.NewShader("./assets/shader/starfield/shader.vert", "./assets/shader/starfield/shader.frag")
 	shader.Use()
 
 	for i := 1; i < 12; i++ {

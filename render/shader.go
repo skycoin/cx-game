@@ -1,4 +1,4 @@
-package utility
+package render
 
 // Helper shader program class from learnopengl.com
 

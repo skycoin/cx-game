@@ -7,7 +7,6 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/utility"
 )
 
 type Laser struct {
@@ -26,7 +25,7 @@ var laserTex texture
 
 const laserDuration = 1.0 // time in seconds that a laser lasts
 var lasers []Laser = []Laser{}
-var laserShader *utility.Shader
+var laserShader *render.Shader
 
 const segmentLength = 0.8
 
@@ -34,7 +33,7 @@ const segmentLength = 0.8
 const laserAnimSpeed = 6
 
 func InitLasers() {
-	laserShader = utility.NewShader(
+	laserShader = render.NewShader(
 		"./assets/shader/mvp.vert", "./assets/shader/laser.frag")
 
 	_, img, _ :=

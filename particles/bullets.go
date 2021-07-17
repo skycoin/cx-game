@@ -5,8 +5,6 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/utility"
-	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/physics"
 )
@@ -19,12 +17,12 @@ type Bullet struct {
 }
 
 var (
-	bulletShader *utility.Shader
+	bulletShader *render.Shader
 	bullets []Bullet
 )
 
 func InitBullets() {
-	bulletShader = utility.NewShader(
+	bulletShader = render.NewShader(
 		"./assets/shader/mvp.vert", "./assets/shader/color.frag" )
 	bulletShader.Use()
 	bulletShader.SetVec4F("colour",1,0,0,1)
@@ -61,7 +59,7 @@ func configureGlForBullet() {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 	*/
 
-	gl.BindVertexArray(spriteloader.QuadVao);
+	gl.BindVertexArray(render.QuadVao);
 }
 
 func DrawBullets(ctx render.WorldContext) {

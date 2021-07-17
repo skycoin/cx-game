@@ -6,15 +6,15 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/utility"
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
-var arcShader *utility.Shader
+var arcShader *render.Shader
 
 var arcSprite spriteloader.SpriteID
 func initArc() {
-	arcShader = utility.NewShader(
+	arcShader = render.NewShader(
 		"./assets/shader/mvp.vert", "./assets/shader/arc.frag" )
 	arcSprite = spriteloader.
 		LoadSingleSprite("./assets/hud/hud_status_fill.png","hud_status_fill")
@@ -38,6 +38,6 @@ func DrawArc(mvp mgl32.Mat4, fullness float32) {
 	arcShader.SetFloat("value",2*math.Pi*fullness)
 
 	gl.Disable(gl.DEPTH_TEST)
-	gl.BindVertexArray(spriteloader.QuadVao)
+	gl.BindVertexArray(render.QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }

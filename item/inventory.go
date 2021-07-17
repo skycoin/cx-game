@@ -8,7 +8,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/render"
@@ -173,10 +172,10 @@ func (inventory Inventory) DrawSlot(
 		slot InventorySlot, ctx render.Context, isSelected bool,
 ) {
 	// draw border
-	utility.DrawColorQuad(ctx,getBorderColor(isSelected))
+	render.DrawColorQuad(ctx,getBorderColor(isSelected))
 	// draw bg on top of border
 	bgCtx := ctx.PushLocal(cxmath.Scale(1-borderSize))
-	utility.DrawColorQuad(bgCtx,bgColor)
+	render.DrawColorQuad(bgCtx,bgColor)
 	// draw item on top of bg
 	itemCtx := ctx.PushLocal(cxmath.Scale(itemSize))
 	// TODO write number for quantity
