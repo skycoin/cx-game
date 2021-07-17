@@ -14,19 +14,22 @@ func NewAgentList() *AgentList {
 
 func NewDevAgentList() *AgentList {
 	agentList := NewAgentList()
-	agentList.CreateAgent(constants.AGENT_PLAYER)
-	agentList.CreateAgent(constants.AGENT_ENEMY_MOB)
+	player := newAgent()
+	player.AgentType = constants.AGENT_PLAYER
+	agentList.CreateAgent(player)
+	enemy := newAgent()
+	enemy.AgentType = constants.AGENT_ENEMY_MOB
+	agentList.CreateAgent(enemy)
 
 	return agentList
 }
 
 //  agentType - constants.AGENT_*desired type*
-func (al *AgentList) CreateAgent(agentType int) bool {
+func (al *AgentList) CreateAgent(agent *Agent) bool {
 	//for now
 	if len(al.Agents) > constants.MAX_AGENTS {
 		return false
 	}
-	agent := newAgent(agentType)
 	al.Agents = append(al.Agents, agent)
 	return true
 }
