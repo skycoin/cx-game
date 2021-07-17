@@ -2,14 +2,15 @@ package agents
 
 import (
 	"github.com/skycoin/cx-game/physics"
+	"github.com/skycoin/cx-game/constants"
 )
 
 type Agent struct {
-	AgentType            int
-	AiHandlerId          int
+	AgentType            constants.AgentType
+	AiHandlerID          constants.AiHandlerID
 	PhysicsState         physics.Body
 	PhysicsParameters    physics.PhysicsParameters
-	DrawFunctionUpdateId int
+	DrawHandlerID        constants.DrawHandlerID
 	HealthComponent      HealthComponent
 }
 
@@ -19,12 +20,13 @@ type HealthComponent struct {
 	Died          bool
 }
 
-func newAgent(agentType int) *Agent {
+func newAgent() *Agent {
 	agent := Agent{
+		AgentType:            constants.AGENT_UNDEFINED,
+		AiHandlerID:          constants.AI_HANDLER_NULL,
+		DrawHandlerID:       constants.DRAW_HANDLER_NULL,
 		PhysicsState:         physics.Body{},
 		PhysicsParameters:    physics.PhysicsParameters{Radius: 5},
-		DrawFunctionUpdateId: 1,
-		AgentType:            agentType,
 	}
 
 	return &agent

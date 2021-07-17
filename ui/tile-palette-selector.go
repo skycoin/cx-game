@@ -8,7 +8,6 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -110,10 +109,10 @@ func (selector *TilePaletteSelector) Draw(ctx render.Context) {
 
 	selectorCtx := ctx.PushLocal(selector.Transform)
 	bgCtx := selectorCtx.PushLocal(cxmath.Scale(float32(1 + padding)))
-	utility.DrawColorQuad(bgCtx, mgl32.Vec4{1, 0, 0, 1})
+	render.DrawColorQuad(bgCtx, mgl32.Vec4{1, 0, 0, 1})
 
 	if selector.SelectedTileIndex >= 0 {
-		utility.DrawColorQuad(render.Context{
+		render.DrawColorQuad(render.Context{
 			World: selector.
 				worldTransformForTileAtIndex(selector.SelectedTileIndex),
 			Projection: ctx.Projection,
