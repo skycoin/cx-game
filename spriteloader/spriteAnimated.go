@@ -149,10 +149,10 @@ func (spriteAnimated *SpriteAnimated) Play(glwindow *glfw.Window, action string)
 	for {
 		select {
 		default:
-			time.Sleep(100 * time.Millisecond)
-			LoadSprite(spriteAnimated.spriteSheetId, spriteAnimated.FrameArr[j].Name, frames[j].Frame.X, frames[j].Frame.Y)
-			spriteId := GetSpriteIdByName(spriteAnimated.FrameArr[j].Name)
-			// fmt.Println("spriteId. ", spriteId, " j. ", j)
+			time.Sleep(time.Duration(frames[j].Duration) * time.Millisecond)
+			LoadSprite(spriteAnimated.spriteSheetId, frames[j].Name, frames[j].Frame.X, frames[j].Frame.Y)
+			spriteId := GetSpriteIdByName(frames[j].Name)
+			fmt.Println("frames. ", frames[j].Action, " - ", frames[j].Order, " X.", frames[j].Frame.X, " Y.", frames[j].Frame.Y, " H.", frames[j].Frame.H, " W.", frames[j].Frame.W)
 			if err := gl.Init(); err != nil {
 				panic(err)
 			}

@@ -99,6 +99,7 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) SpritesheetID {
 		tex:    MakeTexture(img),
 	})
 
+	fmt.Println("len(spritesheets) - 1 ", len(spritesheets)-1)
 	return SpritesheetID(len(spritesheets) - 1)
 }
 
@@ -106,16 +107,14 @@ func LoadSpriteSheetByFrames(fname string, frames []Frames) SpritesheetID {
 	_, img, _ := LoadPng(fname)
 
 	for i := range frames {
-		fmt.Println("xScale: ", i, float32(frames[i].Frame.X)/float32(img.Bounds().Dx()))
-		fmt.Println("yScale: ", i, float32(frames[i].Frame.Y)/float32(img.Bounds().Dy()))
 		spritesheets = append(spritesheets, Spritesheet{
-			xScale: float32(frames[i].Frame.X) / float32(img.Bounds().Dx()),
-			yScale: float32(frames[i].Frame.Y) / float32(img.Bounds().Dy()),
+			xScale: float32(frames[i].Frame.W) / float32(img.Bounds().Dx()),
+			yScale: float32(frames[i].Frame.H) / float32(img.Bounds().Dy()),
 			tex:    MakeTexture(img),
 		})
 	}
-
-	return SpritesheetID(len(spritesheets) - 1)
+	fmt.Println("len(spritesheets) - 1 ", len(spritesheets)-1)
+	return SpritesheetID(len(spritesheets) - 2)
 }
 
 func LoadSingleSprite(fname string, name string) SpriteID {
