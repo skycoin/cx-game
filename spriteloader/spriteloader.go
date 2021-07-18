@@ -24,7 +24,7 @@ func InitSpriteloader(_window *render.Window) {
 	Window = _window
 	spriteLoaderIsInitialized = true
 	spriteShader = render.NewShader(
-		"./assets/shader/sprite.vert", "./assets/shader/sprite.frag" )
+		"./assets/shader/sprite.vert", "./assets/shader/sprite.frag")
 }
 
 type Spritesheet struct {
@@ -95,6 +95,7 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) SpritesheetID {
 	_, img, _ := LoadPng(fname)
 
 	if DEBUG {
+		fmt.Println("img.Bounds(): ", img.Bounds())
 		fmt.Println("xScale: ", float32(img.Bounds().Dx()/col)/float32(img.Bounds().Dx()))
 		fmt.Println("yScale: ", float32(img.Bounds().Dy()/row)/float32(img.Bounds().Dy()))
 	}
@@ -104,6 +105,23 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) SpritesheetID {
 		tex:    MakeTexture(img),
 	})
 
+	return SpritesheetID(len(spritesheets) - 1)
+}
+
+func LoadSpriteSheetByFrames(fname string, frames []Frames) SpritesheetID {
+	_, img, _ := LoadPng(fname)
+
+	if DEBUG {
+		fmt.Println("img.Bounds().Dx: ", img.Bounds().Dx())
+		fmt.Println("img.Bounds().Dy: ", img.Bounds().Dy())
+		fmt.Println("xScale: ", float32(frames[0].Frame.W)/float32(img.Bounds().Dx()))
+		fmt.Println("yScale: ", float32(frames[0].Frame.H)/float32(img.Bounds().Dy()))
+	}
+	spritesheets = append(spritesheets, Spritesheet{
+		xScale: float32(frames[0].Frame.W) / float32(img.Bounds().Dx()),
+		yScale: float32(frames[0].Frame.H) / float32(img.Bounds().Dy()),
+		tex:    MakeTexture(img),
+	})
 	return SpritesheetID(len(spritesheets) - 1)
 }
 
@@ -155,24 +173,24 @@ var SpriteRenderDistance float32 = 10
 //Draw sprite specified with spriteId at x,y position
 //this function is for testing, will not be used later on
 func DrawSpriteQuadOptions(
-		xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
-		opts DrawOptions,
+	xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
+	opts DrawOptions,
 ) {
 	worldTransform := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(xpos), float32(ypos), -SpriteRenderDistance),
 		mgl32.Scale3D(float32(xwidth), float32(yheight), 1),
 	)
-	DrawSpriteQuadMatrix(worldTransform, spriteId,opts)
+	DrawSpriteQuadMatrix(worldTransform, spriteId, opts)
 }
 
 func DrawSpriteQuad(
-		xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
+	xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
 ) {
-	DrawSpriteQuadOptions(xpos,ypos,xwidth,yheight,spriteId,NewDrawOptions())
+	DrawSpriteQuadOptions(xpos, ypos, xwidth, yheight, spriteId, NewDrawOptions())
 }
 
 func DrawSpriteQuadMatrix(
-		worldTransform mgl32.Mat4, spriteId SpriteID, opts DrawOptions,
+	worldTransform mgl32.Mat4, spriteId SpriteID, opts DrawOptions,
 ) {
 	DrawSpriteQuadContext(render.Context{
 		World:      worldTransform,
@@ -181,7 +199,7 @@ func DrawSpriteQuadMatrix(
 }
 
 func DrawSpriteQuadContext(
-		ctx render.Context, spriteId SpriteID, opts DrawOptions,
+	ctx render.Context, spriteId SpriteID, opts DrawOptions,
 ) {
 	// TODO this method probably shouldn't be responsible
 	// for setting up the projection matrix.
@@ -201,22 +219,22 @@ func DrawSpriteQuadContext(
 	gl.BindTexture(gl.TEXTURE_2D, spritesheet.tex)
 
 	spriteShader.Use()
-	spriteShader.SetUint("outTexture",0)
+	spriteShader.SetUint("outTexture", 0)
 	spriteShader.SetVec2F("texScale", spritesheet.xScale, spritesheet.yScale)
 	spriteShader.SetVec2F("texOffset", float32(sprite.x), float32(sprite.y))
-	spriteShader.SetMat4("world",&ctx.World)
-	spriteShader.SetMat4("projection",&ctx.Projection)
+	spriteShader.SetMat4("world", &ctx.World)
+	spriteShader.SetMat4("projection", &ctx.Projection)
 
 	color := opts.Color()
-	spriteShader.SetVec4("color",&color)
+	spriteShader.SetVec4("color", &color)
 
 	gl.BindVertexArray(render.QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
 	// restore texScale and texOffset to defaults
 	// TODO separate GPU programs such that this becomes unecessary
-	spriteShader.SetVec2F("texScale",1,1)
-	spriteShader.SetVec2F("texOffset",0,0)
+	spriteShader.SetVec2F("texScale", 1, 1)
+	spriteShader.SetVec2F("texOffset", 0, 0)
 }
 
 // upload an in-memory RGBA image to the GPU
@@ -259,7 +277,6 @@ var quadVertexAttributes = []float32{
 	-0.5, -0.5, 0, 0, 1,
 	-0.5, 0.5, 0, 0, 0,
 }
-
 
 func MakeQuadVao() uint32 {
 	var vbo uint32
@@ -363,9 +380,9 @@ type DrawOptions struct {
 }
 
 func NewDrawOptions() DrawOptions {
-	return DrawOptions { Alpha: 1 }
+	return DrawOptions{Alpha: 1}
 }
 
 func (opts DrawOptions) Color() mgl32.Vec4 {
-	return mgl32.Vec4 {1,1,1,opts.Alpha}
+	return mgl32.Vec4{1, 1, 1, opts.Alpha}
 }
