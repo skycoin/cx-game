@@ -1,8 +1,6 @@
 package physics
 
 import (
-	"fmt"
-
 	"github.com/skycoin/cx-game/constants/physicsconstants"
 	"github.com/skycoin/cx-game/physics/timer"
 	"github.com/skycoin/cx-game/world/worldcollider"
@@ -36,7 +34,6 @@ func Simulate(dt float32, worldcollider worldcollider.WorldCollider) {
 
 	// physics simulation is done; save interpolated values for rendering
 	alpha := timer.GetTimeBetweenTicks() / physicsconstants.PHYSICS_TIMESTEP
-	fmt.Println(alpha)
 	for idx, _ := range bodies {
 		bodies[idx].UpdateInterpolatedTransform(alpha)
 	}
