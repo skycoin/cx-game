@@ -18,7 +18,7 @@ func (lb LeapingBehaviour) Follow(ctx BehaviourContext) {
 		ctx.Self.Vel.X = directionX * lb.horizontalJumpSpeed
 		ctx.Self.Vel.Y = lb.verticalJumpSpeed
 	} else {
-		// ctx.Self.Vel.Y -= physics.Gravity * dt
+		// ctx.Self.Vel.Y -= physicsconstants.PHYSICS_GRAVITY * dt
 	}
 }
 

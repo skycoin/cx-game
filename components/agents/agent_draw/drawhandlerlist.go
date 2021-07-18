@@ -4,12 +4,14 @@ import (
 	"log"
 
 	"github.com/skycoin/cx-game/agents"
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
-type DrawHandler func([]*agents.Agent)
-var drawHandlers [constants.NUM_DRAW_HANDLERS]DrawHandler
+type AgentDrawHandler func([]*agents.Agent)
+
+var drawHandlers [constants.NUM_AGENT_DRAW_HANDLERS]AgentDrawHandler
 
 func Init() {
 	// TODO move this
@@ -22,23 +24,25 @@ func Init() {
 }
 
 func AssertAllDrawHandlersRegistered() {
-	for _,handler := range drawHandlers {
-		if handler==nil { log.Fatalf("Did not initialize all draw handlers") }
+	for _, handler := range drawHandlers {
+		if handler == nil {
+			log.Fatalf("Did not initialize all agent draw handlers")
+		}
 	}
 }
 
-func RegisterDrawHandler(id constants.DrawHandlerID, handler DrawHandler) {
+func RegisterDrawHandler(id types.AgentDrawHandlerID, handler AgentDrawHandler) {
 	drawHandlers[id] = handler
 }
 
-func ChangeDrawHandler(id constants.DrawHandlerID, newHandler DrawHandler) {
+func ChangeDrawHandler(id types.AgentDrawHandlerID, newHandler AgentDrawHandler) {
 	if id < 0 || len(drawHandlers) >= int(id) {
-		log.Printf("invalid draw handler with ID=%v",id)
+		log.Printf("invalid draw handler with ID=%v", id)
 		return
 	}
 	drawHandlers[id] = newHandler
 }
 
-func GetDrawHandler(id constants.DrawHandlerID) DrawHandler {
+func GetDrawHandler(id types.AgentDrawHandlerID) AgentDrawHandler {
 	return drawHandlers[id]
 }

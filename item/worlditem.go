@@ -94,7 +94,7 @@ func (item *WorldItem) Tick(
 	planet *world.Planet, dt float32,
 	playerPos cxmath.Vec2,
 ) bool {
-	// item.Vel.Y -= physics.Gravity * dt / 2
+	// item.Vel.Y -= physicsconstants.PHYSICS_GRAVITY * dt / 2
 
 	itemToPlayerDisplacement := playerPos.Sub(item.Pos)
 	itemToPlayerDistSqr := itemToPlayerDisplacement.LengthSqr()

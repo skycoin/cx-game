@@ -26,7 +26,7 @@ func (wb WalkingBehaviour) Follow(ctx BehaviourContext) {
 	if wb.shouldJump(ctx) {
 		ctx.Self.Vel.Y = wb.jumpSpeed
 	} else {
-		// ctx.Self.Vel.Y -= physics.Gravity * dt
+		// ctx.Self.Vel.Y -= physicsconstants.PHYSICS_GRAVITY * dt
 	}
 }
 
