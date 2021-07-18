@@ -1,17 +1,18 @@
 package agents
 
 import (
-	"github.com/skycoin/cx-game/physics"
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/physics"
 )
 
 type Agent struct {
-	AgentType            constants.AgentType
-	AiHandlerID          constants.AiHandlerID
-	PhysicsState         physics.Body
-	PhysicsParameters    physics.PhysicsParameters
-	DrawHandlerID        constants.DrawHandlerID
-	HealthComponent      HealthComponent
+	AgentType         constants.AgentType
+	AiHandlerID       types.AgentAiHandlerID
+	PhysicsState      physics.Body
+	PhysicsParameters physics.PhysicsParameters
+	DrawHandlerID     types.AgentDrawHandlerID
+	HealthComponent   HealthComponent
 }
 
 type HealthComponent struct {
@@ -22,11 +23,11 @@ type HealthComponent struct {
 
 func newAgent() *Agent {
 	agent := Agent{
-		AgentType:            constants.AGENT_UNDEFINED,
-		AiHandlerID:          constants.AI_HANDLER_NULL,
-		DrawHandlerID:       constants.DRAW_HANDLER_NULL,
-		PhysicsState:         physics.Body{},
-		PhysicsParameters:    physics.PhysicsParameters{Radius: 5},
+		AgentType:         constants.AGENT_UNDEFINED,
+		AiHandlerID:       constants.AI_HANDLER_NULL,
+		DrawHandlerID:     constants.DRAW_HANDLER_NULL,
+		PhysicsState:      physics.Body{},
+		PhysicsParameters: physics.PhysicsParameters{Radius: 5},
 	}
 
 	return &agent
