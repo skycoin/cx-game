@@ -16,10 +16,14 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
+const maxIgnorePlatformTicks int = 10
+
 type Player struct {
 	physics.Body
 	movement.MovementComponent
 	Controlled bool
+
+	ignorePlatformTicks int
 	// RGBA            *image.RGBA
 	// ImageSize       image.Point
 	helmId        int
@@ -135,5 +139,15 @@ func (player *Player) FixedTick(planet *world.Planet) {
 			player.ActiveMovementType.GetMovementSpeedModifier()
 
 	player.Vel.X = utility.ClampF(player.Vel.X, -maxAbsVelX, maxAbsVelX)
+
+	if player.ignorePlatformTicks>0 { player.ignorePlatformTicks-- }
+	// if input axis is downwards, ignore platforms for a few frames
+	dropping := input.GetAxis(input.VERTICAL) < 0
+	if dropping {
+		player.ignorePlatformTicks = maxIgnorePlatformTicks
+	}
+	
+	player.IsIgnoringPlatforms = player.ignorePlatformTicks > 0
+
 	player.MovementAfterTick(planet)
 }

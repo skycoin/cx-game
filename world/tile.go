@@ -15,6 +15,13 @@ const (
 	TileCategoryChild
 )
 
+type TileCollisionType uint32
+
+const (
+	TileCollisionTypeSolid TileCollisionType = iota
+	TileCollisionTypePlatform
+)
+
 func (tt TileCategory) ShouldRender() bool {
 	return tt!=TileCategoryNone
 }
@@ -22,6 +29,7 @@ func (tt TileCategory) ShouldRender() bool {
 type Tile struct {
 	SpriteID spriteloader.SpriteID
 	TileCategory TileCategory
+	TileCollisionType TileCollisionType
 	TileTypeID TileTypeID
 	Name     string
 	OffsetX  int8

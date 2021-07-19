@@ -26,6 +26,8 @@ type Body struct {
 
 	Damage  DamageFunc
 	Deleted bool
+
+	IsIgnoringPlatforms bool
 }
 
 func (body Body) Transform() mgl32.Mat4 {
@@ -115,7 +117,10 @@ func (body *Body) isCollidingTop(collider worldcollider.WorldCollider, newpos cx
 	return false
 }
 
-func (body *Body) isCollidingBottom(collider worldcollider.WorldCollider, newpos cxmath.Vec2) bool {
+func (body *Body) isCollidingBottom(
+		collider worldcollider.WorldCollider,
+		newpos cxmath.Vec2,
+) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving down
 	if body.Vel.Y >= 0 {
@@ -124,7 +129,9 @@ func (body *Body) isCollidingBottom(collider worldcollider.WorldCollider, newpos
 	left := int(round32(body.Pos.X - body.Size.X/2 + eps))
 	right := int(round32(body.Pos.X + body.Size.X/2 - eps))
 	for x := left; x <= right; x++ {
-		if collider.TileIsSolid(x, bounds.bottomTile) {
+		colliding := collider.
+			TileTopIsSolid(x, bounds.bottomTile, body.IsIgnoringPlatforms)
+		if colliding {
 			return true
 		}
 	}

@@ -13,6 +13,7 @@ var TileTypeIDs struct {
 	Bedrock TileTypeID
 	DirtWall TileTypeID
 	Pipe TileTypeID
+	Platform TileTypeID
 }
 
 func RegisterTileTypes() {
@@ -22,6 +23,7 @@ func RegisterTileTypes() {
 	RegisterBedrockTileType()
 	RegisterDirtWallTileType()
 	RegisterPipeTileType()
+	RegisterPlatformTileType()
 }
 
 func RegisterEmptyTileType() {
@@ -89,5 +91,18 @@ func RegisterPipeTileType() {
 			TilingType: blob.SimpleBlobTiling,
 		},
 		Layer: MidLayer,
+	})
+}
+
+func RegisterPlatformTileType() {
+	spriteID :=
+		spriteloader.LoadSingleSprite("./assets/tile/platform.png","platform")
+	TileTypeIDs.Platform = RegisterTileType(TileType {
+		Name: "Platform",
+		Placer: DirectPlacer{
+			SpriteID: spriteID,
+			TileCollisionType: TileCollisionTypePlatform,
+		},
+		Layer: TopLayer,
 	})
 }
