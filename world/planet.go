@@ -341,7 +341,15 @@ func (planet *Planet) GetTopLayerTile(x, y int) *Tile {
 
 func (planet *Planet) TileIsSolid(x, y int) bool {
 	tile := planet.GetTopLayerTile(x, y)
-	return tile != nil && tile.TileCategory != TileCategoryNone
+	return tile != nil &&
+		tile.TileCategory != TileCategoryNone &&
+		tile.TileCollisionType == TileCollisionTypeSolid
+}
+
+func (planet *Planet) TileTopIsSolid(x,y int, ignorePlatforms bool) bool {
+	tile := planet.GetTopLayerTile(x, y)
+	return tile != nil && tile.TileCategory != TileCategoryNone &&
+		(tile.TileCollisionType == TileCollisionTypeSolid || !ignorePlatforms)
 }
 
 func (planet *Planet) TileExists(layerTiles []Tile, x, y int) bool {

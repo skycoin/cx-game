@@ -64,6 +64,10 @@ func NewDevInventory() InventoryID {
 		InventorySlot{pipeItemTypeID, 20, 0}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(4, 0)] =
 		InventorySlot{BuildToolItemTypeID, 1, 0}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(4, 0)] = InventorySlot{
+		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Platform), 
+		99, 0,
+	}
 
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0,1)] = InventorySlot{
 		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Stone), 
