@@ -5,7 +5,7 @@ import (
 )
 
 func DrawSolid(particleList []*particles.Particle) {
-	for _, particle := range particleList {
+	// for _, particle := range particleList {
 
-	}
+	// }
 }

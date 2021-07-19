@@ -3,11 +3,12 @@ package particle_physics
 import (
 	"log"
 
+	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 )
 
-type ParticlePhysicsHandler func()
+type ParticlePhysicsHandler func([]*particles.Particle)
 
 var ParticlePhysicsHandlerList [constants.NUM_PARTICLE_PHYSICS_HANDLERS]ParticlePhysicsHandler
 
@@ -26,7 +27,7 @@ func Init() {
 }
 
 func Update(dt float32) {
-	
+
 }
 
 func RegisterDrawHandler(id types.ParticlePhysicsHandlerID, handler ParticlePhysicsHandler) {

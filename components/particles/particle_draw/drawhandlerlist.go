@@ -3,18 +3,18 @@ package particle_draw
 import (
 	"log"
 
+	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/render"
 )
 
-type ParticleDrawHandler func()
+type ParticleDrawHandler func([]*particles.Particle)
 
 var ParticleDrawHandlerList [constants.NUM_PARTICLE_DRAW_HANDLERS]ParticleDrawHandler
 
 func Init() {
 
-	particleShader := render.NewShader("./assets/")
+	// particleShader := render.NewShader("./assets/shader/particles/shader.vert", "./assets/shader/particles/shader.vert")
 	RegisterDrawHandler(constants.PARTICLE_DRAW_HANDLER_1, DrawSolid)
 	RegisterDrawHandler(constants.PARTICLE_DRAW_HANDLER_2, DrawTransparent)
 

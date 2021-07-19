@@ -1,5 +1,7 @@
 package particle_draw
 
-func DrawTransparent() {
-	
+import "github.com/skycoin/cx-game/components/particles"
+
+func DrawTransparent(particleList []*particles.Particle) {
+
 }
