@@ -194,7 +194,6 @@ func main() {
 			starmap.Draw()
 		}
 
-		fmt.Println("HI")
 		updateStarField(shader, dt)
 		drawStarField(shader, VAO)
 		glfw.PollEvents()
