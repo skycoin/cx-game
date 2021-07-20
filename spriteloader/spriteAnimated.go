@@ -11,13 +11,14 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
+	"runtime"
 
-	"github.com/go-gl/gl/v2.1/gl"
-	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/mitchellh/mapstructure"
-	"github.com/skycoin/cx-game/render"
 )
+
+func init() {
+	runtime.LockOSThread()
+}
 
 /*
 	this is base struct for sprite animated
@@ -81,11 +82,8 @@ type SpriteAnimated struct {
 	spriteSheetId SpritesheetID
 }
 
-var spriteAnimated SpriteAnimated
-var spriteId SpriteID
-var stopPlay chan bool
-
-func NewSpriteAnimated(fileName string, lwin *render.Window) *SpriteAnimated {
+func NewSpriteAnimated(fileName string) *SpriteAnimated {
+	spriteAnimated := SpriteAnimated{}
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -114,11 +112,11 @@ func NewSpriteAnimated(fileName string, lwin *render.Window) *SpriteAnimated {
 		frames = append(frames, frame)
 	}
 	spriteAnimated.FrameArr = frames
-	// load sprite
-	InitSpriteloader(lwin)
-	// spriteAnimated.spriteSheetId = LoadSpriteSheetByFrames("./assets/"+spriteAnimated.Meta.Image, spriteAnimated.FrameArr)
-	spriteAnimated.spriteSheetId = LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image, 5, 7)
-	// spriteAnimated.spriteSheetId = LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image, 3, 4)
+	// assuming uniform dimensions
+	cols := spriteAnimated.Meta.Size.W / spriteAnimated.FrameArr[0].Frame.W
+	rows := spriteAnimated.Meta.Size.H / spriteAnimated.FrameArr[0].Frame.H
+	spriteAnimated.spriteSheetId =
+		LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image,rows,cols)
 	// sorting frame by Action and Order
 	sort.SliceStable(spriteAnimated.FrameArr, func(i, j int) bool {
 		frI, frJ := spriteAnimated.FrameArr[i], spriteAnimated.FrameArr[j]
@@ -129,7 +127,6 @@ func NewSpriteAnimated(fileName string, lwin *render.Window) *SpriteAnimated {
 			return frI.Order < frJ.Order
 		}
 	})
-	// fmt.Println(spriteAnimated.FrameArr)
 	return &spriteAnimated
 }
 
@@ -143,32 +140,50 @@ func filterByAction(action string, frames []Frames) []Frames {
 	return result
 }
 
-func (spriteAnimated *SpriteAnimated) Play(glwindow *glfw.Window, action string) {
-	frames := filterByAction(action, spriteAnimated.FrameArr)
-	stopPlay = make(chan bool)
-	j := 0
-	for {
-		select {
-		default:
-			time.Sleep(time.Duration(frames[j].Duration) * time.Millisecond)
-			LoadSprite(spriteAnimated.spriteSheetId, frames[j].Name, frames[j].Frame.X, frames[j].Frame.Y)
-			spriteId := GetSpriteIdByName(frames[j].Name)
-			fmt.Println("frames. ", frames[j].Action, " - ", frames[j].Order, " X.", frames[j].Frame.X, " Y.", frames[j].Frame.Y, " H.", frames[j].Frame.H, " W.", frames[j].Frame.W)
-			if err := gl.Init(); err != nil {
-				panic(err)
-			}
-			gl.ClearColor(1, 1, 1, 1)
-			gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-			DrawSpriteQuad(0, 0, 3, 2, spriteId)
-			glwindow.SwapBuffers()
-			glfw.PollEvents()
-			j++
-			if j == len(frames) {
-				j = 0
-			}
-		case <-stopPlay:
-			close(stopPlay)
-			return
+
+type Action struct {
+	SpritesheetID SpritesheetID
+	Frames []ActionFrame
+	Time float32
+	FrameIndex int
+}
+type ActionFrame struct {
+	SpriteID SpriteID
+	Duration float32
+}
+
+func (spriteAnimated SpriteAnimated) Action(name string) Action {
+	framess := filterByAction(name, spriteAnimated.FrameArr)
+	actionframes := make([]ActionFrame,len(framess))
+	for idx,frames := range framess {
+		actionframes[idx] = ActionFrame {
+			SpriteID: LoadSprite(
+				spriteAnimated.spriteSheetId,frames.Name,
+				frames.Frame.X / frames.Frame.W,
+				frames.Frame.Y / frames.Frame.H ),
+			Duration: float32(frames.Duration)/1000,
 		}
+	}
+	return Action {
+		SpritesheetID: spriteAnimated.spriteSheetId,
+		Frames: actionframes,
+	}
+}
+
+func (action *Action) SpriteID() SpriteID {
+	return action.Frame().SpriteID
+}
+
+func (action *Action) Frame() ActionFrame {
+	return action.Frames[action.FrameIndex]
+}
+
+func (action *Action) Update(dt float32) {
+	// accumulate time
+	action.Time += dt
+	// consume time with frames
+	for action.Time > action.Frame().Duration {
+		action.Time -= action.Frame().Duration
+		action.FrameIndex = (action.FrameIndex+1)%len(action.Frames)
 	}
 }

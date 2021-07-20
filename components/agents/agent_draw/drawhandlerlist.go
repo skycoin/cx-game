@@ -5,11 +5,18 @@ import (
 
 	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/components/types"
+	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
-type AgentDrawHandler func([]*agents.Agent)
+type DrawHandlerContext struct {
+	// TODO maybe pass in framebuffers here???
+	Camera *camera.Camera
+	Dt float32
+}
+
+type AgentDrawHandler func([]*agents.Agent,DrawHandlerContext)
 
 var drawHandlers [constants.NUM_AGENT_DRAW_HANDLERS]AgentDrawHandler
 
@@ -19,6 +26,7 @@ func Init() {
 
 	RegisterDrawHandler(constants.DRAW_HANDLER_NULL, NullDrawHandler)
 	RegisterDrawHandler(constants.DRAW_HANDLER_QUAD, QuadDrawHandler)
+	RegisterDrawHandler(constants.DRAW_HANDLER_ANIM, AnimatedDrawHandler)
 
 	AssertAllDrawHandlersRegistered()
 }

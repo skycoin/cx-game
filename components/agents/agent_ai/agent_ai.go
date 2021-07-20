@@ -6,7 +6,8 @@ import (
 )
 
 func UpdateAgents(agentlist *agents.AgentList, player *models.Player) {
+	ctx := AiContext { PlayerPos: player.Pos.Mgl32() }
 	for _, agent := range agentlist.Agents {
-		AiHandlerList[agent.AiHandlerID](agent)
+		aiHandlers[agent.AiHandlerID](agent,ctx)
 	}
 }

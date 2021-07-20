@@ -2,6 +2,8 @@ package components
 
 import (
 	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/components/agents/agent_ai"
 	"github.com/skycoin/cx-game/components/agents/agent_draw"
 	"github.com/skycoin/cx-game/components/agents/agent_health"
@@ -12,6 +14,17 @@ import (
 
 func Update(dt float32) {
 	particle_physics.Update(dt)
+	updateTimers(currentWorldState.AgentList.Agents, dt)
+}
+
+func updateTimers(agents []*agents.Agent, dt float32) {
+	for _,agent := range agents {
+		if agent.DrawHandlerID == constants.DRAW_HANDLER_ANIM {
+			agent.AnimationState.Action.Update(dt)
+		}
+		if agent.WaitingFor > 0 { agent.WaitingFor -= dt }
+		if agent.Died() { agent.TimeSinceDeath += dt }
+	}
 }
 
 func FixedUpdate() {

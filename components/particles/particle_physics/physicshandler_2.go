@@ -4,6 +4,6 @@ import "github.com/skycoin/cx-game/components/particles"
 
 //  Does not bounce, stops on impact, gravity
 
-func PhysicsHandler2(particleList []*particles.Particle) {
+func PhysicsHandlerGravity(particleList []*particles.Particle) {
 
 }

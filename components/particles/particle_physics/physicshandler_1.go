@@ -1,9 +1,12 @@
 package particle_physics
 
-import "github.com/skycoin/cx-game/components/particles"
+import (
+	"log"
+
+	"github.com/skycoin/cx-game/components/particles"
+)
 
 //bounces, gravity
-
-func PhysicsHandler1(particleList []*particles.Particle) {
-
+func PhysicsHandlerBounceGravity(particleList []*particles.Particle) {
+	log.Fatal("bounce gravity physics handler not implemented")
 }
