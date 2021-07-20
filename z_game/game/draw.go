@@ -4,7 +4,6 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/components"
-	"github.com/skycoin/cx-game/enemies"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render/worldctx"
@@ -35,7 +34,6 @@ func Draw() {
 		}
 	*/
 	item.DrawWorldItems(Cam)
-	enemies.DrawBasicEnemies(Cam)
 	components.Draw(CurrentPlanet.WorldState, Cam)
 	player.Draw(Cam, CurrentPlanet)
 	ui.DrawHUD(player.GetHUDState())

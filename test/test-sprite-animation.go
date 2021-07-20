@@ -30,11 +30,20 @@ func main() {
 	win := render.NewWindow(600, 400, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
-	spriteAnimated = spriteloader.NewSpriteAnimated("./assets/spiderDrill.json", &win)
-	spriteAnimated.Play(window, "Walk")
+	spriteloader.InitSpriteloader(&win)
+	spriteAnimated = spriteloader.
+		NewSpriteAnimated("./assets/spiderDrill.json")
+	action := spriteAnimated.Action("Walk")
+	time := glfw.GetTime()
 	for !window.ShouldClose() {
 		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+		newTime := glfw.GetTime()
+		dt := float32(newTime-time)
+		time = newTime
+		action.Update(dt)
+		spriteloader.DrawSpriteQuad(0,0,3,2,action.SpriteID())
 
 		glfw.PollEvents()
 		window.SwapBuffers()

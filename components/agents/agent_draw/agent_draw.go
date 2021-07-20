@@ -6,13 +6,15 @@ import (
 	"github.com/skycoin/cx-game/components/types"
 )
 
-func DrawAgents(agentslist *agents.AgentList, cam *camera.Camera) {
-	agentsToDraw := FrustumCull(agentslist.Agents, cam)
+func DrawAgents(allAgents *agents.AgentList, cam *camera.Camera) {
+	agentsToDraw := FrustumCull(allAgents.Agents, cam)
 
 	bins := BinByDrawHandlerID(agentsToDraw)
 
-	for drawHandlerID, agents := range bins {
-		GetDrawHandler(drawHandlerID)(agents)
+	ctx := DrawHandlerContext{Camera:cam}
+
+	for drawHandlerID, agentsForHandler := range bins {
+		GetDrawHandler(drawHandlerID)(agentsForHandler,ctx)
 	}
 
 }

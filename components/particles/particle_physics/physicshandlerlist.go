@@ -19,9 +19,18 @@ var ParticlePhysicsHandlerList [constants.NUM_PARTICLE_PHYSICS_HANDLERS]Particle
 // 3> "drifts" at fixed velocity, no gravity
 
 func Init() {
-	RegisterDrawHandler(constants.PARTICLE_PHYSICS_HANDLER_1, PhysicsHandler1)
-	RegisterDrawHandler(constants.PARTICLE_PHYSICS_HANDLER_2, PhysicsHandler2)
-	RegisterDrawHandler(constants.PARTICLE_PHYSICS_HANDLER_3, PhysicsHandler3)
+	RegisterPhysicsHandler(
+		constants.PARTICLE_PHYSICS_HANDLER_NULL,
+		PhysicsHandlerNull )
+	RegisterPhysicsHandler(
+		constants.PARTICLE_PHYSICS_HANDLER_BOUNCE_GRAVITY,
+		PhysicsHandlerBounceGravity )
+	RegisterPhysicsHandler(
+		constants.PARTICLE_PHYSICS_HANDLER_GRAVITY,
+		PhysicsHandlerGravity )
+	RegisterPhysicsHandler(
+		constants.PARTICLE_PHYSICS_HANDLER_DRIFT,
+		PhysicsHandlerDrift )
 
 	AssertAllParticleHandlersRegistered()
 }
@@ -30,7 +39,10 @@ func Update(dt float32) {
 
 }
 
-func RegisterDrawHandler(id types.ParticlePhysicsHandlerID, handler ParticlePhysicsHandler) {
+func RegisterPhysicsHandler(
+		id types.ParticlePhysicsHandlerID,
+		handler ParticlePhysicsHandler,
+) {
 	ParticlePhysicsHandlerList[id] = handler
 }
 

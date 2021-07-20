@@ -28,11 +28,23 @@ func main() {
 	win := render.NewWindow(600, 400, true)
 	window := win.Window
 	window.SetKeyCallback(keyCallBack)
-	spriteAnimated = spriteloader.NewSpriteAnimated("./assets/slime.json", &win)
-	spriteAnimated.Play(window, "Jump")
+	spriteloader.InitSpriteloader(&win)
+	spriteAnimated = spriteloader.
+		NewSpriteAnimated("./assets/slime.json")
+	action := spriteAnimated.Action("Idle")
+	time := glfw.GetTime()
 	for !window.ShouldClose() {
 		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+		newTime := glfw.GetTime()
+		dt := float32(newTime-time)
+		time = newTime
+		action.Update(dt)
+
+		log.Printf("slime has sprite id = %v", action.SpriteID())
+
+		spriteloader.DrawSpriteQuad(0,0,3,2,action.SpriteID())
 
 		glfw.PollEvents()
 		window.SwapBuffers()

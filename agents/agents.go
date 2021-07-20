@@ -4,6 +4,7 @@ import (
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/physics"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type Agent struct {
@@ -13,12 +14,22 @@ type Agent struct {
 	PhysicsParameters physics.PhysicsParameters
 	DrawHandlerID     types.AgentDrawHandlerID
 	HealthComponent   HealthComponent
+	TimeSinceDeath    float32
+	WaitingFor        float32
+	AnimationState    AnimationState
+}
+
+type AnimationState struct {
+	Action spriteloader.Action
 }
 
 type HealthComponent struct {
-	Health_amount int
-	Health_max    int
+	Current int
+	Max    int
 	Died          bool
+}
+func NewHealthComponent(max int) HealthComponent {
+	return HealthComponent { Current: max, Max: max, Died: false }
 }
 
 func newAgent() *Agent {
@@ -51,12 +62,20 @@ func (a *Agent) SetVelocity(x, y float32) {
 }
 
 func (a *Agent) TakeDamage(amount int) {
-	a.HealthComponent.Health_amount -= amount
-	if a.HealthComponent.Health_amount <= 0 {
+	a.HealthComponent.Current -= amount
+	if a.HealthComponent.Current <= 0 {
 		a.HealthComponent.Died = true
 	}
 }
 
 func (a *Agent) Died() bool {
 	return a.HealthComponent.Died
+}
+
+func (a *Agent) IsWaiting() bool {
+	return a.WaitingFor > 0
+}
+
+func (a *Agent) WaitFor(seconds float32) {
+	a.WaitingFor = seconds
 }
