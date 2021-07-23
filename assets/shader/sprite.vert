@@ -9,5 +9,6 @@ uniform vec2 texScale;
 uniform vec2 texOffset;
 void main() {
 	gl_Position = projection  *  world * vec4(position, 1.0);
+	//https://stackoverflow.com/questions/13901119/how-does-vectors-multiply-act-in-shader-language
 	tCoord = (texcoord+texOffset) * texScale;
 }
