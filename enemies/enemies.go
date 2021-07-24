@@ -41,3 +41,21 @@ func NewLeapingEnemy(x, y float32) *agents.Agent {
 	physics.RegisterBody(&agent.PhysicsState)
 	return &agent
 }
+
+func NewSpiderDrill(x, y float32) *agents.Agent {
+	spiderDrill := spriteloader.NewSpriteAnimated("./assets/spiderDrill.json")
+	action := spiderDrill.Action("Walk")
+	agent := agents.Agent{
+		AgentType:     constants.AGENT_ENEMY_MOB,
+		AiHandlerID:   constants.AI_HANDLER_DRILL,
+		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
+		PhysicsState: physics.Body{
+			Size: cxmath.Vec2{X: 2.0, Y: 2.0},
+			Pos:  cxmath.Vec2{X: x, Y: y},
+		},
+		HealthComponent: agents.NewHealthComponent(5),
+		AnimationState:  agents.AnimationState{Action: action},
+	}
+	physics.RegisterBody(&agent.PhysicsState)
+	return &agent
+}

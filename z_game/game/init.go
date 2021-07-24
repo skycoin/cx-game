@@ -44,7 +44,7 @@ var (
 
 	catIsScratching bool
 
-	tilePaletteSelector    ui.TilePaletteSelector
+	tilePaletteSelector ui.TilePaletteSelector
 
 	inventoryId item.InventoryID
 
@@ -104,6 +104,8 @@ func Init() {
 		CreateAgent(enemies.NewBasicEnemy(player.Pos.X+6, player.Pos.Y))
 	CurrentPlanet.WorldState.AgentList.
 		CreateAgent(enemies.NewLeapingEnemy(player.Pos.X-6, player.Pos.Y))
+	CurrentPlanet.WorldState.AgentList.
+		CreateAgent(enemies.NewSpiderDrill(player.Pos.X-6, player.Pos.Y))
 
 	sound.LoadSound("player_jump", "jump.wav")
 
