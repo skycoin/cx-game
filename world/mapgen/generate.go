@@ -1,12 +1,11 @@
-package world
+package mapgen
 
 import (
 	"math/rand"
 
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/cxmath"
-	//"github.com/skycoin/cx-game/spriteloader"
-	//"github.com/skycoin/cx-game/spriteloader/blobsprites"
+	"github.com/skycoin/cx-game/world"
 )
 
 // TODO shove in .yaml file
@@ -14,15 +13,16 @@ const persistence = 0.5
 const lacunarity = 2
 const xs = 3
 
-func (planet *Planet) placeTileOnTop(x int, tile Tile) int {
+func placeTileOnTop(planet *world.Planet, x int, tile world.Tile) int {
 	y := planet.GetHeight(x) + 1
 	tileIdx := planet.GetTileIndex(x, y)
 	planet.Layers.Top[tileIdx] = tile
 	return y
 }
 
-func (planet *Planet) placeLayer(
-	tileTypeID TileTypeID, depth,noiseScale float32,
+func placeLayer(
+	planet *world.Planet, tileTypeID world.TileTypeID,
+	depth,noiseScale float32,
 ) []cxmath.Vec2i {
 	positions := []cxmath.Vec2i {}
 	perlin := perlin.NewPerlin2D(rand.Int63(), int(planet.Width), xs, 256)
@@ -39,7 +39,7 @@ func (planet *Planet) placeLayer(
 }
 
 const oreLacunarity = lacunarity*50
-func (planet *Planet) placeOres(tile Tile, threshold float32) {
+func placeOres(planet *world.Planet,tile world.Tile, threshold float32) {
 	perlin := perlin.NewPerlin2D(rand.Int63(), int(planet.Width), xs, 256)
 	for y:=int32(0); y<planet.Height; y++ {
 		for x:=int32(0); x<planet.Width; x++ {
@@ -54,23 +54,47 @@ func (planet *Planet) placeOres(tile Tile, threshold float32) {
 	}
 }
 
-func (planet *Planet) placeBgTile(tileTypeID TileTypeID, pos cxmath.Vec2i) {
+func placeBgTile(
+		planet *world.Planet, tileTypeID world.TileTypeID, pos cxmath.Vec2i,
+) {
 	planet.PlaceTileType(tileTypeID, int(pos.X),int(pos.Y))
 }
 
+func placePoles(planet *world.Planet) {
+	w := float32(planet.Width)
+	north := int( w*(1.0/2.0 + 1.0/4.0) )
+	south := int( w*(1.0/2.0 - 1.0/4.0) )
+	placePole(planet,north)
+	placePole(planet,south)
+}
 
-func GeneratePlanet() *Planet {
-	planet := NewPlanet(100, 100)
-	planet.placeLayer(TileTypeIDs.Air, 4,1)
-	stonePositions := planet.placeLayer(TileTypeIDs.Stone, 8,2)
-	dirtPositions := planet.placeLayer(TileTypeIDs.Dirt, 4,1)
+const poleRadius int = 4
+func placePole(planet *world.Planet, origin int) {
+	for x := origin - poleRadius ; x < origin + poleRadius ; x++ {
+		for y := 0 ; y < int(planet.Height) ; y++ {
+			tile := planet.GetTile(x,y,world.TopLayer)
+			if tile.TileTypeID == world.TileTypeIDs.Dirt {
+				planet.PlaceTileType(world.TileTypeIDs.MethaneIce, x,y)
+			}
+		}
+	}
+}
+
+
+func GeneratePlanet() *world.Planet {
+	planet := world.NewPlanet(100, 100)
+	placeLayer(planet,world.TileTypeIDs.Air, 4,1)
+	stonePositions := placeLayer(planet,world.TileTypeIDs.Stone, 8,2)
+	dirtPositions := placeLayer(planet,world.TileTypeIDs.Dirt, 4,1)
 
 	for _,pos := range dirtPositions {
-		planet.placeBgTile(TileTypeIDs.DirtWall, pos)
+		placeBgTile(planet,world.TileTypeIDs.DirtWall, pos)
 	}
 	for _,pos := range stonePositions {
-		planet.placeBgTile(TileTypeIDs.DirtWall, pos)
+		placeBgTile(planet,world.TileTypeIDs.DirtWall, pos)
 	}
+
+	placePoles(planet)
 
 	return planet
 }
