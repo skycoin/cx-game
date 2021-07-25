@@ -8,10 +8,10 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
-	"runtime"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -116,7 +116,7 @@ func NewSpriteAnimated(fileName string) *SpriteAnimated {
 	cols := spriteAnimated.Meta.Size.W / spriteAnimated.FrameArr[0].Frame.W
 	rows := spriteAnimated.Meta.Size.H / spriteAnimated.FrameArr[0].Frame.H
 	spriteAnimated.spriteSheetId =
-		LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image,rows,cols)
+		LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image, rows, cols)
 	// sorting frame by Action and Order
 	sort.SliceStable(spriteAnimated.FrameArr, func(i, j int) bool {
 		frI, frJ := spriteAnimated.FrameArr[i], spriteAnimated.FrameArr[j]
@@ -140,12 +140,11 @@ func filterByAction(action string, frames []Frames) []Frames {
 	return result
 }
 
-
 type Action struct {
 	SpritesheetID SpritesheetID
-	Frames []ActionFrame
-	Time float32
-	FrameIndex int
+	Frames        []ActionFrame
+	Time          float32
+	FrameIndex    int
 }
 type ActionFrame struct {
 	SpriteID SpriteID
@@ -154,19 +153,19 @@ type ActionFrame struct {
 
 func (spriteAnimated SpriteAnimated) Action(name string) Action {
 	framess := filterByAction(name, spriteAnimated.FrameArr)
-	actionframes := make([]ActionFrame,len(framess))
-	for idx,frames := range framess {
-		actionframes[idx] = ActionFrame {
+	actionframes := make([]ActionFrame, len(framess))
+	for idx, frames := range framess {
+		actionframes[idx] = ActionFrame{
 			SpriteID: LoadSprite(
-				spriteAnimated.spriteSheetId,frames.Name,
-				frames.Frame.X / frames.Frame.W,
-				frames.Frame.Y / frames.Frame.H ),
-			Duration: float32(frames.Duration)/1000,
+				spriteAnimated.spriteSheetId, frames.Name,
+				frames.Frame.X/frames.Frame.W,
+				frames.Frame.Y/frames.Frame.H),
+			Duration: float32(frames.Duration) / 1000,
 		}
 	}
-	return Action {
+	return Action{
 		SpritesheetID: spriteAnimated.spriteSheetId,
-		Frames: actionframes,
+		Frames:        actionframes,
 	}
 }
 
@@ -184,6 +183,6 @@ func (action *Action) Update(dt float32) {
 	// consume time with frames
 	for action.Time > action.Frame().Duration {
 		action.Time -= action.Frame().Duration
-		action.FrameIndex = (action.FrameIndex+1)%len(action.Frames)
+		action.FrameIndex = (action.FrameIndex + 1) % len(action.Frames)
 	}
 }

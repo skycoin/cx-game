@@ -14,9 +14,10 @@ const eps = 0.05
 
 type DamageFunc func(damage int)
 type Body struct {
-	Pos  cxmath.Vec2
-	Vel  cxmath.Vec2
-	Size cxmath.Vec2
+	Pos       cxmath.Vec2
+	Vel       cxmath.Vec2
+	Size      cxmath.Vec2
+	Direction float32
 
 	PreviousTransform     mgl32.Mat4
 	InterpolatedTransform mgl32.Mat4
@@ -118,8 +119,8 @@ func (body *Body) isCollidingTop(collider worldcollider.WorldCollider, newpos cx
 }
 
 func (body *Body) isCollidingBottom(
-		collider worldcollider.WorldCollider,
-		newpos cxmath.Vec2,
+	collider worldcollider.WorldCollider,
+	newpos cxmath.Vec2,
 ) bool {
 	bounds := body.bounds(newpos)
 	// don't bother checking if not moving down

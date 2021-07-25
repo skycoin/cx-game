@@ -13,7 +13,7 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 		spriteloader.DrawSpriteQuadOptions(
 			agent.PhysicsState.Pos.X-ctx.Camera.X,
 			agent.PhysicsState.Pos.Y-ctx.Camera.Y,
-			agent.PhysicsState.Size.X,
+			agent.PhysicsState.Size.X*agent.PhysicsState.Direction,
 			agent.PhysicsState.Size.Y,
 			spriteID, drawOpts,
 		)
