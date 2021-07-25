@@ -1,8 +1,11 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
@@ -37,6 +40,7 @@ func Draw() {
 	components.Draw(CurrentPlanet.WorldState, Cam)
 	player.Draw(Cam, CurrentPlanet)
 	ui.DrawHUD(player.GetHUDState())
+	ui.DrawString(fmt.Sprint(fps.CurFps), mgl32.Vec4{1, 0.2, 0.3, 1}, ui.AlignCenter, baseCtx.PushLocal(mgl32.Translate3D(-11.5, 5, 0)))
 
 	// tile - air line (green)
 	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(

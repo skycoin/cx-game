@@ -14,10 +14,10 @@ func NewAgentList() *AgentList {
 
 func NewDevAgentList() *AgentList {
 	agentList := NewAgentList()
-	player := newAgent()
+	player := newAgent(len(agentList.Agents))
 	player.AgentType = constants.AGENT_PLAYER
 	agentList.CreateAgent(player)
-	enemy := newAgent()
+	enemy := newAgent(len(agentList.Agents))
 	enemy.AgentType = constants.AGENT_ENEMY_MOB
 	agentList.CreateAgent(enemy)
 

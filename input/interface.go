@@ -26,7 +26,7 @@ func GetButton(button string) bool {
 func GetButtonDown(button string) bool {
 	key, ok := ButtonsToKeys[button]
 	if !ok {
-		log.Printf("KEY [%s] IS NOT MAPPED!",button)
+		log.Printf("KEY [%s] IS NOT MAPPED!", button)
 		return false
 	}
 	pressed, ok := KeysPressedDown[key]
@@ -54,10 +54,10 @@ func GetKey(key glfw.Key) bool {
 	return KeysPressed[key]
 }
 func GetKeyDown(key glfw.Key) bool {
-	return KeysPressedDown[key]
+	return window_.GetKey(key) == glfw.Press
 }
 func GetKeyUp(key glfw.Key) bool {
-	return KeysPressedUp[key]
+	return window_.GetKey(key) == glfw.Press
 }
 
 func GetLastKey() glfw.Key {

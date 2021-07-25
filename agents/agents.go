@@ -8,6 +8,7 @@ import (
 )
 
 type Agent struct {
+	AgentId           int
 	AgentType         constants.AgentType
 	AiHandlerID       types.AgentAiHandlerID
 	PhysicsState      physics.Body
@@ -34,7 +35,7 @@ func NewHealthComponent(max int) HealthComponent {
 	return HealthComponent{Current: max, Max: max, Died: false}
 }
 
-func newAgent() *Agent {
+func newAgent(id int) *Agent {
 	agent := Agent{
 		AgentType:         constants.AGENT_UNDEFINED,
 		AiHandlerID:       constants.AI_HANDLER_NULL,
