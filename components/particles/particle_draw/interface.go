@@ -27,4 +27,6 @@ func Init() {
 	AssertAllDrawHandlersRegistered()
 
 	spriteloader.LoadSingleSprite("./assets/particles/particle.png", "particle")
+
+	quad_vao = makeQuadVao()
 }

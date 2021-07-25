@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/types"
@@ -56,4 +57,27 @@ func GetShader(id types.ParticleDrawHandlerId) *render.Shader {
 
 func GetDrawHandler(id types.ParticleDrawHandlerId) ParticleDrawHandler {
 	return ParticleDrawHandlerList[id]
+}
+
+func makeQuadVao() uint32 {
+	vertices := []float32{
+		-0.5, -0.5, 0, 1,
+		-0.5, 0.5, 0, 0,
+		0.5, -0.5, 1, 1,
+
+		-0.5, 0.5, 0, 0,
+		0.5, -0.5, 1, 1,
+		0.5, 0.5, 1, 0,
+	}
+	gl.GenVertexArrays(1, &quad_vao)
+	gl.BindVertexArray(quad_vao)
+
+	var vao uint32
+	gl.GenBuffers(1, &vao)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vao)
+	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(0, 4, gl.FLOAT, false, 0, gl.PtrOffset(0))
+
+	return vao
 }
