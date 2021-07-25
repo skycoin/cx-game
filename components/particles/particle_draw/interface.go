@@ -4,6 +4,7 @@ import (
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 func DrawParticles(particleList *particles.ParticleList, cam *camera.Camera) {
@@ -17,6 +18,7 @@ func DrawParticles(particleList *particles.ParticleList, cam *camera.Camera) {
 
 }
 func Init() {
+	RegisterDrawHandler(constants.PARTICLE_DRAW_HANDLER_NULL, DrawNull)
 	RegisterDrawHandler(
 		constants.PARTICLE_DRAW_HANDLER_SOLID, DrawSolid)
 	RegisterDrawHandler(
@@ -24,4 +26,5 @@ func Init() {
 
 	AssertAllDrawHandlersRegistered()
 
+	spriteloader.LoadSingleSprite("./assets/particles/particle.png", "particle")
 }

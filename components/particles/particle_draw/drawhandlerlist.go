@@ -8,7 +8,6 @@ import (
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/constants/particle_constants"
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -28,25 +27,29 @@ func AssertAllDrawHandlersRegistered() {
 func RegisterDrawHandler(id types.ParticleDrawHandlerId, handler ParticleDrawHandler) {
 	ParticleDrawHandlerList[id] = handler
 	//register shaders
+	fmt.Println("THIS HAS BEEN CALLED WITH ", id)
 	RegisterShader(id)
 }
 
 func RegisterShader(id types.ParticleDrawHandlerId) {
 	switch id {
-	case particle_constants.DRAW_HANDLER_SOLID:
+	case constants.PARTICLE_DRAW_HANDLER_NULL:
+		ParticleShaderList[id] = nil
+	case constants.PARTICLE_DRAW_HANDLER_SOLID:
 		shader := render.NewShader("./assets/shader/particles/solid.vert", "./assets/shader/particles/solid.frag")
 		ParticleShaderList[id] = shader
-	case particle_constants.DRAW_HANDLER_ALPHA_BLENDED:
+	case constants.PARTICLE_DRAW_HANDLER_TRANSPARENT:
 		shader := render.NewShader("./assets/shader/particles/blended.vert",
-			".assets/shader/particles/blended.frag")
+			"./assets/shader/particles/blended.frag")
 		ParticleShaderList[id] = shader
 	}
 }
 
 func GetShader(id types.ParticleDrawHandlerId) *render.Shader {
 	shader, ok := ParticleShaderList[id]
+
 	if !ok {
-		log.Fatal("GET SHADER FAILED!", fmt.Sprintf("shader, look %v"), id)
+		log.Fatal("GET SHADER FAILED!", fmt.Sprintf("shader, look %v", id))
 	}
 	return shader
 }

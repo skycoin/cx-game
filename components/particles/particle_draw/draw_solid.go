@@ -5,11 +5,11 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/particles"
-	"github.com/skycoin/cx-game/constants/particle_constants"
+	"github.com/skycoin/cx-game/constants"
 )
 
 func DrawSolid(particleList []*particles.Particle, cam *camera.Camera) {
-	shader := GetShader(particle_constants.DRAW_HANDLER_SOLID)
+	shader := GetShader(constants.PARTICLE_DRAW_HANDLER_SOLID)
 	shader.Use()
 	projection := cam.GetProjectionMatrix()
 	shader.SetMat4("projection", &projection)
@@ -26,7 +26,7 @@ func DrawSolid(particleList []*particles.Particle, cam *camera.Camera) {
 		})
 		shader.SetInt("particle_texture", 0)
 
-		gl.BindTexture(gl.TEXTURE_2D, particle.Texture)
+		gl.BindTexture(gl.TEXTURE_2D, uint32(particle.Texture))
 		gl.DrawArrays(gl.TRIANGLES, 0, 6)
 
 	}

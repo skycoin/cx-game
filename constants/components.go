@@ -28,7 +28,8 @@ const (
 
 //particle drawhandler constants
 const (
-	PARTICLE_DRAW_HANDLER_SOLID types.ParticleDrawHandlerId = iota
+	PARTICLE_DRAW_HANDLER_NULL types.ParticleDrawHandlerId = iota
+	PARTICLE_DRAW_HANDLER_SOLID
 	PARTICLE_DRAW_HANDLER_TRANSPARENT
 
 	NUM_PARTICLE_DRAW_HANDLERS // DO NOT SET THIS MANUALLY

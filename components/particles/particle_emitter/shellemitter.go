@@ -4,9 +4,8 @@ import (
 	"math/rand"
 
 	"github.com/skycoin/cx-game/components/particles"
-	"github.com/skycoin/cx-game/constants/particle_constants"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type ParticleEmitter struct {
@@ -32,9 +31,9 @@ func (emitter *ParticleEmitter) Emit() {
 	emitter.particleList.AddParticle(
 		emitter.position,
 		cxmath.Vec2{rand.Float32(), rand.Float32()},
-		spriteloader.GetSpriteIdByName("basic-agent"),
+		0,
 		1,
-		particle_constants.DRAW_HANDLER_SOLID,
-		particle_constants.PHYSICS_HANDLER_NO_GRAVITY,
+		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT,
+		constants.PARTICLE_PHYSICS_HANDLER_DRIFT,
 	)
 }

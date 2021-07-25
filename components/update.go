@@ -15,6 +15,7 @@ import (
 
 func Update(dt float32) {
 	updateTimers(currentWorldState.AgentList.Agents, dt)
+	emitter.SetData(currentPlayer.Pos)
 	emitter.Emit()
 }
 

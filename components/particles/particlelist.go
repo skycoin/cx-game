@@ -14,7 +14,7 @@ type ParticleList struct {
 func (pl *ParticleList) AddParticle(
 	position cxmath.Vec2,
 	velocity cxmath.Vec2,
-	texture spriteloader.SpriteID,
+	texture uint32,
 	duration float32,
 	drawHandlerId types.ParticleDrawHandlerId,
 	physiscHandlerID types.ParticlePhysicsHandlerID,
@@ -24,6 +24,7 @@ func (pl *ParticleList) AddParticle(
 		Velocity:         velocity,
 		Duration:         duration,
 		TimeToLive:       duration,
+		Texture:          spriteloader.GetSpriteIdByNameUint32("particle"),
 		DrawHandlerID:    drawHandlerId,
 		PhysicsHandlerID: physiscHandlerID,
 	}

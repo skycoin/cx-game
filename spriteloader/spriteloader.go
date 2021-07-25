@@ -167,6 +167,13 @@ func GetSpriteIdByName(name string) SpriteID {
 	}
 	return spriteId
 }
+func GetSpriteIdByNameUint32(name string) uint32 {
+	//to get texture uint32
+	spriteId := GetSpriteIdByName(name)
+	sprite := sprites[spriteId]
+	spriteSheet := spritesheets[sprite.spriteSheetId]
+	return spriteSheet.tex
+}
 
 var SpriteRenderDistance float32 = 10
 
