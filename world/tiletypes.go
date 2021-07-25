@@ -9,6 +9,7 @@ import (
 var TileTypeIDs struct {
 	Air TileTypeID
 	Dirt TileTypeID
+	MethaneIce TileTypeID
 	Stone TileTypeID
 	Bedrock TileTypeID
 	DirtWall TileTypeID
@@ -19,6 +20,7 @@ var TileTypeIDs struct {
 func RegisterTileTypes() {
 	RegisterEmptyTileType()
 	RegisterDirtTileType()
+	RegisterMethaneIceTileType()
 	RegisterStoneTileType()
 	RegisterBedrockTileType()
 	RegisterDirtWallTileType()
@@ -64,6 +66,16 @@ func RegisterDirtTileType() {
 			},
 			TilingType: blob.FullBlobTiling,
 		},
+		Layer: TopLayer,
+	})
+}
+
+func RegisterMethaneIceTileType() {
+	spriteID := spriteloader.
+		LoadSingleSprite("./assets/tile/methane-ice.png", "Methane Ice")
+	TileTypeIDs.MethaneIce = RegisterTileType(TileType {
+		Name: "Methane Ice",
+		Placer: DirectPlacer { SpriteID: spriteID },
 		Layer: TopLayer,
 	})
 }

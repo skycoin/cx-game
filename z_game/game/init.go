@@ -18,6 +18,7 @@ import (
 	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/world/mapgen"
 )
 
 func init() {
@@ -79,7 +80,7 @@ func Init() {
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
 	//CurrentPlanet = world.NewDevPlanet()
-	CurrentPlanet = world.GeneratePlanet()
+	CurrentPlanet = mapgen.GeneratePlanet()
 	Cam.PlanetWidth = float32(CurrentPlanet.Width)
 
 	components.Init(CurrentPlanet, Cam, player)
