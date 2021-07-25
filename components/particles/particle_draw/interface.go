@@ -23,10 +23,12 @@ func Init() {
 		constants.PARTICLE_DRAW_HANDLER_SOLID, DrawSolid)
 	RegisterDrawHandler(
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT, DrawTransparent)
+	RegisterDrawHandler(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED, DrawTransparentInstanced)
 
 	AssertAllDrawHandlersRegistered()
 
 	spriteloader.LoadSingleSprite("./assets/particles/particle.png", "particle")
 
 	quad_vao = makeQuadVao()
+	initDrawInstanced()
 }

@@ -35,7 +35,7 @@ func (emitter *ParticleEmitter) Emit() {
 		cxmath.Vec2{rand.Float32()*5 - 2.5, rand.Float32() + 0.5*35},
 		spriteloader.GetSpriteIdByNameUint32("particle"),
 		5,
-		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT,
+		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
 		constants.PARTICLE_PHYSICS_HANDLER_GRAVITY,
 	)
 }

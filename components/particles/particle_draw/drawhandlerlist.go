@@ -43,6 +43,9 @@ func RegisterShader(id types.ParticleDrawHandlerId) {
 		shader := render.NewShader("./assets/shader/particles/blended.vert",
 			"./assets/shader/particles/blended.frag")
 		ParticleShaderList[id] = shader
+	case constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED:
+		shader := render.NewShader("./assets/shader/particles/blended_instanced.vert", "./assets/shader/particles/blended_instanced.frag")
+		ParticleShaderList[id] = shader
 	}
 }
 
