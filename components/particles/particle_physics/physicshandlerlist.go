@@ -6,9 +6,10 @@ import (
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/world"
 )
 
-type ParticlePhysicsHandler func([]*particles.Particle)
+type ParticlePhysicsHandler func([]*particles.Particle, *world.Planet)
 
 var ParticlePhysicsHandlerList [constants.NUM_PARTICLE_PHYSICS_HANDLERS]ParticlePhysicsHandler
 

@@ -18,7 +18,7 @@ func Update(dt float32) {
 
 	//update lifetimes
 	currentWorldState.ParticleList.Update(dt)
-	
+
 	emitter.SetData(currentPlayer.Pos)
 	emitter.Emit()
 }

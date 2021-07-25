@@ -3,7 +3,7 @@ package particles
 import (
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/physics"
 )
 
 //for now keep one global particles list, redo later
@@ -20,11 +20,11 @@ func (pl *ParticleList) AddParticle(
 	physiscHandlerID types.ParticlePhysicsHandlerID,
 ) {
 	newParticle := Particle{
-		Position:         position,
-		Velocity:         velocity,
+		Verlet:           NewVerlet(position, velocity),
+		Body:             physics.Body{Pos: position, Vel: velocity},
 		Duration:         duration,
 		TimeToLive:       duration,
-		Texture:          spriteloader.GetSpriteIdByNameUint32("particle"),
+		Texture:          texture,
 		DrawHandlerID:    drawHandlerId,
 		PhysicsHandlerID: physiscHandlerID,
 	}

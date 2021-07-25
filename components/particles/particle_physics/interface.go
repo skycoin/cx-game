@@ -27,6 +27,6 @@ func Update(particleList *particles.ParticleList, planet *world.Planet) {
 	bins := BinByPhysicsHandlerID(particleList.Particles)
 
 	for physicsType, par := range bins {
-		GetParticlePhysicsHandler(physicsType)(par)
+		GetParticlePhysicsHandler(physicsType)(par, planet)
 	}
 }
