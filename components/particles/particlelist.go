@@ -33,12 +33,33 @@ func (pl *ParticleList) AddParticle(
 }
 
 func (pl *ParticleList) Update(dt float32) {
-	for _, par := range pl.Particles {
-		par.Update(dt)
+	particlesToDelete := make([]int, 0)
+	for i, par := range pl.Particles {
 
+		// -1 is infinite
+		if par.Duration != -1 {
+			par.TimeToLive -= dt
+			if par.TimeToLive <= 0 {
+				particlesToDelete = append(particlesToDelete, i)
+			}
+		}
 	}
+	pl.deleteParticles(particlesToDelete)
 }
 
 func (pl *ParticleList) deleteParticles(indexes []int) {
-
+	var newParticleList []*Particle
+	for i, par := range pl.Particles {
+		toBeDeleted := false
+		for _, j := range indexes {
+			if i == j {
+				toBeDeleted = true
+				break
+			}
+		}
+		if !toBeDeleted {
+			newParticleList = append(newParticleList, par)
+		}
+	}
+	pl.Particles = newParticleList
 }

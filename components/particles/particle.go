@@ -14,7 +14,3 @@ type Particle struct {
 	DrawHandlerID    types.ParticleDrawHandlerId
 	PhysicsHandlerID types.ParticlePhysicsHandlerID
 }
-
-func (p *Particle) Update(dt float32) {
-
-}

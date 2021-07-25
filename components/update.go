@@ -15,6 +15,10 @@ import (
 
 func Update(dt float32) {
 	updateTimers(currentWorldState.AgentList.Agents, dt)
+
+	//update lifetimes
+	currentWorldState.ParticleList.Update(dt)
+	
 	emitter.SetData(currentPlayer.Pos)
 	emitter.Emit()
 }

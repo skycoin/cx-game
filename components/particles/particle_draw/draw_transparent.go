@@ -1,8 +1,6 @@
 package particle_draw
 
 import (
-	"fmt"
-
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
@@ -36,7 +34,6 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 	}
 	shader := GetShader(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT)
 
-	fmt.Println(particleList[0].Position)
 	shader.Use()
 	//accomplished by setting blendFunc
 	gl.Enable(gl.BLEND)
@@ -56,7 +53,7 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 		shader.SetMat4("projection", &projection)
 		shader.SetMat4("world", &world)
 		shader.SetVec4("color", &mgl32.Vec4{1, 1, 1,
-			(particle.Duration - particle.TimeToLive) / particle.Duration,
+			particle.TimeToLive / particle.Duration,
 		})
 		shader.SetInt("particle_texture", 0)
 
