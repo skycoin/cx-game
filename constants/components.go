@@ -6,6 +6,7 @@ const (
 	AI_HANDLER_NULL types.AgentAiHandlerID = iota
 	AI_HANDLER_WALK
 	AI_HANDLER_LEAP
+	AI_HANDLER_DRILL
 
 	NUM_AI_HANDLERS
 )

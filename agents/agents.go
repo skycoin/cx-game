@@ -17,6 +17,7 @@ type Agent struct {
 	TimeSinceDeath    float32
 	WaitingFor        float32
 	AnimationState    AnimationState
+	Direction         int
 }
 
 type AnimationState struct {
@@ -25,11 +26,12 @@ type AnimationState struct {
 
 type HealthComponent struct {
 	Current int
-	Max    int
-	Died          bool
+	Max     int
+	Died    bool
 }
+
 func NewHealthComponent(max int) HealthComponent {
-	return HealthComponent { Current: max, Max: max, Died: false }
+	return HealthComponent{Current: max, Max: max, Died: false}
 }
 
 func newAgent() *Agent {
