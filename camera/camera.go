@@ -34,7 +34,7 @@ type Camera struct {
 	Zoom       float32
 	movSpeed   float32
 	window     *render.Window
-	Frustum    Frustum
+	Frustum    cxmath.Frustum
 	focus_area focusArea
 	freeCam    bool
 	PlanetWidth float32

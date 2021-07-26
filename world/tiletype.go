@@ -39,7 +39,7 @@ func (placer DirectPlacer) ItemSpriteID() spriteloader.SpriteID {
 type TileTypeID uint32
 type TileType struct {
 	Name string
-	Layer Layer
+	Layer LayerID
 	Placer Placer
 	Invulnerable bool
 	ID TileTypeID

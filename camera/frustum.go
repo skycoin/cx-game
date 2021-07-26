@@ -4,13 +4,6 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 )
 
-type Frustum struct {
-	Left   int
-	Right  int
-	Top    int
-	Bottom int
-}
-
 var (
 	//distance from center to to left/right edges
 	halfWidth float32 = 16

@@ -55,7 +55,7 @@ func mousePressCallback(
 	if tilePaletteSelector.IsMultiTileSelected() {
 		didPlaceMultiTile := CurrentPlanet.TryPlaceMultiTile(
 			screenX, screenY,
-			world.Layer(tilePaletteSelector.LayerIndex),
+			world.LayerID(tilePaletteSelector.LayerIndex),
 			tilePaletteSelector.GetSelectedMultiTile(),
 			Cam,
 		)
@@ -65,7 +65,7 @@ func mousePressCallback(
 	} else {
 		didPlaceTile := CurrentPlanet.TryPlaceTile(
 			screenX, screenY,
-			world.Layer(tilePaletteSelector.LayerIndex),
+			world.LayerID(tilePaletteSelector.LayerIndex),
 			tilePaletteSelector.GetSelectedTile(),
 			Cam,
 		)

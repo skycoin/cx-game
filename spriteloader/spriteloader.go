@@ -319,28 +319,7 @@ func DrawSpriteQuadCustom(
 	// for setting up the projection matrix.
 	// clarify responsibilities later
 	sprite := sprites[spriteId]
-	spritesheet := spritesheets[sprite.spriteSheetId]
 
-	// bind texture
-	gl.Enable(gl.TEXTURE_2D)
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-	// NOTE depth test is disabled for now,
-	// as we assume that objects are drawn in the correct order
-	gl.Disable(gl.DEPTH_TEST)
-	gl.DepthFunc(gl.LESS)
-	gl.ActiveTexture(gl.TEXTURE0)
-	gl.BindTexture(gl.TEXTURE_2D, spritesheet.tex)
-
-	gl.UseProgram(program)
-	gl.Uniform1ui(
-		gl.GetUniformLocation(program, gl.Str("ourTexture\x00")),
-		spritesheet.tex,
-	)
-	gl.Uniform2f(
-		gl.GetUniformLocation(program, gl.Str("texScale\x00")),
-		spritesheet.xScale, spritesheet.yScale,
-	)
 	gl.Uniform2f(
 		gl.GetUniformLocation(program, gl.Str("texOffset\x00")),
 		float32(sprite.x), float32(sprite.y),
@@ -355,31 +334,7 @@ func DrawSpriteQuadCustom(
 		1, false, &worldTransform[0],
 	)
 
-	w := float32(Window.Width)
-	h := float32(Window.Height)
-	projectTransform := mgl32.Ortho(
-		0, w,
-		0, h,
-		-1, 1,
-	)
-	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(program, gl.Str("projection\x00")),
-		1, false, &projectTransform[0],
-	)
-
-	gl.BindVertexArray(render.QuadVao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
-
-	// restore texScale and texOffset to defaults
-	// TODO separate GPU programs such that this becomes unecessary
-	gl.Uniform2f(
-		gl.GetUniformLocation(program, gl.Str("texScale\x00")),
-		1, 1,
-	)
-	gl.Uniform2f(
-		gl.GetUniformLocation(program, gl.Str("texOffset\x00")),
-		0, 0,
-	)
 }
 
 type DrawOptions struct {

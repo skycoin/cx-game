@@ -188,7 +188,7 @@ func (selector *TilePaletteSelector) GetSelectedTile() world.Tile {
 func (selector *TilePaletteSelector) AddTile(
 	tile world.Tile,
 	x, y int,
-	layerIndex world.Layer,
+	layerIndex world.LayerID,
 ) {
 	idx := y*selector.Width + x
 	layer := selector.Layers[layerIndex]
@@ -198,7 +198,7 @@ func (selector *TilePaletteSelector) AddTile(
 func (selector *TilePaletteSelector) AddMultiTile(
 	multiTile world.MultiTile,
 	left, top int,
-	layerIndex world.Layer,
+	layerIndex world.LayerID,
 ) {
 	for _, tile := range multiTile.Tiles() {
 		selector.AddTile(

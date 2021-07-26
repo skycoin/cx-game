@@ -16,7 +16,7 @@ const xs = 3
 func placeTileOnTop(planet *world.Planet, x int, tile world.Tile) int {
 	y := planet.GetHeight(x) + 1
 	tileIdx := planet.GetTileIndex(x, y)
-	planet.Layers.Top[tileIdx] = tile
+	planet.Layers[world.TopLayer].Tiles[tileIdx] = tile
 	return y
 }
 
@@ -47,8 +47,9 @@ func placeOres(planet *world.Planet,tile world.Tile, threshold float32) {
 			yf := float32(y)
 			sample := perlin.Noise(xf, yf, persistence, oreLacunarity, 8)
 			tileIdx := planet.GetTileIndex(int(x),int(y))
-			if sample > threshold && planet.Layers.Top[tileIdx].Name=="Stone" {
-				planet.Layers.Top[tileIdx] = tile
+			if sample > threshold &&
+				planet.Layers[world.TopLayer].Tiles[tileIdx].Name=="Stone" {
+				planet.Layers[world.TopLayer].Tiles[tileIdx] = tile
 			}
 		}
 	}

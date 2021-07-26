@@ -8,24 +8,47 @@ import (
 
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/render/blob"
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
-type Layer int
+type LayerID int
 
 const (
-	BgLayer  Layer = 0
-	MidLayer Layer = 1
-	TopLayer Layer = 2
+	BgLayer LayerID = iota
+	MidLayer
+	TopLayer
+
+	NumLayers // DO NOT SET MANUALLY
 )
 
-type Layers struct {
-	Background []Tile
-	Mid        []Tile
-	Top        []Tile
+func (id LayerID) Valid() bool {
+	return id >= 0 && id < NumLayers
+}
+
+type Layer struct {
+	Tiles []Tile
+	Spritesheet spriteloader.Spritesheet
+}
+
+type Layers [NumLayers]Layer
+
+func NewLayer(numTiles int32) Layer {
+	// TODO pack spritesheet
+	return Layer {
+		Tiles: make([]Tile, numTiles),
+	}
+}
+
+func NewLayers(numTiles int32) Layers{
+	layers := Layers{}
+	for i := LayerID(0) ; i < NumLayers ; i++ {
+		layers[i] = NewLayer(numTiles)
+	}
+	return layers
 }
 
 type Planet struct {
@@ -36,6 +59,8 @@ type Planet struct {
 	collidingLines  []float32
 	collidingLinesX int
 	collidingLinesY int
+
+	shader          *render.Shader
 }
 
 func NewPlanet(x, y int32) *Planet {
@@ -43,12 +68,15 @@ func NewPlanet(x, y int32) *Planet {
 		WorldState: NewDevWorldState(),
 		Width:      x,
 		Height:     y,
-		Layers: Layers{
-			Background: make([]Tile, x*y),
-			Mid:        make([]Tile, x*y),
-			Top:        make([]Tile, x*y),
-		},
+		Layers: NewLayers(x*y),
+		shader: render.NewShader(
+			"./assets/shader/world.vert", "./assets/shader/sprite.frag" ),
 	}
+	planet.shader.Use()
+	defer planet.shader.StopUsing()
+	// TODO only need one of these
+	planet.shader.SetVec4F("color",1,1,1,1)
+	planet.shader.SetVec4F("colour",1,0,0,1)
 
 	return &planet
 }
@@ -66,44 +94,6 @@ func (planet *Planet) GetNeighbours(layer []Tile, x, y int) blob.Neighbours {
 	}
 }
 
-func (planet *Planet) DrawLayer(tiles []Tile, cam *camera.Camera) {
-	for _, pos := range cam.TilesInView() {
-		x := pos.X
-		y := pos.Y
-		idx := planet.GetTileIndex(int(x), int(y))
-		if idx >= 0 {
-			tile := tiles[idx]
-
-			// FIXME temporarily disabling frustum check
-			// because of planet wrapping issues
-			if tile.TileCategory.ShouldRender() &&
-				cam.IsInBounds(int(x), int(y)) {
-				spriteloader.DrawSpriteQuad(
-					float32(x)-cam.X, float32(y)-cam.Y,
-					1, 1,
-					(tile.SpriteID),
-				)
-				// TODO replace this with something more performant
-				// draw extra versions to achieve wrap around
-				spriteloader.DrawSpriteQuad(
-					float32(x-planet.Width)-cam.X, float32(y)-cam.Y,
-					1, 1,
-					(tile.SpriteID),
-				)
-				spriteloader.DrawSpriteQuad(
-					float32(x+planet.Width)-cam.X, float32(y)-cam.Y,
-					1, 1,
-					(tile.SpriteID),
-				)
-			}
-		}
-	}
-}
-
-func (planet *Planet) Draw(cam *camera.Camera, layer Layer) {
-	planet.DrawLayer(planet.GetLayer(layer), cam)
-}
-
 func (planet *Planet) GetTileIndex(x, y int) int {
 	// apply wrap-around
 	x = cxmath.PositiveModulo(x, int(planet.Width))
@@ -116,18 +106,22 @@ func (planet *Planet) GetTileIndex(x, y int) int {
 func (planet *Planet) ShortestDisplacement(from, to mgl32.Vec2) mgl32.Vec2 {
 	disp := to.Sub(from)
 	w := float32(planet.Width)
+	disp[0] = math32.Mod(disp[0], w)
 	if disp.X() > w/2 {
 		to = to.Add(mgl32.Vec2{-w, 0})
-	} else if disp.X() < -w/2 {
+	}
+	if disp.X() < -w/2 {
 		to = to.Add(mgl32.Vec2{w, 0})
 	}
-	return to.Sub(from)
+	disp = to.Sub(from)
+	disp[0] = math32.Mod(disp[0], w)
+	return disp
 }
 
-func (planet *Planet) GetTile(x, y int, layer Layer) *Tile {
+func (planet *Planet) GetTile(x, y int, layerID LayerID) *Tile {
 	idx := planet.GetTileIndex(x, y)
 	if idx >= 0 {
-		return &planet.GetLayer(layer)[planet.GetTileIndex(x, y)]
+		return &planet.GetLayerTiles(layerID)[planet.GetTileIndex(x, y)]
 	} else {
 		return nil
 	}
@@ -136,7 +130,7 @@ func (planet *Planet) GetTile(x, y int, layer Layer) *Tile {
 func (planet *Planet) GetAllTilesUnique() []Tile {
 	tiles := []Tile{}
 	seenTiles := map[Tile]bool{}
-	for _, tile := range planet.Layers.Top {
+	for _, tile := range planet.Layers[TopLayer].Tiles {
 		_, seen := seenTiles[tile]
 		if !seen {
 			tiles = append(tiles, tile)
@@ -148,7 +142,7 @@ func (planet *Planet) GetAllTilesUnique() []Tile {
 
 func (planet *Planet) TryPlaceTile(
 	x, y float32,
-	layer Layer,
+	layer LayerID,
 	tile Tile,
 	cam *camera.Camera,
 ) bool {
@@ -160,10 +154,8 @@ func (planet *Planet) TryPlaceTile(
 	tileY := int32(math.Round((float64(worldCoords.Y()))))
 	if tileX >= 0 && tileX < planet.Width && tileY >= 0 && tileY < planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
-		planetLayer := planet.GetLayer(layer)
-		if len(planetLayer) == 0 {
-			return false
-		}
+		if !layer.Valid() { return false }
+		planetLayer := planet.GetLayerTiles(layer)
 		if planetLayer[tileIdx].TileCategory == TileCategoryChild ||
 			planetLayer[tileIdx].TileCategory == TileCategoryMulti {
 			planet.RemoveParentTile(planetLayer, tileIdx)
@@ -179,7 +171,7 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 	if !ok {
 		log.Fatalf("cannot find tile type for id [%v]", tileTypeID)
 	}
-	tilesInLayer := planet.GetLayer(tileType.Layer)
+	tilesInLayer := planet.GetLayerTiles(tileType.Layer)
 	tilesInLayer[planet.GetTileIndex(x, y)] =
 		tileType.CreateTile(TileCreationOptions{
 			Neighbours: planet.GetNeighbours(tilesInLayer, x, y),
@@ -214,7 +206,7 @@ func (planet *Planet) updateTile(tilesInLayer []Tile, x, y int) {
 }
 
 func (planet *Planet) TryPlaceMultiTile(
-	x, y float32, layer Layer, multiTile MultiTile, cam *camera.Camera,
+	x, y float32, layerID LayerID, multiTile MultiTile, cam *camera.Camera,
 ) bool {
 	// click relative to camera
 	camCoords := mgl32.Vec4{x / render.PixelsPerTile, y / render.PixelsPerTile, 0, 1}
@@ -224,7 +216,7 @@ func (planet *Planet) TryPlaceMultiTile(
 	tileY := int32(math.Round((float64(worldCoords.Y()))))
 	if tileX >= 0 && tileX < planet.Width && tileY >= 0 && tileY < planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
-		planetLayer := planet.GetLayer(layer)
+		planetLayer := planet.GetLayerTiles(layerID)
 		if len(planetLayer) == 0 {
 			return false
 		}
@@ -232,7 +224,7 @@ func (planet *Planet) TryPlaceMultiTile(
 			planetLayer[tileIdx].TileCategory == TileCategoryMulti {
 			planet.RemoveParentTile(planetLayer, tileIdx)
 		}
-		planet.PlaceMultiTile(int(tileX), int(tileY), layer, multiTile)
+		planet.PlaceMultiTile(int(tileX), int(tileY), layerID, multiTile)
 		return true
 	}
 	return false
@@ -275,22 +267,14 @@ func (planet *Planet) RemoveParentTile(layer []Tile, idx int) {
 
 }
 
-func (planet *Planet) GetLayer(layer Layer) []Tile {
-	switch layer {
-	case BgLayer:
-		return planet.Layers.Background
-	case MidLayer:
-		return planet.Layers.Mid
-	case TopLayer:
-		return planet.Layers.Top
-	}
-	return []Tile{}
+func (planet *Planet) GetLayerTiles(layerID LayerID) []Tile {
+	return planet.Layers[layerID].Tiles
 }
 
 func (planet *Planet) PlaceMultiTile(
-	left, bottom int, layer Layer, mt MultiTile,
+	left, bottom int, layerID LayerID, mt MultiTile,
 ) {
-	planetLayer := planet.GetLayer(layer)
+	planetLayer := planet.GetLayerTiles(layerID)
 
 	// place master tile
 	planetLayer[planet.GetTileIndex(left, bottom)] = Tile{
@@ -323,7 +307,7 @@ func (planet *Planet) PlaceMultiTile(
 func (planet *Planet) GetHeight(x int) int {
 	for y := int(planet.Height - 1); y >= 0; y-- {
 		idx := planet.GetTileIndex(x, y)
-		if planet.Layers.Top[idx].TileCategory != TileCategoryNone {
+		if planet.Layers[TopLayer].Tiles[idx].TileCategory != TileCategoryNone {
 			return y
 		}
 	}
@@ -333,7 +317,7 @@ func (planet *Planet) GetHeight(x int) int {
 func (planet *Planet) GetTopLayerTile(x, y int) *Tile {
 	index := planet.GetTileIndex(x, y)
 	if index >= 0 {
-		return &planet.Layers.Top[index]
+		return &planet.Layers[TopLayer].Tiles[index]
 	} else {
 		return nil
 	}
@@ -432,14 +416,14 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 }
 
 func (planet *Planet) DamageTile(
-	x, y int, layer Layer,
+	x, y int, layerID LayerID,
 ) (tileCopy Tile, destroyed bool) {
 	tileIdx := planet.GetTileIndex(x, y)
 	if tileIdx < 0 {
 		// invalid tile; nothing to damage
 		return
 	}
-	tile := &planet.GetLayer(layer)[tileIdx]
+	tile := &planet.GetLayerTiles(layerID)[tileIdx]
 	_tileCopy := *tile
 	// TODO create tile chunk from collision point rather than tile center
 	particles.CreateTileChunks(float32(x), float32(y), tile.SpriteID)
@@ -451,7 +435,7 @@ func (planet *Planet) DamageTile(
 	_destroyed := tile.Durability <= 0
 	if _destroyed {
 		*tile = NewEmptyTile()
-		planet.updateSurroundingTiles(planet.GetLayer(layer), x, y)
+		planet.updateSurroundingTiles(planet.GetLayerTiles(layerID), x, y)
 	}
 	return _tileCopy, _destroyed
 }
