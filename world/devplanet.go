@@ -30,7 +30,7 @@ func NewDevPlanet() *Planet {
 	for x := 0; x < int(planet.Width); x++ {
 		for y := 4; y < 6; y++ {
 			tileIdx := planet.GetTileIndex(x, y)
-			planet.Layers.Top[tileIdx] = Tile{
+			planet.Layers[TopLayer].Tiles[tileIdx] = Tile{
 				TileCategory: TileCategoryNormal,
 				SpriteID:     (spriteloader.GetSpriteIdByName("Dirt")),
 			}
@@ -40,7 +40,7 @@ func NewDevPlanet() *Planet {
 	for x := 0; x < int(planet.Width); x++ {
 		for y := 2; y < 4; y++ {
 			tileIdx := planet.GetTileIndex(x, y)
-			planet.Layers.Top[tileIdx] = Tile{
+			planet.Layers[TopLayer].Tiles[tileIdx] = Tile{
 				TileCategory: TileCategoryNormal,
 				SpriteID:     (spriteloader.GetSpriteIdByName("Stone")),
 			}
@@ -50,7 +50,7 @@ func NewDevPlanet() *Planet {
 	for x := 0; x < int(planet.Width); x++ {
 		for y := 0; y < 2; y++ {
 			tileIdx := planet.GetTileIndex(x, y)
-			planet.Layers.Top[tileIdx] = Tile{
+			planet.Layers[TopLayer].Tiles[tileIdx] = Tile{
 				TileCategory: TileCategoryNormal,
 				SpriteID:     (spriteloader.GetSpriteIdByName("Bedrock")),
 			}

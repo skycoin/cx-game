@@ -133,8 +133,11 @@ func SwitchBackgrounds(bg Background) {
 func InitStarField(window *render.Window, player *models.Player, cam *camera.Camera) {
 	p = player
 	Cam = cam
-	shader = render.NewShader("./assets/shader/starfield/shader.vert", "./assets/shader/starfield/shader.frag")
+	shader = render.NewShader(
+		"./assets/shader/starfield/shader.vert",
+		"./assets/shader/starfield/shader.frag" )
 	shader.Use()
+	defer shader.StopUsing()
 
 	for i := 1; i < 12; i++ {
 		tex := getGradient(uint(i))
@@ -222,6 +225,21 @@ func UpdateStarField(dt float32) {
 	}
 }
 
+func configureGlForStarfield() {
+	gl.ActiveTexture(gl.TEXTURE0)
+	meta := spriteloader.GetSpriteMetadata(stars[0].SpriteId)
+	gl.BindTexture(gl.TEXTURE_2D, meta.GpuTex )
+	shader.SetVec2F("texScale", meta.ScaleX, meta.ScaleY )
+	projection := mgl32.Ortho(
+		0, float32(spriteloader.Window.Width),
+		0, float32(spriteloader.Window.Height),
+		-1, 1,
+	)
+	shader.SetMat4("projection", &projection)
+	gl.BindVertexArray(render.QuadVao)
+
+}
+
 //draws stars via drawquad function
 func DrawStarField() {
 	gl.Enable(gl.BLEND)
@@ -230,16 +248,48 @@ func DrawStarField() {
 		starmap.Draw()
 	}
 	shader.Use()
-	for _, star := range stars {
-		if star.IsGaussian {
-			shader.SetInt("texture_1d", 1)
-		} else {
-			shader.SetInt("texture_1d", 4)
-			shader.SetFloat("gradValue", star.GradientValue)
-		}
+	defer shader.StopUsing()
+
+	bins := binStars()
+
+	configureGlForStarfield()
+
+	shader.SetInt("texture_1d",1)
+	for _,star := range bins.Gaussian {
 		shader.SetFloat("intensity", getIntensity(star.Intensity))
-		spriteloader.DrawSpriteQuadCustom(star.X, star.Y, star.Size, star.Size, star.SpriteId, shader.ID)
+		spriteloader.DrawSpriteQuadCustom(
+			star.X, star.Y, star.Size, star.Size,
+			star.SpriteId, shader.ID )
 	}
+
+	shader.SetInt("texture_1d", 4)
+	for _,star := range bins.NotGaussian {
+		shader.SetFloat("gradValue", star.GradientValue)
+		shader.SetFloat("intensity", getIntensity(star.Intensity))
+		spriteloader.DrawSpriteQuadCustom(
+			star.X, star.Y, star.Size, star.Size,
+			star.SpriteId, shader.ID )
+	}
+}
+
+func binStars() StarBins {
+	bins := StarBins {
+		Gaussian: make([]*Star,0,len(stars)),
+		NotGaussian: make([]*Star,0,len(stars)),
+	}
+	for _,star := range stars {
+		if star.IsGaussian {
+			bins.Gaussian = append(bins.Gaussian, star)
+		} else {
+			bins.NotGaussian = append(bins.NotGaussian, star)
+		}
+	}
+	return bins
+}
+
+type StarBins struct {
+	Gaussian []*Star
+	NotGaussian []*Star
 }
 
 func getIntensity(intensity float32) float32 {

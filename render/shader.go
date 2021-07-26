@@ -122,6 +122,22 @@ func (s *Shader) SetMat4(name string, value *mgl32.Mat4) {
 	gl.UniformMatrix4fv(gl.GetUniformLocation(s.ID, gl.Str(name+"\x00")), 1, false, &value[0])
 }
 
+func (s *Shader) Locate(name string) int32 {
+	return gl.GetUniformLocation(s.ID, gl.Str(name+"\x00"))
+}
+
+func (s *Shader) SetMat4s(name string, values []mgl32.Mat4) {
+	location := s.Locate(name)
+	count := int32(len(values))
+	gl.UniformMatrix4fv(location, count, false, &values[0][0])
+}
+
+func (s *Shader) SetVec2s(name string, values []mgl32.Vec2) {
+	location := s.Locate(name)
+	count := int32(len(values))
+	gl.Uniform2fv(location, count, &values[0][0])
+}
+
 func checkCompileErrors(shader uint32, tType string) {
 	var success int32
 	var infolog string
