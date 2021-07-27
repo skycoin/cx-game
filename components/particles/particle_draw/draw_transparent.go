@@ -19,9 +19,9 @@ const (
 )
 
 func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
-	shader := GetShader(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT)
+	program := GetProgram(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT)
 
-	shader.Use()
+	program.Use()
 	//accomplished by setting blendFunc
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)
@@ -38,14 +38,14 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 		// 	-600.0/2/32, 600.0/2/32,
 		// )
 		projection := cam.GetProjectionMatrix()
-		shader.SetMat4("projection", &projection)
+		program.SetMat4("projection", &projection)
 		view := cam.GetView()
-		shader.SetMat4("view", &view)
-		shader.SetMat4("world", &world)
-		shader.SetVec4("color", &mgl32.Vec4{1, 1, 1,
+		program.SetMat4("view", &view)
+		program.SetMat4("world", &world)
+		program.SetVec4("color", &mgl32.Vec4{1, 1, 1,
 			particle.TimeToLive / particle.Duration,
 		})
-		shader.SetInt("particle_texture", 0)
+		program.SetInt("particle_texture", 0)
 
 		gl.BindTexture(gl.TEXTURE_2D, particle.Texture)
 		gl.BindVertexArray(quad_vao)
@@ -60,12 +60,12 @@ func DrawTransparentInstanced(particleList []*particles.Particle, cam *camera.Ca
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)
 
-	shader := GetShader(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED)
-	shader.Use()
+	program := GetProgram(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED)
+	program.Use()
 
 	projection := cam.GetProjectionMatrix()
-	shader.SetMat4("projection", &projection)
-	shader.SetInt("particle_texture", 0)
+	program.SetMat4("projection", &projection)
+	program.SetInt("particle_texture", 0)
 
 	gl.BindTexture(gl.TEXTURE_2D, particleList[0].Texture)
 	data_list := make([]float32, 0, len(particleList)*4)

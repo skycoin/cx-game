@@ -4,22 +4,23 @@ import (
 	"log"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 var (
-	lineShader *Shader
-	vao        uint32
-	vbo        uint32
+	lineProgram Program
+	lines_vao   uint32
+	lines_vbo   uint32
 )
 
 func InitDrawLines() {
-	gl.GenVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
+	gl.GenVertexArrays(1, &lines_vao)
+	gl.BindVertexArray(lines_vao)
 
-	gl.GenBuffers(1, &vbo)
+	gl.GenBuffers(1, &lines_vbo)
 
 	gl.EnableVertexAttribArray(0)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BindBuffer(gl.ARRAY_BUFFER, lines_vbo)
 	gl.BufferData(
 		gl.ARRAY_BUFFER,
 		4*4,
@@ -32,7 +33,7 @@ func InitDrawLines() {
 }
 
 func (window *Window) DrawLines(
-	lineArray []float32, color []float32, ctx Context,
+	lineArray []float32, color mgl32.Vec3, ctx Context,
 ) {
 	// DEBUG: check if the array have the right amount of elements
 	if len(lineArray) < 4 {
@@ -40,24 +41,21 @@ func (window *Window) DrawLines(
 	} else if len(lineArray)%2 != 0 {
 		log.Panicln("line array doesn't have the right amount of floats values to draw the lines")
 	}
-	if len(color) > 4 || len(color) < 3 {
-		log.Panicln("wrong amount of floats values for a color (need 3 or 4)")
-	}
 
-	lineShader.Use()
-
-	gl.BindVertexArray(vao)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	lineProgram.Use()
+	gl.BindBuffer(gl.ARRAY_BUFFER, lines_vbo)
 	gl.BufferData(
 		gl.ARRAY_BUFFER,
-		4*len(lineArray),
+		len(lineArray)*4,
 		gl.Ptr(lineArray),
 		gl.STATIC_DRAW,
 	)
 
-	lineShader.SetVec3F("uColor", color[0], color[1], color[2])
+	defer lineProgram.StopUsing()
+	lineProgram.SetVec3("uColor", &color)
 	mvp := ctx.MVP()
-	lineShader.SetMat4("uProjection", &mvp)
+	lineProgram.SetMat4("uProjection", &mvp)
 
+	gl.BindVertexArray(lines_vao)
 	gl.DrawArrays(gl.LINES, 0, int32(len(lineArray)/2))
 }

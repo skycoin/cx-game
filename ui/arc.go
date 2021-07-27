@@ -10,11 +10,11 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
-var arcShader *render.Shader
+var arcProgram render.Program
 
 var arcSprite spriteloader.SpriteID
 func initArc() {
-	arcShader = render.NewShader(
+	arcProgram = render.CompileProgram(
 		"./assets/shader/mvp.vert", "./assets/shader/arc.frag" )
 	arcSprite = spriteloader.
 		LoadSingleSprite("./assets/hud/hud_status_fill.png","hud_status_fill")
@@ -22,20 +22,20 @@ func initArc() {
 
 func DrawArc(mvp mgl32.Mat4, fullness float32) {
 	gl.ActiveTexture(gl.TEXTURE0)
-	arcShader.Use()
-	defer arcShader.StopUsing()
+	arcProgram.Use()
+	defer arcProgram.StopUsing()
 	metadata := spriteloader.GetSpriteMetadata(arcSprite)
-	arcShader.SetUint("tex", metadata.GpuTex)
+	arcProgram.SetUint("tex", metadata.GpuTex)
 	gl.BindTexture(gl.TEXTURE_2D, metadata.GpuTex)
 
-	arcShader.SetMat4("mvp",&mvp)
-	arcShader.SetVec4F("color",1,1,1,1)
+	arcProgram.SetMat4("mvp",&mvp)
+	arcProgram.SetVec4F("color",1,1,1,1)
 	// FIXME note that this only works because sprite is in its own image.
 	// Update this with a more robust strategy at some point.
-	arcShader.SetVec2F("offset",0,0)
-	arcShader.SetVec2F("scale",1,1)
+	arcProgram.SetVec2F("offset",0,0)
+	arcProgram.SetVec2F("scale",1,1)
 
-	arcShader.SetFloat("value",2*math.Pi*fullness)
+	arcProgram.SetFloat("value",2*math.Pi*fullness)
 
 	gl.Disable(gl.DEPTH_TEST)
 	gl.BindVertexArray(render.QuadVao)

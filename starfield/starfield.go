@@ -122,7 +122,7 @@ var (
 
 	//variable for star move speed
 	speed  float32 = 4
-	shader *render.Shader
+	program render.Program
 )
 
 func SwitchBackgrounds(bg Background) {
@@ -133,11 +133,11 @@ func SwitchBackgrounds(bg Background) {
 func InitStarField(window *render.Window, player *models.Player, cam *camera.Camera) {
 	p = player
 	Cam = cam
-	shader = render.NewShader(
+	program = render.CompileProgram(
 		"./assets/shader/starfield/shader.vert",
 		"./assets/shader/starfield/shader.frag" )
-	shader.Use()
-	defer shader.StopUsing()
+	program.Use()
+	defer program.StopUsing()
 
 	for i := 1; i < 12; i++ {
 		tex := getGradient(uint(i))
@@ -162,7 +162,7 @@ func InitStarField(window *render.Window, player *models.Player, cam *camera.Cam
 	star2SpriteSheetId := spriteloader.LoadSpriteSheet(file2)
 
 	ortho := mgl32.Ortho2D(0, float32(window.Width), 0, float32(window.Height))
-	shader.SetMat4("projection", &ortho)
+	program.SetMat4("projection", &ortho)
 
 	//load all sprites from spritesheet
 	for y := 0; y < 4; y++ {
@@ -229,13 +229,13 @@ func configureGlForStarfield() {
 	gl.ActiveTexture(gl.TEXTURE0)
 	meta := spriteloader.GetSpriteMetadata(stars[0].SpriteId)
 	gl.BindTexture(gl.TEXTURE_2D, meta.GpuTex )
-	shader.SetVec2F("texScale", meta.ScaleX, meta.ScaleY )
+	program.SetVec2F("texScale", meta.ScaleX, meta.ScaleY )
 	projection := mgl32.Ortho(
 		0, float32(spriteloader.Window.Width),
 		0, float32(spriteloader.Window.Height),
 		-1, 1,
 	)
-	shader.SetMat4("projection", &projection)
+	program.SetMat4("projection", &projection)
 	gl.BindVertexArray(render.QuadVao)
 
 }
@@ -247,28 +247,28 @@ func DrawStarField() {
 	if background == BACKGROUND_NEBULA {
 		starmap.Draw()
 	}
-	shader.Use()
-	defer shader.StopUsing()
+	program.Use()
+	defer program.StopUsing()
 
 	bins := binStars()
 
 	configureGlForStarfield()
 
-	shader.SetInt("texture_1d",1)
+	program.SetInt("texture_1d",1)
 	for _,star := range bins.Gaussian {
-		shader.SetFloat("intensity", getIntensity(star.Intensity))
+		program.SetFloat("intensity", getIntensity(star.Intensity))
 		spriteloader.DrawSpriteQuadCustom(
 			star.X, star.Y, star.Size, star.Size,
-			star.SpriteId, shader.ID )
+			star.SpriteId, uint32(program) )
 	}
 
-	shader.SetInt("texture_1d", 4)
+	program.SetInt("texture_1d", 4)
 	for _,star := range bins.NotGaussian {
-		shader.SetFloat("gradValue", star.GradientValue)
-		shader.SetFloat("intensity", getIntensity(star.Intensity))
+		program.SetFloat("gradValue", star.GradientValue)
+		program.SetFloat("intensity", getIntensity(star.Intensity))
 		spriteloader.DrawSpriteQuadCustom(
 			star.X, star.Y, star.Size, star.Size,
-			star.SpriteId, shader.ID )
+			star.SpriteId, uint32(program) )
 	}
 }
 

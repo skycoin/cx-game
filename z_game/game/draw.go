@@ -48,16 +48,16 @@ func Draw() {
 	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
 		int(player.Pos.X), int(player.Pos.Y))
 	if len(collidingTileLines) > 2 {
-		Cam.DrawLines(collidingTileLines, []float32{0.0, 1.0, 0.0}, baseCtx)
+		Cam.DrawLines(collidingTileLines, mgl32.Vec3{0.0, 1.0, 0.0}, baseCtx)
 	}
 
 	// body bounding box (blue)
-	Cam.DrawLines(player.GetBBoxLines(), []float32{0.0, 0.0, 1.0}, baseCtx)
+	Cam.DrawLines(player.GetBBoxLines(), mgl32.Vec3{0.0, 0.0, 1.0}, baseCtx)
 
 	// colliding line from body (red)
 	collidingLines := player.GetCollidingLines()
 	if len(collidingLines) > 2 {
-		Cam.DrawLines(collidingLines, []float32{1.0, 0.0, 0.0}, baseCtx)
+		Cam.DrawLines(collidingLines, mgl32.Vec3{1.0, 0.0, 0.0}, baseCtx)
 	}
 
 	ui.DrawDialogueBoxes(camCtx)

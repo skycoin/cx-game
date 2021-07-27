@@ -3,6 +3,7 @@ package world
 import (
 	"log"
 	"math"
+	"strconv"
 
 	"github.com/go-gl/mathgl/mgl32"
 
@@ -14,6 +15,8 @@ import (
 	"github.com/skycoin/cx-game/render/blob"
 	"github.com/skycoin/cx-game/spriteloader"
 )
+
+const NUM_INSTANCES = 100
 
 type LayerID int
 
@@ -60,7 +63,21 @@ type Planet struct {
 	collidingLinesX int
 	collidingLinesY int
 
-	shader *render.Shader
+	program render.Program
+}
+
+func newPlanetProgram() render.Program {
+	config := render.NewShaderConfig(
+		"./assets/shader/world.vert", "./assets/shader/sprite.frag")
+	config.Define("NUM_INSTANCES", strconv.Itoa(NUM_INSTANCES))
+	program := config.Compile()
+
+	program.Use()
+	defer program.StopUsing()
+	// TODO only need one of these
+	program.SetVec4F("color", 1, 1, 1, 1)
+	program.SetVec4F("colour", 1, 0, 0, 1)
+	return program
 }
 
 func NewPlanet(x, y int32) *Planet {
@@ -69,15 +86,8 @@ func NewPlanet(x, y int32) *Planet {
 		Width:      x,
 		Height:     y,
 		Layers:     NewLayers(x * y),
-		shader: render.NewShader(
-			"./assets/shader/world.vert", "./assets/shader/sprite.frag"),
+		program:    newPlanetProgram(),
 	}
-	planet.shader.Use()
-	defer planet.shader.StopUsing()
-	// TODO only need one of these
-	planet.shader.SetVec4F("color", 1, 1, 1, 1)
-	planet.shader.SetVec4F("colour", 1, 0, 0, 1)
-
 	return &planet
 }
 

@@ -72,9 +72,9 @@ func initOpenGL() {
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	log.Println("OpenGL version", version)
 
-	lineShader = NewShader(
-		"./assets/shader/line.vert", "./assets/shader/line.frag")
 	InitDrawLines()
+	lineProgram = CompileProgram(
+		"./assets/shader/line.vert", "./assets/shader/line.frag")
 }
 
 func CreateProgram(vertexShaderSource string, fragmentShaderSource string) uint32 {
