@@ -9,8 +9,9 @@ import (
 )
 
 func DrawSolid(particleList []*particles.Particle, cam *camera.Camera) {
-	shader := GetShader(constants.PARTICLE_DRAW_HANDLER_SOLID)
-	shader.Use()
+	program := GetProgram(constants.PARTICLE_DRAW_HANDLER_SOLID)
+	program.Use()
+	defer program.StopUsing()
 
 	gl.Disable(gl.BLEND)
 	for _, particle := range particleList {
@@ -24,12 +25,12 @@ func DrawSolid(particleList []*particles.Particle, cam *camera.Camera) {
 			-800.0/2/32, 800.0/2/32,
 			-600.0/2/32, 600.0/2/32,
 		)
-		shader.SetMat4("projection", &projection)
-		shader.SetMat4("world", &world)
-		shader.SetVec4("color", &mgl32.Vec4{1, 1, 1,
+		program.SetMat4("projection", &projection)
+		program.SetMat4("world", &world)
+		program.SetVec4("color", &mgl32.Vec4{1, 1, 1,
 			particle.TimeToLive / particle.Duration,
 		})
-		shader.SetInt("particle_texture", 0)
+		program.SetInt("particle_texture", 0)
 
 		gl.BindTexture(gl.TEXTURE_2D, particle.Texture)
 		gl.BindVertexArray(quad_vao)

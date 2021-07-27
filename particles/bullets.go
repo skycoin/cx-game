@@ -17,16 +17,16 @@ type Bullet struct {
 }
 
 var (
-	bulletShader *render.Shader
+	bulletProgram render.Program
 	bullets []Bullet
 )
 
 func InitBullets() {
-	bulletShader = render.NewShader(
+	bulletProgram = render.CompileProgram(
 		"./assets/shader/mvp.vert", "./assets/shader/color.frag" )
-	bulletShader.Use()
-	bulletShader.SetVec4F("colour",1,0,0,1)
-	bulletShader.StopUsing()
+	bulletProgram.Use()
+	bulletProgram.SetVec4F("colour",1,0,0,1)
+	bulletProgram.StopUsing()
 	bullets = []Bullet {}
 }
 
@@ -43,7 +43,7 @@ func (bullet Bullet) WorldTransform() mgl32.Mat4 {
 
 func (bullet Bullet) draw(ctx render.WorldContext) {
 	mvp := ctx.ModelToModelViewProjection(bullet.WorldTransform())
-	bulletShader.SetMat4("mvp", &mvp)
+	bulletProgram.SetMat4("mvp", &mvp)
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
@@ -63,17 +63,17 @@ func configureGlForBullet() {
 }
 
 func DrawBullets(ctx render.WorldContext) {
-	bulletShader.Use()
+	bulletProgram.Use()
 	projection := ctx.Projection()
-	bulletShader.SetMat4("projection", &projection)
+	bulletProgram.SetMat4("projection", &projection)
 	configureGlForBullet()
 	// TODO add texture
-	// bulletShader.SetUint("tex", bulletShader.gpuTex)
+	// bulletProgram.SetUint("tex", bulletProgram.gpuTex)
 
 	for _,bullet := range bullets {
 		bullet.draw(ctx)
 	}
-	bulletShader.StopUsing()
+	bulletProgram.StopUsing()
 }
 
 func TickBullets(dt float32) {

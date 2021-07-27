@@ -4,12 +4,13 @@ import (
 	"log"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
-var lineProgram uint32
+var lineProgram Program
 
 func (window *Window) DrawLines(
-		lineArray []float32, color []float32, ctx Context,
+		lineArray []float32, color mgl32.Vec3, ctx Context,
 ) {
 	// DEBUG: check if the array have the right amount of elements
 	if len(lineArray) < 6 {
@@ -17,11 +18,9 @@ func (window *Window) DrawLines(
 	} else if len(lineArray)%3 != 0 {
 		log.Panicln("line array doesn't have the right amount of floats values to draw the lines")
 	}
-	if len(color) > 4 || len(color) < 3 {
-		log.Panicln("wrong amount of floats values for a color (need 3 or 4)")
-	}
 
-	gl.UseProgram(lineProgram)
+	lineProgram.Use()
+	defer lineProgram.StopUsing()
 
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
@@ -41,18 +40,11 @@ func (window *Window) DrawLines(
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
 	gl.EnableVertexAttribArray(0)
 
-	gl.Uniform3fv(
-		gl.GetUniformLocation(lineProgram, gl.Str("uColor\x00")),
-		1,
-		&color[0],
-	)
+	lineProgram.SetVec3("uColor",&color)
 
 	mvp := ctx.MVP()
 
-	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(lineProgram, gl.Str("uProjection\x00")),
-		1, false, &mvp[0],
-	)
+	lineProgram.SetMat4("uProjection",&mvp)
 
 	gl.BindVertexArray(vao)
 	gl.DrawArrays(gl.LINES, 0, int32(len(lineArray)/2))

@@ -1,4 +1,3 @@
-#version 410
 in vec2 tCoord;
 out vec4 frag_colour;
 uniform sampler2D ourTexture;

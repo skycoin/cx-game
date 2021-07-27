@@ -18,8 +18,8 @@ type PositionedTile struct {
 
 func (planet *Planet) DrawLayer(layer Layer, cam *camera.Camera) {
 	//configureGlForPlanet()
-	planet.shader.Use()
-	defer planet.shader.StopUsing()
+	planet.program.Use()
+	defer planet.program.StopUsing()
 
 	w := int(planet.Width)
 	// split up planet into 2 hemispheres to achieve wrap around
@@ -48,7 +48,7 @@ func (planet *Planet) DrawHemisphere(
 		mgl32.Vec2 { center, 0 } ) // to.y doesn't matter here
 
 	projection := cam.GetProjectionMatrix()
-	planet.shader.
+	planet.program.
 		SetMat4("projection",&projection )
 
 	visible := planet.visibleTiles(layer, cam, left, right)
@@ -111,7 +111,7 @@ func (planet *Planet) drawSpritesheetBin(
 	texScales := [100]mgl32.Vec2{}
 	texOffsets := [100]mgl32.Vec2{}
 	gl.BindTexture(gl.TEXTURE_2D, tex)
-	planet.shader.SetUint("ourTexture",tex)
+	planet.program.SetUint("ourTexture",tex)
 
 	for _,positionedTile := range tiles {
 		tile := positionedTile.Tile
@@ -128,16 +128,16 @@ func (planet *Planet) drawSpritesheetBin(
 
 		instance++
 		if instance==100 {
-			planet.shader.SetMat4s("worlds",worlds[:])
-			planet.shader.SetVec2s("texScales",texScales[:])
-			planet.shader.SetVec2s("texOffsets",texOffsets[:])
+			planet.program.SetMat4s("worlds",worlds[:])
+			planet.program.SetVec2s("texScales",texScales[:])
+			planet.program.SetVec2s("texOffsets",texOffsets[:])
 			gl.DrawArraysInstanced(gl.TRIANGLES,0,6, instance)
 			instance=0
 		}
 	}
 	// draw leftovers
-	planet.shader.SetMat4s("worlds",worlds[:])
-	planet.shader.SetVec2s("texScales",texScales[:])
-	planet.shader.SetVec2s("texOffsets",texOffsets[:])
+	planet.program.SetMat4s("worlds",worlds[:])
+	planet.program.SetVec2s("texScales",texScales[:])
+	planet.program.SetVec2s("texOffsets",texOffsets[:])
 	gl.DrawArraysInstanced(gl.TRIANGLES,0,6, instance)
 }

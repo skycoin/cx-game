@@ -15,7 +15,7 @@ import (
 type ParticleDrawHandler func([]*particles.Particle, *camera.Camera)
 
 var ParticleDrawHandlerList [constants.NUM_PARTICLE_DRAW_HANDLERS]ParticleDrawHandler
-var ParticleShaderList map[types.ParticleDrawHandlerId]*render.Shader = make(map[types.ParticleDrawHandlerId]*render.Shader)
+var ParticleProgramList map[types.ParticleDrawHandlerId]render.Program = make(map[types.ParticleDrawHandlerId]render.Program)
 
 func AssertAllDrawHandlersRegistered() {
 	for _, handler := range ParticleDrawHandlerList {
@@ -34,23 +34,23 @@ func RegisterDrawHandler(id types.ParticleDrawHandlerId, handler ParticleDrawHan
 
 func RegisterShader(id types.ParticleDrawHandlerId) {
 	switch id {
-	case constants.PARTICLE_DRAW_HANDLER_NULL:
-		ParticleShaderList[id] = nil
+	//case constants.PARTICLE_DRAW_HANDLER_NULL:
+    //  ParticleProgramList[id] = nil
 	case constants.PARTICLE_DRAW_HANDLER_SOLID:
-		shader := render.NewShader("./assets/shader/particles/solid.vert", "./assets/shader/particles/solid.frag")
-		ParticleShaderList[id] = shader
+		shader := render.CompileProgram("./assets/shader/particles/solid.vert", "./assets/shader/particles/solid.frag")
+		ParticleProgramList[id] = shader
 	case constants.PARTICLE_DRAW_HANDLER_TRANSPARENT:
-		shader := render.NewShader("./assets/shader/particles/blended.vert",
+		shader := render.CompileProgram("./assets/shader/particles/blended.vert",
 			"./assets/shader/particles/blended.frag")
-		ParticleShaderList[id] = shader
+		ParticleProgramList[id] = shader
 	case constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED:
-		shader := render.NewShader("./assets/shader/particles/blended_instanced.vert", "./assets/shader/particles/blended_instanced.frag")
-		ParticleShaderList[id] = shader
+		shader := render.CompileProgram("./assets/shader/particles/blended_instanced.vert", "./assets/shader/particles/blended_instanced.frag")
+		ParticleProgramList[id] = shader
 	}
 }
 
-func GetShader(id types.ParticleDrawHandlerId) *render.Shader {
-	shader, ok := ParticleShaderList[id]
+func GetProgram(id types.ParticleDrawHandlerId) render.Program {
+	shader, ok := ParticleProgramList[id]
 
 	if !ok {
 		log.Fatal("GET SHADER FAILED!", fmt.Sprintf("shader, look %v", id))

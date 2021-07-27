@@ -21,7 +21,7 @@ type Particle struct {
 	TimeToLive       float32
 }
 var particles = []Particle{}
-var particleShader *render.Shader
+var particleProgram render.Program
 const initialVelocityScale = 3
 const tileChunkLifetime = 1
 const chunkSize = 0.2
@@ -31,7 +31,7 @@ const chunksPerChip = 5
 const gravity = 2
 
 func InitParticles() {
-	particleShader = render.NewShader(
+	particleProgram = render.CompileProgram(
 		"./assets/shader/simple.vert", "./assets/shader/particle.frag" )
 	InitLasers()
 	InitBullets()
@@ -75,9 +75,9 @@ func configureGlForParticles() {
 
 func DrawChunkParticles(ctx render.Context) {
 	configureGlForParticles()
-	particleShader.Use()
+	particleProgram.Use()
 	// particles share both shader and projection matrix - set it only once
-	particleShader.SetMat4("projection", &ctx.Projection)
+	particleProgram.SetMat4("projection", &ctx.Projection)
 	for _,particle := range particles {
 		DrawChunkParticle(particle,ctx)
 	}
@@ -104,20 +104,20 @@ func (particle Particle) GetTransform() mgl32.Mat4 {
 
 func DrawChunkParticle(particle Particle, ctx render.Context) {
 	metadata := spriteloader.GetSpriteMetadata(particle.Sprite)
-	particleShader.SetUint("tex", metadata.GpuTex)
+	particleProgram.SetUint("tex", metadata.GpuTex)
 	gl.BindTexture(gl.TEXTURE_2D, metadata.GpuTex)
 
 	alpha := particle.TimeToLive / laserDuration
 	alpha = 1
-	particleShader.SetVec4F("color", 1,1,1, alpha)
+	particleProgram.SetVec4F("color", 1,1,1, alpha)
 
 	world := ctx.World.Mul4(particle.GetTransform())
-	particleShader.SetMat4("world", &world)
+	particleProgram.SetMat4("world", &world)
 
 	// TODO apply offset and scale to achieve a view 
 	// of only the 2x2 chunk of the tile we are interested in
-	particleShader.SetVec2F("offset", 0,0)
-	particleShader.SetVec2F("scale", 1,1)
+	particleProgram.SetVec2F("offset", 0,0)
+	particleProgram.SetVec2F("scale", 1,1)
 
 	gl.DrawArrays(gl.TRIANGLES,0,6) // draw quad
 }

@@ -164,7 +164,7 @@ func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
 }
 
 func (camera *Camera) DrawLines(
-	lines []float32, color []float32, ctx render.Context,
+	lines []float32, color mgl32.Vec3, ctx render.Context,
 ) {
 	camCtx := ctx.PushView(camera.GetView())
 	camera.window.DrawLines(lines, color, camCtx)
