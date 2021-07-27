@@ -1,6 +1,7 @@
 package physics
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -22,8 +23,7 @@ type Body struct {
 	PreviousTransform     mgl32.Mat4
 	InterpolatedTransform mgl32.Mat4
 
-	Collisions     CollisionInfo
-	collidingLines []float32
+	Collisions CollisionInfo
 
 	Damage  DamageFunc
 	Deleted bool
@@ -51,6 +51,7 @@ type bodyBounds struct {
 }
 
 func (body Body) bounds(newpos cxmath.Vec2) bodyBounds {
+
 	left := round32(newpos.X - body.Size.X/2)
 	leftTile := int(left)
 	right := round32(newpos.X + body.Size.X/2)
@@ -65,7 +66,6 @@ func (body Body) bounds(newpos cxmath.Vec2) bodyBounds {
 		topTile: topTile, bottomTile: bottomTile,
 	}
 }
-
 func round32(x float32) float32 {
 	return float32(math.Round(float64(x)))
 }
@@ -140,7 +140,6 @@ func (body *Body) isCollidingBottom(
 }
 
 func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
-	body.collidingLines = []float32{}
 	body.Collisions.Reset()
 
 	body.Vel.Y -= Gravity * dt
@@ -150,42 +149,24 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	if body.isCollidingLeft(collider, newPos) {
 		body.Collisions.Left = true
 		body.Vel.X = 0
-		newPos.X = float32(body.bounds(newPos).leftTile) + 0.5 + body.Size.X/2
+		newPos.X = body.bounds(newPos).left + 0.5 + body.Size.X/2
 
-		body.collidingLines = append(body.collidingLines, []float32{
-			newPos.X - body.Size.X/2, newPos.Y - body.Size.Y/2, 0.0,
-			newPos.X - body.Size.X/2, newPos.Y + body.Size.Y/2, 0.0,
-		}...)
 	}
 	if body.isCollidingRight(collider, newPos) {
 		body.Collisions.Right = true
 		body.Vel.X = 0
-		newPos.X = float32(body.bounds(newPos).rightTile) - 0.5 - body.Size.X/2
+		newPos.X = body.bounds(newPos).right - 0.5 - body.Size.X/2
 
-		body.collidingLines = append(body.collidingLines, []float32{
-			newPos.X + body.Size.X/2, newPos.Y - body.Size.Y/2, 0.0,
-			newPos.X + body.Size.X/2, newPos.Y + body.Size.Y/2, 0.0,
-		}...)
 	}
 	if body.isCollidingTop(collider, newPos) {
 		body.Collisions.Above = true
 		body.Vel.Y = 0
-		newPos.Y = float32(body.bounds(newPos).topTile) - 0.5 - body.Size.Y/2
-
-		body.collidingLines = append(body.collidingLines, []float32{
-			newPos.X - body.Size.X/2, newPos.Y + body.Size.Y/2, 0.0,
-			newPos.X + body.Size.X/2, newPos.Y + body.Size.Y/2, 0.0,
-		}...)
+		newPos.Y = body.bounds(newPos).top - 0.5 - body.Size.Y/2
 	}
 	if body.isCollidingBottom(collider, newPos) {
 		body.Collisions.Below = true
 		body.Vel.Y = 0
-		newPos.Y = float32(body.bounds(newPos).bottomTile) + 0.5 + body.Size.Y/2
-
-		body.collidingLines = append(body.collidingLines, []float32{
-			newPos.X - body.Size.X/2, newPos.Y - body.Size.Y/2, 0.0,
-			newPos.X + body.Size.X/2, newPos.Y - body.Size.Y/2, 0.0,
-		}...)
+		newPos.Y = body.bounds(newPos).bottom + 0.5 + body.Size.Y/2
 	}
 
 	newPosMgl32 := mgl32.Vec2{newPos.X, newPos.Y}
@@ -201,30 +182,47 @@ func (body *Body) GetBBoxLines() []float32 {
 	x := body.Pos.X - body.Size.X/2
 	y := body.Pos.Y - body.Size.Y/2
 	return []float32{
-		x, y, 0.0,
-		x + body.Size.X, y, 0.0,
+		//bottom
+		x, y,
+		x + body.Size.X, y,
 
-		x + body.Size.X, y, 0.0,
-		x + body.Size.X, y + body.Size.Y, 0.0,
+		//right
+		x + body.Size.X, y,
+		x + body.Size.X, y + body.Size.Y,
 
-		x + body.Size.X, y + body.Size.Y, 0.0,
-		x, y + body.Size.Y, 0.0,
+		//top
+		x + body.Size.X, y + body.Size.Y,
+		x, y + body.Size.Y,
 
-		x, y + body.Size.Y, 0.0,
-		x, y, 0.0,
+		//left
+		x, y + body.Size.Y,
+		x, y,
 	}
 }
 
 func (body *Body) GetCollidingLines() []float32 {
-	collidingLines := []float32{}
-
-	for i := 0; i < len(body.collidingLines); i += 3 {
-		collidingLines = append(collidingLines, []float32{
-			body.collidingLines[i],
-			body.collidingLines[i+1],
-			0.0,
-		}...)
+	collidingLines := make([]float32, 0, 16)
+	bboxLines := body.GetBBoxLines()
+	if body.Collisions.Below {
+		collidingLines = append(collidingLines, bboxLines[0:4]...)
 	}
+	if body.Collisions.Right {
+		collidingLines = append(collidingLines, bboxLines[4:8]...)
+	}
+	if body.Collisions.Above {
+		collidingLines = append(collidingLines, bboxLines[8:12]...)
+	}
+	if body.Collisions.Left {
+		collidingLines = append(collidingLines, bboxLines[12:16]...)
+	}
+	fmt.Println(collidingLines)
+
+	// for i := 0; i < len(body.collidingLines); i += 2 {
+	// 	collidingLines = append(collidingLines, []float32{
+	// 		body.collidingLines[i],
+	// 		body.collidingLines[i+1],
+	// 	}...)
+	// }
 
 	return collidingLines
 }

@@ -30,7 +30,7 @@ func (id LayerID) Valid() bool {
 }
 
 type Layer struct {
-	Tiles []Tile
+	Tiles       []Tile
 	Spritesheet spriteloader.Spritesheet
 }
 
@@ -38,14 +38,14 @@ type Layers [NumLayers]Layer
 
 func NewLayer(numTiles int32) Layer {
 	// TODO pack spritesheet
-	return Layer {
+	return Layer{
 		Tiles: make([]Tile, numTiles),
 	}
 }
 
-func NewLayers(numTiles int32) Layers{
+func NewLayers(numTiles int32) Layers {
 	layers := Layers{}
-	for i := LayerID(0) ; i < NumLayers ; i++ {
+	for i := LayerID(0); i < NumLayers; i++ {
 		layers[i] = NewLayer(numTiles)
 	}
 	return layers
@@ -60,7 +60,7 @@ type Planet struct {
 	collidingLinesX int
 	collidingLinesY int
 
-	shader          *render.Shader
+	shader *render.Shader
 }
 
 func NewPlanet(x, y int32) *Planet {
@@ -68,15 +68,15 @@ func NewPlanet(x, y int32) *Planet {
 		WorldState: NewDevWorldState(),
 		Width:      x,
 		Height:     y,
-		Layers: NewLayers(x*y),
+		Layers:     NewLayers(x * y),
 		shader: render.NewShader(
-			"./assets/shader/world.vert", "./assets/shader/sprite.frag" ),
+			"./assets/shader/world.vert", "./assets/shader/sprite.frag"),
 	}
 	planet.shader.Use()
 	defer planet.shader.StopUsing()
 	// TODO only need one of these
-	planet.shader.SetVec4F("color",1,1,1,1)
-	planet.shader.SetVec4F("colour",1,0,0,1)
+	planet.shader.SetVec4F("color", 1, 1, 1, 1)
+	planet.shader.SetVec4F("colour", 1, 0, 0, 1)
 
 	return &planet
 }
@@ -154,7 +154,9 @@ func (planet *Planet) TryPlaceTile(
 	tileY := int32(math.Round((float64(worldCoords.Y()))))
 	if tileX >= 0 && tileX < planet.Width && tileY >= 0 && tileY < planet.Width {
 		tileIdx := planet.GetTileIndex(int(tileX), int(tileY))
-		if !layer.Valid() { return false }
+		if !layer.Valid() {
+			return false
+		}
 		planetLayer := planet.GetLayerTiles(layer)
 		if planetLayer[tileIdx].TileCategory == TileCategoryChild ||
 			planetLayer[tileIdx].TileCategory == TileCategoryMulti {
@@ -330,7 +332,7 @@ func (planet *Planet) TileIsSolid(x, y int) bool {
 		tile.TileCollisionType == TileCollisionTypeSolid
 }
 
-func (planet *Planet) TileTopIsSolid(x,y int, ignorePlatforms bool) bool {
+func (planet *Planet) TileTopIsSolid(x, y int, ignorePlatforms bool) bool {
 	tile := planet.GetTopLayerTile(x, y)
 	return tile != nil && tile.TileCategory != TileCategoryNone &&
 		(tile.TileCollisionType == TileCollisionTypeSolid || !ignorePlatforms)
@@ -384,26 +386,26 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 				// only draw the tiles outline instead of every single one
 				if planet.TileIsSolid(i+1, j) { // right
 					lines = append(lines, []float32{
-						fxw, fyh, 0.0,
-						fxw, fy, 0.0,
+						fxw, fyh,
+						fxw, fy,
 					}...)
 				}
 				if planet.TileIsSolid(i-1, j) { // left
 					lines = append(lines, []float32{
-						fx, fyh, 0.0,
-						fx, fy, 0.0,
+						fx, fyh,
+						fx, fy,
 					}...)
 				}
 				if planet.TileIsSolid(i, j+1) { // up
 					lines = append(lines, []float32{
-						fx, fyh, 0.0,
-						fxw, fyh, 0.0,
+						fx, fyh,
+						fxw, fyh,
 					}...)
 				}
 				if planet.TileIsSolid(i, j-1) { // down
 					lines = append(lines, []float32{
-						fx, fy, 0.0,
-						fxw, fy, 0.0,
+						fx, fy,
+						fxw, fy,
 					}...)
 				}
 			}
