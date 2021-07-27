@@ -1,4 +1,3 @@
-#version 410 core
 
 //xy - xpos ypos, zw - texcoords
 layout (location=0) in vec4 aQuad;

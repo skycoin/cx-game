@@ -1,11 +1,10 @@
-#version 410
 layout (location=0) in vec3 position;
 layout (location=1) in vec2 texcoord;
 out vec2 tCoord;
 uniform mat4 projection;
-uniform mat4 worlds[100];
-uniform vec2 texScales[100];
-uniform vec2 texOffsets[100];
+uniform mat4 worlds[NUM_INSTANCES];
+uniform vec2 texScales[NUM_INSTANCES];
+uniform vec2 texOffsets[NUM_INSTANCES];
 void main() {
 	mat4 world = worlds[gl_InstanceID];
 	vec2 texScale = texScales[gl_InstanceID];

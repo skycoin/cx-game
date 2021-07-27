@@ -4,10 +4,8 @@ import (
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/types"
-	"github.com/skycoin/cx-game/render"
 )
 
-var particleShader *render.Shader
 
 func FrustumCull(particleList []*particles.Particle, cam *camera.Camera) []*particles.Particle {
 	particlesToDraw := make([]*particles.Particle, 0, len(particleList))

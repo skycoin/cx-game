@@ -25,7 +25,7 @@ var laserTex texture
 
 const laserDuration = 1.0 // time in seconds that a laser lasts
 var lasers []Laser = []Laser{}
-var laserShader *render.Shader
+var laserProgram render.Program
 
 const segmentLength = 0.8
 
@@ -33,7 +33,7 @@ const segmentLength = 0.8
 const laserAnimSpeed = 6
 
 func InitLasers() {
-	laserShader = render.NewShader(
+	laserProgram = render.CompileProgram(
 		"./assets/shader/mvp.vert", "./assets/shader/laser.frag")
 
 	_, img, _ :=
@@ -109,13 +109,13 @@ func TickLasers(dt float32) {
 
 func DrawLaser(laser Laser, ctx render.WorldContext) {
 	alpha := laser.ttl / laserDuration
-	laserShader.SetVec4F("color", 1, 1, 1, alpha)
+	laserProgram.SetVec4F("color", 1, 1, 1, alpha)
 
 	mvp := ctx.ModelToModelViewProjection(laser.transform)
-	laserShader.SetMat4("mvp", &mvp)
+	laserProgram.SetMat4("mvp", &mvp)
 
-	laserShader.SetVec2F("offset", alpha*laserAnimSpeed, 0)
-	laserShader.SetVec2F("scale", laser.length, 1)
+	laserProgram.SetVec2F("offset", alpha*laserAnimSpeed, 0)
+	laserProgram.SetVec2F("scale", laser.length, 1)
 
 	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
@@ -134,10 +134,10 @@ func configureGlForLaser() {
 
 func DrawLasers(ctx render.WorldContext) {
 	// only need to set up shader once for all lasers
-	laserShader.Use()
+	laserProgram.Use()
 	projection := ctx.Projection()
-	laserShader.SetMat4("projection", &projection)
-	laserShader.SetUint("tex", laserTex.gpuTex)
+	laserProgram.SetMat4("projection", &projection)
+	laserProgram.SetUint("tex", laserTex.gpuTex)
 	configureGlForLaser()
 
 	for _, laser := range lasers {
