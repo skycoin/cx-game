@@ -36,11 +36,12 @@ func Draw() {
 	components.Draw(CurrentPlanet.WorldState, Cam)
 	player.Draw(Cam, CurrentPlanet)
 	ui.DrawHUD(player.GetHUDState())
+
 	ui.DrawString(
 		fmt.Sprint(fps.CurFps),
 		mgl32.Vec4{1, 0.2, 0.3, 1},
 		ui.AlignCenter,
-		baseCtx.PushLocal(mgl32.Translate3D(-11.5, 5, 0)),
+		win.DefaultRenderContext().PushLocal(mgl32.Translate3D(-11.5, 5, 0)),
 	)
 
 	// tile - air line (green)

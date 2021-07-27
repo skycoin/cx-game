@@ -33,11 +33,14 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 			0,
 		).Mul4(mgl32.Scale3D(1, 1, 1))
 		// projection := mgl32.Ortho2D(0, 800.0/32, 0, 600.0/32)
-		projection := mgl32.Ortho2D(
-			-800.0/2/32, 800.0/2/32,
-			-600.0/2/32, 600.0/2/32,
-		)
+		// projection := mgl32.Ortho2D(
+		// 	-800.0/2/32, 800.0/2/32,
+		// 	-600.0/2/32, 600.0/2/32,
+		// )
+		projection := cam.GetProjectionMatrix()
 		shader.SetMat4("projection", &projection)
+		view := cam.GetView()
+		shader.SetMat4("view", &view)
 		shader.SetMat4("world", &world)
 		shader.SetVec4("color", &mgl32.Vec4{1, 1, 1,
 			particle.TimeToLive / particle.Duration,
@@ -60,10 +63,7 @@ func DrawTransparentInstanced(particleList []*particles.Particle, cam *camera.Ca
 	shader := GetShader(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED)
 	shader.Use()
 
-	projection := mgl32.Ortho2D(
-		-800.0/2/32, 800.0/2/32,
-		-600.0/2/32, 600.0/2/32,
-	)
+	projection := cam.GetProjectionMatrix()
 	shader.SetMat4("projection", &projection)
 	shader.SetInt("particle_texture", 0)
 
