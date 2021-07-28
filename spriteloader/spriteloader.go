@@ -87,15 +87,20 @@ func LoadSpriteSheet(fname string) SpritesheetID {
 	return SpritesheetID(len(spritesheets) - 1)
 }
 
+func LoadSpriteSheetBySpriteSize(fname string, w,h int) SpritesheetID {
+	_, img, _ := LoadPng(fname)
+	spritesheets = append(spritesheets, Spritesheet{
+		xScale: float32(w) / float32(img.Bounds().Dx()),
+		yScale: float32(h) / float32(img.Bounds().Dy()),
+		tex:    MakeTexture(img),
+	})
+	return SpritesheetID(len(spritesheets) - 1)
+}
+
 //Load spritesheet with rows and columns specified
 func LoadSpriteSheetByColRow(fname string, row int, col int) SpritesheetID {
 	_, img, _ := LoadPng(fname)
 
-	if DEBUG {
-		fmt.Println("img.Bounds(): ", img.Bounds())
-		fmt.Println("xScale: ", float32(img.Bounds().Dx()/col)/float32(img.Bounds().Dx()))
-		fmt.Println("yScale: ", float32(img.Bounds().Dy()/row)/float32(img.Bounds().Dy()))
-	}
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(img.Bounds().Dx()/col) / float32(img.Bounds().Dx()),
 		yScale: float32(img.Bounds().Dy()/row) / float32(img.Bounds().Dy()),
@@ -105,22 +110,6 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) SpritesheetID {
 	return SpritesheetID(len(spritesheets) - 1)
 }
 
-func LoadSpriteSheetByFrames(fname string, frames []Frames) SpritesheetID {
-	_, img, _ := LoadPng(fname)
-
-	if DEBUG {
-		fmt.Println("img.Bounds().Dx: ", img.Bounds().Dx())
-		fmt.Println("img.Bounds().Dy: ", img.Bounds().Dy())
-		fmt.Println("xScale: ", float32(frames[0].Frame.W)/float32(img.Bounds().Dx()))
-		fmt.Println("yScale: ", float32(frames[0].Frame.H)/float32(img.Bounds().Dy()))
-	}
-	spritesheets = append(spritesheets, Spritesheet{
-		xScale: float32(frames[0].Frame.W) / float32(img.Bounds().Dx()),
-		yScale: float32(frames[0].Frame.H) / float32(img.Bounds().Dy()),
-		tex:    MakeTexture(img),
-	})
-	return SpritesheetID(len(spritesheets) - 1)
-}
 
 func LoadSingleSprite(fname string, name string) SpriteID {
 	spritesheetId := LoadSpriteSheetByColRow(fname, 1, 1)

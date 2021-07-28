@@ -1,7 +1,6 @@
 package physics
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -215,7 +214,6 @@ func (body *Body) GetCollidingLines() []float32 {
 	if body.Collisions.Left {
 		collidingLines = append(collidingLines, bboxLines[12:16]...)
 	}
-	fmt.Println(collidingLines)
 
 	// for i := 0; i < len(body.collidingLines); i += 2 {
 	// 	collidingLines = append(collidingLines, []float32{

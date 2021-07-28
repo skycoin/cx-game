@@ -26,7 +26,7 @@ func Update(dt float32) {
 func updateTimers(agents []*agents.Agent, dt float32) {
 	for _, agent := range agents {
 		if agent.DrawHandlerID == constants.DRAW_HANDLER_ANIM {
-			agent.AnimationState.Action.Update(dt)
+			agent.AnimationPlayback.Update(dt)
 		}
 		if agent.WaitingFor > 0 {
 			agent.WaitingFor -= dt

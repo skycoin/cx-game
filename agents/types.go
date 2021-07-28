@@ -3,7 +3,7 @@ package agents
 import (
 	"log"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/cxmath"
 )
@@ -55,8 +55,8 @@ func GetAgentType(id constants.AgentTypeID) AgentType {
 
 func createSlime(opts AgentCreationOptions) *Agent {
 	x := opts.X; y := opts.Y;
-	animation := spriteloader.NewSpriteAnimated("./assets/slime.json")
-	action := animation.Action("Jump")
+	animation := anim.LoadAnimationFromJSON("./assets/slime.json")
+	playback := animation.NewPlayback("Idle")
 	agent := Agent{
 		AgentCategory:     constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_LEAP,
@@ -66,7 +66,7 @@ func createSlime(opts AgentCreationOptions) *Agent {
 			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
 		HealthComponent: NewHealthComponent(5),
-		AnimationState:  AnimationState{Action: action},
+		AnimationPlayback:  playback,
 	}
 	physics.RegisterBody(&agent.PhysicsState)
 	return &agent
@@ -74,8 +74,9 @@ func createSlime(opts AgentCreationOptions) *Agent {
 
 func createSpiderDrill(opts AgentCreationOptions) *Agent {
 	x := opts.X; y := opts.Y;
-	spiderDrill := spriteloader.NewSpriteAnimated("./assets/spiderDrill.json")
-	action := spiderDrill.Action("Walk")
+	// TODO only load these once
+	animation := anim.LoadAnimationFromJSON("./assets/spiderDrill.json")
+	playback := animation.NewPlayback("Idle")
 	agent := Agent{
 		AgentCategory:     constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_DRILL,
@@ -85,7 +86,7 @@ func createSpiderDrill(opts AgentCreationOptions) *Agent {
 			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
 		HealthComponent: NewHealthComponent(5),
-		AnimationState:  AnimationState{Action: action},
+		AnimationPlayback:  playback,
 	}
 	physics.RegisterBody(&agent.PhysicsState)
 	return &agent

@@ -16,6 +16,7 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/spriteloader/anim"
 	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
@@ -68,6 +69,7 @@ func Init() {
 	input.Init(win.Window)
 	sound.Init()
 	spriteloader.InitSpriteloader(&win)
+	anim.InitAnimatedSpriteLoader()
 	spriteloader.DEBUG = false
 	world.RegisterTileTypes()
 	item.InitWorldItem()
