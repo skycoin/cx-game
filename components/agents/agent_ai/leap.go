@@ -20,6 +20,7 @@ func AiHandlerLeap(agent *agents.Agent, ctx AiContext) {
 		agent.PhysicsState.Vel.X = directionX * horizontalJumpSpeed
 		agent.PhysicsState.Vel.Y = verticalJumpSpeed
 		agent.WaitFor(secondsBetweenLeaps)
+		agent.AnimationPlayback.PlayOnce("Jump")
 	}
 
 	// disable sliding

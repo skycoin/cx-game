@@ -1,4 +1,5 @@
-package spriteloader
+package anim
+/*
 
 import (
 	"bufio"
@@ -14,15 +15,13 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 func init() {
 	runtime.LockOSThread()
 }
 
-/*
-	this is base struct for sprite animated
-*/
 type Frame struct {
 	X int `json:"x"`
 	Y int `json:"y"`
@@ -79,7 +78,7 @@ type SpriteAnimated struct {
 	Frames        map[string]interface{} `json:"frames"`
 	FrameArr      []Frames
 	Meta          Meta `json:"meta"`
-	spriteSheetId SpritesheetID
+	spriteSheetId spriteloader.SpritesheetID
 }
 
 func NewSpriteAnimated(fileName string) *SpriteAnimated {
@@ -116,6 +115,7 @@ func NewSpriteAnimated(fileName string) *SpriteAnimated {
 	cols := spriteAnimated.Meta.Size.W / spriteAnimated.FrameArr[0].Frame.W
 	rows := spriteAnimated.Meta.Size.H / spriteAnimated.FrameArr[0].Frame.H
 	spriteAnimated.spriteSheetId =
+		spriteloader.
 		LoadSpriteSheetByColRow("./assets/"+spriteAnimated.Meta.Image, rows, cols)
 	// sorting frame by Action and Order
 	sort.SliceStable(spriteAnimated.FrameArr, func(i, j int) bool {
@@ -141,13 +141,14 @@ func filterByAction(action string, frames []Frames) []Frames {
 }
 
 type Action struct {
-	SpritesheetID SpritesheetID
+	SpritesheetID spriteloader.SpritesheetID
 	Frames        []ActionFrame
 	Time          float32
 	FrameIndex    int
+	Loop          int
 }
 type ActionFrame struct {
-	SpriteID SpriteID
+	SpriteID spriteloader.SpriteID
 	Duration float32
 }
 
@@ -156,7 +157,7 @@ func (spriteAnimated SpriteAnimated) Action(name string) Action {
 	actionframes := make([]ActionFrame, len(framess))
 	for idx, frames := range framess {
 		actionframes[idx] = ActionFrame{
-			SpriteID: LoadSprite(
+			SpriteID: spriteloader.LoadSprite(
 				spriteAnimated.spriteSheetId, frames.Name,
 				frames.Frame.X/frames.Frame.W,
 				frames.Frame.Y/frames.Frame.H),
@@ -169,7 +170,7 @@ func (spriteAnimated SpriteAnimated) Action(name string) Action {
 	}
 }
 
-func (action *Action) SpriteID() SpriteID {
+func (action *Action) SpriteID() spriteloader.SpriteID {
 	return action.Frame().SpriteID
 }
 
@@ -183,6 +184,16 @@ func (action *Action) Update(dt float32) {
 	// consume time with frames
 	for action.Time > action.Frame().Duration {
 		action.Time -= action.Frame().Duration
-		action.FrameIndex = (action.FrameIndex + 1) % len(action.Frames)
+		action.FrameIndex++
+		if action.FrameIndex == len(action.Frames) {
+			action.Loop++
+			action.FrameIndex=0
+		}
 	}
 }
+
+func LoadSpriteSheetByFrames(fname string, frames []Frames) spriteloader.SpritesheetID {
+	return spriteloader.
+		LoadSpriteSheetBySpriteSize(fname, frames[0].Frame.W, frames[0].Frame.H)
+}
+*/
