@@ -19,7 +19,7 @@ func alphaForAgent(agent *agents.Agent) float32 {
 func QuadDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 	// TODO is this assumed??? can we omit this check?
 	if len(agents)==0 { return }
-	spriteID := getSpriteID(agents[0].AgentType)
+	spriteID := getSpriteID(agents[0].AgentCategory)
 	drawOpts := spriteloader.NewDrawOptions()
 	for _, agent := range agents {
 		drawOpts.Alpha = alphaForAgent(agent)
@@ -33,7 +33,7 @@ func QuadDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 	}
 }
 
-func getSpriteID(agentType constants.AgentType) spriteloader.SpriteID {
+func getSpriteID(agentType constants.AgentCategory) spriteloader.SpriteID {
 	switch agentType {
 	default:
 		return spriteloader.GetSpriteIdByName("basic-agent")

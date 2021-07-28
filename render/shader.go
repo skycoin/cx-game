@@ -71,7 +71,6 @@ func (config *ShaderConfig) compileShader(
 }
 
 func (config *ShaderConfig) Compile() Program {
-	log.Printf("compiling shader config %+v",config)
 	vertexSource,err := os.ReadFile(config.vertexPath)
 	if err!=nil { log.Fatal(err) }
 	fragmentSource,err := os.ReadFile(config.fragmentPath)

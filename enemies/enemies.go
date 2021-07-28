@@ -11,7 +11,7 @@ import (
 // TODO either create enemy as a side effect or return instance
 func NewBasicEnemy(x, y float32) *agents.Agent {
 	agent := agents.Agent{
-		AgentType:     constants.AGENT_ENEMY_MOB,
+		AgentCategory:     constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_WALK,
 		DrawHandlerID: constants.DRAW_HANDLER_QUAD,
 		PhysicsState: physics.Body{
@@ -28,7 +28,7 @@ func NewLeapingEnemy(x, y float32) *agents.Agent {
 	animation := spriteloader.NewSpriteAnimated("./assets/slime.json")
 	action := animation.Action("Jump")
 	agent := agents.Agent{
-		AgentType:     constants.AGENT_ENEMY_MOB,
+		AgentCategory:     constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_LEAP,
 		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
 		PhysicsState: physics.Body{
@@ -46,7 +46,7 @@ func NewSpiderDrill(x, y float32) *agents.Agent {
 	spiderDrill := spriteloader.NewSpriteAnimated("./assets/spiderDrill.json")
 	action := spiderDrill.Action("Walk")
 	agent := agents.Agent{
-		AgentType:     constants.AGENT_ENEMY_MOB,
+		AgentCategory:     constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_DRILL,
 		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
 		PhysicsState: physics.Body{
