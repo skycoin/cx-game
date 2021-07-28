@@ -64,7 +64,9 @@ func NewDevInventory() InventoryID {
 		InventorySlot{pipeItemTypeID, 20, 0}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(4, 0)] =
 		InventorySlot{BuildToolItemTypeID, 1, 0}
-	inventory.Slots[inventory.ItemSlotIndexForPosition(4, 0)] = InventorySlot{
+	inventory.Slots[inventory.ItemSlotIndexForPosition(5, 0)] =
+		InventorySlot{EnemyToolItemTypeID, 1, 0}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(6, 0)] = InventorySlot{
 		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Platform), 
 		99, 0,
 	}
@@ -370,6 +372,10 @@ func (inv *Inventory) Draw(ctx render.Context) {
 			// TODO do this less often
 			inv.PlacementGrid.Assemble(inv.ItemTypeIDs())
 			inv.PlacementGrid.Draw(ctx)
+		}
+		// dev items
+		if slot.ItemTypeID == EnemyToolItemTypeID {
+			ui.DrawEnemyTool(ctx)
 		}
 	}
 }

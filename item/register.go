@@ -5,6 +5,7 @@ var (
 	GunItemTypeID ItemTypeID
 	RockDustItemTypeID ItemTypeID
 	BuildToolItemTypeID ItemTypeID
+	EnemyToolItemTypeID ItemTypeID
 )
 
 func RegisterItemTypes() {
@@ -12,6 +13,7 @@ func RegisterItemTypes() {
 	GunItemTypeID = RegisterGunItemType()
 	RockDustItemTypeID = RegisterRockDustItemType()
 	BuildToolItemTypeID = RegisterBuildToolItemType()
+	EnemyToolItemTypeID = RegisterEnemyToolItemType()
 
 	AddDrops()
 }

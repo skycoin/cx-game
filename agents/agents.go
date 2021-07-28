@@ -1,6 +1,8 @@
 package agents
 
 import (
+	"log"
+
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/physics"
@@ -9,7 +11,7 @@ import (
 
 type Agent struct {
 	AgentId           int
-	AgentType         constants.AgentType
+	AgentCategory         constants.AgentCategory
 	AiHandlerID       types.AgentAiHandlerID
 	PhysicsState      physics.Body
 	PhysicsParameters physics.PhysicsParameters
@@ -37,7 +39,7 @@ func NewHealthComponent(max int) HealthComponent {
 
 func newAgent(id int) *Agent {
 	agent := Agent{
-		AgentType:         constants.AGENT_UNDEFINED,
+		AgentCategory:     constants.AGENT_CATEGORY_UNDEFINED,
 		AiHandlerID:       constants.AI_HANDLER_NULL,
 		DrawHandlerID:     constants.DRAW_HANDLER_NULL,
 		PhysicsState:      physics.Body{},
@@ -45,6 +47,11 @@ func newAgent(id int) *Agent {
 	}
 
 	return &agent
+}
+
+func (a *Agent) FillDefaults() {
+	// if have no direction, default to right-facing / no flip
+	if a.PhysicsState.Direction==0 { a.PhysicsState.Direction = 1 }
 }
 
 //prefabs
@@ -81,4 +88,10 @@ func (a *Agent) IsWaiting() bool {
 
 func (a *Agent) WaitFor(seconds float32) {
 	a.WaitingFor = seconds
+}
+
+func (a *Agent) Validate() {
+	if a.AgentCategory == constants.AGENT_CATEGORY_UNDEFINED {
+		log.Fatalf("Cannot create agent with undefined category: %+v",a)
+	}
 }

@@ -5,9 +5,10 @@ import (
 	"runtime"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components"
-	"github.com/skycoin/cx-game/enemies"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
@@ -94,19 +95,22 @@ func Init() {
 	tilePaletteSelector = ui.
 		NewDevTilePaleteSelector()
 
-	//init cam and cat positions
 	spawnX := int(20)
 	Cam.SetCameraPosition(float32(spawnX), 5)
-	// Cam.SetCameraZoomPosition(0)
+
 	player.Pos.X = float32(spawnX)
 	player.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
-	//enemies.SpawnBasicEnemy(player.Pos.X+6, player.Pos.Y)
-	CurrentPlanet.WorldState.AgentList.
-		CreateAgent(enemies.NewBasicEnemy(player.Pos.X+6, player.Pos.Y))
-	CurrentPlanet.WorldState.AgentList.
-		CreateAgent(enemies.NewLeapingEnemy(player.Pos.X-6, player.Pos.Y))
-	CurrentPlanet.WorldState.AgentList.
-		CreateAgent(enemies.NewSpiderDrill(player.Pos.X-6, player.Pos.Y))
+
+	CurrentPlanet.WorldState.AgentList.Spawn(
+		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions {
+			X: player.Pos.X-6, Y: player.Pos.Y,
+		},
+	)
+	CurrentPlanet.WorldState.AgentList.Spawn(
+		constants.AGENT_TYPE_SPIDER_DRILL, agents.AgentCreationOptions {
+			X: player.Pos.X+6, Y: player.Pos.Y,
+		},
+	)
 
 	sound.LoadSound("player_jump", "jump.wav")
 
