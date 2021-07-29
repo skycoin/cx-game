@@ -21,7 +21,7 @@ func (pl *ParticleList) AddParticle(
 ) {
 	newParticle := Particle{
 		Verlet:           NewVerlet(position, velocity),
-		Body:             physics.Body{Pos: position, Vel: velocity, Size: cxmath.Vec2{1, 1}},
+		Body:             physics.Body{Pos: position, Vel: velocity, Size: cxmath.Vec2{0.3, 0.3}, Elasticity: 1, Friction: 0.2},
 		Duration:         duration,
 		TimeToLive:       duration,
 		Texture:          texture,

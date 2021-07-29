@@ -28,14 +28,13 @@ func AssertAllDrawHandlersRegistered() {
 func RegisterDrawHandler(id types.ParticleDrawHandlerId, handler ParticleDrawHandler) {
 	ParticleDrawHandlerList[id] = handler
 	//register shaders
-	fmt.Println("THIS HAS BEEN CALLED WITH ", id)
 	RegisterShader(id)
 }
 
 func RegisterShader(id types.ParticleDrawHandlerId) {
 	switch id {
 	//case constants.PARTICLE_DRAW_HANDLER_NULL:
-    //  ParticleProgramList[id] = nil
+	//  ParticleProgramList[id] = nil
 	case constants.PARTICLE_DRAW_HANDLER_SOLID:
 		shader := render.CompileProgram("./assets/shader/particles/solid.vert", "./assets/shader/particles/solid.frag")
 		ParticleProgramList[id] = shader
