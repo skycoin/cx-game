@@ -71,7 +71,7 @@ func DrawTransparentInstanced(particleList []*particles.Particle, cam *camera.Ca
 	data_list := make([]float32, 0, len(particleList)*4)
 
 	for _, particle := range particleList {
-		data_list = append(data_list, particle.Pos.X-cam.X, particle.Pos.Y-cam.Y, 1, particle.TimeToLive/particle.Duration)
+		data_list = append(data_list, particle.Pos.X-cam.X, particle.Pos.Y-cam.Y, particle.Size.X, particle.TimeToLive/particle.Duration)
 	}
 
 	updateBuffers(&data_list)
