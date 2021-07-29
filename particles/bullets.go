@@ -6,7 +6,6 @@ import (
 
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/physics"
 )
 
 const bulletDamage = 1
@@ -77,6 +76,8 @@ func DrawBullets(ctx render.WorldContext) {
 }
 
 func TickBullets(dt float32) {
+	// TODO replace with more robust projectile system
+	/*
 	newBullets := []Bullet{}
 	for _,bullet := range bullets {
 		//bullet.ttl -= dt
@@ -94,4 +95,5 @@ func TickBullets(dt float32) {
 		}
 	}
 	bullets = newBullets
+	*/
 }

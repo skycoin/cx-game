@@ -29,7 +29,7 @@ func UseEnemyTool(info ItemUseInfo) {
 	opts := agents.AgentCreationOptions {
 		X: world.X(), Y: world.Y(),
 	}
-	info.Planet.WorldState.AgentList.Spawn(id, opts)
+	info.World.Entities.Agents.Spawn(id, opts)
 }
 
 func RegisterEnemyToolItemType() ItemTypeID {

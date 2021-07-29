@@ -7,7 +7,7 @@ import (
 func NewDevPlanet() *Planet {
 	// TODO determine dirt height from perlin
 	planet := NewPlanet(100, 100)
-	planet.WorldState = NewDevWorldState()
+	//planet.WorldState = NewDevWorldState()
 
 	spriteSheetId := spriteloader.
 		LoadSpriteSheet("./assets/tile/mixed-tileset_00.png")

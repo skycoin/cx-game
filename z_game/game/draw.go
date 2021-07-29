@@ -22,19 +22,19 @@ func Draw() {
 	baseCtx := win.DefaultRenderContext()
 	baseCtx.Projection = Cam.GetProjectionMatrix()
 	camCtx := baseCtx.PushView(Cam.GetView())
-	worldCtx := worldctx.NewWorldRenderContext(Cam, CurrentPlanet)
+	worldCtx := worldctx.NewWorldRenderContext(Cam, &World.Planet)
 
 	starfield.DrawStarField()
-	CurrentPlanet.Draw(Cam, world.BgLayer)
-	CurrentPlanet.Draw(Cam, world.MidLayer)
+	World.Planet.Draw(Cam, world.BgLayer)
+	World.Planet.Draw(Cam, world.MidLayer)
 	// draw lasers between mid and top layers.
 	particles.DrawMidTopParticles(worldCtx)
-	CurrentPlanet.Draw(Cam, world.TopLayer)
+	World.Planet.Draw(Cam, world.TopLayer)
 	particles.DrawTopParticles(camCtx)
 
 	item.DrawWorldItems(Cam)
-	components.Draw(CurrentPlanet.WorldState, Cam)
-	player.Draw(Cam, CurrentPlanet)
+	components.Draw(&World.Entities, Cam)
+	player.Draw(Cam, &World.Planet)
 	ui.DrawHUD(player.GetHUDState())
 
 	ui.DrawString(
@@ -45,7 +45,7 @@ func Draw() {
 	)
 
 	// tile - air line (green)
-	collidingTileLines := CurrentPlanet.GetCollidingTilesLinesRelative(
+	collidingTileLines := World.Planet.GetCollidingTilesLinesRelative(
 		int(player.Pos.X), int(player.Pos.Y))
 	if len(collidingTileLines) > 2 {
 		Cam.DrawLines(collidingTileLines, mgl32.Vec3{0.0, 1.0, 0.0}, baseCtx)
@@ -67,6 +67,8 @@ func Draw() {
 	inventory := item.GetInventoryById(inventoryId)
 	inventory.Draw(win.DefaultRenderContext())
 	tilePaletteSelector.Draw(win.DefaultRenderContext())
+
+	Console.Draw(win.DefaultRenderContext())
 
 	glfw.PollEvents()
 	win.Window.SwapBuffers()

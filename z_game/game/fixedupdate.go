@@ -19,10 +19,11 @@ func FixedUpdate(dt float32) {
 }
 
 func FixedTick() {
-	player.FixedTick(CurrentPlanet)
+	player.FixedTick(&World.Planet)
 	components.FixedUpdate()
-	physics.Simulate(physicsconstants.PHYSICS_TIMESTEP, CurrentPlanet)
-	pickedUpItems := item.TickWorldItems(CurrentPlanet, physicsconstants.PHYSICS_TIMESTEP, player.Pos)
+	physics.Simulate(physicsconstants.PHYSICS_TIMESTEP, &World.Planet)
+	pickedUpItems := item.TickWorldItems(
+		&World.Planet, physicsconstants.PHYSICS_TIMESTEP, player.Pos)
 	for _, worldItem := range pickedUpItems {
 		item.GetInventoryById(inventoryId).TryAddItem(worldItem.ItemTypeId)
 	}

@@ -12,7 +12,6 @@ import (
 // epsilon parameter for values that are "close enough"
 const eps = 0.05
 
-type DamageFunc func(damage int)
 type Body struct {
 	Pos       cxmath.Vec2
 	Vel       cxmath.Vec2
@@ -24,7 +23,6 @@ type Body struct {
 
 	Collisions CollisionInfo
 
-	Damage  DamageFunc
 	Deleted bool
 
 	IsIgnoringPlatforms bool

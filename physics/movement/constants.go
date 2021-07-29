@@ -1,7 +1,7 @@
 package movement
 
 const (
-	NORMAL MovementType = 1 << iota
+	NORMAL MovementType = 2 << iota
 	CROUCHING
 	CLIMBING
 	WALL_SLIDING

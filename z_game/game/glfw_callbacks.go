@@ -34,7 +34,7 @@ func mouseReleaseCallback(
 	screenX,screenY := screenPos()
 
 	inventory := item.GetInventoryById(inventoryId)
-	inventory.OnReleaseMouse(screenX, screenY, Cam, CurrentPlanet, player)
+	inventory.OnReleaseMouse(screenX, screenY, Cam, &World.Planet, player)
 }
 
 func mousePressCallback(
@@ -53,7 +53,7 @@ func mousePressCallback(
 	}
 
 	if tilePaletteSelector.IsMultiTileSelected() {
-		didPlaceMultiTile := CurrentPlanet.TryPlaceMultiTile(
+		didPlaceMultiTile := World.Planet.TryPlaceMultiTile(
 			screenX, screenY,
 			world.LayerID(tilePaletteSelector.LayerIndex),
 			tilePaletteSelector.GetSelectedMultiTile(),
@@ -63,7 +63,7 @@ func mousePressCallback(
 			return
 		}
 	} else {
-		didPlaceTile := CurrentPlanet.TryPlaceTile(
+		didPlaceTile := World.Planet.TryPlaceTile(
 			screenX, screenY,
 			world.LayerID(tilePaletteSelector.LayerIndex),
 			tilePaletteSelector.GetSelectedTile(),
@@ -76,11 +76,11 @@ func mousePressCallback(
 
 	inventory := item.GetInventoryById(inventoryId)
 	clickedSlot :=
-		inventory.TryClickSlot(screenX, screenY, Cam, CurrentPlanet, player)
+		inventory.TryClickSlot(screenX, screenY, Cam, &World.Planet, player)
 	if clickedSlot { return }
 
 	item.GetInventoryById(inventoryId).
-		TryUseItem(screenX, screenY, Cam, CurrentPlanet, player)
+		TryUseItem(screenX, screenY, Cam, &World, player)
 }
 
 var (

@@ -51,6 +51,10 @@ func (player *Player) MovementBeforeTick() {
 		if player.Collisions.Below || input.GetButtonDown("fly") {
 			player.TryChangeMovementState(movement.NORMAL)
 		}
+	case movement.CLIMBING:
+		if player.Collisions.Below {
+			player.TryChangeMovementState(movement.NORMAL)
+		}
 	case movement.WALL_SLIDING:
 		if player.Collisions.Below || input.GetButtonDown("jump") {
 			player.TryChangeMovementState(movement.NORMAL)

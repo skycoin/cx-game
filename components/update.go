@@ -14,10 +14,10 @@ import (
 )
 
 func Update(dt float32) {
-	updateTimers(currentWorldState.AgentList.Agents, dt)
+	updateTimers(currentWorld.Entities.Agents.Get(), dt)
 
 	//update lifetimes
-	currentWorldState.ParticleList.Update(dt)
+	currentWorld.Entities.Particles.Update(dt)
 
 	emitter.SetData(currentPlayer.Pos)
 	emitter.Emit()
@@ -39,17 +39,17 @@ func updateTimers(agents []*agents.Agent, dt float32) {
 
 func FixedUpdate() {
 	//update health state first
-	agent_health.UpdateAgents(currentWorldState.AgentList)
+	agent_health.UpdateAgents(&currentWorld.Entities.Agents)
 	//update physics state second
-	agent_physics.UpdateAgents(currentWorldState, currentPlanet)
+	agent_physics.UpdateAgents(currentWorld)
 
-	agent_ai.UpdateAgents(currentWorldState.AgentList, currentPlayer)
+	agent_ai.UpdateAgents(currentWorld, currentPlayer)
 
 	//update particles
-	particle_physics.Update(currentWorldState.ParticleList, currentPlanet)
+	particle_physics.Update(currentWorld)
 }
 
-func Draw(worldState *world.WorldState, cam *camera.Camera) {
-	agent_draw.DrawAgents(worldState.AgentList, cam)
-	particle_draw.DrawParticles(worldState.ParticleList, cam)
+func Draw(entities *world.Entities, cam *camera.Camera) {
+	agent_draw.DrawAgents(&entities.Agents, cam)
+	particle_draw.DrawParticles(&entities.Particles, cam)
 }

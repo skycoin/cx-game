@@ -5,6 +5,8 @@ import (
 )
 
 type AgentList struct {
+	// profile this to see if reducing indirection
+	// would help with performance in a significant way
 	Agents []*Agent
 }
 
@@ -52,3 +54,5 @@ func (al *AgentList) Spawn(
 	agent.Validate()
 	al.Agents = append(al.Agents, agent)
 }
+
+func (al *AgentList) Get() []*Agent { return al.Agents }
