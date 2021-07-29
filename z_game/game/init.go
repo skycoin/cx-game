@@ -19,6 +19,7 @@ import (
 	"github.com/skycoin/cx-game/spriteloader/anim"
 	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/ui"
+	"github.com/skycoin/cx-game/ui/console"
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/world/mapgen"
 )
@@ -35,13 +36,14 @@ const (
 )
 
 var (
+	Console console.Console
 	Cam    *camera.Camera
 	win    render.Window
 	window *glfw.Window
 	player *models.Player
 	fps    *models.Fps
 
-	CurrentPlanet      *world.Planet
+	World  world.World
 	DrawCollisionBoxes = false
 	FPS                int
 
@@ -82,17 +84,27 @@ func Init() {
 
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
-	//CurrentPlanet = world.NewDevPlanet()
-	CurrentPlanet = mapgen.GeneratePlanet()
-	Cam.PlanetWidth = float32(CurrentPlanet.Width)
+	//World.Planet = world.NewDevPlanet()
 
-	components.Init(CurrentPlanet, Cam, player)
+	// TODO move this to the world package or similar
+	World = world.World {
+		Entities: world.Entities {
+			Agents: *agents.NewAgentList(),
+		},
+		Planet: *mapgen.GeneratePlanet(),
+	}
+	components.ChangeWorld(&World)
+
+	//World.Planet = *mapgen.GeneratePlanet()
+	Cam.PlanetWidth = float32(World.Planet.Width)
+
+	components.Init(&World, Cam, player)
 
 	starfield.InitStarField(&win, player, Cam)
 
 	inventoryId = item.NewDevInventory()
 
-	worldTiles := CurrentPlanet.GetAllTilesUnique()
+	worldTiles := World.Planet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 	tilePaletteSelector = ui.
 		NewDevTilePaleteSelector()
@@ -101,19 +113,20 @@ func Init() {
 	Cam.SetCameraPosition(float32(spawnX), 5)
 
 	player.Pos.X = float32(spawnX)
-	player.Pos.Y = float32(CurrentPlanet.GetHeight(spawnX) + 10)
+	player.Pos.Y = float32(World.Planet.GetHeight(spawnX) + 10)
 
-	CurrentPlanet.WorldState.AgentList.Spawn(
+	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions {
 			X: player.Pos.X-6, Y: player.Pos.Y,
 		},
 	)
-	CurrentPlanet.WorldState.AgentList.Spawn(
+	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SPIDER_DRILL, agents.AgentCreationOptions {
 			X: player.Pos.X+6, Y: player.Pos.Y,
 		},
 	)
 
 	sound.LoadSound("player_jump", "jump.wav")
+	Console = console.New()
 
 }

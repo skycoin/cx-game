@@ -1,7 +1,6 @@
 package particle_physics
 
 import (
-	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/world"
 )
@@ -23,7 +22,9 @@ func Init() {
 	AssertAllParticleHandlersRegistered()
 }
 
-func Update(particleList *particles.ParticleList, planet *world.Planet) {
+func Update(World *world.World) {
+	particleList := &World.Entities.Particles
+	planet := &World.Planet
 	bins := BinByPhysicsHandlerID(particleList.Particles)
 
 	for physicsType, par := range bins {

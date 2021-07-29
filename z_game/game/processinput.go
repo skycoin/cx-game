@@ -11,6 +11,7 @@ import (
 )
 
 func ProcessInput() {
+	if Console.IsActive() { return }
 	if input.GetButtonDown("switch-helmet") {
 		player.SetHelmNext()
 	}

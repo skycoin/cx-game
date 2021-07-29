@@ -1,5 +1,9 @@
 package components
 
+// TODO replace globals with structs.
+// If we have multiple worlds loaded,
+// we should be able to simulate them in parallel
+
 import (
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/agents/agent_ai"
@@ -14,20 +18,24 @@ import (
 )
 
 var (
-	currentWorldState *world.WorldState
-	currentPlanet     *world.Planet
+	//currentWorldState *world.WorldState
+	//currentPlanet     *world.Planet
+	currentWorld      *world.World
 	currentCamera     *camera.Camera
 	currentPlayer     *models.Player
 
 	emitter *particle_emitter.ParticleEmitter
 )
 
-func Init(planet *world.Planet, cam *camera.Camera, player *models.Player) {
+func Init(World *world.World, cam *camera.Camera, player *models.Player) {
+	/*
 	currentWorldState = planet.WorldState
 	currentPlanet = planet
 	currentCamera = cam
+	*/
 	currentPlayer = player
-	emitter = particle_emitter.NewParticle(player.Pos, currentWorldState.ParticleList)
+	emitter = particle_emitter.
+		NewParticle(player.Pos, &World.Entities.Particles)
 
 	agent_health.Init()
 	agent_draw.Init()
@@ -43,10 +51,17 @@ func Init(planet *world.Planet, cam *camera.Camera, player *models.Player) {
 func ChangeCamera(newCamera *camera.Camera) {
 	currentCamera = newCamera
 }
+
+func ChangeWorld(newWorld *world.World) {
+	currentWorld = newWorld
+}
+
+/*
 func ChangePlanet(newPlanet *world.Planet) {
 	currentPlanet = newPlanet
 	currentWorldState = newPlanet.WorldState
 }
+*/
 
 func ChangePlayer(newPlayer *models.Player) {
 	currentPlayer = newPlayer

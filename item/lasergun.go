@@ -17,17 +17,17 @@ func UseLaserGun(info ItemUseInfo) {
 
 	playerPos := info.PlayerCoords()
 	for _,pos := range positions {
-		if info.Planet.TileIsSolid(int(pos.X),int(pos.Y)) {
+		if info.World.Planet.TileIsSolid(int(pos.X),int(pos.Y)) {
 			direction := worldCoords.Sub(playerPos).Normalize()
 			length := pos.Vec2().Sub(playerPos).Len() + 0.5
 			targetPos := playerPos.Add(direction.Mul(length))
 
 			closePlayerPos, closeTargetPos :=
-				info.Planet.MinimizeDistance(playerPos, targetPos)
+				info.World.Planet.MinimizeDistance(playerPos, targetPos)
 			particles.CreateLaser(closePlayerPos, closeTargetPos)
 
 			tile,destroyed :=
-				info.Planet.DamageTile(int(pos.X), int(pos.Y), world.TopLayer)
+				info.World.Planet.DamageTile(int(pos.X), int(pos.Y), world.TopLayer)
 
 			if destroyed {
 				//itemTypeId := GetItemTypeIdForTile(tile)
@@ -42,7 +42,7 @@ func UseLaserGun(info ItemUseInfo) {
 	// hit nothing - visual effect only
 	//particles.CreateLaser(playerPos, worldCoords )
 	closePlayerPos, closeTargetPos :=
-		info.Planet.MinimizeDistance(playerPos, worldCoords)
+		info.World.Planet.MinimizeDistance(playerPos, worldCoords)
 	particles.CreateLaser(closePlayerPos, closeTargetPos)
 }
 

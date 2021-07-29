@@ -6,6 +6,7 @@ import (
 	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/ui"
+	"github.com/skycoin/cx-game/ui/console"
 )
 
 func Update(dt float32) {
@@ -28,6 +29,10 @@ func Update(dt float32) {
 	sound.SetListenerPosition(player.Pos)
 	//has to be after listener position is updated
 	sound.Update()
+
+	commandContext := console.NewCommandContext()
+	commandContext.World = &World
+	Console.Update(window, commandContext)
 
 	starfield.UpdateStarField(dt)
 	catIsScratching = false

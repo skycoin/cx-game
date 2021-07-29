@@ -5,17 +5,12 @@ import (
 	"github.com/skycoin/cx-game/components/particles"
 )
 
-type WorldState struct {
-	AgentList *agents.AgentList
-	//particle list
-	ParticleList *particles.ParticleList
+type Entities struct {
+	Agents agents.AgentList
+	Particles particles.ParticleList
 }
 
-func NewDevWorldState() *WorldState {
-	worldState := WorldState{
-		AgentList:    agents.NewDevAgentList(),
-		ParticleList: &particles.ParticleList{},
-	}
-
-	return &worldState
+type World struct {
+	Entities Entities
+	Planet Planet
 }

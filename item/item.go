@@ -32,7 +32,7 @@ type ItemUseInfo struct {
 	ScreenX float32
 	ScreenY float32
 	Camera *camera.Camera
-	Planet *world.Planet
+	World *world.World
 	Player *models.Player
 	Inventory *Inventory
 }
@@ -50,7 +50,7 @@ func (info ItemUseInfo) WorldCoords() mgl32.Vec2 {
 	// click relative to world
 	worldCoords := info.Camera.GetTransform().Mul4x1(camCoords)
 
-	return info.Planet.WrapAround(worldCoords.Vec2())
+	return info.World.Planet.WrapAround(worldCoords.Vec2())
 }
 
 func (info ItemUseInfo) PlayerCoords() mgl32.Vec2 {
@@ -98,9 +98,9 @@ func GetItemTypeIdForTileTypeID(id world.TileTypeID) ItemTypeID {
 		worldCoords := info.WorldCoords()
 		x := int(worldCoords.X()+0.5)
 		y := int(worldCoords.Y()+0.5)
-		if !info.Planet.TileIsSolid(x,y) {
+		if !info.World.Planet.TileIsSolid(x,y) {
 			info.Slot.Quantity--
-			info.Planet.PlaceTileType(id,x,y)
+			info.World.Planet.PlaceTileType(id,x,y)
 		}
 	}
 	itemTypeID = AddItemType(itemType)
