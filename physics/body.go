@@ -26,9 +26,6 @@ type Body struct {
 	Deleted bool
 
 	IsIgnoringPlatforms bool
-
-	Elasticity float32
-	Friction   float32
 }
 
 func (body Body) Transform() mgl32.Mat4 {
@@ -151,13 +148,13 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 
 	if body.isCollidingLeft(collider, newPos) {
 		body.Collisions.Left = true
-		body.Vel.X = -body.Vel.X * body.Elasticity * 0.5
+		body.Vel.X = 0
 		newPos.X = body.bounds(newPos).left + 0.5 + body.Size.X/2
 
 	}
 	if body.isCollidingRight(collider, newPos) {
 		body.Collisions.Right = true
-		body.Vel.X = -body.Vel.X * body.Elasticity * 0.5
+		body.Vel.X = 0
 		newPos.X = body.bounds(newPos).right - 0.5 - body.Size.X/2
 
 	}
@@ -168,8 +165,7 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	}
 	if body.isCollidingBottom(collider, newPos) {
 		body.Collisions.Below = true
-		body.Vel.Y = -body.Vel.Y * body.Elasticity * 0.5
-		body.Vel.X *= (1 - body.Friction)
+		body.Vel.Y = 0
 		newPos.Y = body.bounds(newPos).bottom + 0.5 + body.Size.Y/2
 	}
 
