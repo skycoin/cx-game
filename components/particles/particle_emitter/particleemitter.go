@@ -24,17 +24,20 @@ func NewParticle(position cxmath.Vec2, particlelist *particles.ParticleList) *Pa
 	return &particleEmitter
 }
 
-func (emitter *ParticleEmitter) SetData(position cxmath.Vec2) {
+func (emitter *ParticleEmitter) SetPosition(position cxmath.Vec2) {
 	emitter.position = position
-
 }
+
 func (emitter *ParticleEmitter) Emit() {
 	emitter.particleList.AddParticle(
 		emitter.position,
 		//set velocity up
-		cxmath.Vec2{rand.Float32()*5 - 2.5, rand.Float32() + 0.5*35},
+		cxmath.Vec2{(rand.Float32()*5 - 2.5), rand.Float32() + 0.5},
+		0.3,
+		0.5,
+		0.1,
 		spriteloader.GetSpriteIdByNameUint32("particle"),
-		3,
+		5,
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
 		constants.PARTICLE_PHYSICS_HANDLER_GRAVITY,
 	)

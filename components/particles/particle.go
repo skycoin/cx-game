@@ -3,12 +3,10 @@ package particles
 import (
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/physics"
 )
 
 type Particle struct {
-	Verlet
-	physics.Body
+	ParticleBody
 	TimeToLive       float32
 	Duration         float32
 	Texture          uint32

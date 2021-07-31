@@ -12,6 +12,6 @@ func PhysicsHandlerGravity(particleList []*particles.Particle, planet *world.Pla
 	// for _, par := range particleList {
 	// }
 	for _, par := range particleList {
-		par.Move(planet, constants.TimeStep)
+		par.MoveNoBounceGravity(planet, constants.TimeStep)
 	}
 }

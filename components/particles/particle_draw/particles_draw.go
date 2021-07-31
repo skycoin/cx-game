@@ -6,13 +6,12 @@ import (
 	"github.com/skycoin/cx-game/components/types"
 )
 
-
 func FrustumCull(particleList []*particles.Particle, cam *camera.Camera) []*particles.Particle {
 	particlesToDraw := make([]*particles.Particle, 0, len(particleList))
 
 	for _, par := range particleList {
 		//assume particle radius is 1
-		if cam.IsInBoundsRadius(par.Position, 1) {
+		if cam.IsInBoundsRadius(par.Pos, 1) {
 			particlesToDraw = append(particlesToDraw, par)
 		}
 	}
