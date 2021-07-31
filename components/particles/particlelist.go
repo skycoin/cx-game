@@ -3,7 +3,6 @@ package particles
 import (
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/physics"
 )
 
 //for now keep one global particles list, redo later
@@ -14,14 +13,22 @@ type ParticleList struct {
 func (pl *ParticleList) AddParticle(
 	position cxmath.Vec2,
 	velocity cxmath.Vec2,
+	size float32,
+	elasticity float32,
+	friction float32,
 	texture uint32,
 	duration float32,
 	drawHandlerId types.ParticleDrawHandlerId,
 	physiscHandlerID types.ParticlePhysicsHandlerID,
 ) {
 	newParticle := Particle{
-		Verlet:           NewVerlet(position, velocity),
-		Body:             physics.Body{Pos: position, Vel: velocity, Size: cxmath.Vec2{0.3, 0.3}, Elasticity: 1, Friction: 0.2},
+		ParticleBody: ParticleBody{
+			Pos:        position,
+			Vel:        velocity,
+			Size:       cxmath.Vec2{size, size},
+			Elasticity: elasticity,
+			Friction:   friction,
+		},
 		Duration:         duration,
 		TimeToLive:       duration,
 		Texture:          texture,

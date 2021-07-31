@@ -19,7 +19,7 @@ func Update(dt float32) {
 	//update lifetimes
 	currentWorld.Entities.Particles.Update(dt)
 
-	emitter.SetData(currentPlayer.Pos)
+	emitter.SetPosition(currentPlayer.Pos)
 	emitter.Emit()
 }
 
