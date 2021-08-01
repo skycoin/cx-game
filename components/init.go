@@ -26,6 +26,7 @@ var (
 	currentPlayer *models.Player
 
 	emitter       *particle_emitter.ParticleEmitter
+	sparkEmitter  *particle_emitter.SparkEmitter
 	bulletEmitter *particle_emitter.BulletEmitter
 )
 
@@ -38,11 +39,14 @@ func Init(World *world.World, cam *camera.Camera, player *models.Player) {
 	currentPlayer = player
 	emitter = particle_emitter.
 		NewParticle(player.Pos, &World.Entities.Particles)
+
+	sparkEmitter = particle_emitter.NewSparkEmitter(&currentWorld.Entities.Particles)
 	bulletEmitter = particle_emitter.NewBulletEmitter(
 		player.Pos.Add(cxmath.Vec2{0, 5}),
 		cxmath.Vec2{10, 0},
 		cxmath.Vec2{1, 1},
 		&World.Entities.Particles,
+		sparkEmitter,
 	)
 
 	agent_health.Init()

@@ -12,7 +12,7 @@ func PhysicsHandlerDissappearOnHitCallback(particleList []*particles.Particle, p
 	for _, par := range particleList {
 		par.MoveNoBounceGravity(planet, constants.TimeStep)
 		if par.Collisions.Collided() {
-			par.TimeToLive = 0
+			par.Die()
 			par.Callback(par.ParticleId)
 		}
 	}

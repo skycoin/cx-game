@@ -17,9 +17,10 @@ import (
 type BulletEmitter struct {
 	physics.Body
 	particleList *particles.ParticleList
+	sparkEmitter *SparkEmitter
 }
 
-func NewBulletEmitter(position, velocity, size cxmath.Vec2, particlelist *particles.ParticleList) *BulletEmitter {
+func NewBulletEmitter(position, velocity, size cxmath.Vec2, particlelist *particles.ParticleList, sparkEmitter *SparkEmitter) *BulletEmitter {
 	bulletEmitter := BulletEmitter{
 		Body: physics.Body{
 			Pos:  position,
@@ -27,6 +28,7 @@ func NewBulletEmitter(position, velocity, size cxmath.Vec2, particlelist *partic
 			Size: size,
 		},
 		particleList: particlelist,
+		sparkEmitter: sparkEmitter,
 	}
 
 	return &bulletEmitter
@@ -51,7 +53,7 @@ func (emitter *BulletEmitter) Emit() {
 		3,
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
 		constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT_CALLBACK,
-		emitter.GetCallback(),
+		emitter.OnHitCallback(),
 	)
 }
 
@@ -87,8 +89,8 @@ func (emitter *BulletEmitter) GetDirection() cxmath.Vec2 {
 	return cxmath.Vec2{rotatedX, rotatedY}
 }
 
-func (emitter *BulletEmitter) GetCallback() func(types.ParticleID) {
+func (emitter *BulletEmitter) OnHitCallback() func(types.ParticleID) {
 	return func(id types.ParticleID) {
-		sparkEmitter.Emit(id)
+		emitter.sparkEmitter.Emit(id)
 	}
 }
