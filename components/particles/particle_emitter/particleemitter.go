@@ -36,7 +36,7 @@ func (emitter *ParticleEmitter) Emit() {
 		0.3,
 		0.5,
 		0.1,
-		spriteloader.GetSpriteIdByNameUint32("particle"),
+		spriteloader.GetSpriteIdByNameUint32("star"),
 		5,
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
 		constants.PARTICLE_PHYSICS_HANDLER_GRAVITY,

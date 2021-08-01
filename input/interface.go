@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/utility"
 )
 
@@ -60,7 +61,7 @@ func GetKeyDown(key glfw.Key) bool {
 }
 
 func GetKeyIsUp(key glfw.Key) bool {
-	return window_.GetKey(key) == glfw.Press
+	return window_.Window.GetKey(key) == glfw.Press
 }
 
 func GetLastKey() glfw.Key {
@@ -76,10 +77,24 @@ func GetAxis(axis Axis) float32 {
 
 }
 
-func GetMouseX() float64 {
-	return mouseCoords.X
+func GetMouseWorldCoordsX() float32 {
+	screenX := GetScreenX()
+	tileX := camX + screenX/render.PixelsPerTile
+	return tileX
 }
 
-func GetMouseY() float64 {
-	return mouseCoords.Y
+func GetMouseWorldCoordsY() float32 {
+	screenY := GetScreenY()
+	tileY := camY + screenY/render.PixelsPerTile
+	return tileY
+}
+
+func GetScreenX() float32 {
+	screenX := ((float32(mouseCoords.X)-float32(widthOffset))/float32(scale) - float32(window_.Width)/2) / camZoom
+	return screenX
+}
+
+func GetScreenY() float32 {
+	screenY := (((float32(mouseCoords.Y)-float32(heightOffset))/float32(scale) - float32(window_.Height)/2) * -1) / camZoom
+	return screenY
 }

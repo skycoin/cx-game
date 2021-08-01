@@ -8,7 +8,7 @@ var (
 	mouseCoords  *MouseCoords
 	widthOffset  int32
 	heightOffset int32
-	scale        float32
+	scale        float32 = 1
 )
 
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
@@ -22,4 +22,3 @@ func UpdateMouseCoords(widthOff, heightOff int32, scl float32) {
 	widthOffset = widthOff
 	heightOffset = heightOff
 }
-
