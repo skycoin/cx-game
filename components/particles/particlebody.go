@@ -192,3 +192,7 @@ func (body *ParticleBody) MoveBounceGravity(planet worldcollider.WorldCollider, 
 
 	body.Pos = newPos
 }
+
+func (body *ParticleBody) MoveNoBounceGravityCallback(planet worldcollider.WorldCollider, dt float32) {
+	body.MoveNoBounceGravity(planet, dt)
+}

@@ -40,5 +40,6 @@ func (emitter *ParticleEmitter) Emit() {
 		5,
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
 		constants.PARTICLE_PHYSICS_HANDLER_GRAVITY,
+		nil,
 	)
 }

@@ -6,12 +6,14 @@ import (
 )
 
 type Particle struct {
+	ParticleId types.ParticleID
 	ParticleBody
 	TimeToLive       float32
 	Duration         float32
 	Texture          uint32
 	DrawHandlerID    types.ParticleDrawHandlerId
 	PhysicsHandlerID types.ParticlePhysicsHandlerID
+	Callback         func(types.ParticleID)
 }
 
 type Verlet struct {

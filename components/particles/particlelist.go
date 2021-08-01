@@ -10,6 +10,8 @@ type ParticleList struct {
 	Particles []*Particle
 }
 
+var particleIdCounter int
+
 func (pl *ParticleList) AddParticle(
 	position cxmath.Vec2,
 	velocity cxmath.Vec2,
@@ -20,8 +22,11 @@ func (pl *ParticleList) AddParticle(
 	duration float32,
 	drawHandlerId types.ParticleDrawHandlerId,
 	physiscHandlerID types.ParticlePhysicsHandlerID,
-) {
+	callback func(types.ParticleID),
+) types.ParticleID {
+	particleIdCounter++
 	newParticle := Particle{
+		ParticleId: types.ParticleID(particleIdCounter),
 		ParticleBody: ParticleBody{
 			Pos:        position,
 			Vel:        velocity,
@@ -34,9 +39,11 @@ func (pl *ParticleList) AddParticle(
 		Texture:          texture,
 		DrawHandlerID:    drawHandlerId,
 		PhysicsHandlerID: physiscHandlerID,
+		Callback:         callback,
 	}
 
 	pl.Particles = append(pl.Particles, &newParticle)
+	return newParticle.ParticleId
 }
 
 func (pl *ParticleList) Update(dt float32) {

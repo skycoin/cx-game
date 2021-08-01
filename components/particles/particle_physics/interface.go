@@ -18,6 +18,9 @@ func Init() {
 	RegisterPhysicsHandler(
 		constants.PARTICLE_PHYSICS_HANDLER_DRIFT,
 		PhysicsHandlerDrift)
+	RegisterPhysicsHandler(
+		constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT_CALLBACK,
+		PhysicsHandlerDissappearOnHitCallback)
 
 	AssertAllParticleHandlersRegistered()
 }

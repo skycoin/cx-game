@@ -28,8 +28,7 @@ func Update(dt float32) {
 	if input.GetButtonDown("shoot") {
 		bulletEmitter.Emit()
 	}
-
-	// fmt.Println(currentPlayer.Pos)
+	
 }
 
 func updateTimers(agents []*agents.Agent, dt float32) {
