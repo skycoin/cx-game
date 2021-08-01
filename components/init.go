@@ -39,7 +39,7 @@ func Init(World *world.World, cam *camera.Camera, player *models.Player) {
 	emitter = particle_emitter.
 		NewParticle(player.Pos, &World.Entities.Particles)
 	bulletEmitter = particle_emitter.NewBulletEmitter(
-		player.Pos,
+		player.Pos.Add(cxmath.Vec2{0, 5}),
 		cxmath.Vec2{10, 0},
 		cxmath.Vec2{1, 1},
 		&World.Entities.Particles,

@@ -24,7 +24,7 @@ func Update(dt float32) {
 	emitter.SetPosition(currentPlayer.Pos)
 	// emitter.Emit()
 
-	bulletEmitter.SetPosition(currentPlayer.Pos.Add(cxmath.Vec2{0, 10}))
+	bulletEmitter.SetPosition(currentPlayer.Pos.Add(cxmath.Vec2{0, 5}))
 	if input.GetButtonDown("shoot") {
 		bulletEmitter.Emit()
 	}

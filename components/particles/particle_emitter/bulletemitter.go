@@ -49,7 +49,7 @@ func (emitter *BulletEmitter) Emit() {
 		spriteloader.GetSpriteIdByNameUint32("star"),
 		3,
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
-		constants.PARTICLE_PHYSICS_HANDLER_DRIFT,
+		constants.PARTICLE_PHYSICS_HANDLER_BOUNCE_GRAVITY,
 	)
 	fmt.Println("Emitted")
 }
@@ -60,8 +60,16 @@ func (emitter *BulletEmitter) GetVelocity() cxmath.Vec2 {
 	// velocity.Y = -emitter.Vel.Y * rand.Float32()
 
 	// return velocity
+	inputVec := input.GetMouseWorldCoords().Mgl32()
+	direction := inputVec.Sub(emitter.Pos.Mgl32()).Normalize()
 
-	return emitter.GetDirection()
+	fmt.Println("DIRECTION IS: ", direction)
+
+	result := direction.Mul(10)
+	return cxmath.Vec2{
+		result.X(),
+		result.Y(),
+	}
 }
 
 func (emitter *BulletEmitter) GetDirection() cxmath.Vec2 {

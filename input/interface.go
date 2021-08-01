@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/utility"
 )
@@ -89,6 +90,12 @@ func GetMouseWorldCoordsY() float32 {
 	return tileY
 }
 
+func GetMouseWorldCoords() cxmath.Vec2 {
+	return cxmath.Vec2{
+		X: GetMouseWorldCoordsX(),
+		Y: GetMouseWorldCoordsY(),
+	}
+}
 func GetScreenX() float32 {
 	screenX := ((float32(mouseCoords.X)-float32(widthOffset))/float32(scale) - float32(window_.Width)/2) / camZoom
 	return screenX
