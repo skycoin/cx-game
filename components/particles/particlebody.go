@@ -146,6 +146,7 @@ func (body *ParticleBody) MoveNoBounceGravity(planet worldcollider.WorldCollider
 		body.Vel.X = 0
 		newPos.Y = body.bounds(newPos).bottom + 0.5 + body.Size.Y/2
 	}
+	
 	if body.Collisions.Left {
 		body.Vel.Y = 0
 		body.Vel.X = 0

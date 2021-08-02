@@ -50,7 +50,7 @@ func (emitter *BulletEmitter) Emit() {
 		spriteloader.GetSpriteIdByNameUint32("star"),
 		3,
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
-		constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT,
+		constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT_CALLBACK,
 		emitter.OnHitCallback(),
 	)
 }

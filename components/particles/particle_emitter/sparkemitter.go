@@ -1,8 +1,6 @@
 package particle_emitter
 
 import (
-	"fmt"
-
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
@@ -13,6 +11,9 @@ import (
 type SparkEmitter struct {
 	particleList *particles.ParticleList
 	program      *render.Program
+	minduration float32
+	maxduration float32
+	
 }
 
 func NewSparkEmitter(particleList *particles.ParticleList) *SparkEmitter {
@@ -23,7 +24,6 @@ func NewSparkEmitter(particleList *particles.ParticleList) *SparkEmitter {
 func (emitter *SparkEmitter) Emit(particle *particles.Particle) {
 
 	// direction := cxmath.Vec2{0, 1}
-	fmt.Println("EMITTED")
 
 	for i := 0; i < 10; i++ {
 		emitter.particleList.AddParticle(
@@ -35,7 +35,7 @@ func (emitter *SparkEmitter) Emit(particle *particles.Particle) {
 			spriteloader.GetSpriteIdByNameUint32("star"),
 			3,
 			constants.PARTICLE_DRAW_HANDLER_TRANSPARENT,
-			constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT_CALLBACK,
+			constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT,
 			nil,
 		)
 	}
