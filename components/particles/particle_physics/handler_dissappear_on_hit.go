@@ -8,12 +8,11 @@ import (
 
 // "drifts" at fixed velocity, no gravity
 
-func PhysicsHandlerDissappearOnHitCallback(particleList []*particles.Particle, planet *world.Planet) {
+func PhysicsHandlerDissappearOnHit(particleList []*particles.Particle, planet *world.Planet) {
 	for _, par := range particleList {
 		par.MoveNoBounceGravity(planet, constants.TimeStep)
 		if par.Collisions.Collided() {
 			par.Die()
-			par.Callback(par.ParticleId)
 		}
 	}
 }

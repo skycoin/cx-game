@@ -1,12 +1,10 @@
 package particle_emitter
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/components/particles"
-	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/input"
@@ -52,7 +50,7 @@ func (emitter *BulletEmitter) Emit() {
 		spriteloader.GetSpriteIdByNameUint32("star"),
 		3,
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
-		constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT_CALLBACK,
+		constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT,
 		emitter.OnHitCallback(),
 	)
 }
@@ -84,13 +82,13 @@ func (emitter *BulletEmitter) GetDirection() cxmath.Vec2 {
 	rotatedY := float32(math.Sin(float64(angle)))*emitter.Vel.X +
 		float32(math.Cos(float64(angle)))*emitter.Vel.Y
 
-	fmt.Println("ROTATED: ", rotatedX, "   ", rotatedY, " SCREENX: ", input.GetMouseWorldCoordsX(), "  ", input.GetMouseWorldCoordsY())
+	// fmt.Println("ROTATED: ", rotatedX, "   ", rotatedY, " SCREENX: ", input.GetMouseWorldCoordsX(), "  ", input.GetMouseWorldCoordsY())
 
 	return cxmath.Vec2{rotatedX, rotatedY}
 }
 
-func (emitter *BulletEmitter) OnHitCallback() func(types.ParticleID) {
-	return func(id types.ParticleID) {
-		emitter.sparkEmitter.Emit(id)
+func (emitter *BulletEmitter) OnHitCallback() func(*particles.Particle) {
+	return func(particle *particles.Particle) {
+		emitter.sparkEmitter.Emit(particle)
 	}
 }

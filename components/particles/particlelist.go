@@ -49,7 +49,7 @@ func (pl *ParticleList) AddParticle(
 	duration float32,
 	drawHandlerId types.ParticleDrawHandlerId,
 	physiscHandlerID types.ParticlePhysicsHandlerID,
-	callback func(types.ParticleID),
+	callback func(*Particle),
 ) types.ParticleID {
 	newParticle := Particle{
 		ParticleId: types.ParticleID(pl.idQueue.Pop()),
