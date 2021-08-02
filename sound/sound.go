@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/utility"
 	"github.com/ted537/go-openal/openal"
 )
 
@@ -296,7 +295,7 @@ func NewBuffer(filename string) (*openal.Buffer, error) {
 
 // from 0 to 100
 func SetVolume(value float32) {
-	clampedValue := utility.ClampF(value, 0, 100)
+	clampedValue := cxmath.ClampF(value, 0, 100)
 
 	Listener.SetGain(clampedValue / 100)
 }

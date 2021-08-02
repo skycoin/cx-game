@@ -12,7 +12,6 @@ import (
 	"github.com/skycoin/cx-game/physics/movement"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ui"
-	"github.com/skycoin/cx-game/utility"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -138,7 +137,7 @@ func (player *Player) FixedTick(planet *world.Planet) {
 		player.MovementMeta.MovSpeed *
 			player.ActiveMovementType.GetMovementSpeedModifier()
 
-	player.Vel.X = utility.ClampF(player.Vel.X, -maxAbsVelX, maxAbsVelX)
+	player.Vel.X = cxmath.ClampF(player.Vel.X, -maxAbsVelX, maxAbsVelX)
 
 	if player.ignorePlatformTicks>0 { player.ignorePlatformTicks-- }
 	// if input axis is downwards, ignore platforms for a few frames

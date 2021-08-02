@@ -7,3 +7,9 @@ func Min(x,y int) int {
 func Max(x,y int) int {
 	if x>y { return x } else { return y }
 }
+
+func Clamp(x, min, max int) int {
+	if x < min { return min }
+	if x > max { return max }
+	return x
+}

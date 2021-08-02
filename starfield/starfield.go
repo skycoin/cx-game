@@ -17,7 +17,6 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/starmap"
-	"github.com/skycoin/cx-game/utility"
 )
 
 func init() {
@@ -417,7 +416,7 @@ func genPerlin(width, height int, noiseConfig *noiseSettings) [][]float32 {
 				noiseConfig.Lacunarity,
 				noiseConfig.Octaves,
 			)
-			result = utility.ClampF(result-min/(max-min), 0.0, 1.0)
+			result = cxmath.ClampF(result-min/(max-min), 0.0, 1.0)
 			grid[y] = append(grid[y], result)
 		}
 
@@ -442,7 +441,7 @@ func gaussianTheta(x32, y32 float32) float32 {
 	if A < 0.6 {
 		A = 0.6
 	}
-	theta = float64(utility.DegToRad(float32(starConfig.Gaussian_Angle)))
+	theta = float64(cxmath.DegToRad(float32(starConfig.Gaussian_Angle)))
 	sigmaX = float64(starConfig.Gaussian_Sigma_X)
 	sigmaY = float64(starConfig.Gaussian_Sigma_Y)
 	x0 = float64(starConfig.Gaussian_Offset_X)

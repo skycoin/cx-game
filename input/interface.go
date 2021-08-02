@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/skycoin/cx-game/utility"
+	"github.com/skycoin/cx-game/cxmath"
 )
 
 //continuos keys, holding
@@ -69,9 +69,9 @@ func GetLastKey() glfw.Key {
 
 func GetAxis(axis Axis) float32 {
 	if axis == HORIZONTAL {
-		return utility.BoolToFloat(GetButton("right")) - utility.BoolToFloat(GetButton("left"))
+		return cxmath.BoolToFloat(GetButton("right")) - cxmath.BoolToFloat(GetButton("left"))
 	} else { // VERTICAL
-		return utility.BoolToFloat(GetButton("up")) - utility.BoolToFloat(GetButton("down"))
+		return cxmath.BoolToFloat(GetButton("up")) - cxmath.BoolToFloat(GetButton("down"))
 	}
 
 }
