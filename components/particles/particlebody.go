@@ -11,9 +11,11 @@ import (
 
 type ParticleBody struct {
 	//todo add previous position and velocity if needed
-	Pos  cxmath.Vec2
-	Vel  cxmath.Vec2
-	Size cxmath.Vec2
+	Pos     cxmath.Vec2
+	Vel     cxmath.Vec2
+	PrevPos cxmath.Vec2
+	PrevVel cxmath.Vec2
+	Size    cxmath.Vec2
 
 	Collisions physics.CollisionInfo
 
@@ -122,12 +124,15 @@ func (body *ParticleBody) DetectCollisions(planet worldcollider.WorldCollider, n
 }
 
 func (body *ParticleBody) MoveNoGravity(planet worldcollider.WorldCollider, dt float32) {
+	body.PrevPos = body.Pos
 	body.Pos = body.Pos.Add(body.Vel.Mult(dt))
 }
 
 func (body *ParticleBody) MoveNoBounceGravity(planet worldcollider.WorldCollider, dt float32) {
 	body.Collisions.Reset()
 
+	body.PrevPos = body.Pos
+	body.PrevVel = body.Vel
 	body.Vel.Y += -constants.Gravity * dt
 
 	//todo account drag
@@ -146,7 +151,7 @@ func (body *ParticleBody) MoveNoBounceGravity(planet worldcollider.WorldCollider
 		body.Vel.X = 0
 		newPos.Y = body.bounds(newPos).bottom + 0.5 + body.Size.Y/2
 	}
-	
+
 	if body.Collisions.Left {
 		body.Vel.Y = 0
 		body.Vel.X = 0
@@ -162,6 +167,8 @@ func (body *ParticleBody) MoveNoBounceGravity(planet worldcollider.WorldCollider
 }
 
 func (body *ParticleBody) MoveBounceGravity(planet worldcollider.WorldCollider, dt float32) {
+	body.PrevVel = body.Vel
+	body.PrevPos = body.Pos
 	body.Collisions.Reset()
 
 	body.Vel.Y += -constants.Gravity * dt

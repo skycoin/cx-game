@@ -64,7 +64,7 @@ func (emitter *BulletEmitter) GetVelocity() cxmath.Vec2 {
 	inputVec := input.GetMouseWorldCoords().Mgl32()
 	direction := inputVec.Sub(emitter.Pos.Mgl32()).Normalize()
 
-	result := direction.Mul(50)
+	result := direction.Mul(20)
 	return cxmath.Vec2{
 		result.X(),
 		result.Y(),
