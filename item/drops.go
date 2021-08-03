@@ -6,7 +6,7 @@ import (
 )
 
 func AddDrops() {
-	world.AddDrop(world.TileTypeIDs.Dirt, world.Drop {
+	world.AddDrop(world.IDFor("regolith"), world.Drop {
 		Count: 1, Probability: 0.5, Item: ids.ItemTypeID(RockDustItemTypeID),
 	})
 }

@@ -1,0 +1,39 @@
+---
+
+stone:
+    sprite: tiles/stone
+    layer: top
+
+bedrock:
+    sprite: tiles/bedrock
+    layer: top
+
+regolith:
+    blob: full
+    sprites: 
+        - tiles/regolith
+        - tiles/regolith-alt
+    layer : top
+
+methane-ice:
+    sprite: tiles/methane-ice
+    layer: top
+
+regolith-wall:
+    blob: full
+    sprites: 
+        - tiles/regolith-wall
+    layer: bg
+
+pipe:
+    blob: full
+    sprites: 
+        - tiles/ventilation-pipes
+    layer: mid
+
+platform:
+    sprite: tiles/platform
+    collision: platform
+    layer: top
+
+---

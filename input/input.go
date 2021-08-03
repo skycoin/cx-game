@@ -58,7 +58,6 @@ func registerKeyMaps() {
 	MapKeyToButton("mute", glfw.KeyM)
 	MapKeyToButton("freecam", glfw.KeyF2)
 	MapKeyToButton("cycle-palette", glfw.KeyF3)
-	MapKeyToButton("scratch", glfw.KeyLeftShift)
 	MapKeyToButton("inventory-grid", glfw.KeyI)
 	MapKeyToButton("fly", glfw.KeyT)
 	MapKeyToButton("crouch", glfw.KeyC)

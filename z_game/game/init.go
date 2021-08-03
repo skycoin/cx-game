@@ -47,10 +47,6 @@ var (
 	DrawCollisionBoxes = false
 	FPS                int
 
-	catIsScratching bool
-
-	tilePaletteSelector ui.TilePaletteSelector
-
 	inventoryId item.InventoryID
 
 	//unused
@@ -70,9 +66,10 @@ func Init() {
 
 	input.Init(win.Window)
 	sound.Init()
-	spriteloader.InitSpriteloader(&win)
-	anim.InitAnimatedSpriteLoader()
 	spriteloader.DEBUG = false
+	spriteloader.InitSpriteloader(&win)
+	spriteloader.LoadSpritesFromConfigs()
+	anim.InitAnimatedSpriteLoader()
 	world.RegisterTileTypes()
 	item.InitWorldItem()
 	ui.Init()
@@ -106,8 +103,6 @@ func Init() {
 
 	worldTiles := World.Planet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
-	tilePaletteSelector = ui.
-		NewDevTilePaleteSelector()
 
 	spawnX := int(20)
 	Cam.SetCameraPosition(float32(spawnX), 5)

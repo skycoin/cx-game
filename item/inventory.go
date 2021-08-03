@@ -56,7 +56,7 @@ func NewDevInventory() InventoryID {
 	inventory.Slots[inventory.ItemSlotIndexForPosition(2, 0)] =
 		InventorySlot{GunItemTypeID, 1, 0}
 
-	pipeTileType,ok := world.GetTileTypeByID(world.TileTypeIDs.Pipe)
+	pipeTileType,ok := world.GetTileTypeByID(world.IDFor("pipe"))
 	if !ok { log.Fatal("Cannot find pipe tile type")}
 	pipeTile := pipeTileType.CreateTile(world.TileCreationOptions{})
 	pipeItemTypeID := GetItemTypeIdForTile(pipeTile)
@@ -67,24 +67,24 @@ func NewDevInventory() InventoryID {
 	inventory.Slots[inventory.ItemSlotIndexForPosition(5, 0)] =
 		InventorySlot{EnemyToolItemTypeID, 1, 0}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(6, 0)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Platform), 
+		GetItemTypeIdForTileTypeID(world.IDFor("platform")),
 		99, 0,
 	}
 
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0,1)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Stone), 
+		GetItemTypeIdForTileTypeID(world.IDFor("stone")),
 		1, 0,
 	}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0,2)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Dirt), 
+		GetItemTypeIdForTileTypeID(world.IDFor("regolith")),
 		1, 0,
 	}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0,3)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.TileTypeIDs.DirtWall), 
+		GetItemTypeIdForTileTypeID(world.IDFor("regolith-wall")),
 		1, 0,
 	}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0,4)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.TileTypeIDs.Bedrock), 
+		GetItemTypeIdForTileTypeID(world.IDFor("bedrock")),
 		1, 0,
 	}
 	return inventoryId
