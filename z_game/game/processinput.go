@@ -35,26 +35,11 @@ func ProcessInput() {
 	if input.GetButtonDown("fly") {
 		player.ToggleFlying()
 	}
-
-	if input.GetButtonDown("scratch") {
-		ui.PlaceDialogueBox(
-			"*scratch", ui.AlignLeft, 1,
-			mgl32.Translate3D(
-				player.Pos.X,
-				player.Pos.Y,
-				0,
-			),
-		)
-		catIsScratching = true
-	}
 	if input.GetButtonDown("mute") {
 		sound.ToggleMute()
 	}
 	if input.GetButtonDown("freecam") {
 		Cam.ToggleFreeCam()
-	}
-	if input.GetButtonDown("cycle-palette") {
-		tilePaletteSelector.CycleLayer()
 	}
 	if input.GetButtonDown("inventory-grid") {
 		inventory := item.GetInventoryById(inventoryId)

@@ -74,8 +74,8 @@ func placePole(planet *world.Planet, origin int) {
 	for x := origin - poleRadius ; x < origin + poleRadius ; x++ {
 		for y := 0 ; y < int(planet.Height) ; y++ {
 			tile := planet.GetTile(x,y,world.TopLayer)
-			if tile.TileTypeID == world.TileTypeIDs.Dirt {
-				planet.PlaceTileType(world.TileTypeIDs.MethaneIce, x,y)
+			if tile.TileTypeID == world.IDFor("regolith") {
+				planet.PlaceTileType(world.IDFor("methane-ice"), x,y)
 			}
 		}
 	}
@@ -84,15 +84,15 @@ func placePole(planet *world.Planet, origin int) {
 
 func GeneratePlanet() *world.Planet {
 	planet := world.NewPlanet(100, 100)
-	placeLayer(planet,world.TileTypeIDs.Air, 4,1)
-	stonePositions := placeLayer(planet,world.TileTypeIDs.Stone, 8,2)
-	dirtPositions := placeLayer(planet,world.TileTypeIDs.Dirt, 4,1)
+	placeLayer(planet,world.IDFor("air"), 4,1)
+	stonePositions := placeLayer(planet,world.IDFor("stone"), 8,2)
+	dirtPositions := placeLayer(planet,world.IDFor("regolith"), 4,1)
 
 	for _,pos := range dirtPositions {
-		placeBgTile(planet,world.TileTypeIDs.DirtWall, pos)
+		placeBgTile(planet,world.IDFor("regolith-wall"), pos)
 	}
 	for _,pos := range stonePositions {
-		placeBgTile(planet,world.TileTypeIDs.DirtWall, pos)
+		placeBgTile(planet,world.IDFor("regolith-wall"), pos)
 	}
 
 	placePoles(planet)

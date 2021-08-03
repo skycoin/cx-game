@@ -6,7 +6,6 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/item"
-	"github.com/skycoin/cx-game/world"
 )
 
 func mouseButtonCallback(
@@ -46,33 +45,6 @@ func mousePressCallback(
 	}
 
 	screenX,screenY := screenPos()
-
-	didSelectPaleteTile := tilePaletteSelector.TrySelectTile(screenX, screenY)
-	if didSelectPaleteTile {
-		return
-	}
-
-	if tilePaletteSelector.IsMultiTileSelected() {
-		didPlaceMultiTile := World.Planet.TryPlaceMultiTile(
-			screenX, screenY,
-			world.LayerID(tilePaletteSelector.LayerIndex),
-			tilePaletteSelector.GetSelectedMultiTile(),
-			Cam,
-		)
-		if didPlaceMultiTile {
-			return
-		}
-	} else {
-		didPlaceTile := World.Planet.TryPlaceTile(
-			screenX, screenY,
-			world.LayerID(tilePaletteSelector.LayerIndex),
-			tilePaletteSelector.GetSelectedTile(),
-			Cam,
-		)
-		if didPlaceTile {
-			return
-		}
-	}
 
 	inventory := item.GetInventoryById(inventoryId)
 	clickedSlot :=

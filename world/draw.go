@@ -123,8 +123,12 @@ func (planet *Planet) drawSpritesheetBin(
 			camToCenterX+float32(x)-center, float32(y)-camY, 0,
 		)
 		texScales[instance] = mgl32.Vec2 { meta.ScaleX, meta.ScaleY }
-		texOffsets[instance] =
-			mgl32.Vec2 { float32(meta.PosX), float32(meta.PosY) }
+		// hack - fix translate*scale vs scale*translate mismatch
+		// between shader and spriteloader
+		texOffsets[instance] = mgl32.Vec2 {
+			float32(meta.PosX) / float32(meta.ScaleX),
+			float32(meta.PosY) / float32(meta.ScaleY),
+		}
 
 		instance++
 		if instance==100 {

@@ -1,0 +1,9 @@
+---
+
+name: tiles
+
+sprites:
+    regolith: 
+        unit: full
+
+---

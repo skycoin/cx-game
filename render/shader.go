@@ -165,6 +165,12 @@ func (p Program) Locate(name string) int32 {
 	return gl.GetUniformLocation(uint32(p), gl.Str(name+"\x00"))
 }
 
+func (p Program) SetMat3s(name string, values []mgl32.Mat3) {
+	location := p.Locate(name)
+	count := int32(len(values))
+	gl.UniformMatrix3fv(location, count, false, &values[0][0])
+}
+
 func (p Program) SetMat4s(name string, values []mgl32.Mat4) {
 	location := p.Locate(name)
 	count := int32(len(values))
@@ -204,7 +210,7 @@ func (s Shader) GetInfoLog() string {
 	length := s.GetInt(gl.INFO_LOG_LENGTH)
 	// add 1 to length for null terminator
 	infolog := strings.Repeat("\x00", int(length)+1)
-	gl.GetProgramInfoLog(s.gl(), length, nil, gl.Str(infolog))
+	gl.GetShaderInfoLog(s.gl(), length, nil, gl.Str(infolog))
 	return infolog
 }
 
@@ -218,6 +224,7 @@ func (p Program) GetInfoLog() string {
 
 func (s Shader) checkCompileErrors() {
 	if !s.CompiledSuccessfully() {
+		log.Print("compile error")
 		log.Fatal(s.GetInfoLog())
 	}
 }
@@ -228,6 +235,7 @@ func (p Program) LinkedSuccessfully() bool {
 
 func (p Program) checkLinkErrors() {
 	if !p.LinkedSuccessfully() {
+		log.Print("link error")
 		log.Fatal(p.GetInfoLog())
 	}
 }

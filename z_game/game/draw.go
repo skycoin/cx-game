@@ -66,7 +66,6 @@ func Draw() {
 
 	inventory := item.GetInventoryById(inventoryId)
 	inventory.Draw(win.DefaultRenderContext())
-	tilePaletteSelector.Draw(win.DefaultRenderContext())
 
 	Console.Draw(win.DefaultRenderContext())
 
