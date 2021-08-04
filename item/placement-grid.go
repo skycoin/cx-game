@@ -43,7 +43,9 @@ type PositionedTileTypeID struct {
 
 func (p PositionedTileTypeID) Transform() mgl32.Mat4 {
 	translation := mgl32.Translate3D(
-		float32(p.Rect.Origin.X), -float32(p.Rect.Origin.Y), 0 )
+		float32(p.Rect.Size.X)/2-0.5+float32(p.Rect.Origin.X),
+		-1*(float32(p.Rect.Size.Y)/2-0.5+float32(p.Rect.Origin.Y)),
+		0 )
 	scale := mgl32.Scale3D(
 		float32(p.Rect.Size.X), float32(p.Rect.Size.Y), 1)
 	return translation.Mul4(scale)
@@ -92,9 +94,11 @@ func NewPlacementGrid() PlacementGrid {
 	return PlacementGrid { PositionedTileTypeIDs: []PositionedTileTypeID{} }
 }
 
+
 func (ig *PlacementGrid) Assemble(itemTypeIDs []ItemTypeID) {
-	tileTypeIDs := GetTileTypesIDsForItemTypeIDs(itemTypeIDs)
-	ig.PositionedTileTypeIDs = LayoutTiletypes(tileTypeIDs)
+	//tileTypeIDs := GetTileTypesIDsForItemTypeIDs(itemTypeIDs)
+	ids := world.AllTileTypeIDs()
+	ig.PositionedTileTypeIDs = LayoutTiletypes(ids)
 	//log.Printf("%+v",*ig)
 }
 

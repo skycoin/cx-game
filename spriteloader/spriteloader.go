@@ -34,6 +34,7 @@ type Sprite struct {
 	spriteSheetId SpritesheetID
 	x, y          float32
 	xScale, yScale float32
+	worldXScale, worldYScale float32
 }
 
 type SpriteID uint32
@@ -43,6 +44,7 @@ type SpriteMetadata struct {
 	GpuTex         uint32
 	PosX, PosY     float32
 	ScaleX, ScaleY float32
+	WorldXScale, WorldYScale float32
 }
 
 func GetSpriteMetadata(spriteID SpriteID) SpriteMetadata {
@@ -50,12 +52,16 @@ func GetSpriteMetadata(spriteID SpriteID) SpriteMetadata {
 	spritesheet := spritesheets[sprite.spriteSheetId]
 	if sprite.xScale == 0 { sprite.xScale = 1 }
 	if sprite.yScale == 0 { sprite.yScale = 1 }
+	if sprite.worldXScale == 0 { sprite.worldXScale = 1 }
+	if sprite.worldYScale == 0 { sprite.worldYScale = 1 }
 	return SpriteMetadata{
 		GpuTex: spritesheet.tex,
 		PosX:   sprite.x,
 		PosY:   sprite.y,
 		ScaleX: sprite.xScale * spritesheet.xScale,
 		ScaleY: sprite.yScale * spritesheet.yScale,
+		WorldXScale: sprite.worldXScale,
+		WorldYScale: sprite.worldYScale,
 	}
 }
 
@@ -131,15 +137,20 @@ func LoadSingleSprite(fname string, name string) SpriteID {
 func LoadSpriteF(
 		spriteSheetId SpritesheetID, name string,
 		x, y float32, xScale, yScale float32,
+		worldXScale, worldYScale float32,
 ) SpriteID {
-	sprites = append(sprites, Sprite{spriteSheetId, x, y, xScale, yScale})
+	sprites = append(sprites, Sprite{ spriteSheetId,
+		x, y,
+		xScale, yScale,
+		worldXScale, worldYScale,
+	})
 	spriteId := SpriteID(len(sprites) - 1)
 	spriteIdsByName[name] = spriteId
 	return spriteId
 }
 // int wrapper
 func LoadSprite(id SpritesheetID, name string, x,y int) SpriteID {
-	return LoadSpriteF(id,name,float32(x),float32(y), 1, 1)
+	return LoadSpriteF(id,name,float32(x),float32(y), 1, 1, 1,1)
 }
 
 // convenient for loading multi-tiles,
@@ -234,7 +245,9 @@ func DrawSpriteQuadContext(
 		sprite.xScale * spritesheet.xScale,
 		sprite.yScale * spritesheet.yScale,
 	)
-	SpriteProgram.SetVec2F("texOffset", float32(sprite.x), float32(sprite.y))
+	SpriteProgram.SetVec2F("texOffset",
+		float32(sprite.x) / sprite.xScale,
+		float32(sprite.y) / sprite.yScale )
 	SpriteProgram.SetMat4("world", &ctx.World)
 	SpriteProgram.SetMat4("projection", &ctx.Projection)
 
