@@ -21,6 +21,7 @@ func Update(dt float32) {
 		playerPos := player.InterpolatedTransform.Col(3).Vec2()
 		Cam.SetCameraPosition(playerPos.X(), playerPos.Y())
 	}
+	World.Planet.Update(dt)
 	Cam.Tick(dt)
 	fps.Tick()
 	ui.TickDialogueBoxes(dt)

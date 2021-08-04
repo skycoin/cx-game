@@ -18,15 +18,18 @@ type Placer interface {
 type DirectPlacer struct {
 	SpriteID spriteloader.SpriteID
 	TileCollisionType TileCollisionType
+	Category TileCategory
 }
 func (placer DirectPlacer) CreateTile(
 	tt TileType,opts TileCreationOptions,
 ) Tile {
+	category := placer.Category
+	if category == TileCategoryNone { category = TileCategoryNormal }
 	return Tile {
 		Name: tt.Name,
 		SpriteID: placer.SpriteID,
 		TileTypeID: tt.ID,
-		TileCategory: TileCategoryNormal,
+		TileCategory: category,
 		TileCollisionType: placer.TileCollisionType,
 	}
 }

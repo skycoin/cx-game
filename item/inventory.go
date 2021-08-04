@@ -87,6 +87,10 @@ func NewDevInventory() InventoryID {
 		GetItemTypeIdForTileTypeID(world.IDFor("bedrock")),
 		1, 0,
 	}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(0,5)] = InventorySlot{
+		GetItemTypeIdForTileTypeID(world.IDFor("water")),
+		1, 0,
+	}
 	return inventoryId
 }
 

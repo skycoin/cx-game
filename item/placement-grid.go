@@ -128,6 +128,7 @@ func (ig PlacementGrid) DrawSlot(
 func (grid *PlacementGrid) TrySelect(camCoords mgl32.Vec2) bool {
 	relative := grid.Transform().Inv().Mul4x1(camCoords.Vec4(0,1)).Vec2()
 	x,y := cxmath.RoundVec2(relative)
+	y = -y
 	for _,positioned := range grid.PositionedTileTypeIDs {
 		if positioned.Rect.Contains(x,y) {
 			grid.Selected = positioned.TileTypeID
