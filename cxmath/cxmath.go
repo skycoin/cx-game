@@ -66,12 +66,16 @@ func Sqrt(a float32) float32 {
 	return float32(math.Sqrt(float64(a)))
 }
 
-func LerpVec2(v1,v2 mgl32.Vec2, alpha float32) mgl32.Vec2 {
-	beta := 1-alpha
+func Floor(a float32) float32 {
+	return float32(math.Floor(float64(a)))
+}
+
+func LerpVec2(v1, v2 mgl32.Vec2, alpha float32) mgl32.Vec2 {
+	beta := 1 - alpha
 	return v1.Mul(beta).Add(v2.Mul(alpha))
 }
 
-func RoundVec2(v1 mgl32.Vec2) (x,y int32) {
+func RoundVec2(v1 mgl32.Vec2) (x, y int32) {
 	x = int32(float32(math.Round(float64(v1.X()))))
 	y = int32(float32(math.Round(float64(v1.Y()))))
 	return
