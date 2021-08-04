@@ -17,6 +17,7 @@ type TileConfig struct {
 	Sprite string `yaml:"sprite"`
 	Layer string `yaml:"layer"`
 	Invulnerable bool `yaml:"invulnerable"`
+	Category string `yaml:"category"`
 }
 
 func loadIDsFromSpritenames(names []string, n int) []blobsprites.BlobSpritesID {
@@ -28,12 +29,23 @@ func loadIDsFromSpritenames(names []string, n int) []blobsprites.BlobSpritesID {
 	return ids
 }
 
+func tileCategoryFromString(str string) TileCategory {
+	if str == "" { return TileCategoryNormal }
+	if str == "liquid" { return TileCategoryLiquid }
+
+	log.Fatalf("unrecognized tile category [%v]", str)
+	return TileCategoryNone
+}
+
 func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
 
 	if config.Blob == "" {
 		// TODO handle multiple sprites
 		spriteID := spriteloader.GetSpriteIdByName(config.Sprite)
-		return DirectPlacer { SpriteID: spriteID }
+		return DirectPlacer {
+			SpriteID: spriteID,
+			Category: tileCategoryFromString(config.Category),
+		}
 	}
 	if config.Blob == "full" {
 		ids := loadIDsFromSpritenames(config.Sprites,
@@ -103,7 +115,7 @@ func RegisterConfigTileTypes() {
 	var configs TileConfigs
 	err = yaml.Unmarshal(buf,&configs)
 	if err != nil {
-		log.Fatalf("parse tile configs: %v",err)
+		log.Fatalf("parse tile config %s: %v",tilesConfigPath,err)
 	}
 	for name,config := range configs {
 		RegisterTileType(name, config.TileType(name,NextTileTypeID()))

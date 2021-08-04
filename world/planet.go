@@ -62,8 +62,9 @@ type Planet struct {
 	collidingLines  []float32
 	collidingLinesX int
 	collidingLinesY int
+	Time float32
 
-	program render.Program
+	program, liquidProgram render.Program
 }
 
 func newPlanetProgram() render.Program {
@@ -80,6 +81,15 @@ func newPlanetProgram() render.Program {
 	return program
 }
 
+func newPlanetLiquidProgram() render.Program {
+	config := render.NewShaderConfig(
+		"./assets/shader/world.vert", "./assets/shader/liquid.frag")
+	config.Define("NUM_INSTANCES", strconv.Itoa(NUM_INSTANCES))
+	program := config.Compile()
+
+	return program
+}
+
 func NewPlanet(x, y int32) *Planet {
 	planet := Planet{
 		//WorldState: NewDevWorldState(),
@@ -87,6 +97,8 @@ func NewPlanet(x, y int32) *Planet {
 		Height:     y,
 		Layers:     NewLayers(x * y),
 		program:    newPlanetProgram(),
+		liquidProgram:
+					newPlanetLiquidProgram(),
 	}
 	return &planet
 }
@@ -475,4 +487,8 @@ func (planet *Planet) MinimizeDistance(
 		to.Y(),
 	}
 	return from, toCloser
+}
+
+func (planet *Planet) Update(dt float32) {
+	planet.Time += dt
 }

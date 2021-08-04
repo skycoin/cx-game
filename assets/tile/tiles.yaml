@@ -36,4 +36,10 @@ platform:
     collision: platform
     layer: top
 
+water:
+    sprite: tiles/water
+    category: liquid
+    layer: top
+
 ---
+

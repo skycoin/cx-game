@@ -153,7 +153,6 @@ func (spritesheetConfig *SpriteSheetConfig) Sprites() []render.Sprite {
 	sprites := make([]render.Sprite, 0, len(spritesheetConfig.SpriteConfigs))
 
 	for name,spriteConfig := range spritesheetConfig.SpriteConfigs {
-		log.Printf("loading sprite with name %v",name)
 		sprites = append(sprites, spritesheetConfig.Sprite(name, spriteConfig))
 	}
 	return sprites
@@ -199,7 +198,6 @@ func LoadSpriteSheetFromConfig(imgPath, cfgPath string) render.SpriteSheet {
 }
 
 func RegisterSpritesFromConfig(cfgPath string) []SpriteID {
-	//log.Printf("registering cfg path %v", cfgPath)
 	imgPath := strings.TrimSuffix(cfgPath, ".yaml") + ".png"
 	sheet := LoadSpriteSheetFromConfig(imgPath, cfgPath)
 	// TODO deprecate this
@@ -210,7 +208,6 @@ func RegisterSpritesFromConfig(cfgPath string) []SpriteID {
 		xScale := sprite.Transform.At(0,0)
 		yScale := sprite.Transform.At(1,1)
 
-		log.Printf("loading sprite with offset %v",offset)
 		LoadSpriteF(
 			spriteloadersheet,
 			sprite.Name, offset.X(), offset.Y(),

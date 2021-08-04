@@ -13,6 +13,7 @@ const (
 	TileCategoryNormal
 	TileCategoryMulti
 	TileCategoryChild
+	TileCategoryLiquid
 )
 
 type TileCollisionType uint32
