@@ -207,11 +207,13 @@ func RegisterSpritesFromConfig(cfgPath string) []SpriteID {
 		offset := sprite.Transform.Col(2)
 		xScale := sprite.Transform.At(0,0)
 		yScale := sprite.Transform.At(1,1)
+		worldXScale := sprite.Model.At(0,0)
+		worldYScale := sprite.Model.At(1,1)
 
 		LoadSpriteF(
 			spriteloadersheet,
 			sprite.Name, offset.X(), offset.Y(),
-			xScale, yScale,
+			xScale, yScale, worldXScale, worldYScale,
 		)
 	}
 	return []SpriteID{}

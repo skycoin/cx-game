@@ -117,3 +117,12 @@ func (id TileTypeID) Get() *TileType {
 func AddDrop(id TileTypeID, drop Drop) {
 	tileTypes[id].Drops = append(tileTypes[id].Drops, drop)
 }
+
+// not including air
+func AllTileTypeIDs() []TileTypeID {
+	ids := make([]TileTypeID, 0,len(tileTypes))
+	for idx := TileTypeID(2) ; int(idx) < len(tileTypes) ; idx ++ {
+		ids = append(ids,idx)
+	}
+	return ids
+}

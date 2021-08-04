@@ -148,9 +148,13 @@ func (planet *Planet) drawSpritesheetBin(
 		y := positionedTile.Position.Y
 		meta := spriteloader.GetSpriteMetadata(tile.SpriteID)
 
-		worlds[instance] = mgl32.Translate3D(
-			camToCenterX+float32(x)-center, float32(y)-camY, 0,
+		translate := mgl32.Translate3D(
+			meta.WorldXScale/2-0.5+camToCenterX+float32(x)-center,
+			meta.WorldYScale/2-0.5+float32(y)-camY,
+			0,
 		)
+		scale := mgl32.Scale3D( meta.WorldXScale, meta.WorldYScale, 1)
+		worlds[instance] = translate.Mul4(scale)
 		texScales[instance] = mgl32.Vec2 { meta.ScaleX, meta.ScaleY }
 		// hack - fix translate*scale vs scale*translate mismatch
 		// between shader and spriteloader
@@ -198,7 +202,9 @@ func (planet *Planet) drawLiquidTiles(
 		meta := spriteloader.GetSpriteMetadata(tile.SpriteID)
 
 		worlds[instance] = mgl32.Translate3D(
-			camToCenterX+float32(x)-center, float32(y)-camY, 0,
+			camToCenterX+float32(x)-center, 
+			float32(y)-camY, 
+			0,
 		)
 		texScales[instance] = mgl32.Vec2 { meta.ScaleX, meta.ScaleY }
 		// hack - fix translate*scale vs scale*translate mismatch

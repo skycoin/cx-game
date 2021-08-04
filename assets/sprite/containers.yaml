@@ -14,6 +14,36 @@ sprites:
         left: 0
         top: 0
 
+    purplecanister:
+        unit: grid
+        left: 1
+        top: 0
+        
+    purplebutton:
+        unit: grid
+        left: 2
+        top: 0
+
+    redbutton:
+        unit: grid
+        left: 3
+        top: 0
+
+    crate:
+        unit: grid
+        left: 0
+        top: 1
+
+    crate-square-inset:
+        unit: grid
+        left: 1
+        top: 1
+
+    crate-heart-inset:
+        unit: grid
+        left: 2
+        top: 1
+
     ac-unit:
         unit: grid
         left: 0

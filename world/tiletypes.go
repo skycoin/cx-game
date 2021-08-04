@@ -5,6 +5,8 @@ import (
 	"log"
 
 	"github.com/go-yaml/yaml"
+
+	"github.com/skycoin/cx-game/config"
 	"github.com/skycoin/cx-game/render/blob"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/spriteloader/blobsprites"
@@ -18,6 +20,8 @@ type TileConfig struct {
 	Layer string `yaml:"layer"`
 	Invulnerable bool `yaml:"invulnerable"`
 	Category string `yaml:"category"`
+	Width int32 `yaml:"width"`
+	Height int32 `yaml:"height"`
 }
 
 func loadIDsFromSpritenames(names []string, n int) []blobsprites.BlobSpritesID {
@@ -87,6 +91,7 @@ func (config *TileConfig) TileType(name string, id TileTypeID) TileType {
 		Layer: LayerIDFromName(config.Layer),
 		Placer: config.Placer(name,id),
 		Invulnerable: config.Invulnerable,
+		Width: config.Width, Height: config.Height,
 	}
 }
 
@@ -105,20 +110,20 @@ func RegisterEmptyTileType() {
 	})
 }
 
-const tilesConfigPath = "./assets/tile/tiles.yaml"
-
 func RegisterConfigTileTypes() {
-	buf, err := os.ReadFile(tilesConfigPath)
-	if err != nil {
-		log.Fatalf("cannot read tile config at %s",tilesConfigPath)
+	paths := config.FindPathsWithExt("./assets/tile/", ".yaml")
+	for _,path := range paths {
+		buf, err := os.ReadFile(path)
+		if err != nil {
+			log.Fatalf("cannot read tile config at %s",path)
+		}
+		var configs TileConfigs
+		err = yaml.Unmarshal(buf,&configs)
+		if err != nil {
+			log.Fatalf("parse tile config %s: %v",path,err)
+		}
+		for name,config := range configs {
+			RegisterTileType(name, config.TileType(name,NextTileTypeID()))
+		}
 	}
-	var configs TileConfigs
-	err = yaml.Unmarshal(buf,&configs)
-	if err != nil {
-		log.Fatalf("parse tile config %s: %v",tilesConfigPath,err)
-	}
-	for name,config := range configs {
-		RegisterTileType(name, config.TileType(name,NextTileTypeID()))
-	}
-
 }
