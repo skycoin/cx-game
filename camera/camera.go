@@ -4,10 +4,9 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/cxmath/mathi"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/cxmath/mathi"
 )
 
 var (
