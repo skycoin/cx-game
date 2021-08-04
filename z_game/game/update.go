@@ -35,7 +35,6 @@ func Update(dt float32) {
 	Console.Update(window, commandContext)
 
 	starfield.UpdateStarField(dt)
-	catIsScratching = false
 
 }
 

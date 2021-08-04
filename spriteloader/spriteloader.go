@@ -32,7 +32,8 @@ type SpritesheetID uint32
 
 type Sprite struct {
 	spriteSheetId SpritesheetID
-	x, y          int
+	x, y          float32
+	xScale, yScale float32
 }
 
 type SpriteID uint32
@@ -40,25 +41,34 @@ type SpriteID uint32
 // fetch internal sprite data for using custom OpenGL rendering
 type SpriteMetadata struct {
 	GpuTex         uint32
-	PosX, PosY     int
+	PosX, PosY     float32
 	ScaleX, ScaleY float32
 }
 
 func GetSpriteMetadata(spriteID SpriteID) SpriteMetadata {
 	sprite := sprites[spriteID]
 	spritesheet := spritesheets[sprite.spriteSheetId]
+	if sprite.xScale == 0 { sprite.xScale = 1 }
+	if sprite.yScale == 0 { sprite.yScale = 1 }
 	return SpriteMetadata{
 		GpuTex: spritesheet.tex,
 		PosX:   sprite.x,
 		PosY:   sprite.y,
-		ScaleX: spritesheet.xScale,
-		ScaleY: spritesheet.yScale,
+		ScaleX: sprite.xScale * spritesheet.xScale,
+		ScaleY: sprite.yScale * spritesheet.yScale,
 	}
 }
 
 var spritesheets = []Spritesheet{}
 var sprites = []Sprite{}
 var spriteIdsByName = make(map[string]SpriteID)
+
+func AddSpritesheetFromTexture(tex uint32) SpritesheetID {
+	spritesheets = append(spritesheets, Spritesheet {
+		tex: tex, xScale: 1, yScale: 1,
+	})
+	return SpritesheetID(len(spritesheets)-1)
+}
 
 func AddSpriteSheet(path string, il *ImgLoader) SpritesheetID {
 	img := il.GetImg(path)
@@ -118,11 +128,18 @@ func LoadSingleSprite(fname string, name string) SpriteID {
 }
 
 //Load sprite into internal sheet
-func LoadSprite(spriteSheetId SpritesheetID, name string, x, y int) SpriteID {
-	sprites = append(sprites, Sprite{spriteSheetId, x, y})
+func LoadSpriteF(
+		spriteSheetId SpritesheetID, name string,
+		x, y float32, xScale, yScale float32,
+) SpriteID {
+	sprites = append(sprites, Sprite{spriteSheetId, x, y, xScale, yScale})
 	spriteId := SpriteID(len(sprites) - 1)
 	spriteIdsByName[name] = spriteId
 	return spriteId
+}
+// int wrapper
+func LoadSprite(id SpritesheetID, name string, x,y int) SpriteID {
+	return LoadSpriteF(id,name,float32(x),float32(y), 1, 1)
 }
 
 // convenient for loading multi-tiles,
@@ -213,7 +230,10 @@ func DrawSpriteQuadContext(
 
 	SpriteProgram.Use()
 	SpriteProgram.SetUint("outTexture", 0)
-	SpriteProgram.SetVec2F("texScale", spritesheet.xScale, spritesheet.yScale)
+	SpriteProgram.SetVec2F("texScale",
+		sprite.xScale * spritesheet.xScale,
+		sprite.yScale * spritesheet.yScale,
+	)
 	SpriteProgram.SetVec2F("texOffset", float32(sprite.x), float32(sprite.y))
 	SpriteProgram.SetMat4("world", &ctx.World)
 	SpriteProgram.SetMat4("projection", &ctx.Projection)

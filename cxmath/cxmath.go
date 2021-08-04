@@ -4,6 +4,8 @@ import (
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
+
+	"github.com/skycoin/cx-game/cxmath/math32"
 )
 
 func ConvertScreenCoordsToWorld(x, y float32, projection mgl32.Mat4) mgl32.Vec2 {
@@ -79,4 +81,18 @@ func RoundVec2(v1 mgl32.Vec2) (x, y int32) {
 	x = int32(float32(math.Round(float64(v1.X()))))
 	y = int32(float32(math.Round(float64(v1.Y()))))
 	return
+}
+
+// linearly interpolate between start and target by a factor of alpha
+func Lerp(start, target, alpha float32) float32 {
+	alpha = math32.Clamp(alpha, 0, 1)
+	return (alpha * target) + ((1 - alpha) * start)
+}
+
+func ClampF(x, min,max float32) float32 {
+	return math32.Clamp(x,min,max)
+}
+
+func DegToRad(x float32) float32 {
+	return x*math.Pi/180
 }

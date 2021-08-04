@@ -1,6 +1,8 @@
 package world
 
 import (
+	"log"
+
 	"github.com/skycoin/cx-game/render/blob"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/spriteloader"
@@ -71,8 +73,9 @@ func (tt TileType) UpdateTile(opts TileUpdateOptions) {
 
 // add the null tile type as first element such that tileTypes[0] is empty
 var tileTypes = make([]TileType,1)
+var tileTypeIDsByName = make(map[string]TileTypeID)
 
-func RegisterTileType(tileType TileType) TileTypeID {
+func RegisterTileType(name string, tileType TileType) TileTypeID {
 	id := TileTypeID(len(tileTypes))
 	tileType.ID = id
 	// fill in default size
@@ -81,6 +84,7 @@ func RegisterTileType(tileType TileType) TileTypeID {
 	tileType.ItemSpriteID = tileType.Placer.ItemSpriteID()
 	if tileType.Drops==nil { tileType.Drops=Drops{} }
 	tileTypes = append(tileTypes, tileType)
+	tileTypeIDsByName[name] = id
 	return id
 }
 
@@ -95,6 +99,12 @@ func GetTileTypeByID(id TileTypeID) (TileType,bool) {
 	} else {
 		return TileType{},false
 	}
+}
+
+func IDFor(name string) TileTypeID {
+	id,ok := tileTypeIDsByName[name]
+	if !ok { log.Fatalf("cannot find tile type ID for \"%s\"",name) }
+	return id
 }
 
 func (id TileTypeID) Get() *TileType {

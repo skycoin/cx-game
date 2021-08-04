@@ -1,0 +1,13 @@
+---
+
+name: tiles/regolith
+
+width: 176
+height: 80
+
+cellwidth: 16
+cellheight: 16
+
+autoname: index
+
+---

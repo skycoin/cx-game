@@ -6,7 +6,8 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/utility"
+	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/cxmath/mathi"
 )
 
 var (
@@ -154,7 +155,10 @@ func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
 		zooming = true
 		zoomCurrent = zoomLevels[currentZoomIndex]
 
-		currentZoomIndex = utility.ClampI(currentZoomIndex+int(zoomOffset), 0, len(zoomLevels)-1)
+		currentZoomIndex = mathi.Clamp(
+			currentZoomIndex+int(zoomOffset),
+			0, len(zoomLevels)-1,
+		)
 		nextZoomIndex := currentZoomIndex
 
 		zoomTarget = zoomLevels[nextZoomIndex]
@@ -199,7 +203,7 @@ func (camera *Camera) Tick(dt float32) {
 
 	zoomProgress += dt / zoomDuration
 
-	camera.Zoom = utility.Lerp(zoomCurrent, zoomTarget, zoomProgress)
+	camera.Zoom = cxmath.Lerp(zoomCurrent, zoomTarget, zoomProgress)
 	camera.updateProjection()
 
 	if camera.Zoom == zoomTarget {

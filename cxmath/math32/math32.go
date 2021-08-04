@@ -47,3 +47,9 @@ func Sin(x float32) float32 {
 func Cos(x float32) float32 {
 	return float32(math.Cos(float64(x)))
 }
+
+func Clamp(x, min, max float32) float32 {
+	if x < min { return min }
+	if x > max { return max }
+	return x
+}

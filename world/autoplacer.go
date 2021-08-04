@@ -10,7 +10,6 @@ import (
 
 // place tiles for a given tiletype using an auto-tiling mechanism
 type AutoPlacer struct {
-	name string
 	blobSpritesIDs []blobsprites.BlobSpritesID
 	TileTypeID TileTypeID
 	TilingType blob.TilingType

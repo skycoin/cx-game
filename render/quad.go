@@ -5,6 +5,7 @@ import (
 )
 
 var QuadVao uint32
+const vertsPerQuad int32 = 6
 
 func InitQuadVao() {
 	QuadVao = MakeQuadVao()

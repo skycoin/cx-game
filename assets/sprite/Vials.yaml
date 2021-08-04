@@ -1,0 +1,13 @@
+---
+
+width: 128
+height: 160
+
+cellwidth: 16
+cellheight: 16
+
+name: vials
+
+autoname: index
+
+---
