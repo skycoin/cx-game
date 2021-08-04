@@ -19,12 +19,10 @@ type TileConfig struct {
 	Invulnerable bool `yaml:"invulnerable"`
 }
 
-func loadIDsFromSpritenames(names []string) []blobsprites.BlobSpritesID {
+func loadIDsFromSpritenames(names []string, n int) []blobsprites.BlobSpritesID {
 	ids := make([]blobsprites.BlobSpritesID, len(names))
 	for idx,name := range names {
-		// TODO support simple tiling also
-		ids[idx] = blobsprites.LoadIDFromSpritename(
-			name, blob.BlobSheetWidth * blob.BlobSheetHeight )
+		ids[idx] = blobsprites.LoadIDFromSpritename( name, n )
 
 	}
 	return ids
@@ -38,11 +36,22 @@ func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
 		return DirectPlacer { SpriteID: spriteID }
 	}
 	if config.Blob == "full" {
-		ids := loadIDsFromSpritenames(config.Sprites)
+		ids := loadIDsFromSpritenames(config.Sprites,
+			blob.BlobSheetWidth * blob.BlobSheetHeight )
+
 		return AutoPlacer {
-			// TODO
 			blobSpritesIDs: ids,
 			TileTypeID: id, TilingType: blob.FullBlobTiling,
+		}
+	}
+	if config.Blob == "simple" {
+		ids := loadIDsFromSpritenames(
+			config.Sprites,
+			blob.SimpleBlobSheetWidth*blob.SimpleBlobSheetHeight )
+
+		return AutoPlacer {
+			blobSpritesIDs: ids,
+			TileTypeID: id, TilingType: blob.SimpleBlobTiling,
 		}
 	}
 
