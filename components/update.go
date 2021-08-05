@@ -38,14 +38,9 @@ func updateTimers(agents []*agents.Agent, dt float32) {
 }
 
 func FixedUpdate() {
-	//update health state first
 	agent_health.UpdateAgents(&currentWorld.Entities.Agents)
-	//update physics state second
 	agent_physics.UpdateAgents(currentWorld)
-
 	agent_ai.UpdateAgents(currentWorld, currentPlayer)
-
-	//update particles
 	particle_physics.Update(currentWorld)
 }
 
