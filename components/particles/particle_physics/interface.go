@@ -13,7 +13,7 @@ func Init() {
 		constants.PARTICLE_PHYSICS_HANDLER_BOUNCE_GRAVITY,
 		PhysicsHandlerBounceGravity)
 	RegisterPhysicsHandler(
-		constants.PARTICLE_PHYSICS_HANDLER_GRAVITY,
+		constants.PARTICLE_PHYSICS_HANDLER_COLLISION_GRAVITY,
 		PhysicsHandlerGravity)
 	RegisterPhysicsHandler(
 		constants.PARTICLE_PHYSICS_HANDLER_DRIFT,
@@ -24,6 +24,10 @@ func Init() {
 	RegisterPhysicsHandler(
 		constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT_CALLBACK,
 		PhysicsHandlerDissappearOnHitCallback)
+	RegisterPhysicsHandler(
+		constants.PARTICLE_PHYSICS_HANDLER_NO_COLLISION_GRAVITY,
+		PhysicsHandlerNoCollisionGravity,
+	)
 
 	AssertAllParticleHandlersRegistered()
 }

@@ -34,6 +34,9 @@ func CreateBullet(origin mgl32.Vec2, velocity mgl32.Vec2) {
 		transform: mgl32.Translate3D(origin.X(), origin.Y(), 0),
 		velocity:  velocity,
 	})
+
+	//todo call emitter only for effect
+	
 }
 
 func (bullet Bullet) WorldTransform() mgl32.Mat4 {

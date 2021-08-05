@@ -6,6 +6,7 @@ import (
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/cxmath"
 )
 
 var (
@@ -31,7 +32,7 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 			particle.Pos.X-cam.X,
 			particle.Pos.Y-cam.Y,
 			0,
-		).Mul4(mgl32.Scale3D(1, 1, 1))
+		).Mul4(cxmath.Scale(particle.Size.X))
 		// projection := mgl32.Ortho2D(0, 800.0/32, 0, 600.0/32)
 		// projection := mgl32.Ortho2D(
 		// 	-800.0/2/32, 800.0/2/32,

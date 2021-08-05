@@ -10,6 +10,8 @@ import (
 	"github.com/skycoin/cx-game/spriteloader"
 )
 
+var sparkEmitter *SparkEmitter
+
 type SparkEmitter struct {
 	particleList *particles.ParticleList
 	program      *render.Program
@@ -29,17 +31,24 @@ func (emitter *SparkEmitter) Emit(particle *particles.Particle) {
 	// direction := cxmath.Vec2{0, 1}
 
 	for i := 0; i < 10; i++ {
-		velocity := particle.PrevVel.Mult(-1).Normalize().Add(cxmath.Vec2{0, 0}).Mult(35)
+		velocity := cxmath.Vec2{
+			// X: (particle.PrevVel.X*rand.Float32() - 0.5) * 3,
+			X: (rand.Float32() - 0.5) * 30,
+			// X: 15,
+
+			// Y: (particle.PrevVel.Y * -1 * rand.Float32()),
+			Y: 30 * rand.Float32(),
+		}
 		emitter.particleList.AddParticle(
 			particle.Pos,
 			velocity,
-			1,
+			(rand.Float32()+0.3)/4,
 			0,
 			0,
 			spriteloader.GetSpriteIdByNameUint32("star"),
 			rand.Float32()*(emitter.maxduration-emitter.minduration)+emitter.minduration,
 			constants.PARTICLE_DRAW_HANDLER_TRANSPARENT,
-			constants.PARTICLE_PHYSICS_HANDLER_BOUNCE_GRAVITY,
+			constants.PARTICLE_PHYSICS_HANDLER_NO_COLLISION_GRAVITY,
 			nil,
 		)
 	}

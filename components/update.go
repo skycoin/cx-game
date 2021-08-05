@@ -10,8 +10,6 @@ import (
 	"github.com/skycoin/cx-game/components/particles/particle_draw"
 	"github.com/skycoin/cx-game/components/particles/particle_physics"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -22,13 +20,7 @@ func Update(dt float32) {
 	currentWorld.Entities.Particles.Update(dt)
 
 	emitter.SetPosition(currentPlayer.Pos)
-	emitter.Emit()
-
-	bulletEmitter.SetPosition(currentPlayer.Pos.Add(cxmath.Vec2{0, 5}))
-	if input.GetButtonDown("shoot") {
-		bulletEmitter.Emit()
-	}
-
+	// emitter.Emit()
 }
 
 func updateTimers(agents []*agents.Agent, dt float32) {

@@ -123,7 +123,9 @@ func (body *ParticleBody) DetectCollisions(planet worldcollider.WorldCollider, n
 	body.isCollidingLeft(planet, newpos)
 }
 
-func (body *ParticleBody) MoveNoGravity(planet worldcollider.WorldCollider, dt float32) {
+func (body *ParticleBody) MoveNoCollision(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2) {
+	body.PrevVel = body.Vel
+	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
 	body.PrevPos = body.Pos
 	body.Pos = body.Pos.Add(body.Vel.Mult(dt))
 }

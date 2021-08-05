@@ -11,10 +11,9 @@ import (
 	"github.com/skycoin/cx-game/components/agents/agent_health"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/particles/particle_draw"
-	"github.com/skycoin/cx-game/components/particles/particle_emitter"
 	"github.com/skycoin/cx-game/components/particles/particle_physics"
-	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/models"
+	"github.com/skycoin/cx-game/particle_emitter"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -40,15 +39,6 @@ func Init(World *world.World, cam *camera.Camera, player *models.Player) {
 	emitter = particle_emitter.
 		NewParticle(player.Pos, &World.Entities.Particles)
 
-	sparkEmitter = particle_emitter.NewSparkEmitter(&currentWorld.Entities.Particles)
-	bulletEmitter = particle_emitter.NewBulletEmitter(
-		player.Pos.Add(cxmath.Vec2{0, 5}),
-		cxmath.Vec2{10, 0},
-		cxmath.Vec2{1, 1},
-		&World.Entities.Particles,
-		sparkEmitter,
-	)
-
 	agent_health.Init()
 	agent_draw.Init()
 	agent_ai.Init()
@@ -57,6 +47,7 @@ func Init(World *world.World, cam *camera.Camera, player *models.Player) {
 	particle_draw.Init()
 
 	particles.Init()
+	particle_emitter.Init(&World.Entities.Particles)
 
 }
 

@@ -3,6 +3,7 @@ package particle_physics
 import (
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -10,6 +11,6 @@ import (
 
 func PhysicsHandlerDrift(particleList []*particles.Particle, planet *world.Planet) {
 	for _, par := range particleList {
-		par.MoveNoGravity(planet, constants.TimeStep)
+		par.MoveNoCollision(planet, constants.TimeStep, cxmath.Vec2{})
 	}
 }
