@@ -10,7 +10,6 @@ func RegisterSprite(sprite Sprite) {
 	if sprite.Name=="" {
 		log.Fatal("cannot register sprite with empty name")
 	}
-	log.Printf("registering sprite [%v]",sprite.Name)
 	sprites[sprite.Name] = sprite
 }
 

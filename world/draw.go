@@ -48,8 +48,15 @@ func (planet *Planet) DrawHemisphere(
 		mgl32.Vec2 { center, 0 } ) // to.y doesn't matter here
 
 	projection := cam.GetProjectionMatrix()
+	planet.program.Use()
 	planet.program.
 		SetMat4("projection",&projection )
+	planet.program.StopUsing()
+	planet.liquidProgram.Use()
+	planet.liquidProgram.
+		SetMat4("projection",&projection )
+	planet.liquidProgram.StopUsing()
+	planet.program.Use()
 
 	visible := planet.visibleTiles(layer, cam, left, right)
 	bins := planet.binTilesBySpritesheet(visible)
@@ -57,6 +64,25 @@ func (planet *Planet) DrawHemisphere(
 	for tex,tiles := range bins {
 		planet.drawSpritesheetBin(tex,tiles,camToCenter.X(),cam.Y, center)
 	}
+
+	liquidTiles := filterLiquidTiles(visible)
+	if len(liquidTiles)>0 {
+		meta := spriteloader.GetSpriteMetadata(liquidTiles[0].Tile.SpriteID)
+		planet.drawLiquidTiles(
+			meta.GpuTex, liquidTiles,
+			camToCenter.X(), cam.Y, center,
+		)
+	}
+}
+
+func filterLiquidTiles(all []PositionedTile) []PositionedTile {
+	liquids := []PositionedTile{}
+	for _,tile := range all {
+		if tile.Tile.TileCategory == TileCategoryLiquid {
+			liquids = append(liquids, tile)
+		}
+	}
+	return liquids
 }
 
 func (planet *Planet) Draw(cam *camera.Camera, layerID LayerID) {
@@ -86,6 +112,7 @@ func (planet *Planet) visibleTiles(
 	return positionedTiles
 }
 
+// bin SOLID tiles only
 func (planet *Planet) binTilesBySpritesheet(
 		positionedTiles []PositionedTile,
 ) map[uint32][]PositionedTile {
@@ -96,7 +123,9 @@ func (planet *Planet) binTilesBySpritesheet(
 		if !ok {
 			bins[meta.GpuTex] = []PositionedTile{}
 		}
-		bins[meta.GpuTex] = append(bins[meta.GpuTex], positionedTile)
+		if positionedTile.Tile.TileCategory != TileCategoryLiquid {
+			bins[meta.GpuTex] = append(bins[meta.GpuTex], positionedTile)
+		}
 	}
 	return bins
 }
@@ -119,9 +148,13 @@ func (planet *Planet) drawSpritesheetBin(
 		y := positionedTile.Position.Y
 		meta := spriteloader.GetSpriteMetadata(tile.SpriteID)
 
-		worlds[instance] = mgl32.Translate3D(
-			camToCenterX+float32(x)-center, float32(y)-camY, 0,
+		translate := mgl32.Translate3D(
+			meta.WorldXScale/2-0.5+camToCenterX+float32(x)-center,
+			meta.WorldYScale/2-0.5+float32(y)-camY,
+			0,
 		)
+		scale := mgl32.Scale3D( meta.WorldXScale, meta.WorldYScale, 1)
+		worlds[instance] = translate.Mul4(scale)
 		texScales[instance] = mgl32.Vec2 { meta.ScaleX, meta.ScaleY }
 		// hack - fix translate*scale vs scale*translate mismatch
 		// between shader and spriteloader
@@ -143,5 +176,56 @@ func (planet *Planet) drawSpritesheetBin(
 	planet.program.SetMat4s("worlds",worlds[:])
 	planet.program.SetVec2s("texScales",texScales[:])
 	planet.program.SetVec2s("texOffsets",texOffsets[:])
+	gl.DrawArraysInstanced(gl.TRIANGLES,0,6, instance)
+}
+
+func (planet *Planet) drawLiquidTiles(
+		tex uint32, tiles []PositionedTile,
+		// should probably structure these further
+		camToCenterX float32, camY float32, center float32,
+) {
+	planet.liquidProgram.Use()
+	defer planet.liquidProgram.StopUsing()
+	
+	var instance int32 = 0
+	worlds := [100]mgl32.Mat4{}
+	texScales := [100]mgl32.Vec2{}
+	texOffsets := [100]mgl32.Vec2{}
+	gl.BindTexture(gl.TEXTURE_2D, tex)
+	planet.liquidProgram.SetUint("ourTexture",tex)
+	planet.liquidProgram.SetFloat("time", planet.Time)
+
+	for _,positionedTile := range tiles {
+		tile := positionedTile.Tile
+		x := positionedTile.Position.X
+		y := positionedTile.Position.Y
+		meta := spriteloader.GetSpriteMetadata(tile.SpriteID)
+
+		worlds[instance] = mgl32.Translate3D(
+			camToCenterX+float32(x)-center, 
+			float32(y)-camY, 
+			0,
+		)
+		texScales[instance] = mgl32.Vec2 { meta.ScaleX, meta.ScaleY }
+		// hack - fix translate*scale vs scale*translate mismatch
+		// between shader and spriteloader
+		texOffsets[instance] = mgl32.Vec2 {
+			float32(meta.PosX) / float32(meta.ScaleX),
+			float32(meta.PosY) / float32(meta.ScaleY),
+		}
+
+		instance++
+		if instance==100 {
+			planet.liquidProgram.SetMat4s("worlds",worlds[:])
+			planet.liquidProgram.SetVec2s("texScales",texScales[:])
+			planet.liquidProgram.SetVec2s("texOffsets",texOffsets[:])
+			gl.DrawArraysInstanced(gl.TRIANGLES,0,6, instance)
+			instance=0
+		}
+	}
+	// draw leftovers
+	planet.liquidProgram.SetMat4s("worlds",worlds[:])
+	planet.liquidProgram.SetVec2s("texScales",texScales[:])
+	planet.liquidProgram.SetVec2s("texOffsets",texOffsets[:])
 	gl.DrawArraysInstanced(gl.TRIANGLES,0,6, instance)
 }

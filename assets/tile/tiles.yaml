@@ -26,7 +26,7 @@ regolith-wall:
     layer: bg
 
 pipe:
-    blob: full
+    blob: simple
     sprites: 
         - tiles/ventilation-pipes
     layer: mid
@@ -36,4 +36,10 @@ platform:
     collision: platform
     layer: top
 
+water:
+    sprite: tiles/water
+    category: liquid
+    layer: top
+
 ---
+

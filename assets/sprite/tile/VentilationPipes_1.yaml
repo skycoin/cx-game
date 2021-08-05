@@ -2,8 +2,8 @@
 
 name: tiles/ventilation-pipes
 
-width: 176
-height: 80
+width: 64
+height: 64
 
 cellwidth: 16
 cellheight: 16

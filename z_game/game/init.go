@@ -70,7 +70,7 @@ func Init() {
 	spriteloader.InitSpriteloader(&win)
 	spriteloader.LoadSpritesFromConfigs()
 	anim.InitAnimatedSpriteLoader()
-	world.RegisterTileTypes()
+	world.Init()
 	item.InitWorldItem()
 	ui.Init()
 	particles.InitParticles()

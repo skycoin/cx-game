@@ -18,15 +18,18 @@ type Placer interface {
 type DirectPlacer struct {
 	SpriteID spriteloader.SpriteID
 	TileCollisionType TileCollisionType
+	Category TileCategory
 }
 func (placer DirectPlacer) CreateTile(
 	tt TileType,opts TileCreationOptions,
 ) Tile {
+	category := placer.Category
+	if category == TileCategoryNone { category = TileCategoryNormal }
 	return Tile {
 		Name: tt.Name,
 		SpriteID: placer.SpriteID,
 		TileTypeID: tt.ID,
-		TileCategory: TileCategoryNormal,
+		TileCategory: category,
 		TileCollisionType: placer.TileCollisionType,
 	}
 }
@@ -113,4 +116,13 @@ func (id TileTypeID) Get() *TileType {
 
 func AddDrop(id TileTypeID, drop Drop) {
 	tileTypes[id].Drops = append(tileTypes[id].Drops, drop)
+}
+
+// not including air
+func AllTileTypeIDs() []TileTypeID {
+	ids := make([]TileTypeID, 0,len(tileTypes))
+	for idx := TileTypeID(2) ; int(idx) < len(tileTypes) ; idx ++ {
+		ids = append(ids,idx)
+	}
+	return ids
 }
