@@ -5,6 +5,7 @@ package components
 // we should be able to simulate them in parallel
 
 import (
+	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/agents/agent_ai"
 	"github.com/skycoin/cx-game/components/agents/agent_draw"
@@ -12,24 +13,21 @@ import (
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/particles/particle_draw"
 	"github.com/skycoin/cx-game/components/particles/particle_physics"
-	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/particle_emitter"
 	"github.com/skycoin/cx-game/world"
 )
 
 var (
-	//currentWorldState *world.WorldState
-	//currentPlanet     *world.Planet
 	currentWorld  *world.World
 	currentCamera *camera.Camera
-	currentPlayer *models.Player
+	currentPlayer *agents.Agent
 
 	emitter       *particle_emitter.ParticleEmitter
 	sparkEmitter  *particle_emitter.SparkEmitter
 	bulletEmitter *particle_emitter.BulletEmitter
 )
 
-func Init(World *world.World, cam *camera.Camera, player *models.Player) {
+func Init(World *world.World, cam *camera.Camera, player *agents.Agent) {
 	/*
 		currentWorldState = planet.WorldState
 		currentPlanet = planet
@@ -37,7 +35,7 @@ func Init(World *world.World, cam *camera.Camera, player *models.Player) {
 	*/
 	currentPlayer = player
 	emitter = particle_emitter.
-		NewParticle(player.Pos, &World.Entities.Particles)
+		NewParticle(player.PhysicsState.Pos, &World.Entities.Particles)
 
 	agent_health.Init()
 	agent_draw.Init()
@@ -66,6 +64,6 @@ func ChangePlanet(newPlanet *world.Planet) {
 }
 */
 
-func ChangePlayer(newPlayer *models.Player) {
+func ChangePlayer(newPlayer *agents.Agent) {
 	currentPlayer = newPlayer
 }

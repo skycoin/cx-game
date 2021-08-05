@@ -8,10 +8,12 @@ type Collision struct {
 	Body *Body
 }
 
+const collideDistance float32 = 2
+
 func (body *Body) CollidesWith(other mgl32.Mat4) bool {
 	// TODO something better
 	disp := other.Col(3).Vec2().Sub(body.Transform().Col(3).Vec2())
-	return disp.LenSqr() <= 0.5*0.5
+	return disp.LenSqr() <= collideDistance
 
 }
 

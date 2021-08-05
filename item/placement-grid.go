@@ -148,7 +148,7 @@ func (grid *PlacementGrid) TryPlace(info ItemUseInfo) bool {
 	worldCoords := info.WorldCoords()
 	x32,y32 := cxmath.RoundVec2(worldCoords)
 	x := int(x32); y := int(y32);
-	if !info.World.Planet.TileIsSolid(x,y) {
+	if info.World.TileIsClear(x,y) {
 		info.World.Planet.PlaceTileType(grid.Selected,x,y)
 		return true
 	}

@@ -3,10 +3,10 @@ package item
 import (
 	"github.com/go-gl/mathgl/mgl32"
 
+	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/ids"
 )
@@ -33,7 +33,7 @@ type ItemUseInfo struct {
 	ScreenY float32
 	Camera *camera.Camera
 	World *world.World
-	Player *models.Player
+	Player *agents.Agent
 	Inventory *Inventory
 }
 
@@ -54,7 +54,8 @@ func (info ItemUseInfo) WorldCoords() mgl32.Vec2 {
 }
 
 func (info ItemUseInfo) PlayerCoords() mgl32.Vec2 {
-	return mgl32.Vec2 { info.Player.Pos.X, info.Player.Pos.Y }
+	return mgl32.Vec2 {
+		info.Player.PhysicsState.Pos.X, info.Player.PhysicsState.Pos.Y }
 }
 
 var tileTypeIDsToItemTypeIDs = make(map[world.TileTypeID]ItemTypeID)

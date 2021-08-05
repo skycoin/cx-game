@@ -5,6 +5,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/world/worldcollider"
 )
 
@@ -27,7 +28,14 @@ type Body struct {
 	IsIgnoringPlatforms bool
 }
 
-func (body Body) Transform() mgl32.Mat4 {
+func (body *Body) Contains(x,y float32) bool {
+	pos := mgl32.Vec2 { x,y }
+	disp := pos.Sub(body.Pos.Mgl32())
+	return math32.Abs(disp.X()) < body.Size.X &&
+		math32.Abs(disp.Y()) < body.Size.Y
+}
+
+func (body *Body) Transform() mgl32.Mat4 {
 	return mgl32.Translate3D(body.Pos.X, body.Pos.Y, 0)
 }
 

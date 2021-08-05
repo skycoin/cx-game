@@ -12,7 +12,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/models"
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
@@ -25,7 +24,6 @@ func init() {
 }
 
 var (
-	p          *models.Player
 	Cam        *camera.Camera
 	background Background
 )
@@ -129,8 +127,7 @@ func SwitchBackgrounds(bg Background) {
 }
 
 //create random stars
-func InitStarField(window *render.Window, player *models.Player, cam *camera.Camera) {
-	p = player
+func InitStarField(window *render.Window, cam *camera.Camera) {
 	Cam = cam
 	program = render.CompileProgram(
 		"./assets/shader/starfield/shader.vert",

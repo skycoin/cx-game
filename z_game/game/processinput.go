@@ -2,7 +2,7 @@ package game
 
 import (
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/sound"
@@ -12,12 +12,15 @@ import (
 
 func ProcessInput() {
 	if Console.IsActive() { return }
+	/*
 	if input.GetButtonDown("switch-helmet") {
 		player.SetHelmNext()
 	}
 	if input.GetButtonDown("switch-suit") {
 		player.SetSuitNext()
 	}
+	*/
+	/*
 	if input.GetButtonDown("jump") {
 		didJump := player.Jump()
 		if didJump {
@@ -35,6 +38,7 @@ func ProcessInput() {
 	if input.GetButtonDown("fly") {
 		player.ToggleFlying()
 	}
+	*/
 	if input.GetButtonDown("mute") {
 		sound.ToggleMute()
 	}
@@ -42,7 +46,7 @@ func ProcessInput() {
 		Cam.ToggleFreeCam()
 	}
 	if input.GetButtonDown("inventory-grid") {
-		inventory := item.GetInventoryById(inventoryId)
+		inventory := item.GetInventoryById(player.InventoryID)
 		inventory.IsOpen = !inventory.IsOpen
 	}
 	if input.GetKeyDown(glfw.KeyL) {
@@ -57,6 +61,6 @@ func ProcessInput() {
 	if input.GetButtonDown("enemy-tool-scroll-up") {
 		ui.EnemyToolScrollUp()
 	}
-	inventory := item.GetInventoryById(inventoryId)
+	inventory := item.GetInventoryById(player.InventoryID)
 	inventory.TrySelectSlot(input.GetLastKey())
 }

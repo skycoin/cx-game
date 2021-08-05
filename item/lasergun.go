@@ -11,11 +11,12 @@ func UseLaserGun(info ItemUseInfo) {
 	worldCoords := info.WorldCoords()
 	// adding 0.5 here because raytrace assumes top left coords,
 	// but player and tile positions are stored using centered coords
-	positions := cxmath.Raytrace(
-		float64(info.Player.Pos.X)+0.5,float64(info.Player.Pos.Y)+0.5,
-		float64(worldCoords.X())+0.5,float64(worldCoords.Y()) + 0.5 )
+	//playerPos := info.Player.PhysicsState.Pos
 
 	playerPos := info.PlayerCoords()
+	positions := cxmath.Raytrace(
+		float64(playerPos.X())+0.5,float64(playerPos.Y())+0.5,
+		float64(worldCoords.X())+0.5,float64(worldCoords.Y()) + 0.5 )
 	for _,pos := range positions {
 		if info.World.Planet.TileIsSolid(int(pos.X),int(pos.Y)) {
 			direction := worldCoords.Sub(playerPos).Normalize()

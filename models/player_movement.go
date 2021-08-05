@@ -34,11 +34,13 @@ func (player *Player) MovementBeforeTick() {
 				player.TryChangeMovementState(movement.WALL_SLIDING)
 				return
 			}
+			/*
 			if input.GetButtonUp("jump") {
 				if player.Vel.Y > minJumpSpeed {
 					player.Vel.Y = minJumpSpeed
 				}
 			}
+			*/
 		}
 
 	// handling crouching

@@ -9,6 +9,7 @@ import (
 	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/input"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
@@ -37,17 +38,15 @@ const (
 
 var (
 	Console console.Console
-	Cam     *camera.Camera
-	win     render.Window
-	window  *glfw.Window
-	player  *models.Player
-	fps     *models.Fps
+	Cam    *camera.Camera
+	win    render.Window
+	window *glfw.Window
+	fps    *models.Fps
+	player *agents.Agent
 
 	World              world.World
 	DrawCollisionBoxes = false
 	FPS                int
-
-	inventoryId item.InventoryID
 
 	//unused
 	isTileSelectorVisible = false
@@ -76,8 +75,8 @@ func Init() {
 	particles.InitParticles()
 	item.RegisterItemTypes()
 
-	models.Init()
-	player = models.NewPlayer()
+	//models.Init()
+	//player = models.NewPlayer()
 
 	fps = models.NewFps(false)
 	Cam = camera.NewCamera(&win)
@@ -95,11 +94,9 @@ func Init() {
 	//World.Planet = *mapgen.GeneratePlanet()
 	Cam.PlanetWidth = float32(World.Planet.Width)
 
-	components.Init(&World, Cam, player)
 
-	starfield.InitStarField(&win, player, Cam)
+	starfield.InitStarField(&win, Cam)
 
-	inventoryId = item.NewDevInventory()
 
 	worldTiles := World.Planet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
@@ -107,19 +104,29 @@ func Init() {
 	spawnX := int(20)
 	Cam.SetCameraPosition(float32(spawnX), 5)
 
-	player.Pos.X = float32(spawnX)
-	player.Pos.Y = float32(World.Planet.GetHeight(spawnX) + 10)
+	spawnPos := cxmath.Vec2 {
+		float32(spawnX),
+		float32(World.Planet.GetHeight(spawnX) + 10),
+	}
 
 	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
-			X: player.Pos.X - 6, Y: player.Pos.Y,
+			X: spawnPos.X - 6, Y: spawnPos.Y,
 		},
 	)
 	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SPIDER_DRILL, agents.AgentCreationOptions{
-			X: player.Pos.X + 6, Y: player.Pos.Y,
+			X: spawnPos.X + 6, Y: spawnPos.Y,
 		},
 	)
+	playerAgentID = World.Entities.Agents.Spawn(
+		constants.AGENT_TYPE_PLAYER, agents.AgentCreationOptions {
+			X: spawnPos.X, Y: spawnPos.Y,
+		},
+	)
+	player = findPlayer()
+	player.InventoryID = item.NewDevInventory()
+	components.Init(&World, Cam, player)
 
 	sound.LoadSound("player_jump", "jump.wav")
 	Console = console.New()
