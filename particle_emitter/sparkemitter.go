@@ -27,16 +27,9 @@ func NewSparkEmitter(particleList *particles.ParticleList) *SparkEmitter {
 	}
 }
 func (emitter *SparkEmitter) Emit(particle *particles.Particle) {
-
-	// direction := cxmath.Vec2{0, 1}
-
 	for i := 0; i < 10; i++ {
 		velocity := cxmath.Vec2{
-			// X: (particle.PrevVel.X*rand.Float32() - 0.5) * 3,
 			X: (rand.Float32() - 0.5) * 30,
-			// X: 15,
-
-			// Y: (particle.PrevVel.Y * -1 * rand.Float32()),
 			Y: 30 * rand.Float32(),
 		}
 		emitter.particleList.AddParticle(
