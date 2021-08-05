@@ -3,7 +3,6 @@ package particles
 import (
 	"math"
 
-	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/world/worldcollider"
@@ -125,21 +124,22 @@ func (body *ParticleBody) DetectCollisions(planet worldcollider.WorldCollider, n
 
 func (body *ParticleBody) MoveNoCollision(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2) {
 	body.PrevVel = body.Vel
-	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
 	body.PrevPos = body.Pos
+
+	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
 	body.Pos = body.Pos.Add(body.Vel.Mult(dt))
 }
 
-func (body *ParticleBody) MoveNoBounceGravity(planet worldcollider.WorldCollider, dt float32) {
+//also with collision
+func (body *ParticleBody) MoveNoBounce(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2) {
 	body.Collisions.Reset()
 
 	body.PrevPos = body.Pos
 	body.PrevVel = body.Vel
-	body.Vel.Y += -constants.Gravity * dt
 
-	//todo account drag
-
+	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
+	//todo account drag
 
 	if body.isCollidingTop(planet, newPos) {
 		body.Collisions.Above = true
@@ -170,15 +170,13 @@ func (body *ParticleBody) MoveNoBounceGravity(planet worldcollider.WorldCollider
 	body.Pos = newPos
 }
 
-func (body *ParticleBody) MoveBounceGravity(planet worldcollider.WorldCollider, dt float32) {
+func (body *ParticleBody) MoveBounce(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2) {
+	body.Collisions.Reset()
 	body.PrevVel = body.Vel
 	body.PrevPos = body.Pos
-	body.Collisions.Reset()
 
-	body.Vel.Y += -constants.Gravity * dt
-
+	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
 	//todo account drag
-
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
 	body.DetectCollisions(planet, newPos)
@@ -203,8 +201,4 @@ func (body *ParticleBody) MoveBounceGravity(planet worldcollider.WorldCollider, 
 	}
 
 	body.Pos = newPos
-}
-
-func (body *ParticleBody) MoveNoBounceGravityCallback(planet worldcollider.WorldCollider, dt float32) {
-	body.MoveNoBounceGravity(planet, dt)
 }

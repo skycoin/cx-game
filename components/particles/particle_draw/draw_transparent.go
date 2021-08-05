@@ -33,11 +33,6 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 			particle.Pos.Y-cam.Y,
 			0,
 		).Mul4(cxmath.Scale(particle.Size.X))
-		// projection := mgl32.Ortho2D(0, 800.0/32, 0, 600.0/32)
-		// projection := mgl32.Ortho2D(
-		// 	-800.0/2/32, 800.0/2/32,
-		// 	-600.0/2/32, 600.0/2/32,
-		// )
 		projection := cam.GetProjectionMatrix()
 		program.SetMat4("projection", &projection)
 		view := cam.GetView()

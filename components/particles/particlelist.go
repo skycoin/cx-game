@@ -65,7 +65,7 @@ func (pl *ParticleList) AddParticle(
 		Texture:          texture,
 		DrawHandlerID:    drawHandlerId,
 		PhysicsHandlerID: physiscHandlerID,
-		Callback:         callback,
+		OnCollideCallback:         callback,
 	}
 
 	pl.Particles = append(pl.Particles, &newParticle)

@@ -12,7 +12,7 @@ type Particle struct {
 	Texture          uint32
 	DrawHandlerID    types.ParticleDrawHandlerId
 	PhysicsHandlerID types.ParticlePhysicsHandlerID
-	Callback         func(*Particle)
+	OnCollideCallback         func(*Particle)
 }
 
 func (p *Particle) Die() {
