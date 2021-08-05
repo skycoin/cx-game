@@ -11,3 +11,7 @@ type CollisionInfo struct {
 func (c *CollisionInfo) Reset() {
 	c.Above, c.Below, c.Left, c.Right = false, false, false, false
 }
+
+func (c CollisionInfo) Horizontal() bool {
+	return c.Left || c.Right
+}

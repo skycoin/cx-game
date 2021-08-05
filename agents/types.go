@@ -68,7 +68,7 @@ func createSlime(opts AgentCreationOptions) *Agent {
 		HealthComponent: NewHealthComponent(5),
 		AnimationPlayback:  playback,
 	}
-	physics.RegisterBody(&agent.PhysicsState)
+	//physics.RegisterBody(&agent.PhysicsState)
 	return &agent
 }
 
@@ -88,7 +88,7 @@ func createSpiderDrill(opts AgentCreationOptions) *Agent {
 		HealthComponent: NewHealthComponent(5),
 		AnimationPlayback:  playback,
 	}
-	physics.RegisterBody(&agent.PhysicsState)
+	//physics.RegisterBody(&agent.PhysicsState)
 	return &agent
 }
 
