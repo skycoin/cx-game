@@ -12,6 +12,10 @@ func (c *CollisionInfo) Reset() {
 	c.Above, c.Below, c.Left, c.Right = false, false, false, false
 }
 
+func (c *CollisionInfo) Collided() bool {
+	return c.Above || c.Below || c.Left || c.Right
+}
+
 func (c CollisionInfo) Horizontal() bool {
 	return c.Left || c.Right
 }

@@ -20,7 +20,7 @@ func Update(dt float32) {
 	currentWorld.Entities.Particles.Update(dt)
 
 	emitter.SetPosition(currentPlayer.Pos)
-	emitter.Emit()
+	// emitter.Emit()
 }
 
 func updateTimers(agents []*agents.Agent, dt float32) {

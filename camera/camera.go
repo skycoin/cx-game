@@ -3,10 +3,10 @@ package camera
 import (
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/input"
-	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/mathi"
+	"github.com/skycoin/cx-game/input"
+	"github.com/skycoin/cx-game/render"
 )
 
 var (
@@ -28,15 +28,15 @@ var (
 )
 
 type Camera struct {
-	X          float32
-	Y          float32
-	Vel        mgl32.Vec2
-	Zoom       float32
-	movSpeed   float32
-	window     *render.Window
-	Frustum    cxmath.Frustum
-	focus_area focusArea
-	freeCam    bool
+	X           float32
+	Y           float32
+	Vel         mgl32.Vec2
+	Zoom        float32
+	movSpeed    float32
+	window      *render.Window
+	Frustum     cxmath.Frustum
+	focus_area  focusArea
+	freeCam     bool
 	PlanetWidth float32
 }
 
@@ -104,16 +104,17 @@ func (camera *Camera) SetCameraCenter() {
 func (camera *Camera) SetCameraPosition(x, y float32) {
 	camera.updateFocusArea(x, y)
 	camera.UpdateFrustum()
+	input.UpdateCameraPosition(x, y)
 }
 
 // update focus area to include (x,y)
 func (camera *Camera) updateFocusArea(x, y float32) {
 	modular := cxmath.NewModular(camera.PlanetWidth)
 	var shiftX, shiftY float32
-	if modular.IsLeft(x,camera.focus_area.left) {
-		shiftX = modular.Disp(camera.focus_area.left,x)
-	} else if modular.IsRight(x,camera.focus_area.right) {
-		shiftX = modular.Disp(camera.focus_area.right,x)
+	if modular.IsLeft(x, camera.focus_area.left) {
+		shiftX = modular.Disp(camera.focus_area.left, x)
+	} else if modular.IsRight(x, camera.focus_area.right) {
+		shiftX = modular.Disp(camera.focus_area.right, x)
 	}
 	if y < camera.focus_area.bottom {
 		shiftY = y - camera.focus_area.bottom

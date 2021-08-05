@@ -2,6 +2,7 @@ package cxmath
 
 import (
 	"math"
+
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -50,5 +51,11 @@ func (v1 Vec2) Normalize() Vec2 {
 }
 
 func (v1 Vec2) Mgl32() mgl32.Vec2 {
-	return mgl32.Vec2 {v1.X,v1.Y}
+	return mgl32.Vec2{v1.X, v1.Y}
+}
+
+func (v1 Vec2) Equal(v2 Vec2) bool {
+	eps := 0.001
+	return math.Abs(float64(v1.X-v2.X)) < eps &&
+		math.Abs(float64(v1.Y-v2.Y)) < eps
 }

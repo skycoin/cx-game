@@ -1,6 +1,8 @@
 package particles
 
 import (
+	"fmt"
+
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/cxmath"
 )
@@ -8,7 +10,34 @@ import (
 //for now keep one global particles list, redo later
 type ParticleList struct {
 	Particles []*Particle
+	idQueue   QueueI
 }
+
+type QueueI struct {
+	queue []int
+}
+
+func NewQueue() QueueI {
+	queue := QueueI{
+		queue: make([]int, 0),
+	}
+	return queue
+}
+
+func (q *QueueI) Push(n int) {
+	q.queue = append(q.queue, n)
+}
+func (q *QueueI) Pop() int {
+	if len(q.queue) == 0 {
+		particleIdCounter += 1
+		return particleIdCounter
+	}
+	returnValue := q.queue[0]
+	q.queue = q.queue[1:]
+	return returnValue
+}
+
+var particleIdCounter int
 
 func (pl *ParticleList) AddParticle(
 	position cxmath.Vec2,
@@ -20,8 +49,10 @@ func (pl *ParticleList) AddParticle(
 	duration float32,
 	drawHandlerId types.ParticleDrawHandlerId,
 	physiscHandlerID types.ParticlePhysicsHandlerID,
-) {
+	callback func(*Particle),
+) types.ParticleID {
 	newParticle := Particle{
+		ParticleId: types.ParticleID(pl.idQueue.Pop()),
 		ParticleBody: ParticleBody{
 			Pos:        position,
 			Vel:        velocity,
@@ -34,12 +65,15 @@ func (pl *ParticleList) AddParticle(
 		Texture:          texture,
 		DrawHandlerID:    drawHandlerId,
 		PhysicsHandlerID: physiscHandlerID,
+		OnCollideCallback:         callback,
 	}
 
 	pl.Particles = append(pl.Particles, &newParticle)
+	return newParticle.ParticleId
 }
 
 func (pl *ParticleList) Update(dt float32) {
+	// fmt.Println(pl.idQueue)
 	particlesToDelete := make([]int, 0)
 	for i, par := range pl.Particles {
 
@@ -61,6 +95,7 @@ func (pl *ParticleList) deleteParticles(indexes []int) {
 		for _, j := range indexes {
 			if i == j {
 				toBeDeleted = true
+				pl.idQueue.Push(i)
 				break
 			}
 		}
@@ -69,4 +104,11 @@ func (pl *ParticleList) deleteParticles(indexes []int) {
 		}
 	}
 	pl.Particles = newParticleList
+}
+
+func (pl *ParticleList) GetParticle(id types.ParticleID) *Particle {
+	fmt.Println("AIPERI BEST ", len(pl.Particles), "   ", id)
+
+	return pl.Particles[int(id)]
+
 }

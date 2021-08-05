@@ -37,13 +37,13 @@ const (
 
 var (
 	Console console.Console
-	Cam    *camera.Camera
-	win    render.Window
-	window *glfw.Window
-	player *models.Player
-	fps    *models.Fps
+	Cam     *camera.Camera
+	win     render.Window
+	window  *glfw.Window
+	player  *models.Player
+	fps     *models.Fps
 
-	World  world.World
+	World              world.World
 	DrawCollisionBoxes = false
 	FPS                int
 
@@ -64,7 +64,7 @@ func Init() {
 	window.SetScrollCallback(scrollCallback)
 	window.SetSizeCallback(windowSizeCallback)
 
-	input.Init(win.Window)
+	input.Init(&win)
 	sound.Init()
 	spriteloader.DEBUG = false
 	spriteloader.InitSpriteloader(&win)
@@ -84,8 +84,8 @@ func Init() {
 	//World.Planet = world.NewDevPlanet()
 
 	// TODO move this to the world package or similar
-	World = world.World {
-		Entities: world.Entities {
+	World = world.World{
+		Entities: world.Entities{
 			Agents: *agents.NewAgentList(),
 		},
 		Planet: *mapgen.GeneratePlanet(),
@@ -111,13 +111,13 @@ func Init() {
 	player.Pos.Y = float32(World.Planet.GetHeight(spawnX) + 10)
 
 	World.Entities.Agents.Spawn(
-		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions {
-			X: player.Pos.X-6, Y: player.Pos.Y,
+		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
+			X: player.Pos.X - 6, Y: player.Pos.Y,
 		},
 	)
 	World.Entities.Agents.Spawn(
-		constants.AGENT_TYPE_SPIDER_DRILL, agents.AgentCreationOptions {
-			X: player.Pos.X+6, Y: player.Pos.Y,
+		constants.AGENT_TYPE_SPIDER_DRILL, agents.AgentCreationOptions{
+			X: player.Pos.X + 6, Y: player.Pos.Y,
 		},
 	)
 

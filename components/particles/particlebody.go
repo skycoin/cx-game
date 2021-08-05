@@ -3,7 +3,6 @@ package particles
 import (
 	"math"
 
-	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/world/worldcollider"
@@ -11,9 +10,11 @@ import (
 
 type ParticleBody struct {
 	//todo add previous position and velocity if needed
-	Pos  cxmath.Vec2
-	Vel  cxmath.Vec2
-	Size cxmath.Vec2
+	Pos     cxmath.Vec2
+	Vel     cxmath.Vec2
+	PrevPos cxmath.Vec2
+	PrevVel cxmath.Vec2
+	Size    cxmath.Vec2
 
 	Collisions physics.CollisionInfo
 
@@ -121,37 +122,46 @@ func (body *ParticleBody) DetectCollisions(planet worldcollider.WorldCollider, n
 	body.isCollidingLeft(planet, newpos)
 }
 
-func (body *ParticleBody) MoveNoGravity(planet worldcollider.WorldCollider, dt float32) {
+func (body *ParticleBody) MoveNoCollision(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2) {
+	body.PrevVel = body.Vel
+	body.PrevPos = body.Pos
+
+	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
 	body.Pos = body.Pos.Add(body.Vel.Mult(dt))
 }
 
-func (body *ParticleBody) MoveNoBounceGravity(planet worldcollider.WorldCollider, dt float32) {
+//also with collision
+func (body *ParticleBody) MoveNoBounce(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2) {
 	body.Collisions.Reset()
 
-	body.Vel.Y += -constants.Gravity * dt
+	body.PrevPos = body.Pos
+	body.PrevVel = body.Vel
 
+	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
+	newPos := body.Pos.Add(body.Vel.Mult(dt))
 	//todo account drag
 
-	newPos := body.Pos.Add(body.Vel.Mult(dt))
-
-	body.DetectCollisions(planet, newPos)
-
-	if body.Collisions.Above {
+	if body.isCollidingTop(planet, newPos) {
+		body.Collisions.Above = true
 		body.Vel.Y = 0
 		body.Vel.X = 0
 		newPos.Y = body.bounds(newPos).top - 0.5 - body.Size.Y/2
 	}
-	if body.Collisions.Below {
+	if body.isCollidingBottom(planet, newPos) {
+		body.Collisions.Below = true
 		body.Vel.Y = 0
 		body.Vel.X = 0
 		newPos.Y = body.bounds(newPos).bottom + 0.5 + body.Size.Y/2
 	}
-	if body.Collisions.Left {
+
+	if body.isCollidingLeft(planet, newPos) {
+		body.Collisions.Left = true
 		body.Vel.Y = 0
 		body.Vel.X = 0
 		newPos.X = body.bounds(newPos).left + 0.5 + body.Size.X/2
 	}
-	if body.Collisions.Right {
+	if body.isCollidingRight(planet, newPos) {
+		body.Collisions.Right = true
 		body.Vel.Y = 0
 		body.Vel.X = 0
 		newPos.X = body.bounds(newPos).right - 0.5 + body.Size.X/2
@@ -160,13 +170,13 @@ func (body *ParticleBody) MoveNoBounceGravity(planet worldcollider.WorldCollider
 	body.Pos = newPos
 }
 
-func (body *ParticleBody) MoveBounceGravity(planet worldcollider.WorldCollider, dt float32) {
+func (body *ParticleBody) MoveBounce(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2) {
 	body.Collisions.Reset()
+	body.PrevVel = body.Vel
+	body.PrevPos = body.Pos
 
-	body.Vel.Y += -constants.Gravity * dt
-
+	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
 	//todo account drag
-
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
 	body.DetectCollisions(planet, newPos)
