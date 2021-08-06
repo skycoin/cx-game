@@ -384,3 +384,11 @@ func (inv *Inventory) Draw(ctx render.Context) {
 		}
 	}
 }
+
+func (inv *Inventory) TryScrollDown() {
+    inv.PlacementGrid.Scroll += placementGridScrollStride
+}
+
+func (inv *Inventory) TryScrollUp() {
+    inv.PlacementGrid.Scroll -= placementGridScrollStride
+}

@@ -53,6 +53,8 @@ type SpriteSheetConfig struct {
 	CellHeight int `yaml:"cellheight"`
 	SpriteConfigs map[string]SpriteConfig `yaml:"sprites"`
 	Autoname string `yaml:"autoname"`
+    ModelWidth int `yaml:"modelwidth"`
+    ModelHeight int `yaml:"modelheight"`
 }
 
 func (config *SpriteSheetConfig) Rows() int {
@@ -143,6 +145,11 @@ func (spritesheetConfig *SpriteSheetConfig) Sprites() []render.Sprite {
 		return []render.Sprite{render.Sprite{
 			Name: spritesheetConfig.Name,
 			Transform: mgl32.Ident3(),
+            Model: mgl32.Scale3D(
+                float32(spritesheetConfig.ModelWidth),
+                float32(spritesheetConfig.ModelHeight),
+                1,
+            ),
 		}}
 	}
 
