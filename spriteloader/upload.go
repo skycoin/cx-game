@@ -1,6 +1,8 @@
 package spriteloader
 
 import (
+    "log"
+
 	"github.com/skycoin/cx-game/cxmath"
 )
 
@@ -14,7 +16,10 @@ func (tex GPUTexture) Dims() cxmath.Vec2i {
 }
 
 func LoadTextureFromFileToGPU(fname string) GPUTexture {
-	_,img,_ := LoadPng(fname)
+	status,img,_ := LoadPng(fname)
+    if status != LoadOk {
+        log.Fatalf("cannot upload [%v] to GPU", fname)
+    }
 	tex := MakeTexture(img)
 	return GPUTexture {
 		Gl: tex,

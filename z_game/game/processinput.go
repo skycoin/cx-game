@@ -55,12 +55,14 @@ func ProcessInput() {
 	if input.GetKeyDown(glfw.KeyO) {
 		starfield.SwitchBackgrounds(starfield.BACKGROUND_VOID)
 	}
+	inventory := item.GetInventoryById(player.InventoryID)
+	inventory.TrySelectSlot(input.GetLastKey())
 	if input.GetButtonDown("enemy-tool-scroll-down") {
 		ui.EnemyToolScrollDown()
+        inventory.TryScrollDown()
 	}
 	if input.GetButtonDown("enemy-tool-scroll-up") {
 		ui.EnemyToolScrollUp()
+        inventory.TryScrollUp()
 	}
-	inventory := item.GetInventoryById(player.InventoryID)
-	inventory.TrySelectSlot(input.GetLastKey())
 }

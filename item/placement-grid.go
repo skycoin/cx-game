@@ -11,6 +11,7 @@ import (
 )
 
 const PlacementGridWidth = 5
+const placementGridScrollStride = 4
 
 func binTileTypeIDsByMaterial(
 		tiletypeIDs []world.TileTypeID,
@@ -88,6 +89,7 @@ type PlacementGrid struct {
 	PositionedTileTypeIDs []PositionedTileTypeID
 	Selected world.TileTypeID
 	HasSelected bool
+    Scroll float32
 }
 
 func NewPlacementGrid() PlacementGrid {
@@ -95,15 +97,13 @@ func NewPlacementGrid() PlacementGrid {
 }
 
 
-func (ig *PlacementGrid) Assemble(itemTypeIDs []ItemTypeID) {
-	//tileTypeIDs := GetTileTypesIDsForItemTypeIDs(itemTypeIDs)
+func (grid *PlacementGrid) Assemble(itemTypeIDs []ItemTypeID) {
 	ids := world.AllTileTypeIDs()
-	ig.PositionedTileTypeIDs = LayoutTiletypes(ids)
-	//log.Printf("%+v",*ig)
+	grid.PositionedTileTypeIDs = LayoutTiletypes(ids)
 }
 
 func (grid *PlacementGrid) Transform() mgl32.Mat4 {
-	return mgl32.Translate3D(-10,0,0)
+	return mgl32.Translate3D(-10,grid.Scroll,0)
 }
 
 func (ig *PlacementGrid) Draw(ctx render.Context) {

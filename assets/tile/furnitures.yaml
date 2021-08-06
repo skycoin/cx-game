@@ -56,4 +56,72 @@ ac-unit:
     height: 1
     layer: mid
 
+plant/1:
+    sprite: plant/1
+    durability: 5
+    width: 2 
+    height: 1
+    layer: mid
+
+plant/2:
+    sprite: plant/2
+    durability: 5
+    layer: mid
+
+pot/1:
+    sprite: pot/1
+    durability: 5
+    width: 2 
+    height: 1
+    layer: mid
+
+signs/danger-nuclear:
+    sprite: signs/danger-nuclear
+    durability: 5
+    width: 2
+    height: 3
+    layer: mid
+
+signs/danger-biohazard:
+    sprite: signs/danger-biohazard
+    durability: 5
+    width: 2
+    height: 3
+    layer: mid
+
+decorations/roof-screen:
+    sprite: decorations/roof-screen
+    durability: 5
+    width: 2
+    height: 1
+    layer: mid
+
+decorations/spare-suit:
+    sprite: decorations/spare-suit
+    durability: 5
+    width: 1
+    height: 2
+    layer: mid
+
+seats/chair1:
+    sprite: seats/chair1
+    durability: 5
+    width: 2
+    height: 2
+    layer: mid
+
+seats/chair2:
+    sprite: seats/chair2
+    durability: 5
+    width: 2
+    height: 2
+    layer: mid
+
+seats/chair3:
+    sprite: seats/chair3
+    durability: 5
+    width: 2
+    height: 3
+    layer: mid
+
 ---

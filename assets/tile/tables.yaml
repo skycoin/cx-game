@@ -1,0 +1,143 @@
+---
+
+table/1:
+    sprite: table/1
+    durability: 10
+    width: 3
+    height: 1
+    layer: mid
+
+table/2:
+    sprite: table/2
+    durability: 10
+    width: 3
+    height: 2
+    layer: mid
+
+table/3:
+    sprite: table/3
+    durability: 10
+    width: 3
+    height: 2
+    layer: mid
+
+table/4:
+    sprite: table/4
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/5:
+    sprite: table/5
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/6:
+    sprite: table/6
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/7:
+    sprite: table/7
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/8:
+    sprite: table/8
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/9:
+    sprite: table/9
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/10:
+    sprite: table/10
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/11:
+    sprite: table/11
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/12:
+    sprite: table/12
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/13:
+    sprite: table/13
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/14:
+    sprite: table/14
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/15:
+    sprite: table/15
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/16:
+    sprite: table/16
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/17:
+    sprite: table/17
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+table/18:
+    sprite: table/18
+    durability: 10
+    width: 3
+    height: 2
+    layer: mid
+
+table/19:
+    sprite: table/19
+    durability: 10
+    width: 3
+    height: 2
+    layer: mid
+
+table/20:
+    sprite: table/20
+    durability: 10
+    width: 4
+    height: 2
+    layer: mid
+
+---

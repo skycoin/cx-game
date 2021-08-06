@@ -1,0 +1,22 @@
+---
+
+width: 64
+height: 48
+
+cellwidth: 16
+cellheight: 16
+
+sprites:
+    signs/danger-nuclear:
+        unit: grid
+        left: 0
+        top: 0
+        width: 2
+        height: 3
+
+    signs/danger-biohazard:
+        unit: grid
+        left: 2
+        top: 0
+        width: 2
+        height: 3
