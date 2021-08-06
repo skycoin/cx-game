@@ -10,16 +10,19 @@ import (
 )
 
 func Update(dt float32) {
+	player = findPlayer()
 	FixedUpdate(dt)
 	// physics.Simulate(dt, CurrentPlanet)
 	components.Update(dt)
 	if Cam.IsFreeCam() {
-		player.Controlled = false
+		//player.Controlled = false
 		Cam.MoveCam(dt)
 	} else {
-		player.Controlled = true
-		playerPos := player.InterpolatedTransform.Col(3).Vec2()
-		Cam.SetCameraPosition(playerPos.X(), playerPos.Y())
+		//player.Controlled = true
+		//playerPos := player.InterpolatedTransform.Col(3).Vec2()
+		playerPos :=
+			World.Entities.Agents.FromID(playerAgentID).PhysicsState.Pos
+		Cam.SetCameraPosition(playerPos.X, playerPos.Y)
 	}
 	World.Planet.Update(dt)
 	Cam.Tick(dt)
@@ -27,7 +30,7 @@ func Update(dt float32) {
 	ui.TickDialogueBoxes(dt)
 	particles.TickParticles(dt)
 
-	sound.SetListenerPosition(player.Pos)
+	sound.SetListenerPosition(player.PhysicsState.Pos)
 	//has to be after listener position is updated
 	sound.Update()
 

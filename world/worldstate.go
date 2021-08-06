@@ -14,3 +14,8 @@ type World struct {
 	Entities Entities
 	Planet Planet
 }
+
+func (world World) TileIsClear(x,y int) bool {
+	return world.Entities.Agents.TileIsClear(x,y) &&
+		!world.Planet.TileIsSolid(x,y)
+}

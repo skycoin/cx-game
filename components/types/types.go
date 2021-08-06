@@ -12,3 +12,5 @@ type AgentDrawHandlerID int
 
 type AgentPhysicsHandlerID int
 type ParticlePhysicsHandlerID int
+
+type InventoryID int

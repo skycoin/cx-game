@@ -48,11 +48,22 @@ func (al *AgentList) DestroyAgent(agentId int) bool {
 
 func (al *AgentList) Spawn(
 		agentTypeID constants.AgentTypeID, opts AgentCreationOptions,
-) {
+) int {
 	agent := GetAgentType(agentTypeID).CreateAgent(opts)
 	agent.FillDefaults()
 	agent.Validate()
+	agent.AgentId = len(al.Agents)
 	al.Agents = append(al.Agents, agent)
+	return agent.AgentId
 }
 
 func (al *AgentList) Get() []*Agent { return al.Agents }
+
+func (al *AgentList) FromID(id int) *Agent { return al.Get()[id] }
+
+func (al *AgentList) TileIsClear(x,y int) bool {
+	for _,agent := range al.Get() {
+		if agent.PhysicsState.Contains(float32(x), float32(y)) { return false }
+	}
+	return true
+}

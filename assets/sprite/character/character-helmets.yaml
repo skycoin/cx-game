@@ -1,0 +1,19 @@
+---
+
+width: 640
+height: 288
+
+cellwidth: 64
+cellheight: 96
+
+sprites:
+    helmet/1:
+        unit: grid
+        top: 0
+        left: 0
+    helmet/2:
+        unit: grid
+        top: 0
+        left: 0
+
+---

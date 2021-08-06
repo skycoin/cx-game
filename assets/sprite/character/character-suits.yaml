@@ -1,0 +1,12 @@
+---
+
+width: 320
+height: 96
+
+cellwidth: 64
+cellheight: 96
+
+name: suit
+autoname: index
+
+---

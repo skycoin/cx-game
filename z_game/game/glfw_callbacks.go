@@ -33,7 +33,8 @@ func mouseReleaseCallback(
 ) {
 	screenX, screenY := screenPos()
 
-	inventory := item.GetInventoryById(inventoryId)
+	inventory := item.GetInventoryById(player.InventoryID)
+	player := findPlayer()
 	inventory.OnReleaseMouse(screenX, screenY, Cam, &World.Planet, player)
 }
 
@@ -47,14 +48,15 @@ func mousePressCallback(
 
 	screenX, screenY := screenPos()
 
-	inventory := item.GetInventoryById(inventoryId)
+	inventory := item.GetInventoryById(player.InventoryID)
 	clickedSlot :=
 		inventory.TryClickSlot(screenX, screenY, Cam, &World.Planet, player)
 	if clickedSlot {
 		return
 	}
 
-	item.GetInventoryById(inventoryId).
+	player := World.Entities.Agents.FromID(playerAgentID)
+	item.GetInventoryById(player.InventoryID).
 		TryUseItem(screenX, screenY, Cam, &World, player)
 }
 

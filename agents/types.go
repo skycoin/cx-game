@@ -6,6 +6,7 @@ import (
 	"github.com/skycoin/cx-game/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type AgentCreationOptions struct {
@@ -39,6 +40,11 @@ func init() {
 		Name: "Spider Drill",
 		Category: constants.AGENT_CATEGORY_ENEMY_MOB,
 		CreateAgent: createSpiderDrill,
+	})
+	RegisterAgentType(constants.AGENT_TYPE_PLAYER, AgentType {
+		Name: "Player",
+		Category: constants.AGENT_CATEGORY_PLAYER,
+		CreateAgent: createPlayer,
 	})
 }
 
@@ -87,6 +93,26 @@ func createSpiderDrill(opts AgentCreationOptions) *Agent {
 		},
 		HealthComponent: NewHealthComponent(5),
 		AnimationPlayback:  playback,
+	}
+	//physics.RegisterBody(&agent.PhysicsState)
+	return &agent
+}
+
+func createPlayer(opts AgentCreationOptions) *Agent {
+	agent := Agent {
+		AgentCategory: constants.AGENT_CATEGORY_PLAYER,
+		AiHandlerID:   constants.AI_HANDLER_PLAYER,
+		DrawHandlerID: constants.DRAW_HANDLER_PLAYER,
+		PhysicsState: physics.Body {
+			Pos: cxmath.Vec2{X: opts.X, Y: opts.Y},
+			Size: cxmath.Vec2 { X: 2, Y: 3 },
+			Direction: 1,
+		},
+		HealthComponent: NewHealthComponent(100),
+		PlayerData: PlayerData {
+			HelmetSpriteID: spriteloader.GetSpriteIdByName("helmet/1"),
+			SuitSpriteID: spriteloader.GetSpriteIdByName("suit:0"),
+		},
 	}
 	//physics.RegisterBody(&agent.PhysicsState)
 	return &agent

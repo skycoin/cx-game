@@ -19,8 +19,7 @@ func Update(dt float32) {
 	//update lifetimes
 	currentWorld.Entities.Particles.Update(dt)
 
-	emitter.SetPosition(currentPlayer.Pos)
-	// emitter.Emit()
+	emitter.SetPosition(currentPlayer.PhysicsState.Pos)
 }
 
 func updateTimers(agents []*agents.Agent, dt float32) {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-gl/mathgl/mgl32"
 
+	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/cxmath"
@@ -169,4 +170,13 @@ func (h HUD) Draw(state HUDState) {
 		ctx.PushLocal(mgl32.Translate3D(2*circlePadding,y,0)),state.Oxygen)
 	h.Fuel.Draw(
 		ctx.PushLocal(mgl32.Translate3D(3*circlePadding,y,0)),state.Fuel)
+}
+
+func DrawAgentHUD(agent *agents.Agent) {
+	DrawHUD(HUDState {
+		Health: agent.HealthComponent.Current,
+		MaxHealth: agent.HealthComponent.Max,
+
+		Fullness: 1, Hydration: 1, Oxygen: 1, Fuel: 1,
+	})
 }

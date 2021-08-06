@@ -29,7 +29,6 @@ type Player struct {
 	suitId        int
 	helmSpriteIds [4]spriteloader.SpriteID
 	suitSpriteIds [4]spriteloader.SpriteID
-	XDirection    float32 // 1 when facing right, -1 when facing left
 }
 
 func NewPlayer() *Player {
@@ -39,10 +38,10 @@ func NewPlayer() *Player {
 	player := Player{
 		Body: physics.Body{
 			Size: cxmath.Vec2{X: 2, Y: 3},
+			Direction: 1, // start facing right
 		},
 		MovementComponent: movement.NewPlayerMovementComponent(),
 
-		XDirection: 1, // start facing right
 		Controlled: true,
 	}
 
@@ -99,7 +98,7 @@ func (player *Player) FixedTick(planet *world.Planet) {
 				player.ActiveMovementType.GetMovementSpeedModifier()
 
 		if inputXAxis != 0 {
-			player.XDirection = math32.Sign(inputXAxis)
+			player.Body.Direction = math32.Sign(inputXAxis)
 		}
 
 		if player.ActiveMovementType == movement.FLYING {

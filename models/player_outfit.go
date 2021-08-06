@@ -28,7 +28,7 @@ func (player *Player) DrawOutfit(position mgl32.Vec2) {
 
 	//draw suit
 	var dirX int = 0
-	if player.XDirection < 0 {
+	if player.Direction < 0 {
 		dirX = 1
 	}
 	for i, suitSprite := range player.suitSpriteIds {
@@ -36,7 +36,7 @@ func (player *Player) DrawOutfit(position mgl32.Vec2) {
 		spriteloader.DrawSpriteQuad(
 			position.X()+float32((i+dirX)%2)-(0.5), position.Y()-float32(i/2)+0.25,
 			// player sprite actually faces left so throw an extra (-) here
-			-player.Size.X*player.XDirection/2, player.Size.Y/2, suitSprite,
+			-player.Size.X*player.Direction/2, player.Size.Y/2, suitSprite,
 		)
 	}
 
@@ -45,7 +45,7 @@ func (player *Player) DrawOutfit(position mgl32.Vec2) {
 		spriteloader.DrawSpriteQuad(
 			position.X()+float32((i+dirX)%2)-0.5, position.Y()-float32(i/2)+1.25,
 			// player sprite actually faces left so throw an extra (-) here
-			-player.Size.X*player.XDirection/2, player.Size.Y/2, helmSprite,
+			-player.Size.X*player.Direction/2, player.Size.Y/2, helmSprite,
 		)
 	}
 }
