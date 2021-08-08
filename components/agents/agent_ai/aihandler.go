@@ -8,6 +8,7 @@ import (
 	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/objects"
 )
 
 type AiContext struct {
@@ -23,6 +24,8 @@ func Init() {
 	RegisterAiHandler(constants.AI_HANDLER_LEAP, AiHandlerLeap)
 	RegisterAiHandler(constants.AI_HANDLER_DRILL, AiHandlerDrill)
 	RegisterAiHandler(constants.AI_HANDLER_PLAYER, AiHandlerPlayer)
+
+	objects.SpiderDrillInit()
 
 	assertAllAiHandlersRegistered()
 }
