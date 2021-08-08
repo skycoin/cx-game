@@ -208,6 +208,9 @@ func (body *ParticleBody) MoveNoBounceRaytrace(planet worldcollider.WorldCollide
 	body.PrevPos = body.Pos
 	body.PrevVel = body.Vel
 
+	if body.Vel.IsZero() {
+		return
+	}
 	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
