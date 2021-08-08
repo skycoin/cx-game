@@ -1,8 +1,6 @@
 package particles
 
 import (
-	"fmt"
-
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/cxmath"
 )
@@ -60,12 +58,12 @@ func (pl *ParticleList) AddParticle(
 			Elasticity: elasticity,
 			Friction:   friction,
 		},
-		Duration:         duration,
-		TimeToLive:       duration,
-		Texture:          texture,
-		DrawHandlerID:    drawHandlerId,
-		PhysicsHandlerID: physiscHandlerID,
-		OnCollideCallback:         callback,
+		Duration:          duration,
+		TimeToLive:        duration,
+		Texture:           texture,
+		DrawHandlerID:     drawHandlerId,
+		PhysicsHandlerID:  physiscHandlerID,
+		OnCollideCallback: callback,
 	}
 
 	pl.Particles = append(pl.Particles, &newParticle)
@@ -107,7 +105,6 @@ func (pl *ParticleList) deleteParticles(indexes []int) {
 }
 
 func (pl *ParticleList) GetParticle(id types.ParticleID) *Particle {
-	fmt.Println("AIPERI BEST ", len(pl.Particles), "   ", id)
 
 	return pl.Particles[int(id)]
 
