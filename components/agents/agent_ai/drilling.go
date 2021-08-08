@@ -22,10 +22,14 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 			agent.PhysicsState.IsOnGround()
 
 	if doJump {
+		events.OnSpiderBeforeJump.Trigger(events.SpiderEventData{
+			agent: agent.WaitingFor,
+		})
+
 		agent.PhysicsState.Vel.Y = drillJumpSpeed
 		// trigger an event when spiderdrill jump
-		events.OnSpiderJump.Trigger(events.SpiderJumpData{
-			Vel: agent.PhysicsState.Vel,
+		events.OnSpiderJump.Trigger(events.SpiderEventData{
+			WaitingFor: agent.WaitingFor,
 		})
 	} else {
 		agent.PhysicsState.Vel.Y -= constants.Gravity * constants.TimeStep

@@ -1,40 +1,36 @@
 package events
 
-import "github.com/skycoin/cx-game/cxmath"
-
 var OnSpiderJump onSpiderJump
+var OnSpiderBeforeJump onSpiderBeforeJump
 
-// type SpiderFacingData struct {
-// }
-
-type SpiderJumpData struct {
-	Vel cxmath.Vec2
+type SpiderEventData struct {
+	WaitingFor float32
 }
-
-// type OnSpiderFacingLeft struct {
-// 	handlers []interface{ Handle(SpiderFacingData) }
-// }
 
 type onSpiderJump struct {
-	handlers []interface{ Handle(SpiderJumpData) }
+	handlers []interface{ OnSpiderDrillJump(SpiderEventData) }
 }
 
-func (o *onSpiderJump) Register(handler interface{ Handle(SpiderJumpData) }) {
+func (o *onSpiderJump) Register(handler interface{ OnSpiderDrillJump(SpiderEventData) }) {
 	o.handlers = append(o.handlers, handler)
 }
 
-func (o onSpiderJump) Trigger(data SpiderJumpData) {
+func (o onSpiderJump) Trigger(data SpiderEventData) {
 	for _, handler := range o.handlers {
-		go handler.Handle(data)
+		go handler.OnSpiderDrillJump(data)
 	}
 }
 
-// func (o *OnSpiderFacingLeft) Register(handler interface{ Handle(SpiderFacingData) }) {
-// 	o.handlers = append(o.handlers, handler)
-// }
+type onSpiderBeforeJump struct {
+	handlers []interface{ OnSpiderDrillBeforeJump(SpiderEventData) }
+}
 
-// func (o OnSpiderFacingLeft) Trigger(data SpiderFacingData) {
-// 	for _, handler := range o.handlers {
-// 		go handler.Handle(data)
-// 	}
-// }
+func (o *onSpiderBeforeJump) Register(handler interface{ OnSpiderDrillBeforeJump(SpiderEventData) }) {
+	o.handlers = append(o.handlers, handler)
+}
+
+func (o onSpiderBeforeJump) Trigger(data SpiderEventData) {
+	for _, handler := range o.handlers {
+		go handler.OnSpiderDrillBeforeJump(data)
+	}
+}
