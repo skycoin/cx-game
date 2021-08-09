@@ -2,7 +2,7 @@ package spriteloader
 
 import (
 	"path/filepath"
-	"io/fs"
+	"os"
 	"strings"
 )
 
@@ -10,7 +10,7 @@ func findConfigPaths() []string {
 	paths := []string{}
 	filepath.Walk(
 		"./assets/sprite",
-		func(path string, info fs.FileInfo, er error) error {
+		func(path string, info os.FileInfo, er error) error {
 			if strings.HasSuffix(path, ".yaml") {
 				paths = append(paths, path)
 			}
