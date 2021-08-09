@@ -14,3 +14,5 @@ type AgentPhysicsHandlerID int
 type ParticlePhysicsHandlerID int
 
 type InventoryID int
+
+type ItemTypeID uint32

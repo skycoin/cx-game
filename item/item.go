@@ -4,9 +4,9 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/spriteloader"
-	"github.com/skycoin/cx-game/ids"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
 )
@@ -27,7 +27,7 @@ type ItemType struct {
 }
 
 //type ItemTypeID uint32
-type ItemTypeID ids.ItemTypeID
+type ItemTypeID types.ItemTypeID
 
 type ItemUseInfo struct {
 	Slot      *InventorySlot
