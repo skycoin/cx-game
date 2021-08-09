@@ -17,7 +17,6 @@ import (
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/engine/ui/console"
 	"github.com/skycoin/cx-game/item"
-	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/starfield"
@@ -41,7 +40,7 @@ var (
 	Cam     *camera.Camera
 	win     render.Window
 	window  *glfw.Window
-	fps     *models.Fps
+	fps     *render.Fps
 	player  *agents.Agent
 
 	World              world.World
@@ -74,11 +73,12 @@ func Init() {
 	ui.Init()
 	particles.InitParticles()
 	item.RegisterItemTypes()
+	render.Init()
 
 	//models.Init()
 	//player = models.NewPlayer()
 
-	fps = models.NewFps(false)
+	fps = render.NewFps(false)
 	Cam = camera.NewCamera(&win)
 	//World.Planet = world.NewDevPlanet()
 

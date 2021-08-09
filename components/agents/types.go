@@ -5,7 +5,7 @@ import (
 
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
 )
@@ -113,8 +113,8 @@ func createPlayer(opts AgentCreationOptions) *Agent {
 		},
 		HealthComponent: NewHealthComponent(100),
 		PlayerData: PlayerData{
-			HelmetSpriteID: spriteloader.GetSpriteIdByName("helmet/1"),
-			SuitSpriteID:   spriteloader.GetSpriteIdByName("suit:0"),
+			HelmetSpriteID: render.GetSpriteIDByName("helmet/1"),
+			SuitSpriteID:   render.GetSpriteIDByName("suit:0"),
 		},
 	}
 	//physics.RegisterBody(&agent.PhysicsState)

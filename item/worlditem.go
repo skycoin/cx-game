@@ -76,6 +76,7 @@ func (item WorldItem) Draw(cam *camera.Camera) {
 		return
 	}
 	spriteId := itemTypes[item.ItemTypeId].SpriteID
+	_ = spriteId
 	z := -spriteloader.SpriteRenderDistance
 	view := mgl32.Translate3D(-cam.X, -cam.Y, 0)
 	world := mgl32.Translate3D(
@@ -84,10 +85,13 @@ func (item WorldItem) Draw(cam *camera.Camera) {
 		z,
 	).Mul4(cxmath.Scale(worldItemSize))
 	modelView := view.Mul4(world)
+	_ = modelView
+	/*
 	spriteloader.DrawSpriteQuadMatrix(
 		modelView, spriteId,
 		spriteloader.NewDrawOptions(),
 	)
+	*/
 }
 
 func (item *WorldItem) Tick(

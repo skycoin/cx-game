@@ -6,7 +6,6 @@ import (
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/engine/camera"
-	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
 )
@@ -19,7 +18,7 @@ const (
 )
 
 type ItemType struct {
-	SpriteID spriteloader.SpriteID
+	SpriteID render.SpriteID
 	Name     string
 	Category Category
 
@@ -66,7 +65,7 @@ var itemTypes = make(map[ItemTypeID]*ItemType)
 
 var nextItemTypeID = ItemTypeID(1)
 
-func NewItemType(SpriteID spriteloader.SpriteID) ItemType {
+func NewItemType(SpriteID render.SpriteID) ItemType {
 	return ItemType{
 		SpriteID: SpriteID,
 		Name:     "untitled",

@@ -2,7 +2,7 @@ package item
 
 import (
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/world"
 )
@@ -29,10 +29,11 @@ func UseLaserGun(info ItemUseInfo) {
 
 			tile, destroyed :=
 				info.World.Planet.DamageTile(int(pos.X), int(pos.Y), world.TopLayer)
+			_ = tile
 
 			if destroyed {
 				//itemTypeId := GetItemTypeIdForTile(tile)
-				CreateWorldItems(tile.TileTypeID, pos.Vec2())
+				//CreateWorldItems(tile.TileTypeID, pos.Vec2())
 				//CreateWorldItem(itemTypeId, pos.Vec2())
 			}
 
@@ -48,10 +49,7 @@ func UseLaserGun(info ItemUseInfo) {
 }
 
 func RegisterLaserGunItemType() ItemTypeID {
-	// TODO use proper asset
-	laserGunSpriteId := spriteloader.LoadSingleSprite(
-		"./assets/item/lasergun-temp.png", "lasergun")
-	laserGunItemType := NewItemType(laserGunSpriteId)
+	laserGunItemType := NewItemType(render.GetSpriteIDByName("lasergun"))
 	laserGunItemType.Use = UseLaserGun
 	laserGunItemType.Name = "Laser Gun"
 	return AddItemType(laserGunItemType)

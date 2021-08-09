@@ -1,34 +1,30 @@
 package agent_draw
 
 import (
+	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/components/agents"
-	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/render"
 )
 
-const (
-	playerHeadSize float32 = 1.5
-)
+func drawPlayerSprite(
+		agent *agents.Agent, ctx DrawHandlerContext,
+		spriteID render.SpriteID, zOffset float32,
+) {
+	body := &agent.PhysicsState
+
+	translate := mgl32.Translate3D( body.Pos.X, body.Pos.Y, zOffset )
+
+	scaleX := -body.Size.X * body.Direction
+	scale := mgl32.Scale3D( scaleX, agent.PhysicsState.Size.Y, 1)
+
+	transform := translate.Mul4(scale)
+	render.DrawWorldSprite(transform, spriteID, render.NewSpriteDrawOptions() )
+}
 
 func PlayerDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
-	if len(agents) == 0 {
-		return
-	}
-	drawOpts := spriteloader.NewDrawOptions()
 	for _, agent := range agents {
-		scaleX :=
-			-agent.PhysicsState.Size.X * agent.PhysicsState.Direction
-
-		spriteloader.DrawSpriteQuadOptions(
-			agent.PhysicsState.Pos.X-ctx.Camera.X,
-			agent.PhysicsState.Pos.Y-ctx.Camera.Y,
-			scaleX, agent.PhysicsState.Size.Y,
-			agent.PlayerData.SuitSpriteID, drawOpts,
-		)
-		spriteloader.DrawSpriteQuadOptions(
-			agent.PhysicsState.Pos.X-ctx.Camera.X,
-			agent.PhysicsState.Pos.Y-ctx.Camera.Y,
-			scaleX, agent.PhysicsState.Size.Y,
-			agent.PlayerData.HelmetSpriteID, drawOpts,
-		)
+		drawPlayerSprite(agent, ctx, agent.PlayerData.SuitSpriteID, 0)
+		drawPlayerSprite(agent, ctx, agent.PlayerData.HelmetSpriteID, 1)
 	}
 }

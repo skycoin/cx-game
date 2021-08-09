@@ -1,6 +1,9 @@
 package agent_draw
 
 import (
+	"github.com/go-gl/mathgl/mgl32"
+
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/spriteloader"
@@ -26,13 +29,18 @@ func QuadDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 	drawOpts := spriteloader.NewDrawOptions()
 	for _, agent := range agents {
 		drawOpts.Alpha = alphaForAgent(agent)
-		spriteloader.DrawSpriteQuadOptions(
-			agent.PhysicsState.Pos.X-ctx.Camera.X,
-			agent.PhysicsState.Pos.Y-ctx.Camera.Y,
-			agent.PhysicsState.Size.X,
-			agent.PhysicsState.Size.Y,
-			spriteID, drawOpts,
+		body := &agent.PhysicsState
+		translate := mgl32.Translate3D(
+			body.Pos.X-ctx.Camera.X,
+			body.Pos.Y-ctx.Camera.Y,
+			0,
 		)
+		scale := mgl32.Scale3D(body.Size.X,body.Size.Y,1)
+		ctx := render.Context {
+			World: translate.Mul4(scale),
+			Projection: spriteloader.Window.GetProjectionMatrix(),
+		}
+		spriteloader.DrawSpriteQuadContext(ctx, spriteID, drawOpts)
 	}
 }
 

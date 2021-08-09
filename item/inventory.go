@@ -5,13 +5,13 @@ import (
 	"strconv"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/camera"
-	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
@@ -190,18 +190,23 @@ func (inventory Inventory) DrawSlot(
 	// draw border
 	render.DrawColorQuad(ctx, getBorderColor(isSelected))
 	// draw bg on top of border
-	bgCtx := ctx.PushLocal(cxmath.Scale(1 - borderSize))
+	bgCtx := ctx.
+		PushLocal(mgl32.Translate3D(0,0,0.1)).
+		PushLocal(cxmath.Scale(1 - borderSize))
 	render.DrawColorQuad(bgCtx, bgColor)
 	// draw item on top of bg
-	itemCtx := ctx.PushLocal(cxmath.Scale(itemSize))
-	// TODO write number for quantity
+	itemCtx := ctx.
+		PushLocal(cxmath.Scale(itemSize))
+
 	if slot.Quantity > 0 {
 		spriteId := itemTypes[slot.ItemTypeID].SpriteID
-		spriteloader.DrawSpriteQuadContext(
-			itemCtx, (spriteId), spriteloader.NewDrawOptions())
+		render.DrawUISprite(
+			itemCtx.World.Mul4(
+				mgl32.Translate3D(0,0,0.2)), spriteId,
+			render.NewSpriteDrawOptions() )
 
 		textCtx := itemCtx.PushLocal(
-			mgl32.Translate3D(0.5, -0.05, 0).
+			mgl32.Translate3D(0.5, -0.05, 0.3).
 				Mul4(cxmath.Scale(0.6)))
 		ui.DrawStringRightAligned(
 			strconv.Itoa(int(slot.Quantity)),
@@ -380,6 +385,8 @@ func (inventory *Inventory) SlotIdxForPosition(x, y int) int {
 }
 
 func (inv *Inventory) Draw(ctx render.Context) {
+	gl.Enable(gl.DEPTH_TEST)
+
 	if inv.IsOpen {
 		inv.DrawGrid(ctx)
 	} else {

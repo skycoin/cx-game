@@ -3,7 +3,7 @@ package world
 import (
 	"fmt"
 
-	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/render"
 )
 
 type TileCategory uint32
@@ -28,7 +28,7 @@ func (tt TileCategory) ShouldRender() bool {
 }
 
 type Tile struct {
-	SpriteID          spriteloader.SpriteID
+	SpriteID          render.SpriteID
 	TileCategory      TileCategory
 	TileCollisionType TileCollisionType
 	TileTypeID        TileTypeID
@@ -46,7 +46,7 @@ type MultiTile struct {
 	Width        int
 	Height       int
 	TileCategory TileCategory
-	SpriteIDs    []spriteloader.SpriteID
+	SpriteIDs    []render.SpriteID
 	Name         string
 }
 

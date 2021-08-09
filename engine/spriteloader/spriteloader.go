@@ -193,6 +193,7 @@ var SpriteRenderDistance float32 = 10
 
 //Draw sprite specified with spriteId at x,y position
 //this function is for testing, will not be used later on
+/*
 func DrawSpriteQuadOptions(
 	xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
 	opts DrawOptions,
@@ -203,12 +204,15 @@ func DrawSpriteQuadOptions(
 	)
 	DrawSpriteQuadMatrix(worldTransform, spriteId, opts)
 }
+*/
 
+/*
 func DrawSpriteQuad(
 	xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
 ) {
 	DrawSpriteQuadOptions(xpos, ypos, xwidth, yheight, spriteId, NewDrawOptions())
 }
+*/
 
 func DrawSpriteQuadMatrix(
 	worldTransform mgl32.Mat4, spriteId SpriteID, opts DrawOptions,

@@ -1,4 +1,4 @@
-package models
+package render
 
 import (
 	"fmt"

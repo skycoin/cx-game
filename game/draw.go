@@ -11,6 +11,7 @@ import (
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render/worldctx"
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/world"
 )
@@ -18,6 +19,9 @@ import (
 func Draw() {
 	gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+	render.SetCameraTransform(Cam.GetTransform())
+	render.SetWorldWidth(float32(World.Planet.Width))
 
 	baseCtx := win.DefaultRenderContext()
 	baseCtx.Projection = Cam.GetProjectionMatrix()
@@ -34,7 +38,6 @@ func Draw() {
 
 	item.DrawWorldItems(Cam)
 	components.Draw(&World.Entities, Cam)
-	//player.Draw(Cam, &World.Planet)
 	ui.DrawAgentHUD(player)
 
 	ui.DrawString(
@@ -44,32 +47,16 @@ func Draw() {
 		win.DefaultRenderContext().PushLocal(mgl32.Translate3D(-11.5, 5, 0)),
 	)
 
-	/*
-		// tile - air line (green)
-		collidingTileLines := World.Planet.GetCollidingTilesLinesRelative(
-			int(player.Pos.X), int(player.Pos.Y))
-		if len(collidingTileLines) > 2 {
-			Cam.DrawLines(collidingTileLines, mgl32.Vec3{0.0, 1.0, 0.0}, baseCtx)
-		}
-
-		// body bounding box (blue)
-		Cam.DrawLines(player.GetBBoxLines(), mgl32.Vec3{0.0, 0.0, 1.0}, baseCtx)
-
-		// colliding line from body (red)
-		collidingLines := player.GetCollidingLines()
-		if len(collidingLines) > 2 {
-			Cam.DrawLines(collidingLines, mgl32.Vec3{1.0, 0.0, 0.0}, baseCtx)
-		}
-	*/
-
 	ui.DrawDialogueBoxes(camCtx)
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
 
 	inventory := item.GetInventoryById(player.InventoryID)
-	inventory.Draw(win.DefaultRenderContext())
+	inventory.Draw(baseCtx)
 
 	Console.Draw(win.DefaultRenderContext())
+
+	render.Flush( Cam.GetProjectionMatrix() )
 
 	glfw.PollEvents()
 	win.Window.SwapBuffers()
