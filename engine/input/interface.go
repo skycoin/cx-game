@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/render"
 )
 
 //continuos keys, holding
@@ -77,30 +76,37 @@ func GetAxis(axis Axis) float32 {
 
 }
 
-func GetMouseWorldCoordsX() float32 {
-	screenX := GetScreenX()
-	tileX := camX + screenX/render.PixelsPerTile
-	return tileX
-}
+// func GetMouseWorldCoordsX() float32 {
+// 	screenX := GetScreenX()
+// 	tileX := camX + screenX/render.PixelsPerTile
+// 	return tileX
+// }
 
-func GetMouseWorldCoordsY() float32 {
-	screenY := GetScreenY()
-	tileY := camY + screenY/render.PixelsPerTile
-	return tileY
-}
+// func GetMouseWorldCoordsY() float32 {
+// 	screenY := GetScreenY()
+// 	tileY := camY + screenY/render.PixelsPerTile
+// 	return tileY
+// }
 
-func GetMouseWorldCoords() cxmath.Vec2 {
-	return cxmath.Vec2{
-		X: GetMouseWorldCoordsX(),
-		Y: GetMouseWorldCoordsY(),
-	}
-}
-func GetScreenX() float32 {
-	screenX := ((float32(mouseCoords.X)-float32(widthOffset))/float32(scale) - float32(window_.Width)/2) / camZoom
-	return screenX
-}
+// func GetMouseWorldCoords() cxmath.Vec2 {
+// 	return cxmath.Vec2{
+// 		X: GetMouseWorldCoordsX(),
+// 		Y: GetMouseWorldCoordsY(),
+// 	}
+// }
+// func GetScreenX() float32 {
+// 	screenX := ((float32(mouseCoords.X)-float32(widthOffset))/float32(scale) - float32(window_.Width)/2) / camZoom
+// 	return screenX
+// }
 
-func GetScreenY() float32 {
-	screenY := (((float32(mouseCoords.Y)-float32(heightOffset))/float32(scale) - float32(window_.Height)/2) * -1) / camZoom
-	return screenY
+// func GetScreenY() float32 {
+// 	screenY := (((float32(mouseCoords.Y)-float32(heightOffset))/float32(scale) - float32(window_.Height)/2) * -1) / camZoom
+// 	return screenY
+// }
+
+func GetMouseX() float32 {
+	return float32(mouseCoords.X)
+}
+func GetMouseY() float32 {
+	return float32(mouseCoords.Y)
 }

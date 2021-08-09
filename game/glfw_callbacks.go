@@ -21,10 +21,8 @@ func mouseButtonCallback(
 
 // mouse position relative to screen
 func screenPos() (float32, float32) {
-	// screenX := ((input.GetMouseX()-float32(widthOffset))/float32(scale) - float32(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
-	screenX := input.GetScreenX()
-	// screenY := (((input.GetMouseY()-float32(heightOffset))/float32(scale) - float32(win.Height)/2) * -1) / Cam.Zoom
-	screenY := input.GetScreenY()
+	screenX := ((input.GetMouseX()-float32(widthOffset))/float32(scale) - float32(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
+	screenY := (((input.GetMouseY()-float32(heightOffset))/float32(scale) - float32(win.Height)/2) * -1) / Cam.Zoom
 	return screenX, screenY
 }
 
