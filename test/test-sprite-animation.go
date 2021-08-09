@@ -6,9 +6,9 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/spriteloader"
 )
 
 var cb *models.CatBlack
@@ -40,10 +40,10 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		newTime := glfw.GetTime()
-		dt := float32(newTime-time)
+		dt := float32(newTime - time)
 		time = newTime
 		action.Update(dt)
-		spriteloader.DrawSpriteQuad(0,0,3,2,action.SpriteID())
+		spriteloader.DrawSpriteQuad(0, 0, 3, 2, action.SpriteID())
 
 		glfw.PollEvents()
 		window.SwapBuffers()

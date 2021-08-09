@@ -5,10 +5,10 @@ import (
 	"log"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/render"
 )
 

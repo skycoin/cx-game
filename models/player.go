@@ -3,15 +3,15 @@ package models
 import (
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/constants/physicsconstants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
-	"github.com/skycoin/cx-game/input"
+	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/engine/input"
+	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/physics/movement"
-	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/ui"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -37,7 +37,7 @@ func NewPlayer() *Player {
 
 	player := Player{
 		Body: physics.Body{
-			Size: cxmath.Vec2{X: 2, Y: 3},
+			Size:      cxmath.Vec2{X: 2, Y: 3},
 			Direction: 1, // start facing right
 		},
 		MovementComponent: movement.NewPlayerMovementComponent(),
@@ -138,13 +138,15 @@ func (player *Player) FixedTick(planet *world.Planet) {
 
 	player.Vel.X = cxmath.ClampF(player.Vel.X, -maxAbsVelX, maxAbsVelX)
 
-	if player.ignorePlatformTicks>0 { player.ignorePlatformTicks-- }
+	if player.ignorePlatformTicks > 0 {
+		player.ignorePlatformTicks--
+	}
 	// if input axis is downwards, ignore platforms for a few frames
 	dropping := input.GetAxis(input.VERTICAL) < 0
 	if dropping {
 		player.ignorePlatformTicks = maxIgnorePlatformTicks
 	}
-	
+
 	player.IsIgnoringPlatforms = player.ignorePlatformTicks > 0
 
 	player.MovementAfterTick(planet)

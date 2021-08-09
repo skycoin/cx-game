@@ -7,13 +7,13 @@ import (
 
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
+	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/render/blob"
-	"github.com/skycoin/cx-game/spriteloader"
 )
 
 const NUM_INSTANCES = 100
@@ -62,7 +62,7 @@ type Planet struct {
 	collidingLines  []float32
 	collidingLinesX int
 	collidingLinesY int
-	Time float32
+	Time            float32
 
 	program, liquidProgram render.Program
 }
@@ -93,12 +93,11 @@ func newPlanetLiquidProgram() render.Program {
 func NewPlanet(x, y int32) *Planet {
 	planet := Planet{
 		//WorldState: NewDevWorldState(),
-		Width:      x,
-		Height:     y,
-		Layers:     NewLayers(x * y),
-		program:    newPlanetProgram(),
-		liquidProgram:
-					newPlanetLiquidProgram(),
+		Width:         x,
+		Height:        y,
+		Layers:        NewLayers(x * y),
+		program:       newPlanetProgram(),
+		liquidProgram: newPlanetLiquidProgram(),
 	}
 	return &planet
 }

@@ -2,11 +2,11 @@ package game
 
 import (
 	"github.com/skycoin/cx-game/components"
+	"github.com/skycoin/cx-game/engine/sound"
+	"github.com/skycoin/cx-game/engine/ui"
+	"github.com/skycoin/cx-game/engine/ui/console"
 	"github.com/skycoin/cx-game/particles"
-	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/starfield"
-	"github.com/skycoin/cx-game/ui"
-	"github.com/skycoin/cx-game/ui/console"
 )
 
 func Update(dt float32) {

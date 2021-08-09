@@ -1,4 +1,5 @@
 package anim
+
 /*
 
 import (
@@ -15,7 +16,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 )
 
 func init() {

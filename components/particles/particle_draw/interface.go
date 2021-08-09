@@ -1,10 +1,10 @@
 package particle_draw
 
 import (
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 )
 
 func DrawParticles(particleList *particles.ParticleList, cam *camera.Camera) {

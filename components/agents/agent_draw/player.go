@@ -2,7 +2,7 @@ package agent_draw
 
 import (
 	"github.com/skycoin/cx-game/agents"
-	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 )
 
 const (
@@ -10,7 +10,9 @@ const (
 )
 
 func PlayerDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
-	if len(agents)==0 { return }
+	if len(agents) == 0 {
+		return
+	}
 	drawOpts := spriteloader.NewDrawOptions()
 	for _, agent := range agents {
 		scaleX :=

@@ -5,9 +5,9 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/agents"
+	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/engine/spriteloader/anim"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/spriteloader/anim"
 )
 
 func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
@@ -21,20 +21,20 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 		gl.ActiveTexture(gl.TEXTURE0)
 		gl.BindTexture(gl.TEXTURE_2D, tex)
 		translate := mgl32.Translate3D(
-			agent.PhysicsState.Pos.X - ctx.Camera.X,
-			agent.PhysicsState.Pos.Y - ctx.Camera.Y,
+			agent.PhysicsState.Pos.X-ctx.Camera.X,
+			agent.PhysicsState.Pos.Y-ctx.Camera.Y,
 			0,
 		)
 		scale := mgl32.Scale3D(
-			agent.PhysicsState.Size.X * agent.PhysicsState.Direction,
+			agent.PhysicsState.Size.X*agent.PhysicsState.Direction,
 			agent.PhysicsState.Size.Y,
 			1,
 		)
 		projection := spriteloader.Window.GetProjectionMatrix()
 		mvp := projection.Mul4(translate).Mul4(scale)
-		anim.Program.SetMat4("mvp",&mvp)
+		anim.Program.SetMat4("mvp", &mvp)
 		texTransform := agent.AnimationPlayback.Frame().Transform
-		anim.Program.SetMat3("texTransform",&texTransform)
+		anim.Program.SetMat3("texTransform", &texTransform)
 		gl.DrawArrays(gl.TRIANGLES, 0, 6)
 	}
 }

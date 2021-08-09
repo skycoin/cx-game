@@ -5,14 +5,14 @@ import (
 
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/engine/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
-	"github.com/skycoin/cx-game/spriteloader/anim"
-	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type Agent struct {
 	AgentId           int
-	AgentCategory         constants.AgentCategory
+	AgentCategory     constants.AgentCategory
 	AiHandlerID       types.AgentAiHandlerID
 	PhysicsState      physics.Body
 	PhysicsParameters physics.PhysicsParameters
@@ -28,7 +28,7 @@ type Agent struct {
 }
 
 type PlayerData struct {
-	SuitSpriteID spriteloader.SpriteID
+	SuitSpriteID   spriteloader.SpriteID
 	HelmetSpriteID spriteloader.SpriteID
 }
 
@@ -56,7 +56,9 @@ func newAgent(id int) *Agent {
 
 func (a *Agent) FillDefaults() {
 	// if have no direction, default to right-facing / no flip
-	if a.PhysicsState.Direction==0 { a.PhysicsState.Direction = 1 }
+	if a.PhysicsState.Direction == 0 {
+		a.PhysicsState.Direction = 1
+	}
 }
 
 //prefabs
@@ -97,6 +99,6 @@ func (a *Agent) WaitFor(seconds float32) {
 
 func (a *Agent) Validate() {
 	if a.AgentCategory == constants.AGENT_CATEGORY_UNDEFINED {
-		log.Fatalf("Cannot create agent with undefined category: %+v",a)
+		log.Fatalf("Cannot create agent with undefined category: %+v", a)
 	}
 }

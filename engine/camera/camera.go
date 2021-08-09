@@ -5,7 +5,7 @@ import (
 
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/mathi"
-	"github.com/skycoin/cx-game/input"
+	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/render"
 )
 

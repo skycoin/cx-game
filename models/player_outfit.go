@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-gl/mathgl/mgl32"
-	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 )
 
 var (

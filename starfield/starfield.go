@@ -10,11 +10,11 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/spriteloader"
 	"github.com/skycoin/cx-game/starmap"
 )
 
@@ -118,7 +118,7 @@ var (
 	}
 
 	//variable for star move speed
-	speed  float32 = 4
+	speed   float32 = 4
 	program render.Program
 )
 
@@ -131,7 +131,7 @@ func InitStarField(window *render.Window, cam *camera.Camera) {
 	Cam = cam
 	program = render.CompileProgram(
 		"./assets/shader/starfield/shader.vert",
-		"./assets/shader/starfield/shader.frag" )
+		"./assets/shader/starfield/shader.frag")
 	program.Use()
 	defer program.StopUsing()
 
@@ -224,8 +224,8 @@ func UpdateStarField(dt float32) {
 func configureGlForStarfield() {
 	gl.ActiveTexture(gl.TEXTURE0)
 	meta := spriteloader.GetSpriteMetadata(stars[0].SpriteId)
-	gl.BindTexture(gl.TEXTURE_2D, meta.GpuTex )
-	program.SetVec2F("texScale", meta.ScaleX, meta.ScaleY )
+	gl.BindTexture(gl.TEXTURE_2D, meta.GpuTex)
+	program.SetVec2F("texScale", meta.ScaleX, meta.ScaleY)
 	projection := mgl32.Ortho(
 		0, float32(spriteloader.Window.Width),
 		0, float32(spriteloader.Window.Height),
@@ -250,30 +250,30 @@ func DrawStarField() {
 
 	configureGlForStarfield()
 
-	program.SetInt("texture_1d",1)
-	for _,star := range bins.Gaussian {
+	program.SetInt("texture_1d", 1)
+	for _, star := range bins.Gaussian {
 		program.SetFloat("intensity", getIntensity(star.Intensity))
 		spriteloader.DrawSpriteQuadCustom(
 			star.X, star.Y, star.Size, star.Size,
-			star.SpriteId, uint32(program) )
+			star.SpriteId, uint32(program))
 	}
 
 	program.SetInt("texture_1d", 4)
-	for _,star := range bins.NotGaussian {
+	for _, star := range bins.NotGaussian {
 		program.SetFloat("gradValue", star.GradientValue)
 		program.SetFloat("intensity", getIntensity(star.Intensity))
 		spriteloader.DrawSpriteQuadCustom(
 			star.X, star.Y, star.Size, star.Size,
-			star.SpriteId, uint32(program) )
+			star.SpriteId, uint32(program))
 	}
 }
 
 func binStars() StarBins {
-	bins := StarBins {
-		Gaussian: make([]*Star,0,len(stars)),
-		NotGaussian: make([]*Star,0,len(stars)),
+	bins := StarBins{
+		Gaussian:    make([]*Star, 0, len(stars)),
+		NotGaussian: make([]*Star, 0, len(stars)),
 	}
-	for _,star := range stars {
+	for _, star := range stars {
 		if star.IsGaussian {
 			bins.Gaussian = append(bins.Gaussian, star)
 		} else {
@@ -284,7 +284,7 @@ func binStars() StarBins {
 }
 
 type StarBins struct {
-	Gaussian []*Star
+	Gaussian    []*Star
 	NotGaussian []*Star
 }
 

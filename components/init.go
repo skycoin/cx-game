@@ -6,13 +6,13 @@ package components
 
 import (
 	"github.com/skycoin/cx-game/agents"
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/agents/agent_ai"
 	"github.com/skycoin/cx-game/components/agents/agent_draw"
 	"github.com/skycoin/cx-game/components/agents/agent_health"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/particles/particle_draw"
 	"github.com/skycoin/cx-game/components/particles/particle_physics"
+	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/particle_emitter"
 	"github.com/skycoin/cx-game/world"
 )

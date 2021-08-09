@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/skycoin/cx-game/render"
-	sl "github.com/skycoin/cx-game/spriteloader"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/glfw/v3.3/glfw"
+	sl "github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/render"
 )
 
 func init() {
@@ -24,7 +25,7 @@ var il *sl.ImgLoader
 var spriteId int = -1
 
 //test loader callback function
-func loaderCb(il *sl.ImgLoader){
+func loaderCb(il *sl.ImgLoader) {
 	fmt.Printf("loader cb \n")
 	id := sl.AddSpriteSheet("assets/starfield/stars/planets.png", il)
 	fmt.Printf("AddSpriteSheet id %v\n", id)
@@ -32,12 +33,12 @@ func loaderCb(il *sl.ImgLoader){
 		return
 	}
 
-	sl.LoadSprite(id, "star", 2,1)
+	sl.LoadSprite(id, "star", 2, 1)
 	spriteId = sl.GetSpriteIdByName("star")
 	fmt.Printf("sprite id %v\n", spriteId)
 }
 
-func getPng(dir string) []string{
+func getPng(dir string) []string {
 	var ret []string
 	err := filepath.Walk(dir,
 		func(path string, info os.FileInfo, err error) error {
@@ -68,7 +69,7 @@ func main() {
 	il.Run()
 
 	log.Print("running test-imageloader")
-	win := render.NewWindow(640,480,true)
+	win := render.NewWindow(640, 480, true)
 	window := win.Window
 	defer glfw.Terminate()
 	sl.InitSpriteloader(&win)
@@ -78,11 +79,11 @@ func main() {
 			il.Update()
 		}
 
-		gl.ClearColor(1,1,1,1)
+		gl.ClearColor(1, 1, 1, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		// if load finish ,the img will render
-		if spriteId >= 0{
-			sl.DrawSpriteQuad(0,0,2,2,spriteId)
+		if spriteId >= 0 {
+			sl.DrawSpriteQuad(0, 0, 2, 2, spriteId)
 		}
 
 		glfw.PollEvents()
