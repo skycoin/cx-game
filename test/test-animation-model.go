@@ -6,9 +6,9 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/ui"
 )
 
 var catBlack *models.CatBlack

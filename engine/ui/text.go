@@ -9,8 +9,8 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type TextAlignment uint32
@@ -161,8 +161,8 @@ func DrawStringLeftAligned(
 	program := spriteloader.SpriteProgram
 	program.Use()
 	// this line only needs to occur once if we have a dedicated program
-	program.SetUint("ourTexture",fontTex)
-	program.SetVec4("color",&color)
+	program.SetUint("ourTexture", fontTex)
+	program.SetVec4("color", &color)
 
 	// center it
 	pos := mgl32.Vec2{}
@@ -173,8 +173,8 @@ func DrawStringLeftAligned(
 				Mul4(mgl32.Translate3D(pos.X(), pos.Y(), 0)).
 				Mul4(cxmath.Scale(fontScale))
 
-			program.SetMat4("world",&letterTransform)
-			program.SetMat4("projection",&ctx.Projection)
+			program.SetMat4("world", &letterTransform)
+			program.SetMat4("projection", &ctx.Projection)
 			gl.BindVertexArray(vao)
 			glStart := 6 * charData.index
 			gl.DrawArrays(gl.TRIANGLES, int32(glStart), 6)
@@ -184,7 +184,7 @@ func DrawStringLeftAligned(
 	}
 
 	// restore default color
-	program.SetVec4F("color",1,1,1,1)
+	program.SetVec4F("color", 1, 1, 1, 1)
 }
 
 func DrawStringRightAligned(

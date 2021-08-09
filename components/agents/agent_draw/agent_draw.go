@@ -1,9 +1,9 @@
 package agent_draw
 
 import (
-	"github.com/skycoin/cx-game/agents"
-	"github.com/skycoin/cx-game/camera"
+	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/types"
+	"github.com/skycoin/cx-game/engine/camera"
 )
 
 func DrawAgents(allAgents *agents.AgentList, cam *camera.Camera) {
@@ -11,10 +11,10 @@ func DrawAgents(allAgents *agents.AgentList, cam *camera.Camera) {
 
 	bins := BinByDrawHandlerID(agentsToDraw)
 
-	ctx := DrawHandlerContext{Camera:cam}
+	ctx := DrawHandlerContext{Camera: cam}
 
 	for drawHandlerID, agentsForHandler := range bins {
-		GetDrawHandler(drawHandlerID)(agentsForHandler,ctx)
+		GetDrawHandler(drawHandlerID)(agentsForHandler, ctx)
 	}
 
 }

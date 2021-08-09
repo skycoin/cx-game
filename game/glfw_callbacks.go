@@ -4,7 +4,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/input"
+	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/item"
 )
 

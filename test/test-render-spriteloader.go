@@ -5,11 +5,11 @@ import (
 	"runtime"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/mathgl/mgl32"
 
+	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/spriteloader"
 )
 
 var spriteIndex int = 1
@@ -18,13 +18,18 @@ func init() {
 	runtime.LockOSThread()
 }
 
-
 func keyCallBack(
-		w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey,
+	w *glfw.Window, k glfw.Key, s int, a glfw.Action, mk glfw.ModifierKey,
 ) {
-	if a != glfw.Press { return }
-	if k == glfw.KeyEscape { w.SetShouldClose(true) }
-	if k == glfw.KeySpace { spriteIndex++ }
+	if a != glfw.Press {
+		return
+	}
+	if k == glfw.KeyEscape {
+		w.SetShouldClose(true)
+	}
+	if k == glfw.KeySpace {
+		spriteIndex++
+	}
 }
 
 func main() {
@@ -54,19 +59,23 @@ func main() {
 		gl.Disable(gl.DEPTH_TEST)
 		gl.DepthFunc(gl.LESS)
 
-		bucket,ok := spritesheet.Sprite("orangebucket")
-		if !ok { log.Fatal("could not find orangebucket sprite") }
+		bucket, ok := spritesheet.Sprite("orangebucket")
+		if !ok {
+			log.Fatal("could not find orangebucket sprite")
+		}
 		ac, ok := spritesheet.Sprite("ac-unit")
-		if !ok { log.Fatal("could not find ac-unit sprite") }
+		if !ok {
+			log.Fatal("could not find ac-unit sprite")
+		}
 
-		spritesheet.Draw([]render.SpriteRenderParams {
-			render.SpriteRenderParams {
-				MVP: win.DefaultRenderContext().MVP(),
+		spritesheet.Draw([]render.SpriteRenderParams{
+			render.SpriteRenderParams{
+				MVP:    win.DefaultRenderContext().MVP(),
 				Sprite: bucket,
 			},
-			render.SpriteRenderParams {
+			render.SpriteRenderParams{
 				MVP: win.DefaultRenderContext().
-					PushLocal(mgl32.Translate3D(2,0,0)).MVP(),
+					PushLocal(mgl32.Translate3D(2, 0, 0)).MVP(),
 				Sprite: ac,
 			},
 		})

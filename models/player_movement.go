@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/input"
+	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/physics/movement"
 	"github.com/skycoin/cx-game/world"
 )
@@ -35,11 +35,11 @@ func (player *Player) MovementBeforeTick() {
 				return
 			}
 			/*
-			if input.GetButtonUp("jump") {
-				if player.Vel.Y > minJumpSpeed {
-					player.Vel.Y = minJumpSpeed
+				if input.GetButtonUp("jump") {
+					if player.Vel.Y > minJumpSpeed {
+						player.Vel.Y = minJumpSpeed
+					}
 				}
-			}
 			*/
 		}
 

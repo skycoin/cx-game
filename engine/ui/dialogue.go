@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-gl/mathgl/mgl32"
 
-	//"github.com/skycoin/cx-game/camera"
+	//"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
 )

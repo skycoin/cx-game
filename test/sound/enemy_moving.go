@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/sound"
+	"github.com/skycoin/cx-game/engine/sound"
 )
 
 func main() {

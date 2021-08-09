@@ -3,15 +3,16 @@ package item
 import (
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/agents"
-	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/camera"
-	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/spriteloader"
+	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/ids"
+	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/world"
 )
 
 type Category uint32
+
 const (
 	Misc Category = iota
 	BuildTool
@@ -19,25 +20,26 @@ const (
 
 type ItemType struct {
 	SpriteID spriteloader.SpriteID
-	Name string
+	Name     string
 	Category Category
 
 	Use func(ItemUseInfo)
 }
+
 //type ItemTypeID uint32
 type ItemTypeID ids.ItemTypeID
 
 type ItemUseInfo struct {
-	Slot *InventorySlot
-	ScreenX float32
-	ScreenY float32
-	Camera *camera.Camera
-	World *world.World
-	Player *agents.Agent
+	Slot      *InventorySlot
+	ScreenX   float32
+	ScreenY   float32
+	Camera    *camera.Camera
+	World     *world.World
+	Player    *agents.Agent
 	Inventory *Inventory
 }
 
-func (info ItemUseInfo) CamCoords() mgl32.Vec2{
+func (info ItemUseInfo) CamCoords() mgl32.Vec2 {
 	return mgl32.Vec2{
 		info.ScreenX / render.PixelsPerTile,
 		info.ScreenY / render.PixelsPerTile,
@@ -46,7 +48,7 @@ func (info ItemUseInfo) CamCoords() mgl32.Vec2{
 
 func (info ItemUseInfo) WorldCoords() mgl32.Vec2 {
 	// click relative to camera
-	camCoords := info.CamCoords().Vec4(0,1)
+	camCoords := info.CamCoords().Vec4(0, 1)
 	// click relative to world
 	worldCoords := info.Camera.GetTransform().Mul4x1(camCoords)
 
@@ -54,8 +56,8 @@ func (info ItemUseInfo) WorldCoords() mgl32.Vec2 {
 }
 
 func (info ItemUseInfo) PlayerCoords() mgl32.Vec2 {
-	return mgl32.Vec2 {
-		info.Player.PhysicsState.Pos.X, info.Player.PhysicsState.Pos.Y }
+	return mgl32.Vec2{
+		info.Player.PhysicsState.Pos.X, info.Player.PhysicsState.Pos.Y}
 }
 
 var tileTypeIDsToItemTypeIDs = make(map[world.TileTypeID]ItemTypeID)
@@ -65,10 +67,10 @@ var itemTypes = make(map[ItemTypeID]*ItemType)
 var nextItemTypeID = ItemTypeID(1)
 
 func NewItemType(SpriteID spriteloader.SpriteID) ItemType {
-	return ItemType {
+	return ItemType{
 		SpriteID: SpriteID,
-		Name: "untitled",
-		Use: func(ItemUseInfo) {},
+		Name:     "untitled",
+		Use:      func(ItemUseInfo) {},
 	}
 }
 
@@ -83,25 +85,27 @@ func GetItemTypeById(id ItemTypeID) *ItemType {
 	return itemTypes[id]
 }
 
-func GetTileTypeIDForItemTypeID(itemtypeID ItemTypeID) (world.TileTypeID,bool) {
-	tiletypeID,ok := itemTypeIDsToTileTypeIDs[itemtypeID]
-	return tiletypeID,ok
+func GetTileTypeIDForItemTypeID(itemtypeID ItemTypeID) (world.TileTypeID, bool) {
+	tiletypeID, ok := itemTypeIDsToTileTypeIDs[itemtypeID]
+	return tiletypeID, ok
 }
 
 func GetItemTypeIdForTileTypeID(id world.TileTypeID) ItemTypeID {
 	tiletype := id.Get()
-	itemTypeID,ok := tileTypeIDsToItemTypeIDs[id]
-	if ok { return itemTypeID }
+	itemTypeID, ok := tileTypeIDsToItemTypeIDs[id]
+	if ok {
+		return itemTypeID
+	}
 
 	itemType := NewItemType((tiletype.ItemSpriteID))
 	itemType.Name = tiletype.Name
 	itemType.Use = func(info ItemUseInfo) {
 		worldCoords := info.WorldCoords()
-		x := int(worldCoords.X()+0.5)
-		y := int(worldCoords.Y()+0.5)
-		if !info.World.Planet.TileIsSolid(x,y) {
+		x := int(worldCoords.X() + 0.5)
+		y := int(worldCoords.Y() + 0.5)
+		if !info.World.Planet.TileIsSolid(x, y) {
 			info.Slot.Quantity--
-			info.World.Planet.PlaceTileType(id,x,y)
+			info.World.Planet.PlaceTileType(id, x, y)
 		}
 	}
 	itemTypeID = AddItemType(itemType)

@@ -5,22 +5,22 @@ import (
 	"runtime"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/skycoin/cx-game/agents"
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components"
+	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/input"
+	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/engine/input"
+	"github.com/skycoin/cx-game/engine/sound"
+	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/engine/spriteloader/anim"
+	"github.com/skycoin/cx-game/engine/ui"
+	"github.com/skycoin/cx-game/engine/ui/console"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/sound"
-	"github.com/skycoin/cx-game/spriteloader"
-	"github.com/skycoin/cx-game/spriteloader/anim"
 	"github.com/skycoin/cx-game/starfield"
-	"github.com/skycoin/cx-game/ui"
-	"github.com/skycoin/cx-game/ui/console"
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/world/mapgen"
 )
@@ -38,11 +38,11 @@ const (
 
 var (
 	Console console.Console
-	Cam    *camera.Camera
-	win    render.Window
-	window *glfw.Window
-	fps    *models.Fps
-	player *agents.Agent
+	Cam     *camera.Camera
+	win     render.Window
+	window  *glfw.Window
+	fps     *models.Fps
+	player  *agents.Agent
 
 	World              world.World
 	DrawCollisionBoxes = false
@@ -94,9 +94,7 @@ func Init() {
 	//World.Planet = *mapgen.GeneratePlanet()
 	Cam.PlanetWidth = float32(World.Planet.Width)
 
-
 	starfield.InitStarField(&win, Cam)
-
 
 	worldTiles := World.Planet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
@@ -104,7 +102,7 @@ func Init() {
 	spawnX := int(20)
 	Cam.SetCameraPosition(float32(spawnX), 5)
 
-	spawnPos := cxmath.Vec2 {
+	spawnPos := cxmath.Vec2{
 		float32(spawnX),
 		float32(World.Planet.GetHeight(spawnX) + 10),
 	}
@@ -120,7 +118,7 @@ func Init() {
 		},
 	)
 	playerAgentID = World.Entities.Agents.Spawn(
-		constants.AGENT_TYPE_PLAYER, agents.AgentCreationOptions {
+		constants.AGENT_TYPE_PLAYER, agents.AgentCreationOptions{
 			X: spawnPos.X, Y: spawnPos.Y,
 		},
 	)

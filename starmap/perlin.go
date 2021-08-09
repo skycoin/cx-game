@@ -10,9 +10,9 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
+	sl "github.com/skycoin/cx-game/engine/spriteloader"
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/render"
-	sl "github.com/skycoin/cx-game/spriteloader"
 	"gopkg.in/yaml.v2"
 )
 

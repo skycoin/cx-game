@@ -1,9 +1,9 @@
 package particle_draw
 
 import (
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/components/types"
+	"github.com/skycoin/cx-game/engine/camera"
 )
 
 func FrustumCull(particleList []*particles.Particle, cam *camera.Camera) []*particles.Particle {

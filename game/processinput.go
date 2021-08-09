@@ -3,41 +3,43 @@ package game
 import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 
-	"github.com/skycoin/cx-game/input"
+	"github.com/skycoin/cx-game/engine/input"
+	"github.com/skycoin/cx-game/engine/sound"
+	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/item"
-	"github.com/skycoin/cx-game/sound"
 	"github.com/skycoin/cx-game/starfield"
-	"github.com/skycoin/cx-game/ui"
 )
 
 func ProcessInput() {
-	if Console.IsActive() { return }
+	if Console.IsActive() {
+		return
+	}
 	/*
-	if input.GetButtonDown("switch-helmet") {
-		player.SetHelmNext()
-	}
-	if input.GetButtonDown("switch-suit") {
-		player.SetSuitNext()
-	}
+		if input.GetButtonDown("switch-helmet") {
+			player.SetHelmNext()
+		}
+		if input.GetButtonDown("switch-suit") {
+			player.SetSuitNext()
+		}
 	*/
 	/*
-	if input.GetButtonDown("jump") {
-		didJump := player.Jump()
-		if didJump {
-			ui.PlaceDialogueBox(
-				"*jump*", ui.AlignRight, 1,
-				mgl32.Translate3D(
-					player.Pos.X,
-					player.Pos.Y,
-					0,
-				),
-			)
-			sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
+		if input.GetButtonDown("jump") {
+			didJump := player.Jump()
+			if didJump {
+				ui.PlaceDialogueBox(
+					"*jump*", ui.AlignRight, 1,
+					mgl32.Translate3D(
+						player.Pos.X,
+						player.Pos.Y,
+						0,
+					),
+				)
+				sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
+			}
 		}
-	}
-	if input.GetButtonDown("fly") {
-		player.ToggleFlying()
-	}
+		if input.GetButtonDown("fly") {
+			player.ToggleFlying()
+		}
 	*/
 	if input.GetButtonDown("mute") {
 		sound.ToggleMute()
@@ -59,10 +61,10 @@ func ProcessInput() {
 	inventory.TrySelectSlot(input.GetLastKey())
 	if input.GetButtonDown("enemy-tool-scroll-down") {
 		ui.EnemyToolScrollDown()
-        inventory.TryScrollDown()
+		inventory.TryScrollDown()
 	}
 	if input.GetButtonDown("enemy-tool-scroll-up") {
 		ui.EnemyToolScrollUp()
-        inventory.TryScrollUp()
+		inventory.TryScrollUp()
 	}
 }

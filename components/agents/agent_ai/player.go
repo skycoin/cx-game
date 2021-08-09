@@ -1,18 +1,18 @@
 package agent_ai
 
 import (
-	"github.com/skycoin/cx-game/agents"
-	"github.com/skycoin/cx-game/input"
+	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
+	"github.com/skycoin/cx-game/engine/input"
 )
 
 const (
-	playerWalkAccel float32 = 5
+	playerWalkAccel    float32 = 5
 	maxPlayerWalkSpeed float32 = 7
-	playerJumpSpeed float32 = 25
-	frictionFactor float32 = 3
+	playerJumpSpeed    float32 = 25
+	frictionFactor     float32 = 3
 )
 
 func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
@@ -41,6 +41,6 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 	if player.PhysicsState.IsOnGround() && input.GetButtonDown("jump") {
 		player.PhysicsState.Vel.Y = playerJumpSpeed
 	} else {
-		player.PhysicsState.Vel.Y -= constants.Gravity*constants.TimeStep
+		player.PhysicsState.Vel.Y -= constants.Gravity * constants.TimeStep
 	}
 }

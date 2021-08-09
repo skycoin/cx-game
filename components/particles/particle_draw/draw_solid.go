@@ -3,9 +3,9 @@ package particle_draw
 import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
-	"github.com/skycoin/cx-game/camera"
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/engine/camera"
 )
 
 func DrawSolid(particleList []*particles.Particle, cam *camera.Camera) {

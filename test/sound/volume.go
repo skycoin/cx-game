@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/ikemen-engine/go-openal/openal"
-	"github.com/skycoin/cx-game/sound"
+	"github.com/skycoin/cx-game/engine/sound"
 )
 
 func main() {

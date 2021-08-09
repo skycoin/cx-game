@@ -1,7 +1,7 @@
 package movement_state
 
 import (
-	"github.com/skycoin/cx-game/input"
+	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/models"
 	"github.com/skycoin/cx-game/physics/movement"
 )

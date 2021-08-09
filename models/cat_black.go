@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-gl/gl/v2.1/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/spriteloader"
 )
 
 type CatBlack struct {
@@ -39,8 +39,8 @@ const (
 var stopPlay chan bool
 
 func play(
-		action int, fcount int, lwindow *glfw.Window, 
-		lspriteSheetId spriteloader.SpritesheetID,
+	action int, fcount int, lwindow *glfw.Window,
+	lspriteSheetId spriteloader.SpritesheetID,
 ) {
 	stopPlay = make(chan bool)
 	j := 0
