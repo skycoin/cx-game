@@ -1,7 +1,7 @@
 package agent_ai
 
-import "github.com/skycoin/cx-game/agents"
+import "github.com/skycoin/cx-game/components/agents"
 
-func AiHandlerNull(*agents.Agent,AiContext) {
+func AiHandlerNull(*agents.Agent, AiContext) {
 	// do nothing!
 }

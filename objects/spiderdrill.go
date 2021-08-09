@@ -3,7 +3,7 @@ package objects
 import (
 	"fmt"
 
-	"github.com/skycoin/cx-game/agents"
+	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/events"
 )
 

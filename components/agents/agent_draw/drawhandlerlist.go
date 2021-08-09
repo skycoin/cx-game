@@ -3,7 +3,7 @@ package agent_draw
 import (
 	"log"
 
-	"github.com/skycoin/cx-game/agents"
+	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/camera"

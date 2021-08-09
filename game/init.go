@@ -5,8 +5,8 @@ import (
 	"runtime"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/skycoin/cx-game/agents"
 	"github.com/skycoin/cx-game/components"
+	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/camera"

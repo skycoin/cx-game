@@ -1,7 +1,7 @@
 package agent_health
 
 import (
-	"github.com/skycoin/cx-game/agents"
+	"github.com/skycoin/cx-game/components/agents"
 )
 
 func UpdateAgents(agentList *agents.AgentList) {

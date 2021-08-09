@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/skycoin/cx-game/agents"
+	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/agents/agent_ai"
 	"github.com/skycoin/cx-game/components/agents/agent_draw"
 	"github.com/skycoin/cx-game/components/agents/agent_health"
