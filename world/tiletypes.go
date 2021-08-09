@@ -2,7 +2,7 @@ package world
 
 import (
 	"log"
-	"os"
+	"io/ioutil"
 
 	"github.com/go-yaml/yaml"
 
@@ -118,7 +118,7 @@ func RegisterEmptyTileType() {
 func RegisterConfigTileTypes() {
 	paths := config.FindPathsWithExt("./assets/tile/", ".yaml")
 	for _, path := range paths {
-		buf, err := os.ReadFile(path)
+		buf, err := ioutil.ReadFile(path)
 		if err != nil {
 			log.Fatalf("cannot read tile config at %s", path)
 		}

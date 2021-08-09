@@ -2,7 +2,7 @@ package anim
 
 import (
 	"log"
-	"os"
+	"io/ioutil"
 	"strconv"
 	"strings"
 
@@ -70,7 +70,7 @@ func populateActions(
 }
 
 func LoadAnimationFromJSON(fname string) Animation {
-	buf, err := os.ReadFile(fname)
+	buf, err := ioutil.ReadFile(fname)
 	if err != nil {
 		log.Fatalf("could not find animation spritesheet at %s", fname)
 	}

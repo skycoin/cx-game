@@ -3,7 +3,7 @@ package render
 // Helper shader program class from learnopengl.com
 
 import (
-	"os"
+	"io/ioutil"
 	"fmt"
 	"log"
 	"strings"
@@ -71,9 +71,9 @@ func (config *ShaderConfig) compileShader(
 }
 
 func (config *ShaderConfig) Compile() Program {
-	vertexSource,err := os.ReadFile(config.vertexPath)
+	vertexSource,err := ioutil.ReadFile(config.vertexPath)
 	if err!=nil { log.Fatal(err) }
-	fragmentSource,err := os.ReadFile(config.fragmentPath)
+	fragmentSource,err := ioutil.ReadFile(config.fragmentPath)
 	if err!=nil { log.Fatal(err) }
 
 	vertexShader :=

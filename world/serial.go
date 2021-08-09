@@ -3,7 +3,7 @@ package world
 import (
 	"log"
 	"encoding/json"
-	"os"
+	"io/ioutil"
 )
 
 func (world *World) Save(fname string) {
@@ -11,14 +11,14 @@ func (world *World) Save(fname string) {
 	if err != nil {
 		log.Fatalf("saving world: %v",err)
 	}
-	err = os.WriteFile(fname, buf, 0644)
+	err = ioutil.WriteFile(fname, buf, 0644)
 	if err != nil {
 		log.Fatalf("writing world file: %v",err)
 	}
 }
 
 func (world *World) Load(fname string) {
-	buf, err := os.ReadFile(fname)
+	buf, err := ioutil.ReadFile(fname)
 	if err != nil {
 		log.Fatalf("reading world file: %v",err)
 	}

@@ -3,7 +3,7 @@ package spriteloader
 import (
 	"errors"
 	"fmt"
-	"os"
+	"io/ioutil"
 	"log"
 	"strings"
 
@@ -185,7 +185,7 @@ func (config *SpriteSheetConfig) Validate() error {
 }
 
 func readSpriteSheetConfig(path string) (SpriteSheetConfig,error) {
-	buf, err := os.ReadFile(path)
+	buf, err := ioutil.ReadFile(path)
 	if err != nil { return SpriteSheetConfig{},err }
 	var config SpriteSheetConfig
 	yaml.Unmarshal(buf,&config)
