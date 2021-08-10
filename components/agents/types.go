@@ -107,8 +107,10 @@ func createPlayer(opts AgentCreationOptions) *Agent {
 		AiHandlerID:   constants.AI_HANDLER_PLAYER,
 		DrawHandlerID: constants.DRAW_HANDLER_PLAYER,
 		PhysicsState: physics.Body{
-			Pos:       cxmath.Vec2{X: opts.X, Y: opts.Y},
-			Size:      cxmath.Vec2{X: 2.0*43/64, Y: 3},
+			Pos:
+				cxmath.Vec2{X: opts.X, Y: opts.Y},
+			Size:
+				cxmath.Vec2{X: 2.0*constants.PLAYER_RENDER_TO_HITBOX, Y: 3},
 			Direction: 1,
 		},
 		HealthComponent: NewHealthComponent(100),
