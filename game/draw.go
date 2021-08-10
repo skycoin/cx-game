@@ -11,6 +11,7 @@ import (
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render/worldctx"
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/world"
 )
@@ -37,11 +38,13 @@ func Draw() {
 	//player.Draw(Cam, &World.Planet)
 	ui.DrawAgentHUD(player)
 
+	topLeftCtx :=
+		render.CenterToTopLeft(win.DefaultRenderContext())
 	ui.DrawString(
 		fmt.Sprint(fps.CurFps),
 		mgl32.Vec4{1, 0.2, 0.3, 1},
 		ui.AlignCenter,
-		win.DefaultRenderContext().PushLocal(mgl32.Translate3D(-11.5, 5, 0)),
+		topLeftCtx.PushLocal(mgl32.Translate3D(1, -5, 0)),
 	)
 
 	/*

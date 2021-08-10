@@ -107,9 +107,10 @@ func (inventory Inventory) getBarSlots() []InventorySlot {
 }
 
 func (inventory Inventory) getGridTransform() mgl32.Mat4 {
+	s := inventoryScale
 	return mgl32.Ident4().
 		Mul4(mgl32.Translate3D(0, 0.5, 0)).
-		Mul4(mgl32.Scale3D(gridScale, gridScale, gridScale))
+		Mul4(mgl32.Scale3D(s, s, s))
 }
 
 func (inventory Inventory) ItemTypeIDs() []ItemTypeID {
@@ -122,7 +123,7 @@ func (inventory Inventory) ItemTypeIDs() []ItemTypeID {
 	return ids
 }
 
-var gridScale float32 = 1.5
+var inventoryScale float32 = 2
 
 // size of displayed item relative to slot
 var itemSize float32 = 0.8
@@ -165,7 +166,9 @@ func (inventory Inventory) DrawGrid(ctx render.Context) {
 }
 
 func (inv Inventory) DrawBar(ctx render.Context) {
-	barCtx := ctx.PushLocal(mgl32.Translate3D(0, 1-ctx.Size.Y()/2, 0))
+	barCtx := ctx.
+		PushLocal(mgl32.Translate3D(0, 1-ctx.Size.Y()/2, 0)).
+		PushLocal(mgl32.Scale3D(2,2,1))
 	//barTransform := mgl32.Translate3D(0,-3,-spriteloader.SpriteRenderDistance)
 	barSlots := inv.getBarSlots()
 	for idx, slot := range barSlots {
