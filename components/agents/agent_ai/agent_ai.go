@@ -10,7 +10,9 @@ import (
 // Rather, the list of players should be computed
 // by filtering the world agents
 func UpdateAgents(World *world.World, player *agents.Agent) {
-	ctx := AiContext{PlayerPos: player.PhysicsState.Pos.Mgl32()}
+	ctx := AiContext{
+		PlayerPos: player.PhysicsState.Pos.Mgl32(),
+	}
 	for _, agent := range World.Entities.Agents.Get() {
 		aiHandlers[agent.AiHandlerID](agent, ctx)
 	}

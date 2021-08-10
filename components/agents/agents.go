@@ -30,6 +30,7 @@ type Agent struct {
 type PlayerData struct {
 	SuitSpriteID   render.SpriteID
 	HelmetSpriteID render.SpriteID
+	IgnoringPlatformsFor float32
 }
 
 type HealthComponent struct {
