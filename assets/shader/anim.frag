@@ -5,4 +5,5 @@ uniform mat3 texTransform;
 void main() {
 	vec2 coord  = vec2(texTransform*vec3(tCoord,1));
 	frag_colour = texture(tex,coord);
+	if (frag_colour.a<0.1) discard;
 }

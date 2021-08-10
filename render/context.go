@@ -48,7 +48,7 @@ func (window Window) DefaultRenderContext() Context {
 	projectTransform := mgl32.Ortho(
 		-w/2/PixelsPerTile, w/2/PixelsPerTile,
 		-h/2/PixelsPerTile, h/2/PixelsPerTile,
-		-1, 100,
+		-1000, 1000,
 	)
 	return Context{
 		World:      mgl32.Ident4(),

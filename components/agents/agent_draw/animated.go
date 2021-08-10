@@ -14,6 +14,8 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 	anim.Program.Use()
 	defer anim.Program.StopUsing()
 
+	gl.Enable(gl.DEPTH_TEST)
+
 	gl.BindVertexArray(render.QuadVao)
 
 	for _, agent := range agents {
@@ -23,7 +25,7 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 		translate := mgl32.Translate3D(
 			agent.PhysicsState.Pos.X-ctx.Camera.X,
 			agent.PhysicsState.Pos.Y-ctx.Camera.Y,
-			0,
+			-10,
 		)
 		scale := mgl32.Scale3D(
 			agent.PhysicsState.Size.X*agent.PhysicsState.Direction,
