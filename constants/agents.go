@@ -21,3 +21,7 @@ const (
 
 	NUM_AGENT_TYPES // DO NOT SET THIS MANUALLY
 )
+
+const (
+	PLAYER_RENDER_TO_HITBOX float32 = 43.0/64
+)

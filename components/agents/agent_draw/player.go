@@ -5,6 +5,7 @@ import (
 
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/constants"
 )
 
 func drawPlayerSprite(
@@ -15,7 +16,8 @@ func drawPlayerSprite(
 
 	translate := mgl32.Translate3D( body.Pos.X, body.Pos.Y, zOffset )
 
-	scaleX := -body.Size.X * body.Direction
+	hitboxToRender := 1/constants.PLAYER_RENDER_TO_HITBOX
+	scaleX := -body.Size.X * body.Direction * hitboxToRender
 	scale := mgl32.Scale3D( scaleX, agent.PhysicsState.Size.Y, 1)
 
 	transform := translate.Mul4(scale)
