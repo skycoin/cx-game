@@ -121,6 +121,8 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
+var Projection mgl32.Mat4
+
 func (window *Window) GetProjectionMatrix() mgl32.Mat4 {
 	// return window.DefaultRenderContext().Projection
 	return window.context.Projection
@@ -128,4 +130,5 @@ func (window *Window) GetProjectionMatrix() mgl32.Mat4 {
 
 func (window *Window) SetProjectionMatrix(projection mgl32.Mat4) {
 	window.context.Projection = projection
+	Projection = projection
 }

@@ -3,9 +3,9 @@ package world
 import (
 	"math/rand"
 
-	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/engine/spriteloader/blobsprites"
 	"github.com/skycoin/cx-game/render/blob"
+	"github.com/skycoin/cx-game/render"
 )
 
 // place tiles for a given tiletype using an auto-tiling mechanism
@@ -17,7 +17,7 @@ type AutoPlacer struct {
 
 func (placer AutoPlacer) sprite(
 	neighbours blob.Neighbours,
-) spriteloader.SpriteID {
+) render.SpriteID {
 	blobspritesID :=
 		placer.blobSpritesIDs[rand.Intn(len(placer.blobSpritesIDs))]
 	sprites := blobsprites.GetBlobSpritesById(blobspritesID)
@@ -48,6 +48,6 @@ func (placer AutoPlacer) UpdateTile(
 	}
 }
 
-func (placer AutoPlacer) ItemSpriteID() spriteloader.SpriteID {
+func (placer AutoPlacer) ItemSpriteID() render.SpriteID {
 	return placer.sprite(blob.Neighbours{})
 }

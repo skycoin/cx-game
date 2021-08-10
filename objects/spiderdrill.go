@@ -7,6 +7,8 @@ import (
 	"github.com/skycoin/cx-game/events"
 )
 
+const DEBUG = false
+
 type spiderDrillJumpNotifier struct {
 	agent *agents.Agent
 }
@@ -29,9 +31,9 @@ func SpiderDrillInit() {
 }
 
 func (s spiderDrillJumpNotifier) OnSpiderDrillJump(data events.SpiderEventData) {
-	fmt.Println("Jump: ", data)
+	if DEBUG { fmt.Println("Jump: ", data) }
 }
 
 func (s spiderDrillBeforeJumpNotifier) OnSpiderDrillBeforeJump(data events.SpiderEventData) {
-	fmt.Println("Before Jump: ", data)
+	if DEBUG { fmt.Println("Before Jump: ", data) }
 }

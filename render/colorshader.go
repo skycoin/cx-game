@@ -1,6 +1,7 @@
 // super simple shader for drawing colors directly.
 // intended for UI.
 package render;
+
 import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -21,7 +22,7 @@ func DrawColorQuad(ctx Context, colour mgl32.Vec4) {
 		colorProgramInit = true
 	}
 	// setup features
-	gl.Disable(gl.DEPTH_TEST)
+	gl.Enable(gl.DEPTH_TEST)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	// update uniforms

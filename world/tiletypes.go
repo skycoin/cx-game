@@ -7,9 +7,9 @@ import (
 	"github.com/go-yaml/yaml"
 
 	"github.com/skycoin/cx-game/config"
-	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/engine/spriteloader/blobsprites"
 	"github.com/skycoin/cx-game/render/blob"
+	"github.com/skycoin/cx-game/render"
 )
 
 type TileConfig struct {
@@ -49,8 +49,8 @@ func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
 
 	if config.Blob == "" {
 		// TODO handle multiple sprites
-		spriteID := spriteloader.GetSpriteIdByName(config.Sprite)
-		return DirectPlacer{
+		spriteID := render.GetSpriteIDByName(config.Sprite)
+		return DirectPlacer {
 			SpriteID: spriteID,
 			Category: tileCategoryFromString(config.Category),
 		}

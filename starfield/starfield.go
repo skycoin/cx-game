@@ -239,6 +239,7 @@ func configureGlForStarfield() {
 //draws stars via drawquad function
 func DrawStarField() {
 	gl.Enable(gl.BLEND)
+	gl.Disable(gl.DEPTH_TEST)
 	gl.BlendFunc(gl.ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	if background == BACKGROUND_NEBULA {
 		starmap.Draw()

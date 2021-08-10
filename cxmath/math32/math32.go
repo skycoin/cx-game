@@ -53,3 +53,12 @@ func Clamp(x, min, max float32) float32 {
 	if x > max { return max }
 	return x
 }
+
+// non negative solution to x % d
+func PositiveModulo(x, b float32) float32 {
+	x = Mod(x,b)
+	if x >= 0 {
+		return x
+	}
+	return x + b
+}

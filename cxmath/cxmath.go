@@ -15,7 +15,7 @@ func ConvertScreenCoordsToWorld(x, y float32, projection mgl32.Mat4) mgl32.Vec2 
 }
 
 func Scale(factor float32) mgl32.Mat4 {
-	return mgl32.Scale3D(factor, factor, factor)
+	return mgl32.Scale3D(factor, factor, 1)
 }
 
 func atan2f32(y, x float32) float32 {
