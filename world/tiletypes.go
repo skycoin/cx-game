@@ -20,8 +20,10 @@ type TileConfig struct {
 	Layer        string   `yaml:"layer"`
 	Invulnerable bool     `yaml:"invulnerable"`
 	Category     string   `yaml:"category"`
+	/*
 	Width        int32    `yaml:"width"`
 	Height       int32    `yaml:"height"`
+	*/
 }
 
 func loadIDsFromSpritenames(names []string, n int) []blobsprites.BlobSpritesID {
@@ -100,13 +102,25 @@ func LayerIDFromName(name string) LayerID {
 	return id
 }
 
+func (config *TileConfig) Dims() (int32,int32) {
+	if config.Sprite == "" { return 1,1 }
+	spriteID := render.GetSpriteIDByName(config.Sprite)
+	sprite := render.GetSpriteByID(spriteID)
+	model := sprite.Model
+
+	width := int32(model.At(0,0))
+	height := int32(model.At(1,1))
+	return width,height
+}
+
 func (config *TileConfig) TileType(name string, id TileTypeID) TileType {
+	width,height := config.Dims()
 	return TileType{
 		Name:         name,
 		Layer:        LayerIDFromName(config.Layer),
 		Placer:       config.Placer(name, id),
 		Invulnerable: config.Invulnerable,
-		Width:        config.Width, Height: config.Height,
+		Width:        width, Height: height,
 	}
 }
 

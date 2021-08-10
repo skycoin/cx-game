@@ -12,6 +12,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/constants"
 )
 
 type SpriteConfig struct {
@@ -53,8 +54,6 @@ type SpriteSheetConfig struct {
 	CellHeight int `yaml:"cellheight"`
 	SpriteConfigs map[string]SpriteConfig `yaml:"sprites"`
 	Autoname string `yaml:"autoname"`
-    ModelWidth int `yaml:"modelwidth"`
-    ModelHeight int `yaml:"modelheight"`
 }
 
 func (config *SpriteSheetConfig) Rows() int {
@@ -73,7 +72,8 @@ func (spritesheetConfig *SpriteSheetConfig) spriteScale(
 	cw := float32(spritesheetConfig.CellWidth)
 	ch := float32(spritesheetConfig.CellHeight)
 
-	if spriteConfig.Unit == "grid" {
+	// default unit is "grid"
+	if spriteConfig.Unit == "grid" || spriteConfig.Unit == "" {
 		return mgl32.Scale2D( cw/w, ch/h )
 	}
 	if spriteConfig.Unit == "pixel" {
@@ -139,23 +139,23 @@ func (spritesheetConfig *SpriteSheetConfig) autoSprites() []render.Sprite {
 }
 
 func (spritesheetConfig *SpriteSheetConfig) Sprites() []render.Sprite {
-	if len(spritesheetConfig.SpriteConfigs)==0 &&
-			spritesheetConfig.hasZeroDimensions() {
-		// special case for 1:1 img to yaml
-		return []render.Sprite{render.Sprite{
-			Name: spritesheetConfig.Name,
-			Transform: mgl32.Ident3(),
-            Model: mgl32.Scale3D(
-                float32(spritesheetConfig.ModelWidth),
-                float32(spritesheetConfig.ModelHeight),
-                1,
-            ),
-		}}
-	}
-
 	if spritesheetConfig.Autoname != "" {
 		return spritesheetConfig.autoSprites()
 	}
+
+	if len(spritesheetConfig.SpriteConfigs)==0 {
+		// special case for 1:1 img to yaml
+		w := float32(spritesheetConfig.Width)
+		h := float32(spritesheetConfig.Height)
+		cw := float32(spritesheetConfig.CellWidth)
+		ch := float32(spritesheetConfig.CellHeight)
+		return []render.Sprite{render.Sprite{
+			Name: spritesheetConfig.Name,
+			Transform: mgl32.Ident3(),
+            Model: mgl32.Scale3D( w/cw, h/ch, 1 ),
+		}}
+	}
+
 
 	sprites := make([]render.Sprite, 0, len(spritesheetConfig.SpriteConfigs))
 
@@ -177,7 +177,7 @@ func (config *SpriteSheetConfig) hasZeroDimensions() bool {
 }
 
 func (config *SpriteSheetConfig) Validate() error {
-	if config.hasNonFullSprite() && config.hasZeroDimensions() {
+	if false && config.hasNonFullSprite() && config.hasZeroDimensions() {
 		return errors.New("texture dimensions not set")
 	}
 
@@ -195,6 +195,14 @@ func readSpriteSheetConfig(path string) (SpriteSheetConfig,error) {
 func LoadSpriteSheetFromConfig(imgPath, cfgPath string) render.SpriteSheet {
 	tex := LoadTextureFromFileToGPU(imgPath)
 	config,err := readSpriteSheetConfig(cfgPath)
+
+	config.Width = tex.Width
+	config.Height = tex.Height
+	if config.CellWidth==0 && config.CellHeight==0 {
+		config.CellWidth = constants.DEFAULT_SPRITE_SIZE
+		config.CellHeight = constants.DEFAULT_SPRITE_SIZE
+	}
+
 	if err != nil {
 		log.Fatalf("load spritesheet from \n%s and %s\n\n%v",imgPath,cfgPath,err)
 	}
@@ -207,24 +215,9 @@ func LoadSpriteSheetFromConfig(imgPath, cfgPath string) render.SpriteSheet {
 func RegisterSpritesFromConfig(cfgPath string) []SpriteID {
 	imgPath := strings.TrimSuffix(cfgPath, ".yaml") + ".png"
 	sheet := LoadSpriteSheetFromConfig(imgPath, cfgPath)
-	// TODO deprecate this
-	//spriteloadersheet := AddSpritesheetFromTexture(sheet.Texture.Texture)
 	for _,sprite := range sheet.Sprites {
 		sprite.Texture = sheet.Texture
 		render.RegisterSprite(sprite)
-		//xScale := sprite.Transform.At(0,0)
-		/*
-		offset := sprite.Transform.Col(2)
-		yScale := sprite.Transform.At(1,1)
-		worldXScale := sprite.Model.At(0,0)
-		worldYScale := sprite.Model.At(1,1)
-
-		LoadSpriteF(
-			spriteloadersheet,
-			sprite.Name, offset.X(), offset.Y(),
-			xScale, yScale, worldXScale, worldYScale,
-		)
-		*/
 	}
 	return []SpriteID{}
 }
