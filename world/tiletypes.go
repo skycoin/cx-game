@@ -45,6 +45,14 @@ func tileCategoryFromString(str string) TileCategory {
 	return TileCategoryNone
 }
 
+func tileCollisionTypeFromString(str string) TileCollisionType {
+	if str == "" { return TileCollisionTypeSolid }
+	if str == "platform" { return TileCollisionTypePlatform }
+
+	log.Fatalf("unrecognized tile collision type [%v]", str)
+	return TileCollisionTypeSolid
+}
+
 func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
 
 	if config.Blob == "" {
@@ -53,6 +61,7 @@ func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
 		return DirectPlacer {
 			SpriteID: spriteID,
 			Category: tileCategoryFromString(config.Category),
+			TileCollisionType: tileCollisionTypeFromString(config.Collision),
 		}
 	}
 	if config.Blob == "full" {
