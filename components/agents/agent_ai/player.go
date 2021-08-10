@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	ignorePlatformTime float32 = 0.4
 	playerWalkAccel    float32 = 5
 	maxPlayerWalkSpeed float32 = 7
 	playerJumpSpeed    float32 = 25
@@ -43,4 +44,13 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 	} else {
 		player.PhysicsState.Vel.Y -= constants.Gravity * constants.TimeStep
 	}
+
+	if input.GetButton("down") {
+		player.PlayerData.IgnoringPlatformsFor = ignorePlatformTime
+	} else {
+		if player.PlayerData.IgnoringPlatformsFor > 0 {
+			player.PlayerData.IgnoringPlatformsFor -= constants.TimeStep
+		}
+	}
+	player.PhysicsState.IsIgnoringPlatforms = player.PlayerData.IgnoringPlatformsFor > 0
 }
