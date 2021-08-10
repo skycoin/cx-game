@@ -32,8 +32,8 @@ func init() {
 }
 
 const (
-	WINDOW_WIDTH  = 800
-	WINDOW_HEIGHT = 600
+	INITIAL_WINDOW_WIDTH  = 1440
+	INITIAL_WINDOW_HEIGHT = 900
 )
 
 var (
@@ -54,7 +54,7 @@ var (
 )
 
 func Init() {
-	win = render.NewWindow(WINDOW_WIDTH, WINDOW_HEIGHT, true)
+	win = render.NewWindow(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, true)
 	// defer glfw.Terminate()
 
 	window = win.Window
