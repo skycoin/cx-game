@@ -12,7 +12,7 @@ import (
 var (
 	//variables for smooth zooming over time
 	zooming      bool    = false // flag for to know if zooming is occuring
-	zoomDuration float32 = 0.6   // in seconds
+	zoomDuration float32 = 0.4   // in seconds
 	zoomProgress float32
 
 	// variables for interpolation
