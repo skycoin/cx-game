@@ -9,6 +9,7 @@ const (
 	verticalJumpSpeed   float32 = 15
 	horizontalJumpSpeed float32 = 5
 	secondsBetweenLeaps float32 = 2
+	glideSpeed float32 = 1
 )
 
 func AiHandlerLeap(agent *agents.Agent, ctx AiContext) {
@@ -26,5 +27,9 @@ func AiHandlerLeap(agent *agents.Agent, ctx AiContext) {
 	// disable sliding
 	if onGround && !canJump {
 		agent.PhysicsState.Vel.X = 0
+	}
+
+	if !onGround && math32.Abs(agent.PhysicsState.Vel.X) < glideSpeed {
+		agent.PhysicsState.Vel.X = glideSpeed * directionX
 	}
 }

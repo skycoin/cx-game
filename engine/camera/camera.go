@@ -89,7 +89,7 @@ func (camera *Camera) GetProjectionMatrix() mgl32.Mat4 {
 	right := float32(camera.window.Width) / 2 / 32 / camera.Zoom
 	bottom := -float32(camera.window.Height) / 2 / 32 / camera.Zoom
 	top := float32(camera.window.Height) / 2 / 32 / camera.Zoom
-	projection := mgl32.Ortho(left, right, bottom, top, -1, 1000)
+	projection := mgl32.Ortho(left, right, bottom, top, -1000, 1000)
 
 	return projection
 }
