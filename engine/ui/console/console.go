@@ -12,6 +12,7 @@ import (
 type Console struct {
 	active bool
 	line   string
+	output string
 }
 
 func New() Console {
@@ -56,16 +57,20 @@ func (console *Console) Draw(ctx render.Context) {
 		return
 	}
 	ctx = render.CenterToTopLeft(ctx).
-		PushLocal(mgl32.Translate3D(1, -8, 0))
+		PushLocal(mgl32.Translate3D(1, -10, 0))
 	ui.DrawString(
 		"> "+console.line, mgl32.Vec4{1, 0, 0, 1},
 		ui.AlignLeft,
 		ctx,
 	)
-
+	ui.DrawString(
+		console.output, mgl32.Vec4{0, 1, 0, 1},
+		ui.AlignLeft,
+		ctx.PushLocal(mgl32.Translate3D(0,1,0)),
+	)
 }
 
 func (console *Console) Command(ctx CommandContext) {
-	processCommand(console.line, ctx)
+	console.output = processCommand(console.line, ctx)
 	console.line = ""
 }
