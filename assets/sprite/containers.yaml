@@ -1,54 +1,61 @@
 ---
 
-width: 128
-height: 96
-
-cellwidth: 32
-cellheight: 32
-
 name: containers
 
 sprites:
     orangebucket:
-        unit: grid
         left: 0
         top: 0
+        width: 2
+        height: 2
 
     purplecanister:
         unit: grid
-        left: 1
+        left: 2
         top: 0
+        width: 2
+        height: 2
         
     purplebutton:
         unit: grid
-        left: 2
+        left: 4
         top: 0
+        width: 2
+        height: 2
 
     redbutton:
         unit: grid
-        left: 3
+        left: 6
         top: 0
+        width: 2
+        height: 2
 
     crate:
         unit: grid
         left: 0
-        top: 1
+        top: 2
+        width: 2
+        height: 2
 
     crate-square-inset:
         unit: grid
-        left: 1
-        top: 1
+        left: 2
+        top: 2
+        width: 2
+        height: 2
 
     crate-heart-inset:
         unit: grid
-        left: 2
-        top: 1
+        left: 4
+        top: 2
+        width: 2
+        height: 2
 
     ac-unit:
         unit: grid
         left: 0
-        top: 2
-        width: 2
-        height: 1
+        top: 4
+        width: 3
+        height: 2
 
 ---

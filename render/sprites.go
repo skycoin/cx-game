@@ -27,3 +27,7 @@ func GetSpriteIDByName(name string) SpriteID {
 	}
 	return SpriteID(id)
 }
+
+func GetSpriteByID(id SpriteID) Sprite {
+	return sprites[id]
+}
