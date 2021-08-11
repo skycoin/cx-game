@@ -10,8 +10,8 @@ import (
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
-	"github.com/skycoin/cx-game/render/worldctx"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/render/worldctx"
 	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/world"
 )
@@ -37,7 +37,7 @@ func Draw() {
 	particles.DrawTopParticles(camCtx)
 
 	item.DrawWorldItems(Cam)
-	components.Draw(&World.Entities, Cam)
+
 	ui.DrawAgentHUD(player)
 
 	topLeftCtx :=
@@ -58,7 +58,8 @@ func Draw() {
 
 	Console.Draw(win.DefaultRenderContext())
 
-	render.Flush( Cam.GetProjectionMatrix() )
+	render.Flush(Cam.GetProjectionMatrix())
+	components.Draw(&World.Entities, Cam)
 
 	glfw.PollEvents()
 	win.Window.SwapBuffers()
