@@ -81,7 +81,7 @@ type Star struct {
 var (
 	stars []*Star
 
-	perlinMap    [][]float32
+	myPerlin     perlin.Perlin2D
 	perlinSpread float32 = 0.8
 	//cli options
 	windowConfig *StarFieldSettings = &StarFieldSettings{
@@ -141,14 +141,21 @@ func InitStarField(window *render.Window, cam *camera.Camera) {
 		gl.BindTexture(gl.TEXTURE_1D, tex)
 	}
 
+	myPerlin = perlin.NewPerlin2D(
+		noiseConfig.Seed,
+		noiseConfig.X,
+		noiseConfig.Xs,
+		noiseConfig.Gradmax,
+	)
+
 	windowConfig.Width = window.Width
 	windowConfig.Height = window.Height
 	windowConfig.Starfield_Width = int(float32(windowConfig.Width) * 1.3)
 	windowConfig.Starfield_Height = int(float32(windowConfig.Width) * 1.3)
-	spriteloader.InitSpriteloader(window)
+	// spriteloader.InitSpriteloader(window)
 	spriteloader.DEBUG = false
 
-	perlinMap = genPerlin(windowConfig.Starfield_Width, windowConfig.Starfield_Height, noiseConfig)
+	// perlinMap = genPerlin(windowConfig.Starfield_Width, windowConfig.Starfield_Height, noiseConfig)
 
 	file1 := "./assets/starfield/stars/planets.png"
 	file2 := file1
@@ -347,7 +354,7 @@ func getStarPosition(isGaussian bool, depth int) (float32, float32) {
 		for {
 			x := rand.Intn(windowConfig.Starfield_Width)
 			y := rand.Intn(windowConfig.Starfield_Height)
-			prob := perlinMap[x][y]
+			prob := getPerlin(float32(x), float32(y))
 			deleteChance := (1 - prob)
 			if deleteChance > perlinSpread {
 				continue
@@ -394,14 +401,10 @@ func convertToWorldCoords(xPos, yPos, minX, maxX, minY, maxY float32) (float32, 
 //  width - width of the window
 //  height - height of the window
 //  noiseConfig - config struct with parameters
+
 func genPerlin(width, height int, noiseConfig *noiseSettings) [][]float32 {
 	grid := make([][]float32, 0)
-	myPerlin := perlin.NewPerlin2D(
-		noiseConfig.Seed,
-		noiseConfig.X,
-		noiseConfig.Xs,
-		noiseConfig.Gradmax,
-	)
+
 	max := float32(math.Sqrt2 / (1.9 * noiseConfig.Contrast))
 	min := float32(-math.Sqrt2 / (1.9 * noiseConfig.Contrast))
 	for y := 0; y < width; y++ {
@@ -423,6 +426,21 @@ func genPerlin(width, height int, noiseConfig *noiseSettings) [][]float32 {
 	return grid
 }
 
+func getPerlin(x, y float32) float32 {
+	max := float32(math.Sqrt2 / (1.9 * noiseConfig.Contrast))
+	min := float32(-math.Sqrt2 / (1.9 * noiseConfig.Contrast))
+	result := myPerlin.Noise(
+		x*noiseConfig.Scale,
+		y*noiseConfig.Scale,
+		noiseConfig.Persistance,
+		noiseConfig.Lacunarity,
+		noiseConfig.Octaves,
+	)
+	result = cxmath.ClampF(result-min/(max-min), 0.0, 1.0)
+
+	return result
+}
+
 // Gaussian bivariate distribution function
 //  x32 - X position (float32)
 //  y32 - Y position (float32)
@@ -439,6 +457,7 @@ func gaussianTheta(x32, y32 float32) float32 {
 	if A < 0.6 {
 		A = 0.6
 	}
+
 	theta = float64(cxmath.DegToRad(float32(starConfig.Gaussian_Angle)))
 	sigmaX = float64(starConfig.Gaussian_Sigma_X)
 	sigmaY = float64(starConfig.Gaussian_Sigma_Y)
