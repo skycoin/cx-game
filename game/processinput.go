@@ -20,6 +20,11 @@ func ProcessInput() {
 	}
 	if input.GetButtonDown("freecam") {
 		Cam.ToggleFreeCam()
+		if input.GetInputContext() == input.GAME{
+			input.SetInputContext(input.FREECAM)
+		}else if input.GetInputContext() == input.FREECAM{
+			input.SetInputContext(input.GAME)
+		}
 	}
 	if input.GetButtonDown("inventory-grid") {
 		inventory := item.GetInventoryById(player.InventoryID)

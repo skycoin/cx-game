@@ -30,6 +30,7 @@ type InputContext uint8
 
 const (
 	GAME InputContext = iota
+	FREECAM
 	SWITCH_COSTUME
 )
 
@@ -74,6 +75,9 @@ func MapKeyToButton(button string, key glfw.Key) {
 
 func SetInputContext(ctx InputContext) {
 	inputContext = ctx
+}
+func GetInputContext() InputContext {
+	return inputContext
 }
 
 func SetCamZoom(zoom float32) {

@@ -175,9 +175,10 @@ func drawInstancedQuads(batch Uniforms) {
 	gl.DrawArraysInstanced(gl.TRIANGLES, 0, 6, batch.Count)
 }
 
-//toggles texture filtering options
+//toggles and sets texture filtering options
 //minifying includes nearest and linear interpolation, as well as mipmap
 //magnifying includes nearest and linear interpolation
+
 func ToggleFiltering() {
 	var message string
 	if magFilter == gl.LINEAR {
