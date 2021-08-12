@@ -67,4 +67,7 @@ func ProcessInput() {
 		ui.EnemyToolScrollUp()
 		inventory.TryScrollUp()
 	}
+	if input.GetButtonDown("toggle-zoom") {
+		Cam.CycleZoom()
+	}
 }
