@@ -6,6 +6,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/item"
@@ -54,7 +55,7 @@ func Draw() {
 	// restore original projection matrix
 
 	inventory := item.GetInventoryById(player.InventoryID)
-	inventory.Draw(baseCtx, Cam.Pos())
+	inventory.Draw(baseCtx, Cam.GetTransform().Inv() )
 
 	Console.Draw(win.DefaultRenderContext())
 

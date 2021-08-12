@@ -15,7 +15,7 @@ import (
 type SpriteID int
 
 // Usage:
-// SetWorldWidth(...)
+// Prepare(...)
 // DrawSprite(...) - many times
 // Flush()
 

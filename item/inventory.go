@@ -387,7 +387,7 @@ func (inventory *Inventory) SlotIdxForPosition(x, y int) int {
 	return y*inventory.Width + x
 }
 
-func (inv *Inventory) Draw(ctx render.Context, camPos mgl32.Vec2) {
+func (inv *Inventory) Draw(ctx render.Context, invCam mgl32.Mat4) {
 	gl.Enable(gl.DEPTH_TEST)
 
 	if inv.IsOpen {
@@ -401,7 +401,7 @@ func (inv *Inventory) Draw(ctx render.Context, camPos mgl32.Vec2) {
 		if category == BuildTool {
 			// TODO do this less often
 			inv.PlacementGrid.Assemble(inv.ItemTypeIDs())
-			inv.PlacementGrid.Draw(ctx, camPos)
+			inv.PlacementGrid.Draw(ctx, invCam)
 		}
 		// dev items
 		if slot.ItemTypeID == EnemyToolItemTypeID {
