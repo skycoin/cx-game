@@ -7,6 +7,7 @@ import (
 	"github.com/skycoin/cx-game/cxmath/math32i"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/engine/input"
 )
@@ -123,7 +124,7 @@ func (grid *PlacementGrid) Draw(ctx render.Context, camPos mgl32.Vec2) {
 var previewColor = mgl32.Vec4 { 0,1,0,0.5 } // green
 func (grid *PlacementGrid) DrawPreview(ctx render.Context, camPos mgl32.Vec2) {
 	mousePos := input.GetMousePos().
-		Mul(1.0/32).
+		Mul(1.0/float32(constants.PIXELS_PER_TILE)).
 		Add(mgl32.Vec2{0.5,0.5})
 
 	mouseWorldPos := camPos.Add(mousePos)
@@ -131,7 +132,6 @@ func (grid *PlacementGrid) DrawPreview(ctx render.Context, camPos mgl32.Vec2) {
 		math32.Mod( mouseWorldPos.X(), 1),
 		math32.Mod( mouseWorldPos.Y(), 1),
 	}
-	// TODO formalize magic number "32" for pixels per tile
 	tilePos := mousePos.Sub(offsetIntoTile)
 
 	translate := mgl32.Translate3D(tilePos.X(), tilePos.Y(), 0)
