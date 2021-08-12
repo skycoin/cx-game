@@ -26,6 +26,10 @@ type Window struct {
 func (win *Window) sizeCallback(
 		window *glfw.Window, physicalWidth, physicalHeight int,
 ) {
+	// "physical" dimensions describe actual window size
+	// "virtual" dimensions describe scaling of both world and UI
+	// physical determines resolution.
+	// virtual determines how big things are.
 	virtualWidth := float32(win.Width)
 	virtualHeight := float32(win.Height)
 	windowDimensions := fitCentered(
@@ -35,34 +39,6 @@ func (win *Window) sizeCallback(
 	windowDimensions.Viewport.Use()
 
 	win.PhysicalToViewportTransform = windowDimensions.Transform()
-
-	/*
-	// "physical" dimensions describe actual window size
-	// "virtual" dimensions describe scaling of both world and UI
-	// physical determines resolution.
-	// virtual determines how big things are.
-	physicalWidth := float32(width)
-	physicalHeight := float32(height)
-	virtualWidth := float32(win.Width)
-	virtualHeight := float32(win.Height)
-
-	scaleToFitWidth := physicalWidth / virtualWidth
-	scaleToFitHeight := physicalHeight / virtualHeight
-	// scale to fit entire virtual window in physical window
-	scale = cxmath.Min(scaleToFitHeight, scaleToFitWidth)
-
-	// scale up virtual dimensions to fit in physical dimensions.
-	// in case of aspect ratio mismatch, black bars will appear
-	viewportWidth := int32(virtualWidth*scale)
-	viewportHeight := int32(virtualHeight*scale)
-
-	// store offsets for transitioning from physical to virtual mouse coords
-	// TODO store virtual coords, NOT physical coords
-	widthOffset = (int32(physicalWidth) - viewportWidth)/2
-	heightOffset = (int32(physicalHeight) - viewportHeight)/2
-
-	gl.Viewport( widthOffset, heightOffset, viewportWidth, viewportHeight )
-	*/
 }
 
 
@@ -81,8 +57,6 @@ func NewWindow(width, height int, resizable bool) Window {
 		Window:    glfwWindow,
 	}
 	window.context = window.DefaultRenderContext()
-
-	//glfwWindow.SetSizeCallback(window.sizeCallback)
 
 	return window
 }
