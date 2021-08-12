@@ -7,6 +7,7 @@ import (
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/item"
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/starfield"
 )
 
@@ -19,6 +20,11 @@ func ProcessInput() {
 	}
 	if input.GetButtonDown("freecam") {
 		Cam.ToggleFreeCam()
+		if input.GetInputContext() == input.GAME{
+			input.SetInputContext(input.FREECAM)
+		}else if input.GetInputContext() == input.FREECAM{
+			input.SetInputContext(input.GAME)
+		}
 	}
 	if input.GetButtonDown("inventory-grid") {
 		inventory := item.GetInventoryById(player.InventoryID)
@@ -42,5 +48,9 @@ func ProcessInput() {
 	}
 	if input.GetButtonDown("toggle-zoom") {
 		Cam.CycleZoom()
+	}
+
+	if input.GetButtonDown("toggle-texture-filtering") {
+		render.ToggleFiltering()
 	}
 }

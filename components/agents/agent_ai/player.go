@@ -23,7 +23,10 @@ var (
 )
 
 func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
-	inputXAxis := input.GetAxis(input.HORIZONTAL)
+	var inputXAxis float32
+	if input.GetInputContext() == input.GAME {
+		inputXAxis = input.GetAxis(input.HORIZONTAL)
+	}
 	player.PhysicsState.Vel.X +=
 		inputXAxis * playerWalkAccel
 
