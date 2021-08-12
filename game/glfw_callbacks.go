@@ -19,21 +19,30 @@ func mouseButtonCallback(
 	}
 }
 
+/*
 // mouse position relative to screen
 func screenPos() (float32, float32) {
-	screenX := ((input.GetMouseX()-float32(widthOffset))/float32(scale) - float32(win.Width)/2) / Cam.Zoom // adjust mouse position with zoom
-	screenY := (((input.GetMouseY()-float32(heightOffset))/float32(scale) - float32(win.Height)/2) * -1) / Cam.Zoom
+	w := float32(win.Width)
+	h := float32(win.Height)
+
+
+	// adjust mouse position with zoom
+	screenX :=
+		((input.GetMouseX()-float32(widthOffset))/scale - w/2) / Cam.Zoom
+	screenY :=
+		-((input.GetMouseY()-float32(heightOffset))/scale - h/2) / Cam.Zoom
 	return screenX, screenY
 }
+*/
 
 func mouseReleaseCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
-	screenX, screenY := screenPos()
+	mousePos := input.GetMousePos()
 
 	inventory := item.GetInventoryById(player.InventoryID)
 	player := findPlayer()
-	inventory.OnReleaseMouse(screenX, screenY, Cam, &World.Planet, player)
+	inventory.OnReleaseMouse(mousePos.X(), mousePos.Y(), Cam, &World.Planet, player)
 }
 
 func mousePressCallback(
@@ -44,40 +53,54 @@ func mousePressCallback(
 		return
 	}
 
-	screenX, screenY := screenPos()
+	mousePos := input.GetMousePos()
 
 	inventory := item.GetInventoryById(player.InventoryID)
 	clickedSlot :=
-		inventory.TryClickSlot(screenX, screenY, Cam, &World.Planet, player)
+		inventory.TryClickSlot(
+			mousePos.X(), mousePos.Y(), Cam, &World.Planet, player,
+		)
 	if clickedSlot {
 		return
 	}
 
 	player := World.Entities.Agents.FromID(playerAgentID)
 	item.GetInventoryById(player.InventoryID).
-		TryUseItem(screenX, screenY, Cam, &World, player)
+		TryUseItem(mousePos.X(), mousePos.Y(), Cam, &World, player)
 }
 
 var (
+	// what actually are these???
 	widthOffset, heightOffset int32
 	scale                     float32 = 1
 )
 
 func windowSizeCallback(window *glfw.Window, width, height int) {
+	// "physical" dimensions describe actual window size
+	// "virtual" dimensions describe scaling of both world and UI
+	// physical determines resolution.
+	// virtual determines how big things are.
+	physicalWidth := float32(width)
+	physicalHeight := float32(height)
+	virtualWidth := float32(win.Width)
+	virtualHeight := float32(win.Height)
 
-	// gl.Viewport(0, 0, int32(width), int32(height))
-	scaleToFitWidth := float32(width) / float32(win.Width)
-	scaleToFitHeight := float32(height) / float32(win.Height)
+	scaleToFitWidth := physicalWidth / virtualWidth
+	scaleToFitHeight := physicalHeight / virtualHeight
+	// scale to fit entire virtual window in physical window
 	scale = cxmath.Min(scaleToFitHeight, scaleToFitWidth)
 
-	widthOffset = int32((float32(width) - float32(win.Width)*scale) / 2)
-	heightOffset = int32((float32(height) - float32(win.Height)*scale) / 2)
-	//correct mouse offsets
-	input.UpdateMouseCoords(widthOffset, heightOffset, scale)
+	// scale up virtual dimensions to fit in physical dimensions.
+	// in case of aspect ratio mismatch, black bars will appear
+	viewportWidth := int32(virtualWidth*scale)
+	viewportHeight := int32(virtualHeight*scale)
 
-	gl.Viewport(widthOffset, heightOffset, int32(float32(win.Width)*scale), int32(float32(win.Height)*scale))
-	// win.Width = width
-	// win.Height = height
+	// store offsets for transitioning from physical to virtual mouse coords
+	// TODO store virtual coords, NOT physical coords
+	widthOffset = (int32(physicalWidth) - viewportWidth)/2
+	heightOffset = (int32(physicalHeight) - viewportHeight)/2
+
+	gl.Viewport( widthOffset, heightOffset, viewportWidth, viewportHeight )
 }
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {

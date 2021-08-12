@@ -5,15 +5,15 @@ import (
 )
 
 var (
-	mouseCoords  *MouseCoords
+	mouseCoords  MouseCoords
 	widthOffset  int32
 	heightOffset int32
 	scale        float32 = 1
 )
 
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
-	mouseCoords.X = (xpos)
-	mouseCoords.Y = (ypos)
+	mouseCoords.X = xpos
+	mouseCoords.Y = ypos
 
 }
 

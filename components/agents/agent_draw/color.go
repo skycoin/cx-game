@@ -4,7 +4,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/agents"
-	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -21,12 +20,8 @@ func ColorDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 			agent.PhysicsState.Size.X,
 			agent.PhysicsState.Size.Y,
 			1)
-		ctx := render.Context{
-			World:      translate.Mul4(scale),
-			Projection: spriteloader.Window.GetProjectionMatrix(),
-		}
-
-		render.DrawColorQuad(ctx, debugAgentColor)
+		modelView := translate.Mul4(scale)
+		render.DrawColorQuad(modelView, debugAgentColor)
 
 	}
 }

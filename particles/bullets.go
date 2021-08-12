@@ -21,6 +21,7 @@ var (
 )
 
 func InitBullets() {
+	return 
 	bulletProgram = render.CompileProgram(
 		"./assets/shader/mvp.vert", "./assets/shader/color.frag")
 	bulletProgram.Use()

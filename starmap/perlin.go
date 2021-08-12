@@ -42,7 +42,7 @@ type quadProp struct {
 
 var texture uint32
 var gradient uint32
-var program uint32
+var program render.Program
 var vao uint32
 var window *render.Window
 
@@ -50,8 +50,8 @@ var frameCounter = 0 // reload the texture if yaml has change
 const maxFrames = 60 // every 60 frames
 var SettingsFile = "./starmap/config/starmap.yaml"
 
-const fragShaderFile = "./starmap/gradient.glsl"
-const vertShaderFile = "./starmap/vertex.glsl"
+const fragShaderFile = "./assets/shader/starmap/gradient.glsl"
+const vertShaderFile = "./assets/shader/starmap/vertex.glsl"
 
 var quad quadProp = quadProp{
 	xpos:    0.0,
@@ -75,31 +75,7 @@ func Generate(size int, scale float32, levels uint8) {
 	}
 	loadTextures()
 
-	fragSource, err := ioutil.ReadFile(fragShaderFile)
-	if err != nil {
-		log.Panic(err)
-	}
-	vertSource, err := ioutil.ReadFile(vertShaderFile)
-	if err != nil {
-		log.Panic(err)
-	}
-
-	fragment, err := render.CompileShader(string(fragSource)+"\x00", gl.FRAGMENT_SHADER)
-	if err != nil {
-		log.Panic(err)
-	}
-	vertex, err := render.CompileShader(string(vertSource)+"\x00", gl.VERTEX_SHADER)
-	if err != nil {
-		log.Panic(err)
-	}
-
-	program = gl.CreateProgram()
-
-	gl.AttachShader(program, vertex)
-	gl.AttachShader(program, fragment)
-	gl.LinkProgram(program)
-	gl.DeleteShader(vertex)
-	gl.DeleteShader(fragment)
+	program = render.CompileProgram(vertShaderFile, fragShaderFile)
 
 	vao = sl.MakeQuadVao()
 }
@@ -118,46 +94,25 @@ func Draw() {
 		}
 	}
 
-	gl.UseProgram(program) // use shader
+	program.Use()
+	defer program.StopUsing()
 
-	textureLocation := gl.GetUniformLocation(program, gl.Str("nebulaTexture\x00"))
-	if textureLocation == -1 {
-		log.Println("[WARNING] can't get the nebule texture uniform location")
-	}
-	gradientLocation := gl.GetUniformLocation(program, gl.Str("gradientTexture\x00"))
-	if gradientLocation == -1 {
-		log.Println("[WARNING] can't get the gradient texture uniform location")
-	}
+	program.SetInt("nebulaTexture", 0)
+	program.SetInt("gradientTexture", 1)
+	program.SetVec2F("texScale",1,1)
+	program.SetVec2F("texOffset",0,0)
 
-	gl.Uniform1i(textureLocation, 0)
-	gl.Uniform1i(gradientLocation, 1)
-
-	gl.Uniform2f(
-		gl.GetUniformLocation(program, gl.Str("texScale\x00")),
-		1.0, 1.0,
-	)
-	gl.Uniform2f(
-		gl.GetUniformLocation(program, gl.Str("texOffset\x00")),
-		float32(0.0), float32(0.0),
-	)
-
-	worldTranslate := mgl32.Mat4.Mul4(
+	worldTransform := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(quad.xpos), float32(quad.ypos), -10),
 		mgl32.Scale3D(float32(quad.xwidth), float32(quad.yheight), 1),
 	)
-	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(program, gl.Str("world\x00")),
-		1, false, &worldTranslate[0],
-	)
+	program.SetMat4("world", &worldTransform)
 
 	aspect := float32(window.Width) / float32(window.Height)
 	projectTransform := mgl32.Perspective(
 		mgl32.DegToRad(45), aspect, 0.1, 100.0,
 	)
-	gl.UniformMatrix4fv(
-		gl.GetUniformLocation(program, gl.Str("projection\x00")),
-		1, false, &projectTransform[0],
-	)
+	program.SetMat4("projection", &projectTransform)
 
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, texture)

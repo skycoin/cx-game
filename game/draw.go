@@ -54,7 +54,7 @@ func Draw() {
 	// restore original projection matrix
 
 	inventory := item.GetInventoryById(player.InventoryID)
-	inventory.Draw(baseCtx)
+	inventory.Draw(baseCtx, Cam.Pos())
 
 	Console.Draw(win.DefaultRenderContext())
 

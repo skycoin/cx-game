@@ -5,8 +5,10 @@ import (
 
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32i"
+	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/engine/input"
 )
 
 const PlacementGridWidth = 5
@@ -110,11 +112,46 @@ func (grid *PlacementGrid) Transform() mgl32.Mat4 {
 	return mgl32.Translate3D(-10, grid.Scroll, 0)
 }
 
-func (ig *PlacementGrid) Draw(ctx render.Context) {
-	ctx = ctx.PushLocal(ig.Transform())
-	for _, positionedTileTypeID := range ig.PositionedTileTypeIDs {
-		ig.DrawSlot(positionedTileTypeID, ctx)
+func (grid *PlacementGrid) Draw(ctx render.Context, camPos mgl32.Vec2) {
+	ctx = ctx.PushLocal(grid.Transform())
+	for _, positionedTileTypeID := range grid.PositionedTileTypeIDs {
+		grid.DrawSlot(positionedTileTypeID, ctx)
 	}
+	if grid.HasSelected { grid.DrawPreview(ctx, camPos) }
+}
+
+var previewColor = mgl32.Vec4 { 0,1,0,0.5 } // green
+func (grid *PlacementGrid) DrawPreview(ctx render.Context, camPos mgl32.Vec2) {
+	mousePos := input.GetMousePos().
+		Mul(1.0/32).
+		Add(mgl32.Vec2{0.5,0.5})
+
+	mouseWorldPos := camPos.Add(mousePos)
+	offsetIntoTile := mgl32.Vec2 {
+		math32.Mod( mouseWorldPos.X(), 1),
+		math32.Mod( mouseWorldPos.Y(), 1),
+	}
+	// TODO formalize magic number "32" for pixels per tile
+	tilePos := mousePos.Sub(offsetIntoTile)
+
+	translate := mgl32.Translate3D(tilePos.X(), tilePos.Y(), 0)
+	scaleAndShift := grid.previewTransform()
+	modelView := translate.Mul4(scaleAndShift)
+
+	render.DrawColorQuad(modelView, previewColor)
+}
+
+func (grid *PlacementGrid) previewTransform() mgl32.Mat4 {
+	tiletype := grid.Selected.Get()
+
+	unCenter :=
+		mgl32.Translate3D( 0.5, 0.5, 0)
+	scaleUp :=
+		mgl32.Scale3D( float32(tiletype.Width), float32(tiletype.Height), 1, )
+	reCenter :=
+		mgl32.Translate3D( -0.5, -0.5, 0)
+
+	return reCenter.Mul4(scaleUp).Mul4(unCenter)
 }
 
 func (ig PlacementGrid) DrawSlot(
@@ -122,11 +159,11 @@ func (ig PlacementGrid) DrawSlot(
 ) {
 	slotCtx := ctx.PushLocal(positionedTileTypeID.Transform())
 	// draw border
-	render.DrawColorQuad(slotCtx, borderColor)
+	render.DrawColorQuad(slotCtx.World, borderColor)
 	bgCtx := slotCtx.
 		PushLocal(mgl32.Translate3D(0,0,0.1)).
 		PushLocal(cxmath.Scale(1 - borderSize))
-	render.DrawColorQuad(bgCtx, bgColor)
+	render.DrawColorQuad(bgCtx.World, bgColor)
 	// draw tiletype on top of bg
 	itemCtx := slotCtx.PushLocal(cxmath.Scale(itemSize))
 

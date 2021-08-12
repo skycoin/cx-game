@@ -5,8 +5,8 @@ import "github.com/go-gl/glfw/v3.3/glfw"
 func Run() {
 	Init()
 
-	var dt, lastFrame float32
-	lastFrame = float32(glfw.GetTime())
+	dt := float32(0)
+	lastFrame := float32(glfw.GetTime())
 
 	for !window.ShouldClose() {
 		currTime := float32(glfw.GetTime())

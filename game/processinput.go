@@ -14,33 +14,6 @@ func ProcessInput() {
 	if Console.IsActive() {
 		return
 	}
-	/*
-		if input.GetButtonDown("switch-helmet") {
-			player.SetHelmNext()
-		}
-		if input.GetButtonDown("switch-suit") {
-			player.SetSuitNext()
-		}
-	*/
-	/*
-		if input.GetButtonDown("jump") {
-			didJump := player.Jump()
-			if didJump {
-				ui.PlaceDialogueBox(
-					"*jump*", ui.AlignRight, 1,
-					mgl32.Translate3D(
-						player.Pos.X,
-						player.Pos.Y,
-						0,
-					),
-				)
-				sound.PlaySound("player_jump", sound.SoundOptions{Pitch: 1.5})
-			}
-		}
-		if input.GetButtonDown("fly") {
-			player.ToggleFlying()
-		}
-	*/
 	if input.GetButtonDown("mute") {
 		sound.ToggleMute()
 	}

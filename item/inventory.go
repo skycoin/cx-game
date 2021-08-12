@@ -191,12 +191,12 @@ func (inventory Inventory) DrawSlot(
 	slot InventorySlot, ctx render.Context, isSelected bool,
 ) {
 	// draw border
-	render.DrawColorQuad(ctx, getBorderColor(isSelected))
+	render.DrawColorQuad(ctx.World, getBorderColor(isSelected))
 	// draw bg on top of border
 	bgCtx := ctx.
 		PushLocal(mgl32.Translate3D(0,0,0.1)).
 		PushLocal(cxmath.Scale(1 - borderSize))
-	render.DrawColorQuad(bgCtx, bgColor)
+	render.DrawColorQuad(bgCtx.World, bgColor)
 	// draw item on top of bg
 	itemCtx := ctx.
 		PushLocal(cxmath.Scale(itemSize))
@@ -387,7 +387,7 @@ func (inventory *Inventory) SlotIdxForPosition(x, y int) int {
 	return y*inventory.Width + x
 }
 
-func (inv *Inventory) Draw(ctx render.Context) {
+func (inv *Inventory) Draw(ctx render.Context, camPos mgl32.Vec2) {
 	gl.Enable(gl.DEPTH_TEST)
 
 	if inv.IsOpen {
@@ -401,7 +401,7 @@ func (inv *Inventory) Draw(ctx render.Context) {
 		if category == BuildTool {
 			// TODO do this less often
 			inv.PlacementGrid.Assemble(inv.ItemTypeIDs())
-			inv.PlacementGrid.Draw(ctx)
+			inv.PlacementGrid.Draw(ctx, camPos)
 		}
 		// dev items
 		if slot.ItemTypeID == EnemyToolItemTypeID {
