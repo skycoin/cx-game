@@ -9,6 +9,7 @@ import (
 	"github.com/skycoin/cx-game/cxmath/mathi"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/constants"
 )
 
 var (
@@ -87,10 +88,11 @@ func (camera *Camera) GetView() mgl32.Mat4 {
 }
 
 func (camera *Camera) GetProjectionMatrix() mgl32.Mat4 {
-	left := -float32(camera.window.Width) / 2 / 32 / camera.Zoom
-	right := float32(camera.window.Width) / 2 / 32 / camera.Zoom
-	bottom := -float32(camera.window.Height) / 2 / 32 / camera.Zoom
-	top := float32(camera.window.Height) / 2 / 32 / camera.Zoom
+	ppt := float32(constants.PIXELS_PER_TILE)
+	left := -float32(camera.window.Width) / 2 / ppt
+	right := float32(camera.window.Width) / 2 / ppt
+	bottom := -float32(camera.window.Height) / 2 / ppt
+	top := float32(camera.window.Height) / 2 / ppt
 	projection := mgl32.Ortho(left, right, bottom, top, -1000, 1000)
 
 	return projection
@@ -177,7 +179,9 @@ func (camera *Camera) DrawLines(
 }
 
 func (camera Camera) GetTransform() mgl32.Mat4 {
-	return mgl32.Translate3D(camera.X, camera.Y, 0)
+	translate :=  mgl32.Translate3D(camera.X, camera.Y, 0)
+	scale := mgl32.Scale3D(camera.Zoom,camera.Zoom,1)
+	return translate.Mul4(scale)
 }
 
 func (camera *Camera) updateProjection() {
