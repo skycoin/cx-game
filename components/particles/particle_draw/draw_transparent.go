@@ -61,13 +61,18 @@ func DrawTransparentInstanced(particleList []*particles.Particle, cam *camera.Ca
 
 	projection := cam.GetProjectionMatrix()
 	program.SetMat4("projection", &projection)
+	view := cam.GetViewMatrix()
+	program.SetMat4("view", &view)
 	program.SetInt("particle_texture", 0)
 
 	gl.BindTexture(gl.TEXTURE_2D, particleList[0].Texture)
 	data_list := make([]float32, 0, len(particleList)*4)
 
 	for _, particle := range particleList {
-		data_list = append(data_list, particle.Pos.X-cam.X, particle.Pos.Y-cam.Y, particle.Size.X, particle.TimeToLive/particle.Duration)
+		data_list = append(data_list,
+			particle.Pos.X, particle.Pos.Y, particle.Size.X,
+			particle.TimeToLive/particle.Duration,
+		)
 	}
 
 	updateBuffers(&data_list)

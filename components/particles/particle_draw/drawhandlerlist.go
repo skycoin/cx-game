@@ -15,7 +15,9 @@ import (
 type ParticleDrawHandler func([]*particles.Particle, *camera.Camera)
 
 var ParticleDrawHandlerList [constants.NUM_PARTICLE_DRAW_HANDLERS]ParticleDrawHandler
-var ParticleProgramList map[types.ParticleDrawHandlerId]render.Program = make(map[types.ParticleDrawHandlerId]render.Program)
+
+var ParticleProgramList map[types.ParticleDrawHandlerId]render.Program =
+	make(map[types.ParticleDrawHandlerId]render.Program)
 
 func AssertAllDrawHandlersRegistered() {
 	for _, handler := range ParticleDrawHandlerList {

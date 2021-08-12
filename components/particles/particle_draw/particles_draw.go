@@ -6,12 +6,17 @@ import (
 	"github.com/skycoin/cx-game/engine/camera"
 )
 
-func FrustumCull(particleList []*particles.Particle, cam *camera.Camera) []*particles.Particle {
+const particleRadius int = 1
+
+// filter only particles visible by camera
+func FrustumCull(
+		particleList []*particles.Particle, cam *camera.Camera,
+) []*particles.Particle {
 	particlesToDraw := make([]*particles.Particle, 0, len(particleList))
 
 	for _, par := range particleList {
 		//assume particle radius is 1
-		if cam.IsInBoundsRadius(par.Pos, 1) {
+		if cam.IsInBoundsRadius(par.Pos, particleRadius) {
 			particlesToDraw = append(particlesToDraw, par)
 		}
 	}
@@ -19,7 +24,9 @@ func FrustumCull(particleList []*particles.Particle, cam *camera.Camera) []*part
 	return particlesToDraw
 }
 
-func BinByDrawHandlerID(particleList []*particles.Particle) map[types.ParticleDrawHandlerId][]*particles.Particle {
+func BinByDrawHandlerID(
+		particleList []*particles.Particle,
+) map[types.ParticleDrawHandlerId][]*particles.Particle {
 	bins := make(map[types.ParticleDrawHandlerId][]*particles.Particle)
 	for _, par := range particleList {
 		bins[par.DrawHandlerID] = append(bins[par.DrawHandlerID], par)

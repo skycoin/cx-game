@@ -98,6 +98,10 @@ func (camera *Camera) GetProjectionMatrix() mgl32.Mat4 {
 	return projection
 }
 
+func (camera *Camera) GetViewMatrix() mgl32.Mat4 {
+	return camera.GetTransform().Inv()
+}
+
 func (camera *Camera) SetCameraCenter() {
 	camera.X = float32(camera.window.Width) / 2
 	camera.Y = float32(camera.window.Height) / 2
