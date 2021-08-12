@@ -20,7 +20,7 @@ func initSprite() {
 	spriteProgram = config.Compile()
 }
 
-func Init() { initSprite() }
+func Init() { initSprite(); initColor() }
 
 type Sprite struct {
 	Name string

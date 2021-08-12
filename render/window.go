@@ -1,9 +1,7 @@
 package render
 
 import (
-	"fmt"
 	"log"
-	"strings"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -11,12 +9,62 @@ import (
 )
 
 type Window struct {
-	Height    int
-	Width     int
+	// note that the virtual dimensions have no prefix.
+	// i.e. "Window.Width" is really the virtual width
+	// it is assumed that the vast majority of the time,
+	// the virtual dimensions are what the programmer wants.
+	Width,Height    int
+	PhysicalWidth,PhysicalHeight int
 	Resizable bool
 	Window    *glfw.Window
 	context   Context
+
+	// used for mouse events
+	PhysicalToViewportTransform mgl32.Mat4
 }
+
+func (win *Window) sizeCallback(
+		window *glfw.Window, physicalWidth, physicalHeight int,
+) {
+	virtualWidth := float32(win.Width)
+	virtualHeight := float32(win.Height)
+	windowDimensions := fitCentered(
+		mgl32.Vec2 { virtualWidth, virtualHeight },
+		mgl32.Vec2 { float32(physicalWidth), float32(physicalHeight) },
+	)
+	windowDimensions.Viewport.Use()
+
+	win.PhysicalToViewportTransform = windowDimensions.Transform()
+
+	/*
+	// "physical" dimensions describe actual window size
+	// "virtual" dimensions describe scaling of both world and UI
+	// physical determines resolution.
+	// virtual determines how big things are.
+	physicalWidth := float32(width)
+	physicalHeight := float32(height)
+	virtualWidth := float32(win.Width)
+	virtualHeight := float32(win.Height)
+
+	scaleToFitWidth := physicalWidth / virtualWidth
+	scaleToFitHeight := physicalHeight / virtualHeight
+	// scale to fit entire virtual window in physical window
+	scale = cxmath.Min(scaleToFitHeight, scaleToFitWidth)
+
+	// scale up virtual dimensions to fit in physical dimensions.
+	// in case of aspect ratio mismatch, black bars will appear
+	viewportWidth := int32(virtualWidth*scale)
+	viewportHeight := int32(virtualHeight*scale)
+
+	// store offsets for transitioning from physical to virtual mouse coords
+	// TODO store virtual coords, NOT physical coords
+	widthOffset = (int32(physicalWidth) - viewportWidth)/2
+	heightOffset = (int32(physicalHeight) - viewportHeight)/2
+
+	gl.Viewport( widthOffset, heightOffset, viewportWidth, viewportHeight )
+	*/
+}
+
 
 func NewWindow(width, height int, resizable bool) Window {
 	glfwWindow := initGlfw(width, height, resizable)
@@ -34,7 +82,13 @@ func NewWindow(width, height int, resizable bool) Window {
 	}
 	window.context = window.DefaultRenderContext()
 
+	//glfwWindow.SetSizeCallback(window.sizeCallback)
+
 	return window
+}
+
+func (w *Window) SetCallbacks() {
+	w.Window.SetSizeCallback(w.sizeCallback)
 }
 
 // initGlfw initializes glfw and returns a Window to use.
@@ -75,50 +129,6 @@ func initOpenGL() {
 	InitDrawLines()
 	lineProgram = CompileProgram(
 		"./assets/shader/line.vert", "./assets/shader/line.frag")
-}
-
-func CreateProgram(vertexShaderSource string, fragmentShaderSource string) uint32 {
-	vertexShader, err := CompileShader(vertexShaderSource, gl.VERTEX_SHADER)
-	if err != nil {
-		panic(err)
-	}
-
-	fragmentShader, err := CompileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
-	if err != nil {
-		panic(err)
-	}
-
-	prog := gl.CreateProgram()
-	gl.AttachShader(prog, vertexShader)
-	gl.AttachShader(prog, fragmentShader)
-	gl.LinkProgram(prog)
-	gl.DeleteShader(fragmentShader)
-	gl.DeleteShader(vertexShader)
-
-	return prog
-}
-
-func CompileShader(source string, shaderType uint32) (uint32, error) {
-	shader := gl.CreateShader(shaderType)
-
-	csources, free := gl.Strs(source)
-	gl.ShaderSource(shader, 1, csources, nil)
-	free()
-	gl.CompileShader(shader)
-
-	var status int32
-	gl.GetShaderiv(shader, gl.COMPILE_STATUS, &status)
-	if status == gl.FALSE {
-		var logLength int32
-		gl.GetShaderiv(shader, gl.INFO_LOG_LENGTH, &logLength)
-
-		log := strings.Repeat("\x00", int(logLength+1))
-		gl.GetShaderInfoLog(shader, logLength, nil, gl.Str(log))
-
-		return 0, fmt.Errorf("failed to compile %v: %v", source, log)
-	}
-
-	return shader, nil
 }
 
 var Projection mgl32.Mat4

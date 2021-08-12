@@ -77,6 +77,7 @@ func DrawWorldSprite(transform mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) 
 
 func Flush(projection mgl32.Mat4) {
 	flushSpriteDraws(projection)
+	flushColorDraws(projection)
 }
 
 func flushSpriteDraws(projection mgl32.Mat4) {
@@ -84,6 +85,7 @@ func flushSpriteDraws(projection mgl32.Mat4) {
 	defer spriteProgram.StopUsing()
 
 	gl.Enable(gl.DEPTH_TEST)
+	gl.Enable(gl.BLEND)
 	defer gl.Disable(gl.DEPTH_TEST)
 
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)

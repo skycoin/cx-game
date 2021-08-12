@@ -243,3 +243,7 @@ func (camera *Camera) CycleZoom() {
 	}
 	fmt.Printf("Current zoom: %v\n", message)
 }
+
+func (c *Camera) Pos() mgl32.Vec2 {
+	return mgl32.Vec2{ c.X, c.Y }
+}
