@@ -14,14 +14,14 @@ func addSprite(sprite Sprite) int {
 }
 
 func RegisterSprite(sprite Sprite) {
-	if sprite.Name=="" {
+	if sprite.Name == "" {
 		log.Fatal("cannot register sprite with empty name")
 	}
 	spriteNamesToIDs[sprite.Name] = addSprite(sprite)
 }
 
 func GetSpriteIDByName(name string) SpriteID {
-	id,ok := spriteNamesToIDs[name]
+	id, ok := spriteNamesToIDs[name]
 	if !ok {
 		log.Fatalf("render: cannot find sprite [%v]", name)
 	}

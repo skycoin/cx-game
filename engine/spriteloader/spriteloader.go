@@ -31,9 +31,9 @@ type Spritesheet struct {
 type SpritesheetID uint32
 
 type Sprite struct {
-	spriteSheetId SpritesheetID
-	x, y          float32
-	xScale, yScale float32
+	spriteSheetId            SpritesheetID
+	x, y                     float32
+	xScale, yScale           float32
 	worldXScale, worldYScale float32
 }
 
@@ -41,25 +41,33 @@ type SpriteID uint32
 
 // fetch internal sprite data for using custom OpenGL rendering
 type SpriteMetadata struct {
-	GpuTex         uint32
-	PosX, PosY     float32
-	ScaleX, ScaleY float32
+	GpuTex                   uint32
+	PosX, PosY               float32
+	ScaleX, ScaleY           float32
 	WorldXScale, WorldYScale float32
 }
 
 func GetSpriteMetadata(spriteID SpriteID) SpriteMetadata {
 	sprite := sprites[spriteID]
 	spritesheet := spritesheets[sprite.spriteSheetId]
-	if sprite.xScale == 0 { sprite.xScale = 1 }
-	if sprite.yScale == 0 { sprite.yScale = 1 }
-	if sprite.worldXScale == 0 { sprite.worldXScale = 1 }
-	if sprite.worldYScale == 0 { sprite.worldYScale = 1 }
+	if sprite.xScale == 0 {
+		sprite.xScale = 1
+	}
+	if sprite.yScale == 0 {
+		sprite.yScale = 1
+	}
+	if sprite.worldXScale == 0 {
+		sprite.worldXScale = 1
+	}
+	if sprite.worldYScale == 0 {
+		sprite.worldYScale = 1
+	}
 	return SpriteMetadata{
-		GpuTex: spritesheet.tex,
-		PosX:   sprite.x,
-		PosY:   sprite.y,
-		ScaleX: sprite.xScale * spritesheet.xScale,
-		ScaleY: sprite.yScale * spritesheet.yScale,
+		GpuTex:      spritesheet.tex,
+		PosX:        sprite.x,
+		PosY:        sprite.y,
+		ScaleX:      sprite.xScale * spritesheet.xScale,
+		ScaleY:      sprite.yScale * spritesheet.yScale,
 		WorldXScale: sprite.worldXScale,
 		WorldYScale: sprite.worldYScale,
 	}
@@ -70,10 +78,10 @@ var sprites = []Sprite{}
 var spriteIdsByName = make(map[string]SpriteID)
 
 func AddSpritesheetFromTexture(tex uint32) SpritesheetID {
-	spritesheets = append(spritesheets, Spritesheet {
+	spritesheets = append(spritesheets, Spritesheet{
 		tex: tex, xScale: 1, yScale: 1,
 	})
-	return SpritesheetID(len(spritesheets)-1)
+	return SpritesheetID(len(spritesheets) - 1)
 }
 
 func AddSpriteSheet(path string, il *ImgLoader) SpritesheetID {
@@ -103,7 +111,7 @@ func LoadSpriteSheet(fname string) SpritesheetID {
 	return SpritesheetID(len(spritesheets) - 1)
 }
 
-func LoadSpriteSheetBySpriteSize(fname string, w,h int) SpritesheetID {
+func LoadSpriteSheetBySpriteSize(fname string, w, h int) SpritesheetID {
 	_, img, _ := LoadPng(fname)
 	spritesheets = append(spritesheets, Spritesheet{
 		xScale: float32(w) / float32(img.Bounds().Dx()),
@@ -126,7 +134,6 @@ func LoadSpriteSheetByColRow(fname string, row int, col int) SpritesheetID {
 	return SpritesheetID(len(spritesheets) - 1)
 }
 
-
 func LoadSingleSprite(fname string, name string) SpriteID {
 	spritesheetId := LoadSpriteSheetByColRow(fname, 1, 1)
 	LoadSprite(spritesheetId, name, 0, 0)
@@ -135,11 +142,11 @@ func LoadSingleSprite(fname string, name string) SpriteID {
 
 //Load sprite into internal sheet
 func LoadSpriteF(
-		spriteSheetId SpritesheetID, name string,
-		x, y float32, xScale, yScale float32,
-		worldXScale, worldYScale float32,
+	spriteSheetId SpritesheetID, name string,
+	x, y float32, xScale, yScale float32,
+	worldXScale, worldYScale float32,
 ) SpriteID {
-	sprites = append(sprites, Sprite{ spriteSheetId,
+	sprites = append(sprites, Sprite{spriteSheetId,
 		x, y,
 		xScale, yScale,
 		worldXScale, worldYScale,
@@ -148,9 +155,10 @@ func LoadSpriteF(
 	spriteIdsByName[name] = spriteId
 	return spriteId
 }
+
 // int wrapper
-func LoadSprite(id SpritesheetID, name string, x,y int) SpriteID {
-	return LoadSpriteF(id,name,float32(x),float32(y), 1, 1, 1,1)
+func LoadSprite(id SpritesheetID, name string, x, y int) SpriteID {
+	return LoadSpriteF(id, name, float32(x), float32(y), 1, 1, 1, 1)
 }
 
 // convenient for loading multi-tiles,
@@ -246,12 +254,12 @@ func DrawSpriteQuadContext(
 	SpriteProgram.Use()
 	SpriteProgram.SetUint("outTexture", 0)
 	SpriteProgram.SetVec2F("texScale",
-		sprite.xScale * spritesheet.xScale,
-		sprite.yScale * spritesheet.yScale,
+		sprite.xScale*spritesheet.xScale,
+		sprite.yScale*spritesheet.yScale,
 	)
 	SpriteProgram.SetVec2F("texOffset",
-		float32(sprite.x) / sprite.xScale,
-		float32(sprite.y) / sprite.yScale )
+		float32(sprite.x)/sprite.xScale,
+		float32(sprite.y)/sprite.yScale)
 	SpriteProgram.SetMat4("world", &ctx.World)
 	SpriteProgram.SetMat4("projection", &ctx.Projection)
 
@@ -293,6 +301,7 @@ func MakeTexture(img *image.RGBA) uint32 {
 		int32(img.Rect.Dx()), int32(img.Rect.Dy()), 0,
 		gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix),
 	)
+	gl.GenerateMipmap(gl.TEXTURE_2D)
 
 	return tex
 }

@@ -7,7 +7,7 @@ import (
 // wrapper over an opengl texture
 
 type Texture struct {
-	Target uint32
+	Target  uint32
 	Texture uint32
 }
 
@@ -19,4 +19,10 @@ func (t Texture) Bind() {
 
 func (t Texture) Unbind() {
 	gl.BindTexture(t.Target, 0)
+}
+
+func (t Texture) SetTextureFiltering(minFilter, magFilter int32) {
+	//assume we already bind the texture
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter)
 }

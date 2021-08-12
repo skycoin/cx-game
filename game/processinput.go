@@ -7,6 +7,7 @@ import (
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/item"
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/starfield"
 )
 
@@ -42,5 +43,9 @@ func ProcessInput() {
 	}
 	if input.GetButtonDown("toggle-zoom") {
 		Cam.CycleZoom()
+	}
+
+	if input.GetButtonDown("toggle-texture-filtering") {
+		render.ToggleFiltering()
 	}
 }

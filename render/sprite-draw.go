@@ -1,12 +1,15 @@
 package render
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/cxmath/math32i"
-	"github.com/skycoin/cx-game/constants"
 )
 
 type SpriteID int
@@ -18,33 +21,36 @@ type SpriteID int
 
 var worldWidth float32
 var cameraTransform mgl32.Mat4
-func SetWorldWidth(w float32) { worldWidth = w }
+var minFilter, magFilter int32 = gl.NEAREST, gl.NEAREST
+
+func SetWorldWidth(w float32)           { worldWidth = w }
 func SetCameraTransform(mat mgl32.Mat4) { cameraTransform = mat }
 
 type SpriteDrawOptions struct {
-
 }
-func NewSpriteDrawOptions() SpriteDrawOptions{
+
+func NewSpriteDrawOptions() SpriteDrawOptions {
 	return SpriteDrawOptions{}
 }
 
 type SpriteDraw struct {
-	Sprite Sprite
-	ModelView mgl32.Mat4
+	Sprite      Sprite
+	ModelView   mgl32.Mat4
 	UVTransform mgl32.Mat3
-	Options SpriteDrawOptions
+	Options     SpriteDrawOptions
 }
+
 var spriteDrawsPerAtlas = map[Texture][]SpriteDraw{}
 
 func drawSprite(modelView mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 	sprite := sprites[id]
 	atlas := sprite.Texture
-	spriteDrawsPerAtlas[atlas] = append( spriteDrawsPerAtlas[atlas],
-		SpriteDraw {
-			Sprite: sprite,
-			ModelView: modelView,
+	spriteDrawsPerAtlas[atlas] = append(spriteDrawsPerAtlas[atlas],
+		SpriteDraw{
+			Sprite:      sprite,
+			ModelView:   modelView,
 			UVTransform: sprite.Transform,
-		} )
+		})
 }
 
 // unaffected by camera movement
@@ -53,17 +59,17 @@ func DrawUISprite(transform mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 }
 
 func wrapTransform(raw mgl32.Mat4) mgl32.Mat4 {
-	rawX := raw.At(0,3)
+	rawX := raw.At(0, 3)
 	x := math32.PositiveModulo(rawX, worldWidth)
-	camX := cameraTransform.At(0,3)
+	camX := cameraTransform.At(0, 3)
 	if x-camX > worldWidth/2 {
 		x -= worldWidth
 	}
 	if x-camX < -worldWidth/2 {
 		x += worldWidth
 	}
-	
-	translate := mgl32.Translate3D(x-rawX,0,0)
+
+	translate := mgl32.Translate3D(x-rawX, 0, 0)
 	return translate.Mul4(raw)
 }
 
@@ -94,7 +100,7 @@ func flushSpriteDraws(projection mgl32.Mat4) {
 
 	spriteProgram.SetMat4("projection", &projection)
 
-	for atlas,spriteDraws := range spriteDrawsPerAtlas {
+	for atlas, spriteDraws := range spriteDrawsPerAtlas {
 		drawAtlasSprites(atlas, spriteDraws)
 	}
 	spriteDrawsPerAtlas = make(map[Texture][]SpriteDraw)
@@ -102,17 +108,18 @@ func flushSpriteDraws(projection mgl32.Mat4) {
 
 func drawAtlasSprites(atlas Texture, spriteDraws []SpriteDraw) {
 	atlas.Bind()
+	atlas.SetTextureFiltering(minFilter, magFilter)
 	defer atlas.Unbind()
 
 	uniforms := extractUniforms(spriteDraws)
-	for _,batch := range uniforms.Batch(constants.DRAW_SPRITE_BATCH_SIZE) {
+	for _, batch := range uniforms.Batch(constants.DRAW_SPRITE_BATCH_SIZE) {
 		drawInstancedQuads(batch)
 	}
 }
 
 func extractUniforms(spriteDraws []SpriteDraw) Uniforms {
 	uniforms := NewUniforms(int32(len(spriteDraws)))
-	for idx,spriteDraw := range spriteDraws {
+	for idx, spriteDraw := range spriteDraws {
 		uniforms.ModelViews[idx] = spriteDraw.ModelView
 		uniforms.UVTransforms[idx] = spriteDraw.UVTransform
 	}
@@ -120,50 +127,87 @@ func extractUniforms(spriteDraws []SpriteDraw) Uniforms {
 }
 
 type Uniforms struct {
-	Count int32
-	ModelViews []mgl32.Mat4
+	Count        int32
+	ModelViews   []mgl32.Mat4
 	UVTransforms []mgl32.Mat3
 }
 
 func NewUniforms(count int32) Uniforms {
-	return Uniforms {
-		Count: count,
-		ModelViews: make([]mgl32.Mat4, count),
+	return Uniforms{
+		Count:        count,
+		ModelViews:   make([]mgl32.Mat4, count),
 		UVTransforms: make([]mgl32.Mat3, count),
 	}
 }
 
 func (u Uniforms) Batch(batchSize int32) []Uniforms {
 	numBatches := divideRoundUp(u.Count, batchSize)
-	batches := make([]Uniforms,numBatches)
+	batches := make([]Uniforms, numBatches)
 
-	for i := int32(0) ; i < numBatches ; i++ {
+	for i := int32(0); i < numBatches; i++ {
 		start := batchSize * i
-		stop := math32i.Min(batchSize * (i+1), u.Count)
-		batches[i] = u.Range(start,stop)
+		stop := math32i.Min(batchSize*(i+1), u.Count)
+		batches[i] = u.Range(start, stop)
 	}
 
 	return batches
 }
 
-func (u Uniforms) Range(start,stop int32) Uniforms {
-	return Uniforms {
-		Count: stop-start,
-		ModelViews: u.ModelViews[start:stop],
+func (u Uniforms) Range(start, stop int32) Uniforms {
+	return Uniforms{
+		Count:        stop - start,
+		ModelViews:   u.ModelViews[start:stop],
 		UVTransforms: u.UVTransforms[start:stop],
 	}
 }
 
-func divideRoundUp(a,b int32) int32 {
+func divideRoundUp(a, b int32) int32 {
 	if a%b == 0 {
-		return a/b
+		return a / b
 	} else {
-		return a/b+1
+		return a/b + 1
 	}
 }
 
 func drawInstancedQuads(batch Uniforms) {
 	spriteProgram.SetMat4s("modelviews", batch.ModelViews)
 	spriteProgram.SetMat3s("uvtransforms", batch.UVTransforms)
-	gl.DrawArraysInstanced(gl.TRIANGLES, 0,6, batch.Count)
+	gl.DrawArraysInstanced(gl.TRIANGLES, 0, 6, batch.Count)
+}
+
+func ToggleFiltering() {
+	var message string
+	if magFilter == gl.LINEAR {
+		magFilter = gl.NEAREST
+		message += "MAG: NEAREST  "
+	} else {
+		magFilter = gl.LINEAR
+		message += "MAG: LINEAR  "
+	}
+
+	switch minFilter {
+	case gl.LINEAR:
+		minFilter = gl.NEAREST
+		message += "MIN: NEAREST"
+	case gl.NEAREST:
+		minFilter = gl.NEAREST_MIPMAP_NEAREST
+		message += "MIN: NEAREST_MIPMAP_NEAREST"
+	case gl.NEAREST_MIPMAP_NEAREST:
+		minFilter = gl.NEAREST_MIPMAP_LINEAR
+		message += "MIN: NEAREST_MIPMAP_LINEAR"
+	case gl.NEAREST_MIPMAP_LINEAR:
+		minFilter = gl.LINEAR_MIPMAP_NEAREST
+		message += "MIN: NEAREST_M_LINEAR"
+	case gl.LINEAR_MIPMAP_NEAREST:
+		minFilter = gl.LINEAR_MIPMAP_LINEAR
+		message += "MIN: LINEAR_M_LINEAR"
+	case gl.LINEAR_MIPMAP_LINEAR:
+		minFilter = gl.LINEAR
+		message += "MIN: LINEAR"
+	default:
+		//should not branch this way
+		log.Panic("something is wrong")
+	}
+
+	fmt.Println(message)
 }
