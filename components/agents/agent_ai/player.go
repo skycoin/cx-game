@@ -14,7 +14,7 @@ const (
 	maxPlayerWalkSpeed float32 = 7
 	// playerJumpSpeed    float32 = 25
 	playerJumpAcceleration float32 = 200
-	jumpMaxFrames                  = 5
+	jumpMaxFrames                  = 10
 	frictionFactor         float32 = 3
 )
 
@@ -50,8 +50,12 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 	if player.PhysicsState.IsOnGround() && input.GetButtonDown("jump") {
 		jumpFrame = 0
 	}
-	if jumpFrame < 3 || input.GetButton("jump") && jumpFrame < jumpMaxFrames {
+	if jumpFrame < 3 {
 		player.PhysicsState.Vel.Y += playerJumpAcceleration * constants.TimeStep
+		jumpFrame += 1
+	}
+	if input.GetButton("jump") && jumpFrame < jumpMaxFrames {
+		player.PhysicsState.Vel.Y += playerJumpAcceleration / 3 * constants.TimeStep
 		jumpFrame += 1
 	}
 
