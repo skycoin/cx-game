@@ -1,6 +1,8 @@
 package camera
 
 import (
+	"fmt"
+
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/cxmath"
@@ -221,4 +223,23 @@ func (camera *Camera) ToggleFreeCam() {
 
 	//reset velocity for now
 	camera.Vel = mgl32.Vec2{}
+}
+
+func (camera *Camera) CycleZoom() {
+	var message string
+	switch camera.Zoom {
+	case 1:
+		camera.Zoom = 0.5
+		message = "2 pixels per pixel"
+	case 0.5:
+		camera.Zoom = 1.0 / 3.0
+		message = "3 pixels per pixel"
+	case 1.0 / 3.0:
+		camera.Zoom = 1.0 / 4.0
+		message = "4 pixels per pixel"
+	default:
+		camera.Zoom = 1
+		message = "1 pixel per pixels"
+	}
+	fmt.Printf("Current zoom: %v\n", message)
 }
