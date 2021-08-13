@@ -13,18 +13,18 @@ type Window struct {
 	// i.e. "Window.Width" is really the virtual width
 	// it is assumed that the vast majority of the time,
 	// the virtual dimensions are what the programmer wants.
-	Width,Height    int
-	PhysicalWidth,PhysicalHeight int
-	Resizable bool
-	Window    *glfw.Window
-	context   Context
+	Width, Height                 int
+	PhysicalWidth, PhysicalHeight int
+	Resizable                     bool
+	Window                        *glfw.Window
+	context                       Context
 
 	// used for mouse events
 	PhysicalToViewportTransform mgl32.Mat4
 }
 
 func (win *Window) sizeCallback(
-		window *glfw.Window, physicalWidth, physicalHeight int,
+	window *glfw.Window, physicalWidth, physicalHeight int,
 ) {
 	// "physical" dimensions describe actual window size
 	// "virtual" dimensions describe scaling of both world and UI
@@ -33,14 +33,25 @@ func (win *Window) sizeCallback(
 	virtualWidth := float32(win.Width)
 	virtualHeight := float32(win.Height)
 	windowDimensions := fitCentered(
-		mgl32.Vec2 { virtualWidth, virtualHeight },
-		mgl32.Vec2 { float32(physicalWidth), float32(physicalHeight) },
+		mgl32.Vec2{virtualWidth, virtualHeight},
+		mgl32.Vec2{float32(physicalWidth), float32(physicalHeight)},
 	)
 	windowDimensions.Viewport.Use()
 
 	win.PhysicalToViewportTransform = windowDimensions.Transform()
 }
 
+func (win *Window) SetInitialWindowDimensions() {
+	virtualWidth := float32(win.Width)
+	virtualHeight := float32(win.Height)
+	windowDimensions := fitCentered(
+		mgl32.Vec2{virtualWidth, virtualHeight},
+		mgl32.Vec2{virtualWidth, virtualHeight},
+	)
+	windowDimensions.Viewport.Use()
+
+	win.PhysicalToViewportTransform = windowDimensions.Transform()
+}
 
 func NewWindow(width, height int, resizable bool) Window {
 	glfwWindow := initGlfw(width, height, resizable)
@@ -63,6 +74,7 @@ func NewWindow(width, height int, resizable bool) Window {
 
 func (w *Window) SetCallbacks() {
 	w.Window.SetSizeCallback(w.sizeCallback)
+	w.SetInitialWindowDimensions()
 }
 
 // initGlfw initializes glfw and returns a Window to use.
