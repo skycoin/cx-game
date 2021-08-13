@@ -2,6 +2,7 @@ package world
 
 import (
 	"log"
+	"fmt"
 	"math"
 	"strconv"
 
@@ -39,7 +40,6 @@ type Layer struct {
 type Layers [NumLayers]Layer
 
 func NewLayer(numTiles int32) Layer {
-	// TODO pack spritesheet
 	return Layer{
 		Tiles: make([]Tile, numTiles),
 	}
@@ -66,20 +66,7 @@ type Planet struct {
 	program, liquidProgram render.Program
 }
 
-func newPlanetProgram() render.Program {
-	config := render.NewShaderConfig(
-		"./assets/shader/world.vert", "./assets/shader/sprite.frag")
-	config.Define("NUM_INSTANCES", strconv.Itoa(NUM_INSTANCES))
-	program := config.Compile()
-
-	program.Use()
-	defer program.StopUsing()
-	// TODO only need one of these
-	program.SetVec4F("color", 1, 1, 1, 1)
-	program.SetVec4F("colour", 1, 0, 0, 1)
-	return program
-}
-
+// TODO move to render
 func newPlanetLiquidProgram() render.Program {
 	config := render.NewShaderConfig(
 		"./assets/shader/world.vert", "./assets/shader/liquid.frag")
@@ -95,7 +82,6 @@ func NewPlanet(x, y int32) *Planet {
 		Width:         x,
 		Height:        y,
 		Layers:        NewLayers(x * y),
-		program:       newPlanetProgram(),
 		liquidProgram: newPlanetLiquidProgram(),
 	}
 	return &planet
@@ -198,18 +184,43 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 		tileType.CreateTile(TileCreationOptions{
 			Neighbours: planet.GetNeighbours(tilesInLayer, x, y),
 		})
-	planet.updateSurroundingTiles(tilesInLayer, x, y)
+	rect := cxmath.Rect {
+		cxmath.Vec2i{ int32(x), int32(y) },
+		tileType.Size(),
+	}
+	for _,neighbour := range rect.Neighbours() {
+		planet.updateTile(tilesInLayer, int(neighbour.X), int(neighbour.Y))
+	}
+
+	// place child tiles (non-root) to prevent overlap
+	for offsetX := int32(0) ; offsetX < rect.Size.X ; offsetX++ {
+		for offsetY := int32(0) ; offsetY < rect.Size.Y ; offsetY++ {
+			// don't overwrite root
+			if offsetX!=0 || offsetY!=0 {
+				tileIdx := planet.GetTileIndex(
+					int(rect.Origin.X + offsetX),
+					int(rect.Origin.Y + offsetY),
+				)
+
+				tilesInLayer[tileIdx] = Tile {
+					TileCategory: TileCategoryChild,
+					OffsetX: int8(offsetX), OffsetY: int8(offsetY),
+					Name: fmt.Sprintf("%s (child)",tileType.Name),
+				}
+			}
+		}
+	}
 }
 
 func (planet *Planet) updateSurroundingTiles(
 	tilesInLayer []Tile, x, y int,
 ) {
-	for xOffset := -1; xOffset <= 1; xOffset++ {
-		for yOffset := -1; yOffset <= 1; yOffset++ {
-			if xOffset != 0 || yOffset != 0 {
-				planet.updateTile(tilesInLayer, x+xOffset, y+yOffset)
-			}
-		}
+	rect := cxmath.Rect {
+		cxmath.Vec2i{ int32(x), int32(y) },
+		cxmath.Vec2i{ 1,1 },
+	}
+	for _,neighbour := range rect.Neighbours() {
+		planet.updateTile(tilesInLayer, int(neighbour.X), int(neighbour.Y))
 	}
 }
 
