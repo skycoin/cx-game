@@ -186,6 +186,18 @@ func (grid *PlacementGrid) TrySelect(camCoords mgl32.Vec2) bool {
 	return false
 }
 
+func tilesAreClear(
+		World *world.World, layerID world.LayerID,
+		xstart,ystart, xstop,ystop int,
+) bool {
+	for x := xstart ; x < xstop ; x++ {
+		for y := ystart ; y < ystop ; y++ {
+			if !World.TileIsClear(layerID, x, y) { return false }
+		}
+	}
+	return true
+}
+
 func (grid *PlacementGrid) TryPlace(info ItemUseInfo) bool {
 	if !grid.HasSelected {
 		return false
@@ -194,7 +206,12 @@ func (grid *PlacementGrid) TryPlace(info ItemUseInfo) bool {
 	x32, y32 := cxmath.RoundVec2(worldCoords)
 	x := int(x32)
 	y := int(y32)
-	if info.World.TileIsClear(x, y) {
+	tt := grid.Selected.Get() // tiletype
+	canPlace := tilesAreClear(
+		info.World, tt.Layer,
+		x,y, x+int(tt.Width), y+int(tt.Height),
+	)
+	if canPlace {
 		info.World.Planet.PlaceTileType(grid.Selected, x, y)
 		return true
 	}

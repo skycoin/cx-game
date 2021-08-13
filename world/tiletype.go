@@ -62,7 +62,7 @@ type TileType struct {
 }
 
 func (tt TileType) Size() cxmath.Vec2i {
-	return cxmath.Vec2i{tt.Width, tt.Height}
+	return cxmath.Vec2i{ tt.Width, tt.Height }
 }
 
 func (tt *TileType) Transform() mgl32.Mat4 {
