@@ -36,6 +36,7 @@ func Update(dt float32) {
 
 	commandContext := console.NewCommandContext()
 	commandContext.World = &World
+	commandContext.Player = player
 	Console.Update(window, commandContext)
 
 	starfield.UpdateStarField(dt)
