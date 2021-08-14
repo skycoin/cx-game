@@ -152,12 +152,18 @@ func (grid *PlacementGrid) previewTransform() mgl32.Mat4 {
 	return reCenter.Mul4(scaleUp).Mul4(unCenter)
 }
 
-func (ig PlacementGrid) DrawSlot(
+
+
+func (grid PlacementGrid) DrawSlot(
 	positionedTileTypeID PositionedTileTypeID, ctx render.Context,
 ) {
 	slotCtx := ctx.PushLocal(positionedTileTypeID.Transform())
 	// draw border
-	render.DrawColorQuad(slotCtx.World, borderColor)
+	color := borderColor
+	if grid.Selected == positionedTileTypeID.TileTypeID {
+		color = selectedBorderColor
+	}
+	render.DrawColorQuad(slotCtx.World, color)
 	bgCtx := slotCtx.
 		PushLocal(mgl32.Translate3D(0,0,0.1)).
 		PushLocal(cxmath.Scale(1 - borderSize))
