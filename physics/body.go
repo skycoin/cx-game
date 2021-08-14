@@ -4,6 +4,7 @@ import (
 	"math"
 	"github.com/go-gl/mathgl/mgl32"
 
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/world/worldcollider"
@@ -180,6 +181,9 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	offset := collider.WrapAroundOffset(newPosMgl32)
 	newPosMgl32 = newPosMgl32.Add(offset)
 	body.Pos = cxmath.Vec2{newPosMgl32.X(), newPosMgl32.Y()}
+
+	if body.Pos.Y <= 0 { body.Pos.Y = constants.VERTICAL_RESET_HEIGHT }
+
 	// move previous transform to avoid weird interpolation around boundaries
 	body.PreviousTransform = body.PreviousTransform.
 		Mul4(mgl32.Translate3D(offset.X(), offset.Y(), 0))

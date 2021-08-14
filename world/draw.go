@@ -86,17 +86,20 @@ func (planet *Planet) visibleTiles(
 	bottom := mathi.Max(cam.Frustum.Bottom, 0)
 	top := mathi.Min(cam.Frustum.Top, int(planet.Height))
 	capacity := (top - bottom + 1) * (right - left + 1)
+	if capacity < 0 { capacity = 0 }
 	positionedTiles := make([]PositionedTile, 0, capacity)
 
 	for y := bottom; y <= top; y++ {
 		for x := left; x <= right; x++ {
 			tileIdx := planet.GetTileIndex(x, y)
-			tile := layer.Tiles[tileIdx]
-			if tile.TileCategory != TileCategoryNone {
-				positionedTiles = append(positionedTiles, PositionedTile{
-					Position: cxmath.Vec2i{X: int32(x), Y: int32(y)},
-					Tile:     tile,
-				})
+			if tileIdx != -1 {
+				tile := layer.Tiles[tileIdx]
+				if tile.TileCategory != TileCategoryNone {
+					positionedTiles = append(positionedTiles, PositionedTile{
+						Position: cxmath.Vec2i{X: int32(x), Y: int32(y)},
+						Tile:     tile,
+					})
+				}
 			}
 		}
 	}
