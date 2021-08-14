@@ -5,6 +5,8 @@ type AgentTypeID int
 
 const (
 	MAX_AGENTS int = 64
+	// how high agents are teleported for vertical wrap around
+	VERTICAL_RESET_HEIGHT float32 = 256
 )
 
 const (
