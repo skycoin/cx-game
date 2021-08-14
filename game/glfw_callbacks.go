@@ -104,5 +104,5 @@ func windowSizeCallback(window *glfw.Window, width, height int) {
 }
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {
-	Cam.SetCameraZoomPosition(float32(-yOff))
+	Cam.SetCameraZoomPosition(float32(yOff))
 }

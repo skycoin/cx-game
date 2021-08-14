@@ -103,6 +103,7 @@ func (camera *Camera) GetProjectionMatrix() mgl32.Mat4 {
 
 func (camera *Camera) GetViewMatrix() mgl32.Mat4 {
 	return camera.GetTransform().Inv()
+	// return camera.GetTransform()
 }
 
 func (camera *Camera) SetCameraCenter() {
@@ -186,6 +187,7 @@ func (camera *Camera) DrawLines(
 
 func (camera Camera) GetTransform() mgl32.Mat4 {
 	translate := mgl32.Translate3D(camera.X, camera.Y, 0)
+	// fmt.Println(camera.Zoom)
 	scale := mgl32.Scale3D(camera.Zoom, camera.Zoom, 1)
 	return translate.Mul4(scale)
 }
@@ -227,14 +229,14 @@ func (camera *Camera) IsFreeCam() bool {
 	return camera.freeCam
 }
 
-func (camera *Camera) ToggleFreeCam() {
-
-	camera.freeCam = !camera.freeCam
-
-	//reset velocity for now
-	camera.Vel = mgl32.Vec2{}
+func (camera *Camera) TurnOnFreeCam() {
+	camera.freeCam = true
+	input.SetInputContext(input.FREECAM)
 }
-
+func (camera *Camera) TurnOffFreeCam() {
+	camera.freeCam = false
+	input.SetInputContext(input.GAME)
+}
 func (camera *Camera) CycleZoom() {
 	var message string
 	switch camera.Zoom {

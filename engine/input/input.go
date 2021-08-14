@@ -61,7 +61,7 @@ func registerKeyMaps() {
 	MapKeyToButton("down", glfw.KeyS)
 	MapKeyToButton("jump", glfw.KeySpace)
 	MapKeyToButton("mute", glfw.KeyM)
-	MapKeyToButton("freecam", glfw.KeyKP0)
+	MapKeyToButton("freecam-on", glfw.KeyKP0)
 	MapKeyToButton("cycle-palette", glfw.KeyF3)
 	MapKeyToButton("inventory-grid", glfw.KeyI)
 	MapKeyToButton("fly", glfw.KeyT)
@@ -82,6 +82,7 @@ func registerKeyMaps() {
 	MapKeyToButton("left", glfw.KeyA)
 	MapKeyToButton("up", glfw.KeyW)
 	MapKeyToButton("down", glfw.KeyS)
+	MapKeyToButton("freecam-off", glfw.KeyKP0)
 
 	//revert to game input context
 	SetInputContext(GAME)
