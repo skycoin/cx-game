@@ -20,10 +20,11 @@ type MouseCoords struct {
 }
 
 var (
-	window_      *render.Window
-	inputContext InputContext
-	camZoom      float32 = 1
-	camX, camY   float32
+	window_          *render.Window
+	inputContext     InputContext
+	prevInputContext InputContext
+	// camZoom          float32 = 1
+	// camX, camY       float32
 )
 
 type InputContext uint8
@@ -31,6 +32,7 @@ type InputContext uint8
 const (
 	GAME InputContext = iota
 	FREECAM
+	CONSOLE
 	SWITCH_COSTUME
 )
 
@@ -46,6 +48,12 @@ func registerCallbacks() {
 }
 
 func registerKeyMaps() {
+	//init buttons map for each input context
+	ButtonsMap[GAME] = make(map[string]glfw.Key)
+	ButtonsMap[FREECAM] = make(map[string]glfw.Key)
+	ButtonsMap[CONSOLE] = make(map[string]glfw.Key)
+	ButtonsMap[SWITCH_COSTUME] = make(map[string]glfw.Key)
+
 	SetInputContext(GAME)
 	MapKeyToButton("right", glfw.KeyD)
 	MapKeyToButton("left", glfw.KeyA)
@@ -53,7 +61,7 @@ func registerKeyMaps() {
 	MapKeyToButton("down", glfw.KeyS)
 	MapKeyToButton("jump", glfw.KeySpace)
 	MapKeyToButton("mute", glfw.KeyM)
-	MapKeyToButton("freecam", glfw.KeyKP0)
+	MapKeyToButton("freecam-on", glfw.KeyKP0)
 	MapKeyToButton("cycle-palette", glfw.KeyF3)
 	MapKeyToButton("inventory-grid", glfw.KeyI)
 	MapKeyToButton("fly", glfw.KeyT)
@@ -67,23 +75,33 @@ func registerKeyMaps() {
 
 	MapKeyToButton("enemy-tool-scroll-down", glfw.KeyDown)
 	MapKeyToButton("enemy-tool-scroll-up", glfw.KeyUp)
+
+	//freecam
+	SetInputContext(FREECAM)
+	MapKeyToButton("right", glfw.KeyD)
+	MapKeyToButton("left", glfw.KeyA)
+	MapKeyToButton("up", glfw.KeyW)
+	MapKeyToButton("down", glfw.KeyS)
+	MapKeyToButton("freecam-off", glfw.KeyKP0)
+
+	//revert to game input context
+	SetInputContext(GAME)
+
 }
 
 func MapKeyToButton(button string, key glfw.Key) {
-	ButtonsToKeys[button] = key
+	ActiveButtonsToKeys[button] = key
 }
 
 func SetInputContext(ctx InputContext) {
+	prevInputContext = inputContext
 	inputContext = ctx
+	ActiveButtonsToKeys = ButtonsMap[ctx]
+}
+func SetPreviousInputContext() {
+	inputContext = prevInputContext
+	ActiveButtonsToKeys = ButtonsMap[prevInputContext]
 }
 func GetInputContext() InputContext {
 	return inputContext
-}
-
-func SetCamZoom(zoom float32) {
-	camZoom = zoom
-}
-
-func UpdateCameraPosition(x, y float32) {
-	camX, camY = x, y
 }

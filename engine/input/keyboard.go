@@ -9,9 +9,11 @@ var (
 	KeysPressed     = make(map[glfw.Key]bool)
 	KeysPressedDown = make(map[glfw.Key]bool)
 	KeysPressedUp   = make(map[glfw.Key]bool)
-	//for
-	ButtonsToKeys   = make(map[string]glfw.Key)
-	lastKeyPressed glfw.Key
+
+	//for each context, have map of registered buttons to keys
+	ButtonsMap          = make(map[InputContext]map[string]glfw.Key)
+	ActiveButtonsToKeys map[string]glfw.Key
+	lastKeyPressed      glfw.Key
 )
 
 type Axis int
@@ -21,13 +23,9 @@ const (
 	VERTICAL
 )
 
-func Reset() {
-
-}
-
 func keyCallback(
-		w *glfw.Window,
-		key glfw.Key, scancode int, action glfw.Action, mk glfw.ModifierKey,
+	w *glfw.Window,
+	key glfw.Key, scancode int, action glfw.Action, mk glfw.ModifierKey,
 ) {
 	for key := range KeysPressed {
 		delete(KeysPressedUp, key)
@@ -53,4 +51,3 @@ func keyCallback(
 	}
 
 }
-

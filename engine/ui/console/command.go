@@ -7,20 +7,30 @@ import (
 	"github.com/skycoin/cx-game/world/mapgen"
 )
 
-type Command func(string,CommandContext) string
+type Command func(string, CommandContext) string
 
 var commands = make(map[string]Command)
 
 func LoadMap(line string, ctx CommandContext) string {
-	fname := strings.Split(line," ")[1]
-	log.Printf("trying to load map from %s",fname)
+	splitLine := strings.Split(line, " ")
+	if len(splitLine) < 2 {
+		log.Println("[LOADMAP ERROR] provide filename")
+		return ""
+	}
+	fname := splitLine[1]
+	log.Printf("trying to load map from %s", fname)
 	ctx.World.Load(fname)
 	return ""
 }
 
 func SaveMap(line string, ctx CommandContext) string {
-	fname := strings.Split(line," ")[1]
-	log.Printf("trying to save map to %s",fname)
+	splitLine := strings.Split(line, " ")
+	if len(splitLine) < 2 {
+		log.Println("[SAVEMAP ERROR] provide filename")
+		return ""
+	}
+	fname := splitLine[1]
+	log.Printf("trying to save map to %s", fname)
 	ctx.World.Save(fname)
 	return ""
 }
@@ -32,10 +42,10 @@ func NewPlanet(line string, ctx CommandContext) string {
 
 func Help(line string, ctx CommandContext) string {
 	names := make([]string, 0, len(commands))
-	for name,_ := range commands {
+	for name, _ := range commands {
 		names = append(names, name)
 	}
-	return strings.Join(names,", ")
+	return strings.Join(names, ", ")
 }
 
 func init() {
@@ -46,11 +56,11 @@ func init() {
 }
 
 func processCommand(line string, ctx CommandContext) string {
-	words := strings.Split(line," ")
+	words := strings.Split(line, " ")
 	commandName := words[0]
-	command,ok := commands[commandName]
+	command, ok := commands[commandName]
 	if !ok {
-		log.Printf("unrecognized command [%s]",commandName)
+		log.Printf("unrecognized command [%s]", commandName)
 		return ""
 	}
 	return command(line, ctx)

@@ -10,25 +10,59 @@ import (
 
 const (
 	ignorePlatformTime float32 = 0.4
-	playerWalkAccel    float32 = 5
-	maxPlayerWalkSpeed float32 = 7
+	playerWalkAccel    float32 = 1.8
+	maxPlayerWalkSpeed float32 = 8
 	// playerJumpSpeed    float32 = 25
-	playerJumpAcceleration float32 = 200
-	jumpMaxFrames                  = 10
-	frictionFactor         float32 = 3
+	playerJumpAcceleration float32 = 170
+	jumpMaxFrames                  = 15
+	jumpFrames                     = 3
+	frictionFactor         float32 = 1
 )
 
 var (
-	jumpFrame int = 5
+	//give it initial big value so it will not jump immediately, try setting this to 0 and see result
+	jumpFrame int = 10
 )
 
 func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
+
 	var inputXAxis float32
+	//added this check to prevent player from moving when in "freecam" or other mode
 	if input.GetInputContext() == input.GAME {
 		inputXAxis = input.GetAxis(input.HORIZONTAL)
+
+		if player.PhysicsState.IsOnGround() && input.GetButtonDown("jump") {
+			jumpFrame = 0
+		}
+
+		if jumpFrame < jumpFrames {
+			player.PhysicsState.Vel.Y += playerJumpAcceleration * constants.TimeStep
+			jumpFrame += 1
+		} else if !player.PhysicsState.IsOnGround() &&
+			input.GetButton("jump") &&
+			jumpFrame < jumpMaxFrames {
+			player.PhysicsState.Vel.Y += playerJumpAcceleration / 3 * constants.TimeStep
+			jumpFrame += 1
+		}
+
+		if input.GetButton("down") {
+			player.PlayerData.IgnoringPlatformsFor = ignorePlatformTime
+		} else {
+			if player.PlayerData.IgnoringPlatformsFor > 0 {
+				player.PlayerData.IgnoringPlatformsFor -= constants.TimeStep
+			}
+		}
 	}
-	player.PhysicsState.Vel.X +=
-		inputXAxis * playerWalkAccel
+
+	// player.PhysicsState.Vel.X += playerWalkAccel * inputXAxis
+
+	if !player.PhysicsState.IsOnGround() {
+
+		player.PhysicsState.Vel.X += playerWalkAccel * inputXAxis
+	} else {
+
+		player.PhysicsState.Vel.X += playerWalkAccel * inputXAxis
+	}
 
 	if inputXAxis != 0 {
 		player.PhysicsState.Direction = math32.Sign(inputXAxis)
@@ -43,31 +77,13 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 		player.PhysicsState.Vel.X = 0
 	}
 
-	if math32.Abs(player.PhysicsState.Vel.X) > maxPlayerWalkSpeed {
-		player.PhysicsState.Vel.X =
-			math32.Sign(player.PhysicsState.Vel.X) * maxPlayerWalkSpeed
-	}
+	player.PhysicsState.Vel.X = math32.Clamp(player.PhysicsState.Vel.X, -maxPlayerWalkSpeed, maxPlayerWalkSpeed)
+	// if math32.Abs(player.PhysicsState.Vel.X) > maxPlayerWalkSpeed {
+	// 	player.PhysicsState.Vel.X =
+	// 		math32.Sign(player.PhysicsState.Vel.X) * maxPlayerWalkSpeed
+	// }
 
 	player.PhysicsState.Vel.Y -= constants.Gravity * constants.TimeStep
 
-	if player.PhysicsState.IsOnGround() && input.GetButtonDown("jump") {
-		jumpFrame = 0
-	}
-	if jumpFrame < 3 {
-		player.PhysicsState.Vel.Y += playerJumpAcceleration * constants.TimeStep
-		jumpFrame += 1
-	}
-	if input.GetButton("jump") && jumpFrame < jumpMaxFrames {
-		player.PhysicsState.Vel.Y += playerJumpAcceleration / 3 * constants.TimeStep
-		jumpFrame += 1
-	}
-
-	if input.GetButton("down") {
-		player.PlayerData.IgnoringPlatformsFor = ignorePlatformTime
-	} else {
-		if player.PlayerData.IgnoringPlatformsFor > 0 {
-			player.PlayerData.IgnoringPlatformsFor -= constants.TimeStep
-		}
-	}
 	player.PhysicsState.IsIgnoringPlatforms = player.PlayerData.IgnoringPlatformsFor > 0
 }

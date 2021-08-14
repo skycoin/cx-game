@@ -92,18 +92,17 @@ func windowSizeCallback(window *glfw.Window, width, height int) {
 
 	// scale up virtual dimensions to fit in physical dimensions.
 	// in case of aspect ratio mismatch, black bars will appear
-	viewportWidth := int32(virtualWidth*scale)
-	viewportHeight := int32(virtualHeight*scale)
+	viewportWidth := int32(virtualWidth * scale)
+	viewportHeight := int32(virtualHeight * scale)
 
 	// store offsets for transitioning from physical to virtual mouse coords
 	// TODO store virtual coords, NOT physical coords
-	widthOffset = (int32(physicalWidth) - viewportWidth)/2
-	heightOffset = (int32(physicalHeight) - viewportHeight)/2
+	widthOffset = (int32(physicalWidth) - viewportWidth) / 2
+	heightOffset = (int32(physicalHeight) - viewportHeight) / 2
 
-	gl.Viewport( widthOffset, heightOffset, viewportWidth, viewportHeight )
+	gl.Viewport(widthOffset, heightOffset, viewportWidth, viewportHeight)
 }
 
 func scrollCallback(w *glfw.Window, xOff, yOff float64) {
 	Cam.SetCameraZoomPosition(float32(yOff))
-	input.SetCamZoom(Cam.Zoom)
 }

@@ -31,9 +31,11 @@ func (console *Console) OnChar(w *glfw.Window, char rune) {
 func (console *Console) ToggleActive(window *glfw.Window) {
 	console.active = !console.active
 	if console.active {
+		input.SetInputContext(input.CONSOLE)
 		window.SetCharCallback(console.OnChar)
 		console.line = ""
 	} else {
+		input.SetPreviousInputContext()
 		window.SetCharCallback(nil)
 	}
 }
@@ -66,7 +68,7 @@ func (console *Console) Draw(ctx render.Context) {
 	ui.DrawString(
 		console.output, mgl32.Vec4{0, 1, 0, 1},
 		ui.AlignLeft,
-		ctx.PushLocal(mgl32.Translate3D(0,1,0)),
+		ctx.PushLocal(mgl32.Translate3D(0, 1, 0)),
 	)
 }
 
