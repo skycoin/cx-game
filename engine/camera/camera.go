@@ -7,6 +7,7 @@ import (
 
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/cxmath/mathi"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/render"
@@ -144,8 +145,10 @@ func (camera *Camera) updateFocusArea(x, y float32) {
 	camera.Vel[0] = camera.focus_area.center.X() - camera.X
 	camera.Vel[1] = camera.focus_area.center.Y() - camera.Y
 
-	camera.X = camera.focus_area.center.X()
+	camera.X = math32.
+		PositiveModulo( camera.focus_area.center.X(), camera.PlanetWidth )
 	camera.Y = camera.focus_area.center.Y()
+
 }
 
 //sets camera for target position

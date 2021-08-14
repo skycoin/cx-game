@@ -2,6 +2,7 @@ package console
 
 import (
 	"log"
+	"fmt"
 	"strings"
 	"strconv"
 
@@ -52,14 +53,20 @@ func Help(line string, ctx CommandContext) string {
 func Teleport(line string, ctx CommandContext) string {
 	words := strings.Split(line, " ")
 
-	x,err := strconv.ParseFloat(words[1],32)
-	if err!=nil { log.Fatalf("Teleport() [x]: %v",err) }
-	y,err := strconv.ParseFloat(words[2], 32)
-	if err!=nil { log.Fatalf("Teleport() [y]: %v",err) }
+	output := fmt.Sprintf( "%.2f %.2f",
+		ctx.Player.PhysicsState.Pos.X,
+		ctx.Player.PhysicsState.Pos.Y,
+	)
+	if len(words) > 1 {
+		x,err := strconv.ParseFloat(words[1],32)
+		if err!=nil { log.Fatalf("Teleport() [x]: %v",err) }
+		y,err := strconv.ParseFloat(words[2], 32)
+		if err!=nil { log.Fatalf("Teleport() [y]: %v",err) }
 
-	ctx.Player.PhysicsState.Pos.X = float32(x)
-	ctx.Player.PhysicsState.Pos.Y = float32(y)
-	return ""
+		ctx.Player.PhysicsState.Pos.X = float32(x)
+		ctx.Player.PhysicsState.Pos.Y = float32(y)
+	}
+	return output
 }
 
 func init() {
