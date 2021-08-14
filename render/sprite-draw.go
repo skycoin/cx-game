@@ -24,7 +24,9 @@ var cameraTransform mgl32.Mat4
 var minFilter, magFilter int32 = gl.NEAREST, gl.NEAREST
 
 func SetWorldWidth(w float32)           { worldWidth = w }
-func SetCameraTransform(mat mgl32.Mat4) { cameraTransform = mat }
+func SetCameraTransform(mat mgl32.Mat4) {
+	cameraTransform = mat
+}
 
 type SpriteDrawOptions struct {
 }

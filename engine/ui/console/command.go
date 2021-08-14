@@ -2,7 +2,9 @@ package console
 
 import (
 	"log"
+	"fmt"
 	"strings"
+	"strconv"
 
 	"github.com/skycoin/cx-game/world/mapgen"
 )
@@ -48,10 +50,30 @@ func Help(line string, ctx CommandContext) string {
 	return strings.Join(names, ", ")
 }
 
+func Teleport(line string, ctx CommandContext) string {
+	words := strings.Split(line, " ")
+
+	output := fmt.Sprintf( "%.2f %.2f",
+		ctx.Player.PhysicsState.Pos.X,
+		ctx.Player.PhysicsState.Pos.Y,
+	)
+	if len(words) > 1 {
+		x,err := strconv.ParseFloat(words[1],32)
+		if err!=nil { log.Fatalf("Teleport() [x]: %v",err) }
+		y,err := strconv.ParseFloat(words[2], 32)
+		if err!=nil { log.Fatalf("Teleport() [y]: %v",err) }
+
+		ctx.Player.PhysicsState.Pos.X = float32(x)
+		ctx.Player.PhysicsState.Pos.Y = float32(y)
+	}
+	return output
+}
+
 func init() {
 	commands["loadmap"] = LoadMap
 	commands["savemap"] = SaveMap
 	commands["newplanet"] = NewPlanet
+	commands["tp"] = Teleport
 	commands["help"] = Help
 }
 
