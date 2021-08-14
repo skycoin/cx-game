@@ -5,11 +5,11 @@ import (
 
 	"github.com/go-gl/mathgl/mgl32"
 
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/mathi"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/constants"
 )
 
 var (
@@ -78,6 +78,9 @@ func NewCamera(window *render.Window) *Camera {
 
 //Updates Camera Positions
 func (camera *Camera) MoveCam(dTime float32) {
+	if input.GetInputContext() != input.FREECAM {
+		return
+	}
 	camera.X += input.GetAxis(input.HORIZONTAL) * dTime * camera.movSpeed
 	camera.Y += input.GetAxis(input.VERTICAL) * dTime * camera.movSpeed
 	camera.UpdateFrustum()
@@ -112,7 +115,6 @@ func (camera *Camera) SetCameraCenter() {
 func (camera *Camera) SetCameraPosition(x, y float32) {
 	camera.updateFocusArea(x, y)
 	camera.UpdateFrustum()
-	input.UpdateCameraPosition(x, y)
 }
 
 // update focus area to include (x,y)
@@ -183,8 +185,8 @@ func (camera *Camera) DrawLines(
 }
 
 func (camera Camera) GetTransform() mgl32.Mat4 {
-	translate :=  mgl32.Translate3D(camera.X, camera.Y, 0)
-	scale := mgl32.Scale3D(camera.Zoom,camera.Zoom,1)
+	translate := mgl32.Translate3D(camera.X, camera.Y, 0)
+	scale := mgl32.Scale3D(camera.Zoom, camera.Zoom, 1)
 	return translate.Mul4(scale)
 }
 
@@ -253,5 +255,5 @@ func (camera *Camera) CycleZoom() {
 }
 
 func (c *Camera) Pos() mgl32.Vec2 {
-	return mgl32.Vec2{ c.X, c.Y }
+	return mgl32.Vec2{c.X, c.Y}
 }

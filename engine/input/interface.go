@@ -11,7 +11,7 @@ import (
 
 //continuos keys, holding
 func GetButton(button string) bool {
-	key, ok := ButtonsToKeys[button]
+	key, ok := ActiveButtonsToKeys[button]
 	if !ok {
 		log.Printf("KEY IS NOT MAPPED!")
 		return false
@@ -26,7 +26,7 @@ func GetButton(button string) bool {
 
 //action keys, if pressed once
 func GetButtonDown(button string) bool {
-	key, ok := ButtonsToKeys[button]
+	key, ok := ActiveButtonsToKeys[button]
 	if !ok {
 		log.Printf("KEY [%s] IS NOT MAPPED!", button)
 		return false
@@ -40,7 +40,7 @@ func GetButtonDown(button string) bool {
 }
 
 func GetButtonUp(button string) bool {
-	key, ok := ButtonsToKeys[button]
+	key, ok := ActiveButtonsToKeys[button]
 	if !ok {
 		log.Printf("KEY IS NOT MAPPED")
 		return false
