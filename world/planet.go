@@ -1,8 +1,8 @@
 package world
 
 import (
-	"log"
 	"fmt"
+	"log"
 	"math"
 	"strconv"
 
@@ -184,28 +184,28 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 		tileType.CreateTile(TileCreationOptions{
 			Neighbours: planet.GetNeighbours(tilesInLayer, x, y),
 		})
-	rect := cxmath.Rect {
-		cxmath.Vec2i{ int32(x), int32(y) },
+	rect := cxmath.Rect{
+		cxmath.Vec2i{int32(x), int32(y)},
 		tileType.Size(),
 	}
-	for _,neighbour := range rect.Neighbours() {
+	for _, neighbour := range rect.Neighbours() {
 		planet.updateTile(tilesInLayer, int(neighbour.X), int(neighbour.Y))
 	}
 
 	// place child tiles (non-root) to prevent overlap
-	for offsetX := int32(0) ; offsetX < rect.Size.X ; offsetX++ {
-		for offsetY := int32(0) ; offsetY < rect.Size.Y ; offsetY++ {
+	for offsetX := int32(0); offsetX < rect.Size.X; offsetX++ {
+		for offsetY := int32(0); offsetY < rect.Size.Y; offsetY++ {
 			// don't overwrite root
-			if offsetX!=0 || offsetY!=0 {
+			if offsetX != 0 || offsetY != 0 {
 				tileIdx := planet.GetTileIndex(
-					int(rect.Origin.X + offsetX),
-					int(rect.Origin.Y + offsetY),
+					int(rect.Origin.X+offsetX),
+					int(rect.Origin.Y+offsetY),
 				)
 
-				tilesInLayer[tileIdx] = Tile {
+				tilesInLayer[tileIdx] = Tile{
 					TileCategory: TileCategoryChild,
-					OffsetX: int8(offsetX), OffsetY: int8(offsetY),
-					Name: fmt.Sprintf("%s (child)",tileType.Name),
+					OffsetX:      int8(offsetX), OffsetY: int8(offsetY),
+					Name: fmt.Sprintf("%s (child)", tileType.Name),
 				}
 			}
 		}
@@ -215,11 +215,11 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 func (planet *Planet) updateSurroundingTiles(
 	tilesInLayer []Tile, x, y int,
 ) {
-	rect := cxmath.Rect {
-		cxmath.Vec2i{ int32(x), int32(y) },
-		cxmath.Vec2i{ 1,1 },
+	rect := cxmath.Rect{
+		cxmath.Vec2i{int32(x), int32(y)},
+		cxmath.Vec2i{1, 1},
 	}
-	for _,neighbour := range rect.Neighbours() {
+	for _, neighbour := range rect.Neighbours() {
 		planet.updateTile(tilesInLayer, int(neighbour.X), int(neighbour.Y))
 	}
 }
@@ -500,4 +500,9 @@ func (planet *Planet) MinimizeDistance(
 
 func (planet *Planet) Update(dt float32) {
 	planet.Time += dt
+}
+
+func (planet *Planet) NearOxygenGenerator(position cxmath.Vec2) bool {
+	//todo after, return always true for now
+	return true
 }
