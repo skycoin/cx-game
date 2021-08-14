@@ -15,7 +15,8 @@ type World struct {
 	Planet   Planet
 }
 
-func (world World) TileIsClear(x, y int) bool {
+func (world World) TileIsClear(layerID LayerID, x, y int) bool {
+	layerTiles := world.Planet.GetLayerTiles(layerID)
 	return world.Entities.Agents.TileIsClear(x, y) &&
-		!world.Planet.TileIsSolid(x, y)
+		!world.Planet.TileExists(layerTiles, x, y)
 }

@@ -50,6 +50,25 @@ func (r Rect) Cells() []Vec2i {
 	return cells
 }
 
+func (r Rect) Neighbours() []Vec2i {
+	neighbours := make([]Vec2i, 0, r.Size.X*2 + r.Size.Y*2 - 4)
+	// above/below neighbours ( including corners )
+	for x := int32(-1) ; x <= r.Size.X ; x++ {
+		neighbours = append( neighbours,
+			Vec2i { r.Origin.X + x, r.Origin.Y-1 },
+			Vec2i { r.Origin.X + x, r.Origin.Y+r.Size.Y },
+		)
+	}
+	// left/right neighbours ( excluding corners )
+	for y := int32(0) ; y < r.Size.Y ; y++ {
+		neighbours = append( neighbours,
+			Vec2i { r.Origin.X-1, r.Origin.Y+y },
+			Vec2i { r.Origin.X+r.Size.X, r.Origin.Y+y },
+		)
+	}
+	return neighbours
+}
+
 type BinaryGrid struct {
 	Width,Height int
 	Occupied []bool

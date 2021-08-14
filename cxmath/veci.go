@@ -34,3 +34,7 @@ func (v1 Vec2i) Length() float32 {
 func (v1 Vec2i) Vec2() mgl32.Vec2 {
 	return mgl32.Vec2 { float32(v1.X), float32(v1.Y) }
 }
+
+func (v1 Vec2i) Eq(v2 Vec2i) bool {
+	return v1.X == v2.X && v1.Y == v2.Y
+}
