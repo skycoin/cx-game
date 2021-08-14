@@ -40,7 +40,7 @@ func (emitter *SparkEmitter) Emit(particle *particles.Particle) {
 			0,
 			spriteloader.GetSpriteIdByNameUint32("star"),
 			rand.Float32()*(emitter.maxduration-emitter.minduration)+emitter.minduration,
-			constants.PARTICLE_DRAW_HANDLER_TRANSPARENT,
+			constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
 			constants.PARTICLE_PHYSICS_HANDLER_NO_COLLISION_GRAVITY,
 			nil,
 		)

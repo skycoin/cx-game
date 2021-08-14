@@ -16,17 +16,19 @@ func DrawSolid(particleList []*particles.Particle, cam *camera.Camera) {
 	gl.Disable(gl.BLEND)
 	for _, particle := range particleList {
 		world := mgl32.Translate3D(
-			particle.Pos.X-cam.X,
-			particle.Pos.Y-cam.Y,
+			particle.Pos.X,
+			particle.Pos.Y,
 			0,
-		).Mul4(mgl32.Scale3D(1, 1, 1))
+		).Mul4(mgl32.Scale3D(particle.Size.X, particle.Size.Y, 1))
 		// projection := mgl32.Ortho2D(0, 800.0/32, 0, 600.0/32)
-		projection := mgl32.Ortho2D(
-			-800.0/2/32, 800.0/2/32,
-			-600.0/2/32, 600.0/2/32,
-		)
+
+		projection := cam.GetProjectionMatrix()
+
+		view := cam.GetViewMatrix()
+		program.SetMat4("view", &view)
 		program.SetMat4("projection", &projection)
 		program.SetMat4("world", &world)
+
 		program.SetVec4("color", &mgl32.Vec4{1, 1, 1,
 			particle.TimeToLive / particle.Duration,
 		})

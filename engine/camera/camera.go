@@ -188,7 +188,7 @@ func (camera *Camera) DrawLines(
 func (camera Camera) GetTransform() mgl32.Mat4 {
 	translate := mgl32.Translate3D(camera.X, camera.Y, 0)
 	// fmt.Println(camera.Zoom)
-	scale := mgl32.Scale3D(camera.Zoom, camera.Zoom, 1)
+	scale := mgl32.Scale3D(1/camera.Zoom, 1/camera.Zoom, 1)
 	return translate.Mul4(scale)
 }
 

@@ -29,13 +29,13 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 
 	for _, particle := range particleList {
 		world := mgl32.Translate3D(
-			particle.Pos.X-cam.X,
-			particle.Pos.Y-cam.Y,
+			particle.Pos.X,
+			particle.Pos.Y,
 			0,
 		).Mul4(cxmath.Scale(particle.Size.X))
 		projection := cam.GetProjectionMatrix()
 		program.SetMat4("projection", &projection)
-		view := cam.GetView()
+		view := cam.GetViewMatrix()
 		program.SetMat4("view", &view)
 		program.SetMat4("world", &world)
 		program.SetVec4("color", &mgl32.Vec4{1, 1, 1,
