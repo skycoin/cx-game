@@ -18,6 +18,7 @@ type Particle struct {
 }
 
 type ParticleMeta struct {
+	//should be between 0 and 1
 	SlowdownFactor float32
 }
 

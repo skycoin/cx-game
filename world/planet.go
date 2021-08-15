@@ -506,7 +506,7 @@ func (planet *Planet) Update(dt float32) {
 func (planet *Planet) NearOxygenGenerator(position cxmath.Vec2) bool {
 	//todo after, return always true for now
 	if input.GetButton("bubbles") {
-		fmt.Println("Working")
+		// fmt.Println("Working")
 		return true
 	}
 	return false

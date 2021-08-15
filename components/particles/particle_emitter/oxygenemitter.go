@@ -7,6 +7,7 @@ import (
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/world"
 )
@@ -30,11 +31,13 @@ and in update function, emitter can change its position, track object etc
 //object pool
 var oxygenEmitters []OxygenEmitter
 
+var emitterTTL = 30
+
 type OxygenEmitter struct {
 	//ttl in ticks
 
 	//-1 is unset, ready to by set, 0 means it expired
-	TTL          float32
+	TTL          int
 	Position     cxmath.Vec2
 	agentId      types.AgentID
 	particleList *particles.ParticleList
@@ -61,7 +64,7 @@ func NewOxygenEmitter(trackedId types.AgentID, particleList *particles.ParticleL
 
 //works when entering/reentering near oxygen generator
 func (e *OxygenEmitter) Init() {
-	e.TTL = 30
+	e.TTL = emitterTTL
 	//emit
 }
 
@@ -74,7 +77,11 @@ func (emitter *OxygenEmitter) Update(dt float32, currentWorld *world.World) {
 	if currentWorld.Planet.NearOxygenGenerator(emitter.Position) {
 		if emitter.TTL > 0 {
 			//emit logic
-			emitter.Emit()
+			//every fifth tick
+			if emitter.TTL%5 == 0 {
+				emitter.Emit()
+			}
+			emitter.TTL -= 1
 		} else if emitter.TTL == -1 {
 			emitter.Init()
 			return
@@ -90,6 +97,7 @@ func (emitter *OxygenEmitter) Update(dt float32, currentWorld *world.World) {
 
 // works when exited oxygen generator
 func (emitter *OxygenEmitter) Teardown() {
+	//todo add bubble pop
 	emitter.TTL = 0
 
 }
@@ -103,19 +111,18 @@ func (emitter *OxygenEmitter) Emit() {
 
 	id := emitter.particleList.AddParticle(
 		emitter.Position,
-		cxmath.Vec2{rand.Float32(), 35},
+		cxmath.Vec2{emitter.getBubbleX(), emitter.getBubbleY()},
 		1,
 		0,
 		0,
 		spriteloader.GetSpriteIdByNameUint32("star"),
-		5,
-		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
+		3,
+		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT,
 		constants.PARTICLE_PHYSICS_HANDLER_OXYGEN,
 		nil,
 	)
-
 	particle := emitter.particleList.GetParticle(id)
-	particle.SlowdownFactor = 1
+	particle.SlowdownFactor = 0.9
 }
 
 func (emitter *OxygenEmitter) Detach() {
@@ -124,4 +131,18 @@ func (emitter *OxygenEmitter) Detach() {
 
 func (emitter *OxygenEmitter) IsFree() bool {
 	return emitter.agentId == -1
+}
+
+func (emitter *OxygenEmitter) getBubbleX() float32 {
+	direction := getDirection()
+
+	return rand.Float32() * 5 * direction
+}
+
+func (emitter *OxygenEmitter) getBubbleY() float32 {
+	return rand.Float32() + 0.5*2
+}
+
+func getDirection() float32 {
+	return math32.Sign(rand.Float32() - 0.5)
 }
