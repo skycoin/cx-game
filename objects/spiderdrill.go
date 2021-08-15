@@ -31,9 +31,13 @@ func SpiderDrillInit() {
 }
 
 func (s spiderDrillJumpNotifier) OnSpiderDrillJump(data events.SpiderEventData) {
-	if DEBUG { fmt.Println("Jump: ", data) }
+	if DEBUG {
+		fmt.Println("Jump: ", data)
+	}
 }
 
 func (s spiderDrillBeforeJumpNotifier) OnSpiderDrillBeforeJump(data events.SpiderEventData) {
-	if DEBUG { fmt.Println("Before Jump: ", data) }
+	if DEBUG {
+		fmt.Println("Before Jump: ", data)
+	}
 }
