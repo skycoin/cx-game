@@ -23,8 +23,8 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 		gl.ActiveTexture(gl.TEXTURE0)
 		gl.BindTexture(gl.TEXTURE_2D, tex)
 		translate := mgl32.Translate3D(
-			agent.PhysicsState.Pos.X-ctx.Camera.X,
-			agent.PhysicsState.Pos.Y-ctx.Camera.Y,
+			agent.PhysicsState.Pos.X,
+			agent.PhysicsState.Pos.Y,
 			-10,
 		)
 		scale := mgl32.Scale3D(
@@ -33,7 +33,8 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 			1,
 		)
 		projection := spriteloader.Window.GetProjectionMatrix()
-		mvp := projection.Mul4(translate).Mul4(scale)
+		mvp := projection.Mul4(ctx.Camera.GetViewMatrix()).Mul4(translate).Mul4(scale)
+
 		anim.Program.SetMat4("mvp", &mvp)
 		texTransform := agent.AnimationPlayback.Frame().Transform
 		anim.Program.SetMat3("texTransform", &texTransform)
