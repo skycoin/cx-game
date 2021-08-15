@@ -1,7 +1,6 @@
 package item
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 
@@ -309,9 +308,7 @@ func (inventory *Inventory) getGridClickPosition(
 		screenY / render.PixelsPerTile,
 		0, 1}
 
-	fmt.Println("camcoords: ", camCoords)
 	centered := inventory.getGridTransform().Inv().Mul4x1(camCoords).Vec2()
-	fmt.Println("centered: ", centered)
 	// convert from centered to top-left origin
 	w := float32(inventory.Width)
 	h := float32(len(inventory.Slots)) / w
