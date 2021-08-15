@@ -21,10 +21,6 @@ var (
 	currentWorld  *world.World
 	currentCamera *camera.Camera
 	currentPlayer *agents.Agent
-
-	emitter       *particle_emitter.ParticleEmitter
-	sparkEmitter  *particle_emitter.SparkEmitter
-	bulletEmitter *particle_emitter.BulletEmitter
 )
 
 func Init(World *world.World, cam *camera.Camera, player *agents.Agent) {
@@ -34,8 +30,6 @@ func Init(World *world.World, cam *camera.Camera, player *agents.Agent) {
 		currentCamera = cam
 	*/
 	currentPlayer = player
-	emitter = particle_emitter.
-		NewParticle(player.PhysicsState.Pos, &World.Entities.Particles)
 
 	agent_health.Init()
 	agent_draw.Init()

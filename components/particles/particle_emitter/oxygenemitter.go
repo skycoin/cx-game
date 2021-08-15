@@ -59,7 +59,7 @@ func NewOxygenEmitter(trackedId types.AgentID, particleList *particles.ParticleL
 	return newOxygenEmitter
 }
 
-//precondition works when entering/reentering near oxygen generator
+//works when entering/reentering near oxygen generator
 func (e *OxygenEmitter) Init() {
 	e.TTL = 30
 	//emit
@@ -75,7 +75,6 @@ func (emitter *OxygenEmitter) Update(dt float32, currentWorld *world.World) {
 		if emitter.TTL > 0 {
 			//emit logic
 			emitter.Emit()
-
 		} else if emitter.TTL == -1 {
 			emitter.Init()
 			return
@@ -89,9 +88,7 @@ func (emitter *OxygenEmitter) Update(dt float32, currentWorld *world.World) {
 	}
 }
 
-// postcondition
 // works when exited oxygen generator
-//
 func (emitter *OxygenEmitter) Teardown() {
 	emitter.TTL = 0
 
@@ -100,21 +97,25 @@ func (emitter *OxygenEmitter) Teardown() {
 func (emitter *OxygenEmitter) Reset() {
 	emitter.TTL = -1
 }
+
 func (emitter *OxygenEmitter) Emit() {
 	emitter.TTL -= 1
 
-	emitter.particleList.AddParticle(
+	id := emitter.particleList.AddParticle(
 		emitter.Position,
-		cxmath.Vec2{rand.Float32(), 5},
+		cxmath.Vec2{rand.Float32(), 35},
 		1,
 		0,
 		0,
 		spriteloader.GetSpriteIdByNameUint32("star"),
-		1,
+		5,
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
 		constants.PARTICLE_PHYSICS_HANDLER_OXYGEN,
 		nil,
 	)
+
+	particle := emitter.particleList.GetParticle(id)
+	particle.SlowdownFactor = 1
 }
 
 func (emitter *OxygenEmitter) Detach() {

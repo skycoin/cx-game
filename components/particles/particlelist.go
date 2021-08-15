@@ -35,7 +35,7 @@ func (q *QueueI) Pop() int {
 	return returnValue
 }
 
-var particleIdCounter int
+var particleIdCounter int = -1
 
 func (pl *ParticleList) AddParticle(
 	position cxmath.Vec2,
