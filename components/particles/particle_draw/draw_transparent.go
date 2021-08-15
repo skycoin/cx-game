@@ -23,11 +23,19 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 	program := GetProgram(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT)
 
 	program.Use()
+
+	//temporary prevent from writing to depth buffer
+	gl.DepthMask(false)
+
 	//accomplished by setting blendFunc
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)
 
 	for _, particle := range particleList {
+		if particle == nil {
+			continue
+		}
+
 		world := mgl32.Translate3D(
 			particle.Pos.X,
 			particle.Pos.Y,
@@ -50,11 +58,16 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 	}
 
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	gl.DepthMask(true)
 }
 
 func DrawTransparentInstanced(particleList []*particles.Particle, cam *camera.Camera) {
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)
+	//temporary prevent from writing to depth buffer
+	gl.DepthMask(false)
+	// gl.BlendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	// gl.BlendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ZERO)
 
 	program := GetProgram(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED)
 	program.Use()
@@ -79,6 +92,8 @@ func DrawTransparentInstanced(particleList []*particles.Particle, cam *camera.Ca
 
 	gl.BindVertexArray(instanced_vao)
 	gl.DrawArraysInstanced(gl.TRIANGLES, 0, 6, int32(len(particleList)))
+
+	gl.DepthMask(true)
 }
 
 func initDrawInstanced() {

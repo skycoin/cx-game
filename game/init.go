@@ -7,6 +7,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/components/particles/particle_emitter"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/camera"
@@ -120,5 +121,8 @@ func Init() {
 
 	sound.LoadSound("player_jump", "jump.wav")
 	Console = console.New()
+
+	//add oxygen emitter
+	particle_emitter.EmitOxygen(playerAgentID, &World.Entities.Particles)
 
 }

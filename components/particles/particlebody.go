@@ -203,6 +203,45 @@ func (body *ParticleBody) MoveBounce(planet worldcollider.WorldCollider, dt floa
 	body.Pos = newPos
 }
 
+//gradually slow the velocity on x axis,
+func (body *ParticleBody) MoveSlowXAxis(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2, isColliding bool, slowdownFactor float32) {
+	body.PrevVel = body.Vel
+	body.PrevPos = body.Pos
+	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
+	body.Vel.X = body.Vel.X * slowdownFactor
+	//todo account drag
+	newPos := body.Pos.Add(body.Vel.Mult(dt))
+
+	//if colliding flag is set
+	if isColliding {
+		body.Collisions.Reset()
+
+		body.DetectCollisions(planet, newPos)
+
+		if body.Collisions.Above {
+			body.Vel.Y = 0
+			body.Vel.X *= (1 - body.Friction)
+			newPos.Y = body.bounds(newPos).top - 0.5 - body.Size.Y/2
+		}
+		if body.Collisions.Below {
+			body.Vel.Y = -body.Vel.Y * body.Elasticity
+			body.Vel.X *= (1 - body.Friction)
+			newPos.Y = body.bounds(newPos).bottom + 0.5 + body.Size.Y/2
+		}
+		if body.Collisions.Left {
+			body.Vel.X = -body.Vel.X * body.Elasticity
+			newPos.X = body.bounds(newPos).left + 0.5 + body.Size.X/2
+		}
+		if body.Collisions.Right {
+			body.Vel.X = -body.Vel.X * body.Elasticity
+			newPos.X = body.bounds(newPos).right - 0.5 + body.Size.X/2
+		}
+		body.Pos = newPos
+	} else {
+		body.Pos = newPos
+	}
+}
+
 //for bullets
 func (body *ParticleBody) MoveNoBounceRaytrace(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2) {
 	body.PrevPos = body.Pos

@@ -1,7 +1,7 @@
 package item
 
 import (
-	"github.com/skycoin/cx-game/particle_emitter"
+	"github.com/skycoin/cx-game/components/particles/particle_emitter"
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -21,8 +21,8 @@ func UseGun(info ItemUseInfo) {
 
 func RegisterGunItemType() ItemTypeID {
 	/*
-	spriteId := spriteloader.LoadSingleSprite(
-		"./assets/item/gun-temp.png", "gun")
+		spriteId := spriteloader.LoadSingleSprite(
+			"./assets/item/gun-temp.png", "gun")
 	*/
 	itemType := NewItemType(render.GetSpriteIDByName("gun-temp"))
 	itemType.Use = UseGun

@@ -9,6 +9,9 @@ func BinByPhysicsHandlerID(particleList []*particles.Particle) map[types.Particl
 	bins := make(map[types.ParticlePhysicsHandlerID][]*particles.Particle)
 
 	for _, par := range particleList {
+		if par == nil {
+			continue
+		}
 		bins[par.PhysicsHandlerID] = append(bins[par.PhysicsHandlerID], par)
 	}
 	return bins

@@ -7,6 +7,7 @@ import (
 	"github.com/skycoin/cx-game/components/agents/agent_health"
 	"github.com/skycoin/cx-game/components/agents/agent_physics"
 	"github.com/skycoin/cx-game/components/particles/particle_draw"
+	"github.com/skycoin/cx-game/components/particles/particle_emitter"
 	"github.com/skycoin/cx-game/components/particles/particle_physics"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/camera"
@@ -19,7 +20,7 @@ func Update(dt float32) {
 	//update lifetimes
 	currentWorld.Entities.Particles.Update(dt)
 
-	emitter.SetPosition(currentPlayer.PhysicsState.Pos)
+	particle_emitter.Update(dt, currentWorld)
 }
 
 func updateTimers(agents []*agents.Agent, dt float32) {

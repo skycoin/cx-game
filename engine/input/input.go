@@ -72,6 +72,7 @@ func registerKeyMaps() {
 	MapKeyToButton("shoot", glfw.KeyP)
 	MapKeyToButton("toggle-zoom", glfw.KeyF2)
 	MapKeyToButton("toggle-texture-filtering", glfw.KeyF6)
+	MapKeyToButton("bubbles", glfw.KeyU)
 
 	MapKeyToButton("enemy-tool-scroll-down", glfw.KeyDown)
 	MapKeyToButton("enemy-tool-scroll-up", glfw.KeyUp)

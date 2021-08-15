@@ -4,8 +4,8 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/agents"
@@ -168,7 +168,7 @@ func (inventory Inventory) DrawGrid(ctx render.Context) {
 func (inv Inventory) DrawBar(ctx render.Context) {
 	barCtx := ctx.
 		PushLocal(mgl32.Translate3D(0, 1-ctx.Size.Y()/2, 0)).
-		PushLocal(mgl32.Scale3D(2,2,1))
+		PushLocal(mgl32.Scale3D(2, 2, 1))
 	//barTransform := mgl32.Translate3D(0,-3,-spriteloader.SpriteRenderDistance)
 	barSlots := inv.getBarSlots()
 	for idx, slot := range barSlots {
@@ -194,7 +194,7 @@ func (inventory Inventory) DrawSlot(
 	render.DrawColorQuad(ctx.World, getBorderColor(isSelected))
 	// draw bg on top of border
 	bgCtx := ctx.
-		PushLocal(mgl32.Translate3D(0,0,0.1)).
+		PushLocal(mgl32.Translate3D(0, 0, 0.1)).
 		PushLocal(cxmath.Scale(1 - borderSize))
 	render.DrawColorQuad(bgCtx.World, bgColor)
 	// draw item on top of bg
@@ -205,8 +205,8 @@ func (inventory Inventory) DrawSlot(
 		spriteId := itemTypes[slot.ItemTypeID].SpriteID
 		render.DrawUISprite(
 			itemCtx.World.Mul4(
-				mgl32.Translate3D(0,0,0.2)), spriteId,
-			render.NewSpriteDrawOptions() )
+				mgl32.Translate3D(0, 0, 0.2)), spriteId,
+			render.NewSpriteDrawOptions())
 
 		textCtx := itemCtx.PushLocal(
 			mgl32.Translate3D(0.5, -0.05, 0.3).

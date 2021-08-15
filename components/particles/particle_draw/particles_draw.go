@@ -10,11 +10,14 @@ const particleRadius int = 1
 
 // filter only particles visible by camera
 func FrustumCull(
-		particleList []*particles.Particle, cam *camera.Camera,
+	particleList []*particles.Particle, cam *camera.Camera,
 ) []*particles.Particle {
-	particlesToDraw := make([]*particles.Particle, 0, len(particleList))
+	particlesToDraw := make([]*particles.Particle, 0)
 
 	for _, par := range particleList {
+		if par == nil {
+			continue
+		}
 		//assume particle radius is 1
 		if cam.IsInBoundsRadius(par.Pos, particleRadius) {
 			particlesToDraw = append(particlesToDraw, par)
@@ -25,7 +28,7 @@ func FrustumCull(
 }
 
 func BinByDrawHandlerID(
-		particleList []*particles.Particle,
+	particleList []*particles.Particle,
 ) map[types.ParticleDrawHandlerId][]*particles.Particle {
 	bins := make(map[types.ParticleDrawHandlerId][]*particles.Particle)
 	for _, par := range particleList {

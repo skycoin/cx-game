@@ -27,15 +27,16 @@ func (q *QueueI) Push(n int) {
 }
 func (q *QueueI) Pop() int {
 	if len(q.queue) == 0 {
-		particleIdCounter += 1
-		return particleIdCounter
+		return -1
+		// particleIdCounter += 1
+		// return particleIdCounter
 	}
 	returnValue := q.queue[0]
 	q.queue = q.queue[1:]
 	return returnValue
 }
 
-var particleIdCounter int
+var particleIdCounter int = -1
 
 func (pl *ParticleList) AddParticle(
 	position cxmath.Vec2,
@@ -49,8 +50,11 @@ func (pl *ParticleList) AddParticle(
 	physiscHandlerID types.ParticlePhysicsHandlerID,
 	callback func(*Particle),
 ) types.ParticleID {
+
+	//id should match particle id
+	newId := pl.idQueue.Pop()
 	newParticle := Particle{
-		ParticleId: types.ParticleID(pl.idQueue.Pop()),
+		ParticleId: types.ParticleID(newId),
 		ParticleBody: ParticleBody{
 			Pos:        position,
 			Vel:        velocity,
@@ -66,7 +70,12 @@ func (pl *ParticleList) AddParticle(
 		OnCollideCallback: callback,
 	}
 
-	pl.Particles = append(pl.Particles, &newParticle)
+	if newId == -1 {
+		pl.Particles = append(pl.Particles, &newParticle)
+		newParticle.ParticleId = types.ParticleID(len(pl.Particles) - 1)
+	} else {
+		pl.Particles[newId] = &newParticle
+	}
 	return newParticle.ParticleId
 }
 
@@ -74,34 +83,40 @@ func (pl *ParticleList) Update(dt float32) {
 	// fmt.Println(pl.idQueue)
 	particlesToDelete := make([]int, 0)
 	for i, par := range pl.Particles {
-
-		// -1 is infinite
-		if par.Duration != -1 {
-			par.TimeToLive -= dt
-			if par.TimeToLive <= 0 {
-				particlesToDelete = append(particlesToDelete, i)
+		if par != nil {
+			// -1 is infinite
+			if par.Duration != -1 {
+				par.TimeToLive -= dt
+				if par.TimeToLive <= 0 {
+					particlesToDelete = append(particlesToDelete, i)
+				}
 			}
 		}
+
 	}
 	pl.deleteParticles(particlesToDelete)
 }
 
 func (pl *ParticleList) deleteParticles(indexes []int) {
-	var newParticleList []*Particle
-	for i, par := range pl.Particles {
-		toBeDeleted := false
-		for _, j := range indexes {
-			if i == j {
-				toBeDeleted = true
-				pl.idQueue.Push(i)
-				break
-			}
-		}
-		if !toBeDeleted {
-			newParticleList = append(newParticleList, par)
-		}
+	for _, i := range indexes {
+		pl.Particles[i] = nil
+		pl.idQueue.Push(i)
 	}
-	pl.Particles = newParticleList
+	// var newParticleList []*Particle
+	// for i, par := range pl.Particles {
+	// 	toBeDeleted := false
+	// 	for _, j := range indexes {
+	// 		if i == j {
+	// 			toBeDeleted = true
+	// 			pl.idQueue.Push(int(par.ParticleId))
+	// 			break
+	// 		}
+	// 	}
+	// 	if !toBeDeleted {
+	// 		newParticleList = append(newParticleList, par)
+	// 	}
+	// }
+	// pl.Particles = newParticleList
 }
 
 func (pl *ParticleList) GetParticle(id types.ParticleID) *Particle {
