@@ -1,6 +1,7 @@
 package agents
 
 import (
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 )
 
@@ -18,17 +19,17 @@ func NewAgentList() *AgentList {
 
 func NewDevAgentList() *AgentList {
 	agentList := NewAgentList()
-	player := newAgent(len(agentList.Agents))
-	player.AgentCategory = constants.AGENT_CATEGORY_PLAYER
-	agentList.CreateAgent(player)
-	enemy := newAgent(len(agentList.Agents))
-	enemy.AgentCategory = constants.AGENT_CATEGORY_ENEMY_MOB
-	agentList.CreateAgent(enemy)
+	// player := newAgent(len(agentList.Agents))
+	// player.AgentCategory = constants.AGENT_CATEGORY_PLAYER
+	// agentList.CreateAgent(player)
+	// enemy := newAgent(len(agentList.Agents))
+	// enemy.AgentCategory = constants.AGENT_CATEGORY_ENEMY_MOB
+	// agentList.CreateAgent(enemy)
 
 	return agentList
 }
 
-func (al *AgentList) CreateAgent(agent *Agent) bool {
+func (al *AgentList) CreatelAgent(agent *Agent) bool {
 	//for now
 	if len(al.Agents) > constants.MAX_AGENTS {
 		return false
@@ -47,23 +48,25 @@ func (al *AgentList) DestroyAgent(agentId int) bool {
 }
 
 func (al *AgentList) Spawn(
-		agentTypeID constants.AgentTypeID, opts AgentCreationOptions,
-) int {
+	agentTypeID constants.AgentTypeID, opts AgentCreationOptions,
+) types.AgentID {
 	agent := GetAgentType(agentTypeID).CreateAgent(opts)
 	agent.FillDefaults()
 	agent.Validate()
 	agent.AgentId = len(al.Agents)
 	al.Agents = append(al.Agents, agent)
-	return agent.AgentId
+	return types.AgentID(agent.AgentId)
 }
 
 func (al *AgentList) Get() []*Agent { return al.Agents }
 
-func (al *AgentList) FromID(id int) *Agent { return al.Get()[id] }
+func (al *AgentList) FromID(id types.AgentID) *Agent { return al.Get()[id] }
 
-func (al *AgentList) TileIsClear(x,y int) bool {
-	for _,agent := range al.Get() {
-		if agent.PhysicsState.Contains(float32(x), float32(y)) { return false }
+func (al *AgentList) TileIsClear(x, y int) bool {
+	for _, agent := range al.Get() {
+		if agent.PhysicsState.Contains(float32(x), float32(y)) {
+			return false
+		}
 	}
 	return true
 }

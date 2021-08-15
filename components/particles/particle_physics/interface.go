@@ -28,6 +28,10 @@ func Init() {
 		constants.PARTICLE_PHYSICS_HANDLER_NO_COLLISION_GRAVITY,
 		PhysicsHandlerNoCollisionGravity,
 	)
+	RegisterPhysicsHandler(
+		constants.PARTICLE_PHYSICS_HANDLER_OXYGEN,
+		PhysicsHandlerOxygen,
+	)
 
 	AssertAllParticleHandlersRegistered()
 }
