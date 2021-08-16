@@ -17,9 +17,16 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 	agent.PhysicsState.Direction = directionX * -1
 	agent.PhysicsState.Vel.X = directionX * drillSpeed
 
+	isCollisionHorizontal := agent.PhysicsState.Collisions.Horizontal()
+	if isCollisionHorizontal {
+		events.OnSpiderCollisionHorizontal.Trigger(events.SpiderEventData{
+			Agent: agent,
+		})
+	}
+
 	doJump :=
 		agent.PhysicsState.Collisions.Horizontal() &&
-			agent.PhysicsState.IsOnGround()
+			agent.PhysicsState.IsOnGround() && !agent.PhysicsState.Collisions.VerticalAbove()
 	if doJump {
 		events.OnSpiderBeforeJump.Trigger(events.SpiderEventData{
 			Agent: agent,

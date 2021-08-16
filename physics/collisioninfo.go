@@ -19,3 +19,11 @@ func (c *CollisionInfo) Collided() bool {
 func (c CollisionInfo) Horizontal() bool {
 	return c.Left || c.Right
 }
+
+func (c CollisionInfo) Vertical() bool {
+	return c.Above || c.Below
+}
+
+func (c CollisionInfo) VerticalAbove() bool {
+	return c.Above
+}
