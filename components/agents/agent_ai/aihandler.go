@@ -12,7 +12,8 @@ import (
 )
 
 type AiContext struct {
-	PlayerPos mgl32.Vec2
+	WorldWidth float32
+	PlayerPos  mgl32.Vec2
 }
 type AiHandler func(*agents.Agent, AiContext)
 

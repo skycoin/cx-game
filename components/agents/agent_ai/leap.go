@@ -9,11 +9,16 @@ const (
 	verticalJumpSpeed   float32 = 15
 	horizontalJumpSpeed float32 = 5
 	secondsBetweenLeaps float32 = 2
-	glideSpeed float32 = 1
+	glideSpeed          float32 = 1
 )
 
 func AiHandlerLeap(agent *agents.Agent, ctx AiContext) {
-	directionX := math32.Sign(ctx.PlayerPos.X() - agent.PhysicsState.Pos.X)
+	dist := ctx.PlayerPos.X() - agent.PhysicsState.Pos.X
+
+	directionX := math32.Sign(dist)
+	if math32.Abs(dist) > ctx.WorldWidth/2 {
+		directionX *= -1
+	}
 
 	onGround := agent.PhysicsState.Collisions.Below
 	canJump := onGround && !agent.IsWaiting()

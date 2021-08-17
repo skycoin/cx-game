@@ -11,7 +11,8 @@ import (
 // by filtering the world agents
 func UpdateAgents(World *world.World, player *agents.Agent) {
 	ctx := AiContext{
-		PlayerPos: player.PhysicsState.Pos.Mgl32(),
+		WorldWidth: float32(World.Planet.Width),
+		PlayerPos:  player.PhysicsState.Pos.Mgl32(),
 	}
 	for _, agent := range World.Entities.Agents.Get() {
 		aiHandlers[agent.AiHandlerID](agent, ctx)
