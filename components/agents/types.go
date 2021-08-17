@@ -5,9 +5,9 @@ import (
 
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
+	"github.com/skycoin/cx-game/render"
 )
 
 type AgentCreationOptions struct {
@@ -85,7 +85,7 @@ func createSpiderDrill(opts AgentCreationOptions) *Agent {
 	y := opts.Y
 	// TODO only load these once
 	animation := anim.LoadAnimationFromJSON("./assets/spiderDrill.json")
-	playback := animation.NewPlayback("Idle")
+	playback := animation.NewPlayback("Walk")
 	agent := Agent{
 		AgentCategory: constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_DRILL,
@@ -107,10 +107,8 @@ func createPlayer(opts AgentCreationOptions) *Agent {
 		AiHandlerID:   constants.AI_HANDLER_PLAYER,
 		DrawHandlerID: constants.DRAW_HANDLER_PLAYER,
 		PhysicsState: physics.Body{
-			Pos:
-				cxmath.Vec2{X: opts.X, Y: opts.Y},
-			Size:
-				cxmath.Vec2{X: 2.0*constants.PLAYER_RENDER_TO_HITBOX, Y: 3},
+			Pos:       cxmath.Vec2{X: opts.X, Y: opts.Y},
+			Size:      cxmath.Vec2{X: 2.0 * constants.PLAYER_RENDER_TO_HITBOX, Y: 3},
 			Direction: 1,
 		},
 		HealthComponent: NewHealthComponent(100),
