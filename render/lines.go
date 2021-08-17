@@ -32,8 +32,8 @@ func InitDrawLines() {
 	gl.EnableVertexAttribArray(0)
 }
 
-func (window *Window) DrawLines(
-	lineArray []float32, color mgl32.Vec3, ctx Context,
+func DrawLines(
+	lineArray []float32, color mgl32.Vec3, mvp mgl32.Mat4,
 ) {
 	// DEBUG: check if the array have the right amount of elements
 	if len(lineArray) < 4 {
@@ -53,7 +53,6 @@ func (window *Window) DrawLines(
 
 	defer lineProgram.StopUsing()
 	lineProgram.SetVec3("uColor", &color)
-	mvp := ctx.MVP()
 	lineProgram.SetMat4("uProjection", &mvp)
 
 	gl.BindVertexArray(lines_vao)

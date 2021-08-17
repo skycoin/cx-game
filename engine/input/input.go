@@ -72,6 +72,7 @@ func registerKeyMaps() {
 	MapKeyToButton("shoot", glfw.KeyP)
 	MapKeyToButton("toggle-zoom", glfw.KeyF2)
 	MapKeyToButton("toggle-texture-filtering", glfw.KeyF6)
+	MapKeyToButton("toggle-bbox", glfw.KeyF1)
 	MapKeyToButton("bubbles", glfw.KeyU)
 
 	MapKeyToButton("enemy-tool-scroll-down", glfw.KeyDown)
@@ -84,6 +85,7 @@ func registerKeyMaps() {
 	MapKeyToButton("up", glfw.KeyW)
 	MapKeyToButton("down", glfw.KeyS)
 	MapKeyToButton("freecam-off", glfw.KeyKP0)
+	MapKeyToButton("toggle-bbox", glfw.KeyF1)
 
 	//revert to game input context
 	SetInputContext(GAME)
