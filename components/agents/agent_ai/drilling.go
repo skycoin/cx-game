@@ -19,7 +19,11 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 		directionX *= -1
 	}
 	agent.PhysicsState.Direction = directionX * -1
-	agent.PhysicsState.Vel.X = directionX * drillSpeed
+	if math32.Abs(dist) > 0.2 {
+		agent.PhysicsState.Vel.X = directionX * drillSpeed
+	} else {
+		agent.PhysicsState.Vel.X = 0
+	}
 
 	isCollisionHorizontal := agent.PhysicsState.Collisions.Horizontal()
 	if isCollisionHorizontal {
