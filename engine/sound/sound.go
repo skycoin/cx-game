@@ -264,7 +264,7 @@ func getFreeSource() *openal.Source {
 }
 
 func printDebug(messages ...interface{}) {
-	if !DEBUG {
+	if DEBUG {
 		log.Println(messages...)
 	}
 }
