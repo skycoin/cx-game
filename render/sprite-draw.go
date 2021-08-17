@@ -23,7 +23,7 @@ var worldWidth float32
 var cameraTransform mgl32.Mat4
 var minFilter, magFilter int32 = gl.NEAREST, gl.NEAREST
 
-func SetWorldWidth(w float32)           { worldWidth = w }
+func SetWorldWidth(w float32) { worldWidth = w }
 func SetCameraTransform(mat mgl32.Mat4) {
 	cameraTransform = mat
 }
@@ -86,6 +86,10 @@ func DrawWorldSprite(transform mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) 
 func Flush(projection mgl32.Mat4) {
 	flushSpriteDraws(projection)
 	flushColorDraws(projection)
+	if drawBBoxLines {
+		flushBBoxLineDraws(projection)
+	}
+
 }
 
 func flushSpriteDraws(projection mgl32.Mat4) {

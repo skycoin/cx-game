@@ -4,6 +4,7 @@ import (
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/render"
 )
 
 func DrawAgents(allAgents *agents.AgentList, cam *camera.Camera) {
@@ -15,6 +16,11 @@ func DrawAgents(allAgents *agents.AgentList, cam *camera.Camera) {
 
 	for drawHandlerID, agentsForHandler := range bins {
 		GetDrawHandler(drawHandlerID)(agentsForHandler, ctx)
+	}
+	if render.IsBBoxActive() {
+		for _, agent := range agentsToDraw {
+			render.DrawBBoxLines(agent.PhysicsState.GetBBoxLines(), agent.PhysicsState.GetCollidingLines())
+		}
 	}
 
 }
