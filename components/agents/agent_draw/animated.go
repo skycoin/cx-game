@@ -41,3 +41,7 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 		gl.DrawArrays(gl.TRIANGLES, 0, 6)
 	}
 }
+
+var (
+	worldWidth float32 = 100
+)

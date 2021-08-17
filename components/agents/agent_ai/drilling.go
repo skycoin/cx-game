@@ -13,7 +13,11 @@ const (
 )
 
 func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
-	directionX := math32.Sign(ctx.PlayerPos.X() - agent.PhysicsState.Pos.X)
+	dist := ctx.PlayerPos.X() - agent.PhysicsState.Pos.X
+	directionX := math32.Sign(dist)
+	if math32.Abs(dist) > ctx.WorldWidth/2 {
+		directionX *= -1
+	}
 	agent.PhysicsState.Direction = directionX * -1
 	agent.PhysicsState.Vel.X = directionX * drillSpeed
 
