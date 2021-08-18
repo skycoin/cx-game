@@ -1,9 +1,9 @@
 package item
 
 import (
-	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/engine/ui"
+	"github.com/skycoin/cx-game/render"
 )
 
 func UseBuildTool(info ItemUseInfo) {
@@ -16,7 +16,7 @@ func UseBuildTool(info ItemUseInfo) {
 }
 
 func RegisterBuildToolItemType() ItemTypeID {
-	itemtype := NewItemType(render.GetSpriteIDByName("dev-build-tool"))
+	itemtype := NewItemType(render.GetSpriteIDByName("dev-build-furniture-tool-2"))
 	itemtype.Name = "Dev Build Tool"
 	itemtype.Category = BuildTool
 	itemtype.Use = UseBuildTool
