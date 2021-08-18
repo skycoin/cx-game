@@ -53,7 +53,7 @@ func (p PositionedTileTypeID) Transform() mgl32.Mat4 {
 	translation := mgl32.Translate3D(
 		float32(p.Rect.Size.X)/2-0.5+float32(p.Rect.Origin.X),
 		-1*(float32(p.Rect.Size.Y)/2-0.5+float32(p.Rect.Origin.Y)),
-		0)
+		-5)
 	scale := mgl32.Scale3D(
 		float32(p.Rect.Size.X), float32(p.Rect.Size.Y), 1)
 	return translation.Mul4(scale)
@@ -209,6 +209,26 @@ func tilesAreClear(
 			}
 		}
 	}
+	//if layer is backgroundlayer, do additional front layer checks
+	if layerID == world.BgLayer {
+		for x := xstart; x < xstop; x++ {
+			for y := ystart; y < ystop; y++ {
+				if !World.TileIsClear(world.MidLayer, x, y) ||
+					!World.TileIsClear(world.TopLayer, x, y) {
+					return false
+				}
+			}
+		}
+	} else // if layer is midlayer, do additional top layer check
+	if layerID == world.MidLayer {
+		for x := xstart; x < xstop; x++ {
+			for y := ystart; y < ystop; y++ {
+				if !World.TileIsClear(world.TopLayer, x, y) {
+					return false
+				}
+			}
+		}
+	}
 	return true
 }
 
@@ -248,5 +268,4 @@ func (grid *PlacementGrid) UpdatePreview(World *world.World, screenX, screenY fl
 		x+int(tt.Width),
 		y+int(tt.Height),
 	)
-
 }
