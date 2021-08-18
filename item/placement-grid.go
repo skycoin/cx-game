@@ -53,7 +53,7 @@ func (p PositionedTileTypeID) Transform() mgl32.Mat4 {
 	translation := mgl32.Translate3D(
 		float32(p.Rect.Size.X)/2-0.5+float32(p.Rect.Origin.X),
 		-1*(float32(p.Rect.Size.Y)/2-0.5+float32(p.Rect.Origin.Y)),
-		0)
+		-5)
 	scale := mgl32.Scale3D(
 		float32(p.Rect.Size.X), float32(p.Rect.Size.Y), 1)
 	return translation.Mul4(scale)
