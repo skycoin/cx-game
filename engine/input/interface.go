@@ -98,3 +98,4 @@ func GetMousePos() mgl32.Vec2 {
 
 	return virtualPos
 }
+
