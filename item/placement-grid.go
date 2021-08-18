@@ -3,13 +3,14 @@ package item
 import (
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/cxmath/math32i"
-	"github.com/skycoin/cx-game/cxmath/math32"
-	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/cxmath/math32"
+	"github.com/skycoin/cx-game/cxmath/math32i"
+	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/input"
+	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/world"
 )
 
 const PlacementGridWidth = 5
@@ -98,6 +99,7 @@ type PlacementGrid struct {
 	Selected              world.TileTypeID
 	HasSelected           bool
 	Scroll                float32
+	canPlace              bool
 }
 
 func NewPlacementGrid() PlacementGrid {
@@ -118,19 +120,25 @@ func (grid *PlacementGrid) Draw(ctx render.Context, invCam mgl32.Mat4) {
 	for _, positionedTileTypeID := range grid.PositionedTileTypeIDs {
 		grid.DrawSlot(positionedTileTypeID, ctx)
 	}
-	if grid.HasSelected { grid.DrawPreview(ctx, invCam) }
+	if grid.HasSelected {
+		previewColor := mgl32.Vec4{0, 1, 0, 0.5}
+		if !grid.canPlace {
+			previewColor = mgl32.Vec4{1, 0, 0, 0.5}
+		}
+		grid.DrawPreview(ctx, invCam, previewColor)
+	}
 }
 
-var previewColor = mgl32.Vec4 { 0,1,0,0.5 } // green
-func (grid *PlacementGrid) DrawPreview(ctx render.Context, invCam mgl32.Mat4) {
-	mousePos := input.GetMousePos().Mul(1.0/float32(constants.PIXELS_PER_TILE))
-	mousePosHomog := mgl32.Vec4 { mousePos.X(), mousePos.Y(), 0, 1 }
+// var previewColor = mgl32.Vec4{0, 1, 0, 0.5} // green
+func (grid *PlacementGrid) DrawPreview(ctx render.Context, invCam mgl32.Mat4, previewColor mgl32.Vec4) {
+	mousePos := input.GetMousePos().Mul(1.0 / float32(constants.PIXELS_PER_TILE))
+	mousePosHomog := mgl32.Vec4{mousePos.X(), mousePos.Y(), 0, 1}
 	mouseWorldPos := invCam.Inv().Mul4x1(mousePosHomog).Vec2()
 
 	translate := mgl32.Translate3D(
 		math32.Round(mouseWorldPos.X()),
 		math32.Round(mouseWorldPos.Y()),
-		0 )
+		0)
 	shiftAndScale := grid.previewTransform()
 
 	worldTransform := translate.Mul4(shiftAndScale)
@@ -143,16 +151,14 @@ func (grid *PlacementGrid) previewTransform() mgl32.Mat4 {
 	tiletype := grid.Selected.Get()
 
 	unCenter :=
-		mgl32.Translate3D( 0.5, 0.5, 0)
+		mgl32.Translate3D(0.5, 0.5, 0)
 	scaleUp :=
-		mgl32.Scale3D( float32(tiletype.Width), float32(tiletype.Height), 1, )
+		mgl32.Scale3D(float32(tiletype.Width), float32(tiletype.Height), 1)
 	reCenter :=
-		mgl32.Translate3D( -0.5, -0.5, 0)
+		mgl32.Translate3D(-0.5, -0.5, 0)
 
 	return reCenter.Mul4(scaleUp).Mul4(unCenter)
 }
-
-
 
 func (grid PlacementGrid) DrawSlot(
 	positionedTileTypeID PositionedTileTypeID, ctx render.Context,
@@ -165,14 +171,14 @@ func (grid PlacementGrid) DrawSlot(
 	}
 	render.DrawColorQuad(slotCtx.World, color)
 	bgCtx := slotCtx.
-		PushLocal(mgl32.Translate3D(0,0,0.1)).
+		PushLocal(mgl32.Translate3D(0, 0, 0.1)).
 		PushLocal(cxmath.Scale(1 - borderSize))
 	render.DrawColorQuad(bgCtx.World, bgColor)
 	// draw tiletype on top of bg
 	itemCtx := slotCtx.PushLocal(cxmath.Scale(itemSize))
 
 	render.DrawUISprite(
-		itemCtx.World.Mul4(mgl32.Translate3D(0,0,0.2)),
+		itemCtx.World.Mul4(mgl32.Translate3D(0, 0, 0.2)),
 		positionedTileTypeID.TileTypeID.Get().ItemSpriteID,
 		render.NewSpriteDrawOptions(),
 	)
@@ -193,12 +199,14 @@ func (grid *PlacementGrid) TrySelect(camCoords mgl32.Vec2) bool {
 }
 
 func tilesAreClear(
-		World *world.World, layerID world.LayerID,
-		xstart,ystart, xstop,ystop int,
+	World *world.World, layerID world.LayerID,
+	xstart, ystart, xstop, ystop int,
 ) bool {
-	for x := xstart ; x < xstop ; x++ {
-		for y := ystart ; y < ystop ; y++ {
-			if !World.TileIsClear(layerID, x, y) { return false }
+	for x := xstart; x < xstop; x++ {
+		for y := ystart; y < ystop; y++ {
+			if !World.TileIsClear(layerID, x, y) {
+				return false
+			}
 		}
 	}
 	return true
@@ -212,14 +220,33 @@ func (grid *PlacementGrid) TryPlace(info ItemUseInfo) bool {
 	x32, y32 := cxmath.RoundVec2(worldCoords)
 	x := int(x32)
 	y := int(y32)
-	tt := grid.Selected.Get() // tiletype
-	canPlace := tilesAreClear(
-		info.World, tt.Layer,
-		x,y, x+int(tt.Width), y+int(tt.Height),
-	)
-	if canPlace {
+	if grid.canPlace {
 		info.World.Planet.PlaceTileType(grid.Selected, x, y)
 		return true
 	}
 	return false
+}
+
+func (grid *PlacementGrid) UpdatePreview(World *world.World, screenX, screenY float32, Cam *camera.Camera) {
+	if !grid.HasSelected {
+		return
+	}
+
+	mousePos := input.GetMousePos()
+	screenTilePos := Cam.GetTransform().Mul4x1(mousePos.Mul(1.0/32).Vec4(0, 1))
+
+	x32, y32 := cxmath.RoundVec2(screenTilePos.Vec2())
+	x := int(x32)
+	y := int(y32)
+
+	tt := grid.Selected.Get()
+
+	grid.canPlace = tilesAreClear(
+		World,
+		tt.Layer,
+		x, y,
+		x+int(tt.Width),
+		y+int(tt.Height),
+	)
+
 }

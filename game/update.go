@@ -2,9 +2,11 @@ package game
 
 import (
 	"github.com/skycoin/cx-game/components"
+	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/engine/ui/console"
+	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/starfield"
 )
@@ -41,9 +43,12 @@ func Update(dt float32) {
 
 	starfield.UpdateStarField(dt)
 
-}
+	mousePos := input.GetMousePos()
+	item.GetInventoryById(player.InventoryID).PlacementGrid.UpdatePreview(
+		&World,
+		mousePos.X(),
+		mousePos.Y(),
+		Cam,
+	)
 
-// type mouseDraws struct {
-// 	xpos float32
-// 	ypos float32
-// }
+}
