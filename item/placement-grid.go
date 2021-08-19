@@ -13,7 +13,7 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
-const PlacementGridWidth = 5
+const PlacementGridWidth = 15
 const placementGridScrollStride = 4
 
 func binTileTypeIDsByMaterial(
