@@ -1,8 +1,6 @@
 package particles
 
 import (
-	"fmt"
-
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 
@@ -114,7 +112,6 @@ func DrawLaser(laser Laser, ctx render.WorldContext) {
 	alpha := laser.ttl / laserDuration
 	laserProgram.SetVec4F("color", 1, 1, 1, alpha)
 
-	fmt.Println(laser.transform)
 	mvp := ctx.ModelToModelViewProjection(laser.transform)
 	laserProgram.SetMat4("mvp", &mvp)
 
