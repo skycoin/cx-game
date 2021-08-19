@@ -10,6 +10,6 @@ import (
 //bounces, gravity
 func PhysicsHandlerBounceGravity(particleList []*particles.Particle, planet *world.Planet) {
 	for _, par := range particleList {
-		par.MoveBounce(planet, constants.TimeStep, cxmath.Vec2{0, -constants.Gravity})
+		par.MoveBounce(planet, constants.PHYSICS_TICK, cxmath.Vec2{0, -constants.Gravity})
 	}
 }

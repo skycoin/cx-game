@@ -36,12 +36,12 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 		}
 
 		if jumpFrame < jumpFrames {
-			player.PhysicsState.Vel.Y += playerJumpAcceleration * constants.TimeStep
+			player.PhysicsState.Vel.Y += playerJumpAcceleration * constants.PHYSICS_TICK
 			jumpFrame += 1
 		} else if !player.PhysicsState.IsOnGround() &&
 			input.GetButton("jump") &&
 			jumpFrame < jumpMaxFrames {
-			player.PhysicsState.Vel.Y += playerJumpAcceleration / 3 * constants.TimeStep
+			player.PhysicsState.Vel.Y += playerJumpAcceleration / 3 * constants.PHYSICS_TICK
 			jumpFrame += 1
 		}
 
@@ -49,7 +49,7 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 			player.PlayerData.IgnoringPlatformsFor = ignorePlatformTime
 		} else {
 			if player.PlayerData.IgnoringPlatformsFor > 0 {
-				player.PlayerData.IgnoringPlatformsFor -= constants.TimeStep
+				player.PlayerData.IgnoringPlatformsFor -= constants.PHYSICS_TICK
 			}
 		}
 	}
@@ -83,7 +83,7 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 	// 		math32.Sign(player.PhysicsState.Vel.X) * maxPlayerWalkSpeed
 	// }
 
-	player.PhysicsState.Vel.Y -= constants.Gravity * constants.TimeStep
+	player.PhysicsState.Vel.Y -= constants.Gravity * constants.PHYSICS_TICK
 
 	player.PhysicsState.IsIgnoringPlatforms = player.PlayerData.IgnoringPlatformsFor > 0
 }

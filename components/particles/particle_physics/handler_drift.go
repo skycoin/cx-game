@@ -11,6 +11,6 @@ import (
 
 func PhysicsHandlerDrift(particleList []*particles.Particle, planet *world.Planet) {
 	for _, par := range particleList {
-		par.MoveNoCollision(planet, constants.TimeStep, cxmath.Vec2{})
+		par.MoveNoCollision(planet, constants.PHYSICS_TICK, cxmath.Vec2{})
 	}
 }

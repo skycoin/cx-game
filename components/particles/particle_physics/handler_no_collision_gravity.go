@@ -13,7 +13,7 @@ func PhysicsHandlerNoCollisionGravity(particleList []*particles.Particle, planet
 	// for _, par := range particleList {
 	// }
 	for _, par := range particleList {
-		par.MoveNoCollision(planet, constants.TimeStep, cxmath.Vec2{
+		par.MoveNoCollision(planet, constants.PHYSICS_TICK, cxmath.Vec2{
 			0,
 			-constants.Gravity * 5,
 		})

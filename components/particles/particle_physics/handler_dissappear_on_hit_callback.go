@@ -9,7 +9,7 @@ import (
 
 func PhysicsHandlerDissappearOnHitCallback(particleList []*particles.Particle, planet *world.Planet) {
 	for _, par := range particleList {
-		par.MoveNoBounceRaytrace(planet, constants.TimeStep, cxmath.Vec2{})
+		par.MoveNoBounceRaytrace(planet, constants.PHYSICS_TICK, cxmath.Vec2{})
 		if par.Collisions.Collided() {
 			par.OnCollideCallback(par)
 			par.Die()

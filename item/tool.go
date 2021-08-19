@@ -6,7 +6,31 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
-func UseBuildTool(info ItemUseInfo) {
+func RegisterFurnitureToolItemType() ItemTypeID {
+	itemtype := NewItemType(render.GetSpriteIDByName("dev-furniture-tool-2"))
+	itemtype.Name = "Dev Furniture Tool"
+	itemtype.Category = BuildTool
+	itemtype.Use = UseFurnitureTool
+	return AddItemType(itemtype)
+}
+
+func RegisterTileToolItemType() ItemTypeID {
+	itemtype := NewItemType(render.GetSpriteIDByName("dev-tile-tool"))
+	itemtype.Name = "Dev Tile Tool"
+	itemtype.Category = BuildTool
+	itemtype.Use = UseTileTool
+	return AddItemType(itemtype)
+
+}
+
+func RegisterEnemyToolItemType() ItemTypeID {
+	itemtype := NewItemType(render.GetSpriteIDByName("dev-enemy-tool"))
+	itemtype.Name = "Dev Enemy Tool"
+	itemtype.Use = UseEnemyTool
+	return AddItemType(itemtype)
+}
+
+func UseFurnitureTool(info ItemUseInfo) {
 	didSelect := info.Inventory.PlacementGrid.TrySelect(info.CamCoords())
 	if didSelect {
 		return
@@ -15,12 +39,14 @@ func UseBuildTool(info ItemUseInfo) {
 	_ = didPlace
 }
 
-func RegisterBuildToolItemType() ItemTypeID {
-	itemtype := NewItemType(render.GetSpriteIDByName("dev-build-furniture-tool-2"))
-	itemtype.Name = "Dev Build Tool"
-	itemtype.Category = BuildTool
-	itemtype.Use = UseBuildTool
-	return AddItemType(itemtype)
+func UseTileTool(info ItemUseInfo) {
+	didSelect := info.Inventory.PlacementGrid.TrySelect(info.CamCoords())
+	if didSelect {
+		return
+	}
+
+	didPlace := info.Inventory.PlacementGrid.TryPlace(info)
+	_ = didPlace
 }
 
 func UseEnemyTool(info ItemUseInfo) {
@@ -30,11 +56,4 @@ func UseEnemyTool(info ItemUseInfo) {
 		X: world.X(), Y: world.Y(),
 	}
 	info.World.Entities.Agents.Spawn(id, opts)
-}
-
-func RegisterEnemyToolItemType() ItemTypeID {
-	itemtype := NewItemType(render.GetSpriteIDByName("dev-enemy-tool"))
-	itemtype.Name = "Dev Enemy Tool"
-	itemtype.Use = UseEnemyTool
-	return AddItemType(itemtype)
 }
