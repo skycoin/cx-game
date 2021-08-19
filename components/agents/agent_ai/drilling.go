@@ -46,6 +46,6 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 			Agent: agent,
 		})
 	} else {
-		agent.PhysicsState.Vel.Y -= constants.Gravity * constants.TimeStep
+		agent.PhysicsState.Vel.Y -= constants.Gravity * constants.PHYSICS_TICK
 	}
 }

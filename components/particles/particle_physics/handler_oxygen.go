@@ -11,6 +11,6 @@ import (
 
 func PhysicsHandlerOxygen(particleList []*particles.Particle, planet *world.Planet) {
 	for _, par := range particleList {
-		par.MoveSlowXAxis(planet, constants.TimeStep, cxmath.Vec2{}, false, par.SlowdownFactor)
+		par.MoveSlowXAxis(planet, constants.PHYSICS_TICK, cxmath.Vec2{}, false, par.SlowdownFactor)
 	}
 }

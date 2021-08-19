@@ -2,7 +2,8 @@ package game
 
 import (
 	"github.com/skycoin/cx-game/components"
-	"github.com/skycoin/cx-game/constants/physicsconstants"
+	"github.com/skycoin/cx-game/constants"
+
 	//"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/physics/timer"
@@ -11,22 +12,22 @@ import (
 func FixedUpdate(dt float32) {
 	timer.Accumulator += dt
 
-	for timer.Accumulator >= physicsconstants.PHYSICS_TIMESTEP {
+	for timer.Accumulator >= constants.PHYSICS_TICK {
 
 		FixedTick()
-		timer.Accumulator -= physicsconstants.PHYSICS_TIMESTEP
+		timer.Accumulator -= constants.PHYSICS_TICK
 	}
 }
 
 func FixedTick() {
 	//player.FixedTick(&World.Planet)
 	components.FixedUpdate()
-	physics.Simulate(physicsconstants.PHYSICS_TIMESTEP, &World.Planet)
+	physics.Simulate(constants.PHYSICS_TICK, &World.Planet)
 	/*
-	pickedUpItems := item.TickWorldItems(
-		&World.Planet, physicsconstants.PHYSICS_TIMESTEP, player.Pos)
-	for _, worldItem := range pickedUpItems {
-		item.GetInventoryById(inventoryId).TryAddItem(worldItem.ItemTypeId)
-	}
+		pickedUpItems := item.TickWorldItems(
+			&World.Planet, physicsconstants.PHYSICS_TIMESTEP, player.Pos)
+		for _, worldItem := range pickedUpItems {
+			item.GetInventoryById(inventoryId).TryAddItem(worldItem.ItemTypeId)
+		}
 	*/
 }
