@@ -5,14 +5,16 @@ import (
 
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/render/blob"
-	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/components/types"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/render/blob"
 )
 
 type Placer interface {
-	CreateTile(TileType,TileCreationOptions) Tile
-	UpdateTile(TileType,TileUpdateOptions)
+	CreateTile(TileType, TileCreationOptions) Tile
+	UpdateTile(TileType, TileUpdateOptions)
 	ItemSpriteID() render.SpriteID
 }
 
@@ -52,6 +54,7 @@ type TileTypeID uint32
 type TileType struct {
 	Name          string
 	Layer         LayerID
+	ToolType      types.ToolType
 	Placer        Placer
 	Invulnerable  bool
 	ID            TileTypeID
@@ -62,17 +65,17 @@ type TileType struct {
 }
 
 func (tt TileType) Size() cxmath.Vec2i {
-	return cxmath.Vec2i{ tt.Width, tt.Height }
+	return cxmath.Vec2i{tt.Width, tt.Height}
 }
 
 func (tt *TileType) Transform() mgl32.Mat4 {
 	translate := mgl32.Translate3D(
-		-0.5 + float32(tt.Width)/2,
-		-0.5 + float32(tt.Height)/2,
+		-0.5+float32(tt.Width)/2,
+		-0.5+float32(tt.Height)/2,
 		0,
 	)
 	scale := mgl32.Scale3D(
-		float32(tt.Width), float32(tt.Height), 1 )
+		float32(tt.Width), float32(tt.Height), 1)
 	return translate.Mul4(scale)
 }
 
@@ -94,9 +97,11 @@ func (tt TileType) UpdateTile(opts TileUpdateOptions) {
 
 // add the null tile type as first element such that tileTypes[0] is empty
 var tileTypes = make([]TileType, 1)
+var furnitureTileTypes = make([]TileType, 0)
+var tileTileTypes = make([]TileType, 0)
 var tileTypeIDsByName = make(map[string]TileTypeID)
 
-func RegisterTileType(name string, tileType TileType) TileTypeID {
+func RegisterTileType(name string, tileType TileType, ToolType types.ToolType) TileTypeID {
 	id := TileTypeID(len(tileTypes))
 	tileType.ID = id
 	// fill in default size
@@ -110,6 +115,7 @@ func RegisterTileType(name string, tileType TileType) TileTypeID {
 	if tileType.Drops == nil {
 		tileType.Drops = Drops{}
 	}
+	tileType.ToolType = ToolType
 	tileTypes = append(tileTypes, tileType)
 	tileTypeIDsByName[name] = id
 	return id
@@ -149,6 +155,26 @@ func AllTileTypeIDs() []TileTypeID {
 	ids := make([]TileTypeID, 0, len(tileTypes))
 	for idx := TileTypeID(2); int(idx) < len(tileTypes); idx++ {
 		ids = append(ids, idx)
+	}
+	return ids
+}
+
+func AllFurnitureIDs() []TileTypeID {
+	ids := make([]TileTypeID, 0)
+	for i := TileTypeID(2); int(i) < len(tileTypes); i++ {
+		if tileTypes[i].ToolType == constants.FURNITURE_TOOL {
+			ids = append(ids, i)
+		}
+	}
+	return ids
+}
+
+func AllTileIDs() []TileTypeID {
+	ids := make([]TileTypeID, 0)
+	for i := TileTypeID(2); int(i) < len(tileTypes); i++ {
+		if tileTypes[i].ToolType == constants.TILE_TOOL {
+			ids = append(ids, i)
+		}
 	}
 	return ids
 }

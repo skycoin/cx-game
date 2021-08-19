@@ -3,6 +3,7 @@ package item
 import (
 	"log"
 	"strconv"
+	"sync"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -389,6 +390,8 @@ func (inventory *Inventory) SlotIdxForPosition(x, y int) int {
 	return y*inventory.Width + x
 }
 
+var mySync sync.Once
+
 func (inv *Inventory) Draw(ctx render.Context, invCam mgl32.Mat4) {
 	gl.Enable(gl.DEPTH_TEST)
 
@@ -399,11 +402,19 @@ func (inv *Inventory) Draw(ctx render.Context, invCam mgl32.Mat4) {
 	}
 	slot := inv.SelectedItemSlot()
 	if slot.Quantity > 0 {
-		category := slot.ItemTypeID.Get().Category
-		if category == BuildTool {
+		item := slot.ItemTypeID.Get()
+		if item.Category == BuildTool {
 			// TODO do this less often
-			inv.PlacementGrid.Assemble(inv.ItemTypeIDs())
-			inv.PlacementGrid.Draw(ctx, invCam)
+
+			if item.Name == "Dev Tile Tool" {
+				//todo add constants, this is quick hack
+				inv.PlacementGrid.Assemble("tile")
+				inv.PlacementGrid.Draw(ctx, invCam)
+			} else if item.Name == "Dev Furniture Tool" {
+				inv.PlacementGrid.Assemble("furniture")
+				inv.PlacementGrid.Draw(ctx, invCam)
+			}
+
 		}
 		// dev items
 		if slot.ItemTypeID == EnemyToolItemTypeID {

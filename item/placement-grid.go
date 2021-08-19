@@ -1,6 +1,8 @@
 package item
 
 import (
+	"log"
+
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/constants"
@@ -77,7 +79,7 @@ func LayoutTiletypes(tiletypeIDs []world.TileTypeID) []PositionedTileTypeID {
 	for _, bin := range bins {
 		sizes := getTileTypeSizes(bin)
 		rects := cxmath.PackRectangles(PlacementGridWidth, sizes)
-		for binIdx, _ := range rects {
+		for binIdx := range rects {
 			rect := &rects[binIdx]
 			rect.Origin.Y += materialYOffset
 			positionedTileTypeIDs[layoutIdx] = PositionedTileTypeID{
@@ -106,8 +108,15 @@ func NewPlacementGrid() PlacementGrid {
 	return PlacementGrid{PositionedTileTypeIDs: []PositionedTileTypeID{}}
 }
 
-func (grid *PlacementGrid) Assemble(itemTypeIDs []ItemTypeID) {
-	ids := world.AllTileTypeIDs()
+func (grid *PlacementGrid) Assemble(toolType string) {
+	var ids []world.TileTypeID
+	if toolType == "tile" {
+		ids = world.AllTileIDs()
+	} else if toolType == "furniture" {
+		ids = world.AllFurnitureIDs()
+	} else {
+		log.Fatalf("Unexpected tooltype: %v\n", toolType)
+	}
 	grid.PositionedTileTypeIDs = LayoutTiletypes(ids)
 }
 

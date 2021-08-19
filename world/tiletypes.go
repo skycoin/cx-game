@@ -1,15 +1,17 @@
 package world
 
 import (
-	"log"
 	"io/ioutil"
+	"log"
+	"strings"
 
 	"github.com/go-yaml/yaml"
 
 	"github.com/skycoin/cx-game/config"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/spriteloader/blobsprites"
-	"github.com/skycoin/cx-game/render/blob"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/render/blob"
 )
 
 type TileConfig struct {
@@ -21,8 +23,8 @@ type TileConfig struct {
 	Invulnerable bool     `yaml:"invulnerable"`
 	Category     string   `yaml:"category"`
 	/*
-	Width        int32    `yaml:"width"`
-	Height       int32    `yaml:"height"`
+		Width        int32    `yaml:"width"`
+		Height       int32    `yaml:"height"`
 	*/
 }
 
@@ -48,8 +50,12 @@ func tileCategoryFromString(str string) TileCategory {
 }
 
 func tileCollisionTypeFromString(str string) TileCollisionType {
-	if str == "" { return TileCollisionTypeSolid }
-	if str == "platform" { return TileCollisionTypePlatform }
+	if str == "" {
+		return TileCollisionTypeSolid
+	}
+	if str == "platform" {
+		return TileCollisionTypePlatform
+	}
 
 	log.Fatalf("unrecognized tile collision type [%v]", str)
 	return TileCollisionTypeSolid
@@ -60,9 +66,9 @@ func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
 	if config.Blob == "" {
 		// TODO handle multiple sprites
 		spriteID := render.GetSpriteIDByName(config.Sprite)
-		return DirectPlacer {
-			SpriteID: spriteID,
-			Category: tileCategoryFromString(config.Category),
+		return DirectPlacer{
+			SpriteID:          spriteID,
+			Category:          tileCategoryFromString(config.Category),
 			TileCollisionType: tileCollisionTypeFromString(config.Collision),
 		}
 	}
@@ -102,19 +108,21 @@ func LayerIDFromName(name string) LayerID {
 	return id
 }
 
-func (config *TileConfig) Dims() (int32,int32) {
-	if config.Sprite == "" { return 1,1 }
+func (config *TileConfig) Dims() (int32, int32) {
+	if config.Sprite == "" {
+		return 1, 1
+	}
 	spriteID := render.GetSpriteIDByName(config.Sprite)
 	sprite := render.GetSpriteByID(spriteID)
 	model := sprite.Model
 
-	width := int32(model.At(0,0))
-	height := int32(model.At(1,1))
-	return width,height
+	width := int32(model.At(0, 0))
+	height := int32(model.At(1, 1))
+	return width, height
 }
 
 func (config *TileConfig) TileType(name string, id TileTypeID) TileType {
-	width,height := config.Dims()
+	width, height := config.Dims()
 	return TileType{
 		Name:         name,
 		Layer:        LayerIDFromName(config.Layer),
@@ -135,11 +143,12 @@ func RegisterEmptyTileType() {
 	RegisterTileType("air", TileType{
 		Name:   "Air",
 		Placer: DirectPlacer{},
-	})
+	}, constants.NULL_TOOL)
 }
 
 func RegisterConfigTileTypes() {
 	paths := config.FindPathsWithExt("./assets/tile/", ".yaml")
+
 	for _, path := range paths {
 		buf, err := ioutil.ReadFile(path)
 		if err != nil {
@@ -151,7 +160,12 @@ func RegisterConfigTileTypes() {
 			log.Fatalf("parse tile config %s: %v", path, err)
 		}
 		for name, config := range configs {
-			RegisterTileType(name, config.TileType(name, NextTileTypeID()))
+			//todo this is quick hack
+			if strings.Contains(path, "tiles.yaml") {
+				RegisterTileType(name, config.TileType(name, NextTileTypeID()), constants.TILE_TOOL)
+			} else {
+				RegisterTileType(name, config.TileType(name, NextTileTypeID()), constants.FURNITURE_TOOL)
+			}
 		}
 	}
 }
