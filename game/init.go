@@ -66,6 +66,7 @@ func Init() {
 
 	input.Init(&win)
 	sound.Init()
+	sound.Mute()
 	spriteloader.DEBUG = false
 	spriteloader.InitSpriteloader(&win)
 	spriteloader.LoadSpritesFromConfigs()
