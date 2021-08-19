@@ -55,7 +55,7 @@ func (p PositionedTileTypeID) Transform() mgl32.Mat4 {
 	translation := mgl32.Translate3D(
 		float32(p.Rect.Size.X)/2-0.5+float32(p.Rect.Origin.X),
 		-1*(float32(p.Rect.Size.Y)/2-0.5+float32(p.Rect.Origin.Y)),
-		-5)
+		0)
 	scale := mgl32.Scale3D(
 		float32(p.Rect.Size.X), float32(p.Rect.Size.Y), 1)
 	return translation.Mul4(scale)
@@ -121,7 +121,8 @@ func (grid *PlacementGrid) Assemble(toolType string) {
 }
 
 func (grid *PlacementGrid) Transform() mgl32.Mat4 {
-	return mgl32.Translate3D(-10, grid.Scroll, 0)
+	//slightly behind the hud to not overlap
+	return mgl32.Translate3D(-10, grid.Scroll, constants.HUD_Z-1)
 }
 
 func (grid *PlacementGrid) Draw(ctx render.Context, invCam mgl32.Mat4) {
@@ -153,6 +154,10 @@ func (grid *PlacementGrid) DrawPreview(ctx render.Context, invCam mgl32.Mat4, pr
 	worldTransform := translate.Mul4(shiftAndScale)
 	modelView := invCam.Mul4(worldTransform)
 
+	//behind the hud
+	modelView = modelView.Mul4(
+		mgl32.Translate3D(0, 0, constants.HUD_Z-1),
+	)
 	render.DrawColorQuad(modelView, previewColor)
 }
 

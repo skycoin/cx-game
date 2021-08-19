@@ -5,6 +5,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
@@ -27,7 +28,7 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 		translate := mgl32.Translate3D(
 			agent.PhysicsState.Pos.X,
 			agent.PhysicsState.Pos.Y,
-			-10,
+			constants.AGENT_Z,
 		)
 		scale := mgl32.Scale3D(
 			agent.PhysicsState.Size.X*agent.PhysicsState.Direction,

@@ -6,6 +6,7 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/engine/input"
+	"github.com/skycoin/cx-game/engine/sound"
 )
 
 const (
@@ -32,6 +33,7 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 		inputXAxis = input.GetAxis(input.HORIZONTAL)
 
 		if player.PhysicsState.IsOnGround() && input.GetButtonDown("jump") {
+			sound.PlaySound("player_jump")
 			jumpFrame = 0
 		}
 

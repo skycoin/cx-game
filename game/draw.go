@@ -34,8 +34,8 @@ func Draw() {
 	World.Planet.Draw(Cam, world.MidLayer)
 	// draw lasers between mid and top layers.
 	particles.DrawMidTopParticles(worldCtx)
-	World.Planet.Draw(Cam, world.TopLayer)
 	particles.DrawTopParticles(camCtx)
+	World.Planet.Draw(Cam, world.TopLayer)
 
 	item.DrawWorldItems(Cam)
 

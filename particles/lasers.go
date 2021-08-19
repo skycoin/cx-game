@@ -1,9 +1,12 @@
 package particles
 
 import (
+	"fmt"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
@@ -84,7 +87,7 @@ func CreateLaser(from, to mgl32.Vec2) {
 	angle := -cxmath.AngleTo(right, disp)
 	length := disp.Len()
 	transform := mgl32.Ident4().
-		Mul4(mgl32.Translate3D(from.X(), from.Y(), 0)).
+		Mul4(mgl32.Translate3D(from.X(), from.Y(), constants.MIDLAYER_Z+1)).
 		Mul4(mgl32.HomogRotate3DZ(angle)).
 		Mul4(mgl32.Scale3D(length, 1, 1))
 
@@ -111,6 +114,7 @@ func DrawLaser(laser Laser, ctx render.WorldContext) {
 	alpha := laser.ttl / laserDuration
 	laserProgram.SetVec4F("color", 1, 1, 1, alpha)
 
+	fmt.Println(laser.transform)
 	mvp := ctx.ModelToModelViewProjection(laser.transform)
 	laserProgram.SetMat4("mvp", &mvp)
 
