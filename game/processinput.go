@@ -38,16 +38,18 @@ func ProcessInput() {
 		if input.GetButtonDown("toggle-texture-filtering") {
 			render.ToggleFiltering()
 		}
-		if input.GetButtonDown("toggle-bbox"){
+		if input.GetButtonDown("toggle-bbox") {
 			render.ToggleBBox()
 		}
 	case input.FREECAM:
 		if input.GetButtonDown("freecam-off") {
 			Cam.TurnOffFreeCam()
 		}
-		if input.GetButtonDown("toggle-bbox"){
+		if input.GetButtonDown("toggle-bbox") {
 			render.ToggleBBox()
 		}
 	}
+
+	input.Reset()
 
 }

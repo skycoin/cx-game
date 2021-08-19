@@ -1,9 +1,12 @@
 package world
 
 import (
+	"log"
+
 	"github.com/go-gl/mathgl/mgl32"
 	//"github.com/go-gl/gl/v4.1-core/gl"
 
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/mathi"
 	"github.com/skycoin/cx-game/engine/camera"
@@ -24,7 +27,7 @@ func (pt PositionedTile) Transform() mgl32.Mat4 {
 }
 
 func (planet *Planet) DrawLayer(
-		layer Layer, cam *camera.Camera, layerID LayerID,
+	layer Layer, cam *camera.Camera, layerID LayerID,
 ) {
 	planet.program.Use()
 	defer planet.program.StopUsing()
@@ -54,11 +57,21 @@ func (planet *Planet) DrawHemisphere(
 	planet.program.Use()
 
 	visible := planet.visibleTiles(layer, cam, left, right)
-	for _,positionedTile := range visible {
-		z := -10+float32(layerID)/4
+	for _, positionedTile := range visible {
+		// z := -10+float32(layerID)/4
+		var z float32
+		if layerID == TopLayer {
+			z = constants.FRONTLAYER_Z
+		} else if layerID == MidLayer {
+			z = constants.MIDLAYER_Z
+		} else if layerID == BgLayer {
+			z = constants.BGLAYER_Z
+		} else {
+			log.Fatalf("error: Unknown layer!")
+		}
 
 		transform := positionedTile.Transform().
-			Mul4(mgl32.Translate3D(0,0,z))
+			Mul4(mgl32.Translate3D(0, 0, z))
 		render.DrawWorldSprite(
 			transform, positionedTile.Tile.SpriteID,
 			render.NewSpriteDrawOptions(),
@@ -86,7 +99,9 @@ func (planet *Planet) visibleTiles(
 	bottom := mathi.Max(cam.Frustum.Bottom, 0)
 	top := mathi.Min(cam.Frustum.Top, int(planet.Height))
 	capacity := (top - bottom + 1) * (right - left + 1)
-	if capacity < 0 { capacity = 0 }
+	if capacity < 0 {
+		capacity = 0
+	}
 	positionedTiles := make([]PositionedTile, 0, capacity)
 
 	for y := bottom; y <= top; y++ {

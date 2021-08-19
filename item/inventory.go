@@ -3,14 +3,13 @@ package item
 import (
 	"log"
 	"strconv"
-	"sync"
 
-	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/types"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/ui"
@@ -176,7 +175,7 @@ func (inv Inventory) DrawBar(ctx render.Context) {
 	barSlots := inv.getBarSlots()
 	for idx, slot := range barSlots {
 		x := float32(idx) - float32(len(barSlots))/2
-		slotCtx := barCtx.PushLocal(mgl32.Translate3D(x, 0, 0))
+		slotCtx := barCtx.PushLocal(mgl32.Translate3D(x, 0, constants.HUD_Z))
 		isSelected := idx == inv.SelectedBarSlotIndex
 		inv.DrawSlot(slot, slotCtx, isSelected)
 	}
@@ -193,12 +192,14 @@ func getBorderColor(isSelected bool) mgl32.Vec4 {
 func (inventory Inventory) DrawSlot(
 	slot InventorySlot, ctx render.Context, isSelected bool,
 ) {
+
 	// draw border
 	render.DrawColorQuad(ctx.World, getBorderColor(isSelected))
 	// draw bg on top of border
 	bgCtx := ctx.
 		PushLocal(mgl32.Translate3D(0, 0, 0.1)).
 		PushLocal(cxmath.Scale(1 - borderSize))
+	// bgCtx = ctx
 	render.DrawColorQuad(bgCtx.World, bgColor)
 	// draw item on top of bg
 	itemCtx := ctx.
@@ -273,12 +274,20 @@ func (inventory *Inventory) TrySelectSlot(k glfw.Key) bool {
 		return false
 	}
 
-	inventory.SelectedBarSlotIndex = numberKeyPosition(k)
+	selectedSlot := numberKeyPosition(k)
+	if selectedSlot == inventory.SelectedBarSlotIndex {
+		inventory.SelectedBarSlotIndex = -1
+	} else {
+		inventory.SelectedBarSlotIndex = selectedSlot
+	}
 
 	return true
 }
 
 func (inventory *Inventory) SelectedItemSlot() *InventorySlot {
+	if inventory.SelectedBarSlotIndex == -1 {
+		return nil
+	}
 	return &inventory.Slots[inventory.SelectedBarSlotIndex]
 }
 
@@ -287,6 +296,9 @@ func (inventory *Inventory) TryUseItem(
 	World *world.World, player *agents.Agent,
 ) bool {
 	itemSlot := inventory.SelectedItemSlot()
+	if itemSlot == nil {
+		return false
+	}
 	// don't use empty items
 	if itemSlot.Quantity == 0 {
 		return false
@@ -390,10 +402,7 @@ func (inventory *Inventory) SlotIdxForPosition(x, y int) int {
 	return y*inventory.Width + x
 }
 
-var mySync sync.Once
-
 func (inv *Inventory) Draw(ctx render.Context, invCam mgl32.Mat4) {
-	gl.Enable(gl.DEPTH_TEST)
 
 	if inv.IsOpen {
 		inv.DrawGrid(ctx)
@@ -401,19 +410,23 @@ func (inv *Inventory) Draw(ctx render.Context, invCam mgl32.Mat4) {
 		inv.DrawBar(ctx)
 	}
 	slot := inv.SelectedItemSlot()
+	if slot == nil {
+		return
+	}
 	if slot.Quantity > 0 {
 		item := slot.ItemTypeID.Get()
 		if item.Category == BuildTool {
 			// TODO do this less often
+			var buildType string
 
 			if item.Name == "Dev Tile Tool" {
 				//todo add constants, this is quick hack
-				inv.PlacementGrid.Assemble("tile")
-				inv.PlacementGrid.Draw(ctx, invCam)
+				buildType = "tile"
 			} else if item.Name == "Dev Furniture Tool" {
-				inv.PlacementGrid.Assemble("furniture")
-				inv.PlacementGrid.Draw(ctx, invCam)
+				buildType = "furniture"
 			}
+			inv.PlacementGrid.Assemble(buildType)
+			inv.PlacementGrid.Draw(ctx, invCam)
 
 		}
 		// dev items

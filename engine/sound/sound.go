@@ -310,6 +310,15 @@ func ToggleMute() {
 	}
 }
 
+func Mute() {
+	muted = true
+	SetVolume(0)
+}
+
+func Unmute() {
+	muted = false
+	SetVolume(100)
+}
 func checkError() bool {
 	err := openal.Err()
 	switch err {

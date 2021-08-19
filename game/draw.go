@@ -34,8 +34,8 @@ func Draw() {
 	World.Planet.Draw(Cam, world.MidLayer)
 	// draw lasers between mid and top layers.
 	particles.DrawMidTopParticles(worldCtx)
-	World.Planet.Draw(Cam, world.TopLayer)
 	particles.DrawTopParticles(camCtx)
+	World.Planet.Draw(Cam, world.TopLayer)
 
 	item.DrawWorldItems(Cam)
 
@@ -62,20 +62,6 @@ func Draw() {
 	components.Draw(&World.Entities, Cam)
 	render.Flush(Cam.GetProjectionMatrix())
 
-	// collidingTileLines := World.Planet.GetCollidingTilesLinesRelative(
-	// 	int(player.PhysicsState.Pos.X), int(player.PhysicsState.Pos.Y))
-	// if len(collidingTileLines) > 2 {
-	// 	Cam.DrawLines(collidingTileLines, mgl32.Vec3{0.0, 1.0, 0.0}, baseCtx)
-	// }
-	// // body bounding box (blue)
-	// Cam.DrawLines(player.PhysicsState.GetBBoxLines(), mgl32.Vec3{0.0, 0.0, 1.0}, baseCtx)
-	// // colliding line from body (red)
-	// collidingLines := player.PhysicsState.GetCollidingLines()
-	// if len(collidingLines) > 2 {
-	// 	Cam.DrawLines(collidingLines, mgl32.Vec3{1.0, 0.0, 0.0}, baseCtx)
-	// }
-
-	// fmt.Println(len(collidingLines))
 	glfw.PollEvents()
 	win.Window.SwapBuffers()
 }
