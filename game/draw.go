@@ -57,8 +57,8 @@ func Draw() {
 
 	Console.Draw(win.DefaultRenderContext())
 
-	components.Draw(&World.Entities, Cam)
 	render.Flush(Cam.GetProjectionMatrix())
+	components.Draw(&World.Entities, Cam)
 	ui.DrawAgentHUD(player)
 	particles.DrawMidTopParticles(worldCtx)
 
