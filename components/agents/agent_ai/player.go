@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	ignorePlatformTime float32 = 0.4
+	ignorePlatformTime float32 = 0.15
 	playerWalkAccel    float32 = 1.8
 	maxPlayerWalkSpeed float32 = 8
 	// playerJumpSpeed    float32 = 25
