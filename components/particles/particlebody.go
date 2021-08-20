@@ -6,6 +6,8 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/world/worldcollider"
+	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/components/types"
 )
 
 type ParticleBody struct {
@@ -20,6 +22,25 @@ type ParticleBody struct {
 
 	Elasticity float32
 	Friction   float32
+
+	HitAgentID types.AgentID
+	IsHittingAgent bool
+}
+
+func NewParticleBody(
+	pos,vel cxmath.Vec2,
+	size,elasticity,friction float32,
+) ParticleBody {
+	return ParticleBody {
+		Pos: pos, Vel: vel, Size: cxmath.Vec2{size,size},
+		Elasticity: elasticity, Friction: friction,
+	}
+}
+
+func (pb *ParticleBody) Body() physics.Body {
+	return physics.Body {
+		Pos: pb.Pos, Vel: pb.Vel, Direction: 1,
+	}
 }
 
 type bodyBounds struct {
@@ -243,7 +264,10 @@ func (body *ParticleBody) MoveSlowXAxis(planet worldcollider.WorldCollider, dt f
 }
 
 //for bullets
-func (body *ParticleBody) MoveNoBounceRaytrace(planet worldcollider.WorldCollider, dt float32, acceleration cxmath.Vec2) {
+func (body *ParticleBody) MoveNoBounceRaytrace(
+		planet worldcollider.WorldCollider, agents []*agents.Agent,
+		dt float32, acceleration cxmath.Vec2,
+) {
 	body.PrevPos = body.Pos
 	body.PrevVel = body.Vel
 
@@ -253,8 +277,11 @@ func (body *ParticleBody) MoveNoBounceRaytrace(planet worldcollider.WorldCollide
 	body.Vel = body.Vel.Add(acceleration.Mult(0.5 * dt))
 	newPos := body.Pos.Add(body.Vel.Mult(dt))
 
-	collided := body.Raytrace(newPos, planet)
-	if collided {
+	willCollide :=
+		body.RaytracePlanet(newPos, planet) ||
+		body.CheckAgentCollisions(newPos, agents)
+
+	if willCollide {
 		body.Vel = cxmath.Vec2{}
 	} else {
 		body.Pos = newPos
@@ -303,7 +330,10 @@ func getCloserGridLine(xLines, yLines *GridLine) *GridLine {
 	}
 }
 
-func (body *ParticleBody) Raytrace(newPos cxmath.Vec2, planet worldcollider.WorldCollider) bool {
+// check for collisions and return whether collision occured. mutates.
+func (body *ParticleBody) RaytracePlanet(
+		newPos cxmath.Vec2, planet worldcollider.WorldCollider,
+) bool {
 	x0, y0 := float64(body.Pos.X+0.5), float64(body.Pos.Y+0.5)
 	x1, y1 := float64(newPos.X+0.5), float64(newPos.Y+0.5)
 
@@ -365,5 +395,22 @@ func (body *ParticleBody) Raytrace(newPos cxmath.Vec2, planet worldcollider.Worl
 		closerLine.next += closerLine.dt
 	}
 
+	return false
+}
+
+func (particleBody *ParticleBody) CheckAgentCollisions(
+		newPos cxmath.Vec2, Agents []*agents.Agent,
+) bool {
+	for _,agent := range Agents {
+		body := particleBody.Body()
+		if agent.PhysicsState.Intersects(&body) {
+			// set the left collision arbitrarily
+			// - we simply need to flag that a collision occured
+			particleBody.Collisions.Left= true
+			particleBody.HitAgentID = agent.AgentId
+			particleBody.IsHittingAgent = true
+			return true
+		}
+	}
 	return false
 }

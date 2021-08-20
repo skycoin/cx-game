@@ -5,7 +5,6 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
-//bounces, gravity
-func PhysicsHandlerNull(particleList []*particles.Particle, planet *world.Planet) {
+func PhysicsHandlerNull(Particles []*particles.Particle, World *world.World) {
 	// do nothing!
 }

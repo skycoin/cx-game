@@ -44,7 +44,7 @@ func (al *AgentList) DestroyAgent(agentId int) bool {
 	}
 
 	al.Agents = append(al.Agents[:agentId], al.Agents[agentId+1:]...)
-	return false
+	return true
 }
 
 func (al *AgentList) Spawn(
@@ -53,14 +53,20 @@ func (al *AgentList) Spawn(
 	agent := GetAgentType(agentTypeID).CreateAgent(opts)
 	agent.FillDefaults()
 	agent.Validate()
-	agent.AgentId = len(al.Agents)
+	agent.AgentId = types.AgentID(len(al.Agents))
 	al.Agents = append(al.Agents, agent)
 	return types.AgentID(agent.AgentId)
 }
 
 func (al *AgentList) Get() []*Agent { return al.Agents }
 
-func (al *AgentList) FromID(id types.AgentID) *Agent { return al.Get()[id] }
+// TODO something better than linear search
+func (al *AgentList) FromID(id types.AgentID) *Agent { 
+	for _,agent := range al.Get() {
+		if agent.AgentId == id { return agent }
+	}
+	return nil
+}
 
 func (al *AgentList) TileIsClear(x, y int) bool {
 	for _, agent := range al.Get() {

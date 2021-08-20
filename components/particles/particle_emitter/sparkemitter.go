@@ -26,23 +26,32 @@ func NewSparkEmitter(particleList *particles.ParticleList) *SparkEmitter {
 		maxduration:  1.5,
 	}
 }
-func (emitter *SparkEmitter) Emit(particle *particles.Particle) {
+
+const (
+	sparkElasticity float32 = 0
+	sparkDuration float32 = 0
+)
+
+func (emitter *SparkEmitter) Emit(parent *particles.Particle) {
 	for i := 0; i < 10; i++ {
 		velocity := cxmath.Vec2{
 			X: (rand.Float32() - 0.5) * 10,
 			Y: 20 * rand.Float32(),
 		}
-		emitter.particleList.AddParticle(
-			particle.Pos,
-			velocity,
-			(rand.Float32()+0.3)/4,
-			0,
-			0,
+		size := (rand.Float32()+0.3)/4
+		duration :=
+			rand.Float32()*(emitter.maxduration-emitter.minduration)+
+			emitter.minduration
+		particle := particles.NewParticle(
+			particles.NewParticleBody(
+				parent.Pos, velocity, size, sparkElasticity, sparkDuration,
+			),
 			spriteloader.GetSpriteIdByNameUint32("star"),
-			rand.Float32()*(emitter.maxduration-emitter.minduration)+emitter.minduration,
+			duration,
 			constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
 			constants.PARTICLE_PHYSICS_HANDLER_NO_COLLISION_GRAVITY,
 			nil,
 		)
+		emitter.particleList.AddParticle(particle)
 	}
 }

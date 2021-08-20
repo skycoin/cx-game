@@ -38,10 +38,22 @@ func Init() {
 
 func Update(World *world.World) {
 	particleList := &World.Entities.Particles
-	planet := &World.Planet
 	bins := BinByPhysicsHandlerID(particleList.Particles)
 
 	for physicsType, par := range bins {
-		GetParticlePhysicsHandler(physicsType)(par, planet)
+		GetParticlePhysicsHandler(physicsType)(par, World)
+	}
+
+	// behaviour independent of particle type
+	for _,particle := range particleList.Particles {
+		if particle != nil {
+			if particle.IsHittingAgent && particle.Damage != 0 {
+				agent := World.Entities.Agents.
+					FromID(particle.ParticleBody.HitAgentID)
+				agent.TakeDamage(particle.Damage)
+				particle.Damage = 0 // only hit agent once
+				return // FIXME
+			}
+		}
 	}
 }

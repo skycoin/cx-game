@@ -11,7 +11,7 @@ import (
 )
 
 type Agent struct {
-	AgentId           int
+	AgentId           types.AgentID
 	AgentCategory     constants.AgentCategory
 	AiHandlerID       types.AgentAiHandlerID
 	PhysicsState      physics.Body

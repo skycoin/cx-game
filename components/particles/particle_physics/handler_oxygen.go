@@ -9,8 +9,11 @@ import (
 
 // Does not collide, apply gravity
 
-func PhysicsHandlerOxygen(particleList []*particles.Particle, planet *world.Planet) {
-	for _, par := range particleList {
-		par.MoveSlowXAxis(planet, constants.PHYSICS_TICK, cxmath.Vec2{}, false, par.SlowdownFactor)
+func PhysicsHandlerOxygen(
+		Particles []*particles.Particle, World *world.World,
+) {
+	for _, par := range Particles {
+		par.MoveSlowXAxis( &World.Planet,
+			constants.PHYSICS_TICK, cxmath.Vec2{}, false, par.SlowdownFactor)
 	}
 }

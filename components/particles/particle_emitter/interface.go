@@ -14,7 +14,9 @@ func CreateBullet(position, velocity mgl32.Vec2) {
 	)
 }
 
-func EmitOxygen(agentId types.AgentID, particleList *particles.ParticleList){
-	//create oxygen emitter, it will be added to object pool and updated each tick checking for conditions
+func EmitOxygen(agentId types.AgentID, particleList *particles.ParticleList) {
+	// create oxygen emitter.
+	// it will be added to object pool and updated each tick,
+	// checking for conditions
 	NewOxygenEmitter(agentId, particleList)
 }

@@ -5,7 +5,9 @@ import (
 	"github.com/skycoin/cx-game/components/types"
 )
 
-func BinByPhysicsHandlerID(particleList []*particles.Particle) map[types.ParticlePhysicsHandlerID][]*particles.Particle {
+func BinByPhysicsHandlerID(
+		particleList []*particles.Particle,
+) map[types.ParticlePhysicsHandlerID][]*particles.Particle {
 	bins := make(map[types.ParticlePhysicsHandlerID][]*particles.Particle)
 
 	for _, par := range particleList {
