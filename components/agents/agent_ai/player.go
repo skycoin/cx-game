@@ -47,7 +47,7 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 			jumpFrame += 1
 		}
 
-		if input.GetButton("down") {
+		if input.GetButtonDown("down") {
 			player.PlayerData.IgnoringPlatformsFor = ignorePlatformTime
 		} else {
 			if player.PlayerData.IgnoringPlatformsFor > 0 {
