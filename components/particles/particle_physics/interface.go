@@ -48,8 +48,8 @@ func Update(World *world.World) {
 	for _,particle := range particleList.Particles {
 		if particle != nil {
 			if particle.IsHittingAgent && particle.Damage != 0 {
-				agent :=
-					World.Entities.Agents.FromID(particle.ParticleBody.HitAgentID)
+				agent := World.Entities.Agents.
+					FromID(particle.ParticleBody.HitAgentID)
 				agent.TakeDamage(particle.Damage)
 				particle.Damage = 0 // only hit agent once
 				return // FIXME
