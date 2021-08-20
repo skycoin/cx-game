@@ -33,13 +33,11 @@ func Draw() {
 	World.Planet.Draw(Cam, world.BgLayer)
 	World.Planet.Draw(Cam, world.MidLayer)
 	// draw lasers between mid and top layers.
-	particles.DrawMidTopParticles(worldCtx)
+
 	particles.DrawTopParticles(camCtx)
 	World.Planet.Draw(Cam, world.TopLayer)
 
 	item.DrawWorldItems(Cam)
-
-	ui.DrawAgentHUD(player)
 
 	topLeftCtx :=
 		render.CenterToTopLeft(win.DefaultRenderContext())
@@ -61,6 +59,8 @@ func Draw() {
 
 	components.Draw(&World.Entities, Cam)
 	render.Flush(Cam.GetProjectionMatrix())
+	ui.DrawAgentHUD(player)
+	particles.DrawMidTopParticles(worldCtx)
 
 	glfw.PollEvents()
 	win.Window.SwapBuffers()

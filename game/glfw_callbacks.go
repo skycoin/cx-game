@@ -56,6 +56,11 @@ func mousePressCallback(
 	mousePos := input.GetMousePos()
 
 	inventory := item.GetInventoryById(player.InventoryID)
+
+	if b == glfw.MouseButtonRight {
+		inventory.TryCancelSelect()
+		return
+	}
 	clickedSlot :=
 		inventory.TryClickSlot(
 			mousePos.X(), mousePos.Y(), Cam, &World.Planet, player,
