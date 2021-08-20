@@ -247,7 +247,7 @@ func tilesAreClear(
 }
 
 func (grid *PlacementGrid) TryPlace(info ItemUseInfo) bool {
-	if !grid.HasSelected {
+	if !grid.HasSelected || grid.Selected == 0 {
 		return false
 	}
 	worldCoords := info.WorldCoords()

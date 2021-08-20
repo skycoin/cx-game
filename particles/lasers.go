@@ -136,8 +136,8 @@ func configureGlForLaser() {
 func DrawLasers(ctx render.WorldContext) {
 	// only need to set up shader once for all lasers
 	laserProgram.Use()
-	projection := ctx.Projection()
-	laserProgram.SetMat4("projection", &projection)
+	// projection := ctx.Projection()
+	// laserProgram.SetMat4("projection", &projection)
 	laserProgram.SetUint("tex", laserTex.gpuTex)
 	configureGlForLaser()
 

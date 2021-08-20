@@ -29,14 +29,13 @@ func NewSparkEmitter(particleList *particles.ParticleList) *SparkEmitter {
 func (emitter *SparkEmitter) Emit(particle *particles.Particle) {
 	for i := 0; i < 10; i++ {
 		velocity := cxmath.Vec2{
-			X: (rand.Float32() - 0.5) * 3,
-			Y: 30 * rand.Float32(),
+			X: (rand.Float32() - 0.5) * 10,
+			Y: 20 * rand.Float32(),
 		}
 		emitter.particleList.AddParticle(
 			particle.Pos,
 			velocity,
-			// (rand.Float32()+0.3)/4,
-			1,
+			(rand.Float32()+0.3)/4,
 			0,
 			0,
 			spriteloader.GetSpriteIdByNameUint32("star"),

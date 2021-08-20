@@ -443,3 +443,7 @@ func (inv *Inventory) TryScrollDown() {
 func (inv *Inventory) TryScrollUp() {
 	inv.PlacementGrid.Scroll -= placementGridScrollStride
 }
+
+func (inv *Inventory) TryCancelSelect() {
+	inv.PlacementGrid.Selected = 0
+}
