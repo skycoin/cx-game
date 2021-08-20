@@ -9,14 +9,16 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
-type ParticlePhysicsHandler func([]*particles.Particle, *world.Planet)
+// a physics handler simulates the behaviour of
+// many homogenous particles within a world
+type ParticlePhysicsHandler func([]*particles.Particle, *world.World)
 
-var ParticlePhysicsHandlerList [constants.NUM_PARTICLE_PHYSICS_HANDLERS]ParticlePhysicsHandler
+var ParticlePhysicsHandlerList =
+	[constants.NUM_PARTICLE_PHYSICS_HANDLERS]ParticlePhysicsHandler{}
 
+// Particle physics handlers achieve functionality such as:
 // 1> bounces, gravity
-
 // 2> Does not bounce, stops on impact, gravity
-
 // 3> "drifts" at fixed velocity, no gravity
 
 func RegisterPhysicsHandler(

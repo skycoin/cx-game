@@ -43,6 +43,9 @@ type OxygenEmitter struct {
 	particleList *particles.ParticleList
 }
 
+// FIXME Why is the NewOxygenEmitter() method responsible 
+// for both registering and creating the emitter?
+// Additionally, why do we return a copy rather than a pointer/ID ?
 func NewOxygenEmitter(trackedId types.AgentID, particleList *particles.ParticleList) OxygenEmitter {
 
 	for i := range oxygenEmitters {
@@ -106,23 +109,31 @@ func (emitter *OxygenEmitter) Reset() {
 	emitter.TTL = -1
 }
 
+const (
+	oxygenSize float32 = 1
+	oxygenElasticity float32 = 0
+	oxygenFriction float32 = 0
+	oxygenDuration float32 = 3
+)
+
 func (emitter *OxygenEmitter) Emit() {
 	emitter.TTL -= 1
 
-	id := emitter.particleList.AddParticle(
+	body := particles.NewParticleBody(
 		emitter.Position,
 		cxmath.Vec2{emitter.getBubbleX(), emitter.getBubbleY()},
-		1,
-		0,
-		0,
-		spriteloader.GetSpriteIdByNameUint32("star"),
-		3,
+		oxygenSize, oxygenFriction, oxygenDuration,
+	)
+	texture := spriteloader.GetSpriteIdByNameUint32("star")
+	particle := particles.NewParticle(
+		body, texture, oxygenDuration,
 		constants.PARTICLE_DRAW_HANDLER_TRANSPARENT,
 		constants.PARTICLE_PHYSICS_HANDLER_OXYGEN,
 		nil,
 	)
-	particle := emitter.particleList.GetParticle(id)
-	particle.SlowdownFactor = 0.9
+	id := emitter.particleList.AddParticle(particle)
+	particleInList := emitter.particleList.GetParticle(id)
+	particleInList.SlowdownFactor = 0.9
 }
 
 func (emitter *OxygenEmitter) Detach() {

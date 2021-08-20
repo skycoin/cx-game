@@ -2,7 +2,6 @@ package particles
 
 import (
 	"github.com/skycoin/cx-game/components/types"
-	"github.com/skycoin/cx-game/cxmath"
 )
 
 //for now keep one global particles list, redo later
@@ -28,55 +27,25 @@ func (q *QueueI) Push(n int) {
 func (q *QueueI) Pop() int {
 	if len(q.queue) == 0 {
 		return -1
-		// particleIdCounter += 1
-		// return particleIdCounter
 	}
 	returnValue := q.queue[0]
 	q.queue = q.queue[1:]
 	return returnValue
 }
 
-var particleIdCounter int = -1
-
-func (pl *ParticleList) AddParticle(
-	position cxmath.Vec2,
-	velocity cxmath.Vec2,
-	size float32,
-	elasticity float32,
-	friction float32,
-	texture uint32,
-	duration float32,
-	drawHandlerId types.ParticleDrawHandlerId,
-	physiscHandlerID types.ParticlePhysicsHandlerID,
-	callback func(*Particle),
-) types.ParticleID {
+func (pl *ParticleList) AddParticle(particle Particle) types.ParticleID {
 
 	//id should match particle id
 	newId := pl.idQueue.Pop()
-	newParticle := Particle{
-		ParticleId: types.ParticleID(newId),
-		ParticleBody: ParticleBody{
-			Pos:        position,
-			Vel:        velocity,
-			Size:       cxmath.Vec2{size, size},
-			Elasticity: elasticity,
-			Friction:   friction,
-		},
-		Duration:          duration,
-		TimeToLive:        duration,
-		Texture:           texture,
-		DrawHandlerID:     drawHandlerId,
-		PhysicsHandlerID:  physiscHandlerID,
-		OnCollideCallback: callback,
-	}
 
 	if newId == -1 {
-		pl.Particles = append(pl.Particles, &newParticle)
-		newParticle.ParticleId = types.ParticleID(len(pl.Particles) - 1)
+		pl.Particles = append(pl.Particles, &particle)
+		particle.ParticleId = types.ParticleID(len(pl.Particles) - 1)
 	} else {
-		pl.Particles[newId] = &newParticle
+		particle.ParticleId = types.ParticleID(newId)
+		pl.Particles[newId] = &particle
 	}
-	return newParticle.ParticleId
+	return particle.ParticleId
 }
 
 func (pl *ParticleList) Update(dt float32) {

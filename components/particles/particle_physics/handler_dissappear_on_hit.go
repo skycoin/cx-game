@@ -9,9 +9,11 @@ import (
 
 // "drifts" at fixed velocity, no gravity
 
-func PhysicsHandlerDissappearOnHit(particleList []*particles.Particle, planet *world.Planet) {
-	for _, par := range particleList {
-		par.MoveNoBounce(planet, constants.PHYSICS_TICK, cxmath.Vec2{})
+func PhysicsHandlerDissappearOnHit(
+		Particles []*particles.Particle, World *world.World,
+) {
+	for _, par := range Particles {
+		par.MoveNoBounce(&World.Planet, constants.PHYSICS_TICK, cxmath.Vec2{})
 		if par.Collisions.Collided() {
 			par.Die()
 		}

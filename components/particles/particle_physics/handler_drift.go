@@ -9,8 +9,9 @@ import (
 
 // "drifts" at fixed velocity, no gravity
 
-func PhysicsHandlerDrift(particleList []*particles.Particle, planet *world.Planet) {
-	for _, par := range particleList {
-		par.MoveNoCollision(planet, constants.PHYSICS_TICK, cxmath.Vec2{})
+func PhysicsHandlerDrift(Particles []*particles.Particle, World *world.World) {
+	for _, par := range Particles {
+		par.MoveNoCollision( &World.Planet,
+			constants.PHYSICS_TICK, cxmath.Vec2{} )
 	}
 }

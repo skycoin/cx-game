@@ -9,13 +9,15 @@ import (
 
 // Does not collide, apply gravity
 
-func PhysicsHandlerNoCollisionGravity(particleList []*particles.Particle, planet *world.Planet) {
-	// for _, par := range particleList {
-	// }
-	for _, par := range particleList {
-		par.MoveNoCollision(planet, constants.PHYSICS_TICK, cxmath.Vec2{
-			0,
-			-constants.Gravity * 5,
-		})
+func PhysicsHandlerNoCollisionGravity(
+	Particles []*particles.Particle, World *world.World,
+) {
+	for _, par := range Particles {
+		par.MoveNoCollision( &World.Planet,
+			constants.PHYSICS_TICK, cxmath.Vec2{
+				0,
+				-constants.Gravity * 5,
+			},
+		)
 	}
 }

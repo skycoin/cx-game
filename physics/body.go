@@ -240,3 +240,11 @@ func (body *Body) GetCollidingLines() []float32 {
 func (body *Body) IsOnGround() bool {
 	return body.Collisions.Below
 }
+
+func (body *Body) Intersects(other *Body) bool {
+	disp := body.Pos.Sub(other.Pos)
+	intersects :=
+		math32.Abs(disp.X) < body.Size.X/2 &&
+		math32.Abs(disp.Y) < body.Size.Y/2
+	return intersects
+}

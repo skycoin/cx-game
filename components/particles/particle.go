@@ -7,6 +7,7 @@ import (
 type Particle struct {
 	ParticleId types.ParticleID
 	ParticleBody
+	Damage            int
 	TimeToLive        float32
 	Duration          float32
 	Texture           uint32
@@ -15,6 +16,20 @@ type Particle struct {
 	OnCollideCallback func(*Particle)
 	//embed the struct for easier access
 	ParticleMeta
+}
+
+func NewParticle(
+	body ParticleBody, texture uint32, duration float32,
+	drawHandlerID types.ParticleDrawHandlerId,
+	physicsHandlerID types.ParticlePhysicsHandlerID,
+	onCollideCallback func(*Particle),
+) Particle {
+	return Particle {
+		ParticleBody: body, Texture: texture,
+		Duration: duration, TimeToLive: duration,
+		DrawHandlerID: drawHandlerID, PhysicsHandlerID: physicsHandlerID,
+		OnCollideCallback: onCollideCallback,
+	}
 }
 
 type ParticleMeta struct {
