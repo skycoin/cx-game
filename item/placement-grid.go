@@ -223,17 +223,7 @@ func tilesAreClear(
 			}
 		}
 	}
-	//if layer is backgroundlayer, do additional front layer checks
-	if layerID == world.BgLayer {
-		for x := xstart; x < xstop; x++ {
-			for y := ystart; y < ystop; y++ {
-				if !World.TileIsClear(world.MidLayer, x, y) ||
-					!World.TileIsClear(world.TopLayer, x, y) {
-					return false
-				}
-			}
-		}
-	} else // if layer is midlayer, do additional top layer check
+	// if layer is midlayer, do additional top layer check
 	if layerID == world.MidLayer {
 		for x := xstart; x < xstop; x++ {
 			for y := ystart; y < ystop; y++ {
