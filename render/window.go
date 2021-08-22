@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -54,6 +55,7 @@ func (win *Window) SetInitialWindowDimensions() {
 }
 
 func NewWindow(width, height int, resizable bool) Window {
+	fmt.Println("windows: ", width, height)
 	glfwWindow := initGlfw(width, height, resizable)
 	initOpenGL()
 
@@ -103,6 +105,16 @@ func initGlfw(width, height int, resizable bool) *glfw.Window {
 	window.MakeContextCurrent()
 
 	return window
+}
+
+// https://github.com/glfw/glfw/issues/1334
+func FixRenderCOCOA(window *glfw.Window) {
+	windowMoved := false
+	if !windowMoved {
+		x, y := window.GetPos()
+		window.SetPos(x+1, y)
+		windowMoved = true
+	}
 }
 
 func initOpenGL() {
