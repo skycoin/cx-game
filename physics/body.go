@@ -182,7 +182,10 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	newPosMgl32 = newPosMgl32.Add(offset)
 	body.Pos = cxmath.Vec2{newPosMgl32.X(), newPosMgl32.Y()}
 
-	if body.Pos.Y <= 0 { body.Pos.Y = constants.VERTICAL_RESET_HEIGHT }
+	if body.Pos.Y > constants.HEIGHT_LIMIT {
+		body.Pos.Y = constants.HEIGHT_LIMIT
+	}
+	if body.Pos.Y <= 0 { body.Pos.Y = constants.HEIGHT_LIMIT }
 
 	// move previous transform to avoid weird interpolation around boundaries
 	body.PreviousTransform = body.PreviousTransform.
