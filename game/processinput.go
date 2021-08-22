@@ -41,12 +41,18 @@ func ProcessInput() {
 		if input.GetButtonDown("toggle-bbox") {
 			render.ToggleBBox()
 		}
+		if input.GetButtonDown("cycle-pixel-snap") {
+			render.CyclePixelSnap()
+		}
 	case input.FREECAM:
 		if input.GetButtonDown("freecam-off") {
 			Cam.TurnOffFreeCam()
 		}
 		if input.GetButtonDown("toggle-bbox") {
 			render.ToggleBBox()
+		}
+		if input.GetButtonDown("cycle-pixel-snap") {
+			render.CyclePixelSnap()
 		}
 	}
 

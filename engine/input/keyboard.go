@@ -43,6 +43,7 @@ func keyCallback(
 		lastKeyPressed = key
 		KeysPressedDown[key] = true
 		KeysPressed[key] = true
+
 	} else if action == glfw.Repeat {
 		//nothing
 	} else if action == glfw.Release {
