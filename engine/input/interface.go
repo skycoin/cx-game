@@ -9,11 +9,13 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 )
 
+var DEBUG = false
+
 //continuos keys, holding
 func GetButton(button string) bool {
 	key, ok := ActiveButtonsToKeys[button]
-	if !ok {
-		log.Printf("KEY IS NOT MAPPED!")
+	if !ok && DEBUG {
+		log.Printf("BUTTON [%s] IS NOT MAPPED!\n", button)
 		return false
 	}
 	pressed, ok := KeysPressed[key]
@@ -27,8 +29,8 @@ func GetButton(button string) bool {
 //action keys, if pressed once
 func GetButtonDown(button string) bool {
 	key, ok := ActiveButtonsToKeys[button]
-	if !ok {
-		log.Printf("KEY [%s] IS NOT MAPPED!", button)
+	if !ok && DEBUG {
+		log.Printf("BUTTON [%s] IS NOT MAPPED\n", button)
 		return false
 	}
 	pressed, ok := KeysPressedDown[key]
@@ -41,8 +43,8 @@ func GetButtonDown(button string) bool {
 
 func GetButtonUp(button string) bool {
 	key, ok := ActiveButtonsToKeys[button]
-	if !ok {
-		log.Printf("KEY IS NOT MAPPED")
+	if !ok && DEBUG {
+		log.Printf("BUTTON [%s] IS NOT MAPPED\n", button)
 		return false
 	}
 	return GetKeyDown(key)
