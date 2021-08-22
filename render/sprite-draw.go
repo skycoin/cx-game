@@ -37,7 +37,7 @@ func NewSpriteDrawOptions() SpriteDrawOptions {
 
 type SpriteDraw struct {
 	Sprite      Sprite
-	ModelView   mgl32.Mat4
+	Model       mgl32.Mat4
 	View        mgl32.Mat4
 	UVTransform mgl32.Mat3
 	Options     SpriteDrawOptions
@@ -45,13 +45,13 @@ type SpriteDraw struct {
 
 var spriteDrawsPerAtlas = map[Texture][]SpriteDraw{}
 
-func drawSprite(modelView, view mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
+func drawSprite(model, view mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 	sprite := sprites[id]
 	atlas := sprite.Texture
 	spriteDrawsPerAtlas[atlas] = append(spriteDrawsPerAtlas[atlas],
 		SpriteDraw{
 			Sprite:      sprite,
-			ModelView:   modelView,
+			Model:       model,
 			View:        view,
 			UVTransform: sprite.Transform,
 		})
@@ -82,9 +82,9 @@ func wrapTransform(raw mgl32.Mat4) mgl32.Mat4 {
 // TODO implement wrap-around in here
 func DrawWorldSprite(transform mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 	wrappedTransform := wrapTransform(transform)
-	modelview := cameraTransform.Inv().Mul4(wrappedTransform)
+	model := wrappedTransform
 	view := cameraTransform.Inv()
-	drawSprite(modelview, view, id, opts)
+	drawSprite(model, view, id, opts)
 }
 
 func Flush(projection mgl32.Mat4) {
@@ -130,7 +130,7 @@ func drawAtlasSprites(atlas Texture, spriteDraws []SpriteDraw) {
 func extractUniforms(spriteDraws []SpriteDraw) Uniforms {
 	uniforms := NewUniforms(int32(len(spriteDraws)))
 	for idx, spriteDraw := range spriteDraws {
-		uniforms.ModelViews[idx] = spriteDraw.ModelView
+		uniforms.Models[idx] = spriteDraw.Model
 		uniforms.Views[idx] = spriteDraw.View
 		uniforms.UVTransforms[idx] = spriteDraw.UVTransform
 	}
@@ -139,7 +139,7 @@ func extractUniforms(spriteDraws []SpriteDraw) Uniforms {
 
 type Uniforms struct {
 	Count        int32
-	ModelViews   []mgl32.Mat4
+	Models       []mgl32.Mat4
 	Views        []mgl32.Mat4
 	UVTransforms []mgl32.Mat3
 }
@@ -147,7 +147,7 @@ type Uniforms struct {
 func NewUniforms(count int32) Uniforms {
 	return Uniforms{
 		Count:        count,
-		ModelViews:   make([]mgl32.Mat4, count),
+		Models:       make([]mgl32.Mat4, count),
 		Views:        make([]mgl32.Mat4, count),
 		UVTransforms: make([]mgl32.Mat3, count),
 	}
@@ -169,7 +169,7 @@ func (u Uniforms) Batch(batchSize int32) []Uniforms {
 func (u Uniforms) Range(start, stop int32) Uniforms {
 	return Uniforms{
 		Count:        stop - start,
-		ModelViews:   u.ModelViews[start:stop],
+		Models:       u.Models[start:stop],
 		Views:        u.Views[start:stop],
 		UVTransforms: u.UVTransforms[start:stop],
 	}
@@ -184,7 +184,7 @@ func divideRoundUp(a, b int32) int32 {
 }
 
 func drawInstancedQuads(batch Uniforms) {
-	spriteProgram.SetMat4s("modelviews", batch.ModelViews)
+	spriteProgram.SetMat4s("models", batch.Models)
 	spriteProgram.SetMat4s("views", batch.Views)
 	spriteProgram.SetMat3s("uvtransforms", batch.UVTransforms)
 	gl.DrawArraysInstanced(gl.TRIANGLES, 0, 6, batch.Count)
