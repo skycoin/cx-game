@@ -8,10 +8,13 @@ uniform mat4 modelviews[NUM_INSTANCES];
 uniform mat4 views[NUM_INSTANCES];
 
 void main() {
+	mat4 model = inverse(views[gl_InstanceID]) *modelviews[gl_InstanceID];
+
+	vec4 pos = floor(model * vec4(position,1.0)*32)/32;
+
 	gl_Position = 
 		projection *
-		modelviews[gl_InstanceID] * 
-		vec4(position, 1.0) ;
+		views[gl_InstanceID] * pos;
 
 	instance = gl_InstanceID;
 	spriteCoord = texcoord;

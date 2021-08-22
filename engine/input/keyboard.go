@@ -1,6 +1,9 @@
 package input
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
@@ -23,6 +26,8 @@ const (
 	VERTICAL
 )
 
+var timer time.Time
+
 func keyCallback(
 	w *glfw.Window,
 	key glfw.Key, scancode int, action glfw.Action, mk glfw.ModifierKey,
@@ -36,6 +41,9 @@ func keyCallback(
 	}
 
 	if action == glfw.Press {
+		if key == glfw.KeyU {
+			timer = time.Now()
+		}
 		if key == glfw.KeyEscape {
 			w.SetShouldClose(true)
 
@@ -43,7 +51,12 @@ func keyCallback(
 		lastKeyPressed = key
 		KeysPressedDown[key] = true
 		KeysPressed[key] = true
+
 	} else if action == glfw.Repeat {
+		if key == glfw.KeyU {
+			newTime := time.Since(timer).Milliseconds()
+			fmt.Println(newTime)
+		}
 		//nothing
 	} else if action == glfw.Release {
 		KeysPressed[key] = false
