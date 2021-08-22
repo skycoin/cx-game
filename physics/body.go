@@ -29,11 +29,14 @@ type Body struct {
 	IsIgnoringPlatforms bool
 }
 
-func (body *Body) Contains(x,y float32) bool {
+func (body *Body) Contains(x,y,w,h float32) bool {
 	pos := mgl32.Vec2 { x,y }
 	disp := pos.Sub(body.Pos.Mgl32())
-	return math32.Abs(disp.X()) < body.Size.X &&
-		math32.Abs(disp.Y()) < body.Size.Y
+	// add 0.5 to account for offset to center of point
+	contains :=
+		math32.Abs(disp.X()) < body.Size.X/2+w &&
+		math32.Abs(disp.Y()) < body.Size.Y/2+h
+	return contains
 }
 
 func (body *Body) Transform() mgl32.Mat4 {
@@ -182,7 +185,10 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	newPosMgl32 = newPosMgl32.Add(offset)
 	body.Pos = cxmath.Vec2{newPosMgl32.X(), newPosMgl32.Y()}
 
-	if body.Pos.Y <= 0 { body.Pos.Y = constants.VERTICAL_RESET_HEIGHT }
+	if body.Pos.Y > constants.HEIGHT_LIMIT {
+		body.Pos.Y = constants.HEIGHT_LIMIT
+	}
+	if body.Pos.Y <= 0 { body.Pos.Y = constants.HEIGHT_LIMIT }
 
 	// move previous transform to avoid weird interpolation around boundaries
 	body.PreviousTransform = body.PreviousTransform.

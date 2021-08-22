@@ -70,7 +70,7 @@ func (al *AgentList) FromID(id types.AgentID) *Agent {
 
 func (al *AgentList) TileIsClear(x, y int) bool {
 	for _, agent := range al.Get() {
-		if agent.PhysicsState.Contains(float32(x), float32(y)) {
+		if agent.PhysicsState.Contains(float32(x), float32(y), 0.5, 0.5) {
 			return false
 		}
 	}
