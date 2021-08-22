@@ -231,7 +231,7 @@ func ToggleFiltering() {
 	fmt.Println(message)
 }
 
-func TogglePixelSnap() {
+func CyclePixelSnap() {
 	switch spriteProgram {
 	case &spriteProgram1:
 		spriteProgram = &spriteProgram2
