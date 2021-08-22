@@ -8,7 +8,7 @@ uniform mat4 models[NUM_INSTANCES];
 uniform mat4 views[NUM_INSTANCES];
 
 void main() {
-	vec4 pos = round(models[gl_InstanceID] * vec4(position,1.0)*16)/16;
+	vec4 pos = round(models[gl_InstanceID] * vec4(position,1.0)*32)/32;
 
 	gl_Position = 
 		projection *
