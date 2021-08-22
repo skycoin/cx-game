@@ -29,11 +29,14 @@ type Body struct {
 	IsIgnoringPlatforms bool
 }
 
-func (body *Body) Contains(x,y float32) bool {
+func (body *Body) Contains(x,y,w,h float32) bool {
 	pos := mgl32.Vec2 { x,y }
 	disp := pos.Sub(body.Pos.Mgl32())
-	return math32.Abs(disp.X()) < body.Size.X &&
-		math32.Abs(disp.Y()) < body.Size.Y
+	// add 0.5 to account for offset to center of point
+	contains :=
+		math32.Abs(disp.X()) < body.Size.X/2+w &&
+		math32.Abs(disp.Y()) < body.Size.Y/2+h
+	return contains
 }
 
 func (body *Body) Transform() mgl32.Mat4 {
