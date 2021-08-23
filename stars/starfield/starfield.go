@@ -15,7 +15,7 @@ import (
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/starmap"
+	"github.com/skycoin/cx-game/stars/starmap"
 )
 
 func init() {
