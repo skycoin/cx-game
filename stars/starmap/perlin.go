@@ -48,7 +48,7 @@ var window *render.Window
 
 var frameCounter = 0 // reload the texture if yaml has change
 const maxFrames = 60 // every 60 frames
-var SettingsFile = "./starmap/config/starmap.yaml"
+var SettingsFile = "./assets/starfield/starmap.yaml"
 
 const fragShaderFile = "./assets/shader/starmap/gradient.glsl"
 const vertShaderFile = "./assets/shader/starmap/vertex.glsl"
