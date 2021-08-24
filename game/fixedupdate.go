@@ -5,7 +5,7 @@ import (
 	"github.com/skycoin/cx-game/constants"
 
 	//"github.com/skycoin/cx-game/item"
-	"github.com/skycoin/cx-game/physics"
+
 	"github.com/skycoin/cx-game/physics/timer"
 )
 
@@ -22,7 +22,7 @@ func FixedUpdate(dt float32) {
 func FixedTick() {
 	//player.FixedTick(&World.Planet)
 	components.FixedUpdate()
-	physics.Simulate(constants.PHYSICS_TICK, &World.Planet)
+	// physics.Simulate(constants.PHYSICS_TICK, &World.Planet)
 	/*
 		pickedUpItems := item.TickWorldItems(
 			&World.Planet, physicsconstants.PHYSICS_TIMESTEP, player.Pos)
