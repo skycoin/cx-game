@@ -14,11 +14,6 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
-type MouseCoords struct {
-	X float64
-	Y float64
-}
-
 var (
 	window_          *render.Window
 	inputContext     InputContext
@@ -44,7 +39,6 @@ func Init(window *render.Window) {
 
 func registerCallbacks() {
 	window_.Window.SetKeyCallback(keyCallback)
-	window_.Window.SetCursorPosCallback(cursorPosCallback)
 }
 
 func registerKeyMaps() {

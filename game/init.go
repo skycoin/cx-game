@@ -66,6 +66,7 @@ func Init() {
 
 	window.SetMouseButtonCallback(mouseButtonCallback)
 	window.SetScrollCallback(scrollCallback)
+	window.SetCursorPosCallback(cursorPosCallback)
 	//window.SetSizeCallback(windowSizeCallback)
 
 	input.Init(&win)

@@ -81,15 +81,15 @@ func GetAxis(axis Axis) float32 {
 }
 
 func GetMouseX() float32 {
-	return float32(mouseCoords.X)
+	return float32(MouseCoords.X)
 }
 func GetMouseY() float32 {
-	return float32(mouseCoords.Y)
+	return float32(MouseCoords.Y)
 }
 
 func GetMousePos() mgl32.Vec2 {
-	physicalX := float32(mouseCoords.X)
-	physicalY := float32(mouseCoords.Y)
+	physicalX := float32(MouseCoords.X)
+	physicalY := float32(MouseCoords.Y)
 
 	physicalPos := mgl32.Vec2{physicalX, physicalY}
 	physicalPosHomogenous :=
