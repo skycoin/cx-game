@@ -2,6 +2,7 @@ package physics
 
 import (
 	"math"
+
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/constants"
@@ -15,6 +16,7 @@ const eps = 0.05
 
 type Body struct {
 	Pos       cxmath.Vec2
+	PrevPos   cxmath.Vec2
 	Vel       cxmath.Vec2
 	Size      cxmath.Vec2
 	Direction float32
@@ -29,13 +31,13 @@ type Body struct {
 	IsIgnoringPlatforms bool
 }
 
-func (body *Body) Contains(x,y,w,h float32) bool {
-	pos := mgl32.Vec2 { x,y }
+func (body *Body) Contains(x, y, w, h float32) bool {
+	pos := mgl32.Vec2{x, y}
 	disp := pos.Sub(body.Pos.Mgl32())
 	// add 0.5 to account for offset to center of point
 	contains :=
 		math32.Abs(disp.X()) < body.Size.X/2+w &&
-		math32.Abs(disp.Y()) < body.Size.Y/2+h
+			math32.Abs(disp.Y()) < body.Size.Y/2+h
 	return contains
 }
 
@@ -148,6 +150,7 @@ func (body *Body) isCollidingBottom(
 }
 
 func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
+	body.PrevPos = body.Pos
 	body.Collisions.Reset()
 
 	body.Vel.Y -= Gravity * dt
@@ -188,11 +191,14 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	if body.Pos.Y > constants.HEIGHT_LIMIT {
 		body.Pos.Y = constants.HEIGHT_LIMIT
 	}
-	if body.Pos.Y <= 0 { body.Pos.Y = constants.HEIGHT_LIMIT }
+	if body.Pos.Y <= 0 {
+		body.Pos.Y = constants.HEIGHT_LIMIT
+	}
 
 	// move previous transform to avoid weird interpolation around boundaries
-	body.PreviousTransform = body.PreviousTransform.
-		Mul4(mgl32.Translate3D(offset.X(), offset.Y(), 0))
+	// body.PreviousTransform = body.PreviousTransform.
+	// Mul4(mgl32.Translate3D(offset.X(), offset.Y(), 0))
+	body.PrevPos = body.PrevPos.Add(cxmath.Vec2{offset[0], offset[1]})
 }
 
 func (body *Body) GetBBoxLines() []float32 {
@@ -251,6 +257,6 @@ func (body *Body) Intersects(other *Body) bool {
 	disp := body.Pos.Sub(other.Pos)
 	intersects :=
 		math32.Abs(disp.X) < body.Size.X/2 &&
-		math32.Abs(disp.Y) < body.Size.Y/2
+			math32.Abs(disp.Y) < body.Size.Y/2
 	return intersects
 }

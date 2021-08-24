@@ -5,6 +5,7 @@ import (
 
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/physics/timer"
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -14,7 +15,15 @@ func drawPlayerSprite(
 ) {
 	body := &agent.PhysicsState
 
-	translate := mgl32.Translate3D(body.Pos.X, body.Pos.Y, zOffset)
+	//drawn one frame behind
+	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+
+	interpolatedPos := body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
+	translate := mgl32.Translate3D(
+		interpolatedPos.X,
+		interpolatedPos.Y,
+		zOffset,
+	)
 
 	hitboxToRender := 1 / constants.PLAYER_RENDER_TO_HITBOX
 	scaleX := -body.Size.X * body.Direction * hitboxToRender

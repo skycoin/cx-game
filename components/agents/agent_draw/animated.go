@@ -9,6 +9,7 @@ import (
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
+	"github.com/skycoin/cx-game/physics/timer"
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -25,9 +26,12 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 		gl.ActiveTexture(gl.TEXTURE0)
 		gl.BindTexture(gl.TEXTURE_2D, tex)
 
+		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+
+		interpolatedPos := agent.PhysicsState.PrevPos.Mult(1 - alpha).Add(agent.PhysicsState.Pos.Mult(alpha))
 		translate := mgl32.Translate3D(
-			agent.PhysicsState.Pos.X,
-			agent.PhysicsState.Pos.Y,
+			interpolatedPos.X,
+			interpolatedPos.Y,
 			constants.AGENT_Z,
 		)
 		scale := mgl32.Scale3D(
