@@ -26,15 +26,18 @@ func Draw() {
 
 	baseCtx := win.DefaultRenderContext()
 	baseCtx.Projection = Cam.GetProjectionMatrix()
-	camCtx := baseCtx.PushView(Cam.GetView())
+	// camCtx := baseCtx.PushView(Cam.GetView())
 	worldCtx := worldctx.NewWorldRenderContext(Cam, &World.Planet)
 
+	//draw starfield
 	starfield.DrawStarField()
+
+	//queue-draw world
 	World.Planet.Draw(Cam, world.BgLayer)
 	World.Planet.Draw(Cam, world.MidLayer)
 	// draw lasers between mid and top layers.
 
-	particles.DrawTopParticles(camCtx)
+	// particles.DrawTopParticles(camCtx)
 	World.Planet.Draw(Cam, world.TopLayer)
 
 	item.DrawWorldItems(Cam)
@@ -48,17 +51,22 @@ func Draw() {
 		topLeftCtx.PushLocal(mgl32.Translate3D(1, -5, 0)),
 	)
 
-	ui.DrawDialogueBoxes(camCtx)
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
+
+	//fix dialogboxdraw
+	// ui.DrawDialogueBoxes(camCtx)
 
 	inventory := item.GetInventoryById(player.InventoryID)
 	inventory.Draw(baseCtx, Cam.GetTransform().Inv())
 
 	Console.Draw(win.DefaultRenderContext())
 
-	components.Draw(&World.Entities, Cam)
+	components.Draw_Queued(&World.Entities, Cam)
 	render.Flush(Cam.GetProjectionMatrix())
+
+	//draw after flushing
+	components.Draw(&World.Entities, Cam)
 	ui.DrawAgentHUD(player)
 	particles.DrawMidTopParticles(worldCtx)
 
