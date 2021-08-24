@@ -8,6 +8,7 @@ import (
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
+	"github.com/skycoin/cx-game/physics/timer"
 	"github.com/skycoin/cx-game/world/worldcollider"
 )
 
@@ -153,7 +154,7 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	body.PrevPos = body.Pos
 	body.Collisions.Reset()
 
-	body.Vel.Y -= Gravity * dt
+	body.Vel.Y -= constants.Gravity * dt
 	//account drag
 	body.Vel.Y += 0.1 * body.Vel.Y * body.Vel.Y * 0.2 * dt
 	// body.Vel.X *= (1 - body.Friction)
@@ -223,6 +224,31 @@ func (body *Body) GetBBoxLines() []float32 {
 	}
 }
 
+func (body *Body) GetInterpolatedBBoxLines() []float32 {
+	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+
+	x, y := body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha)).Sub(cxmath.Vec2{body.Size.X / 2, body.Size.Y / 2}).Mgl32().Elem()
+
+	return []float32{
+		//bottom
+		x, y,
+		x + body.Size.X, y,
+
+		//right
+		x + body.Size.X, y,
+		x + body.Size.X, y + body.Size.Y,
+
+		//top
+		x + body.Size.X, y + body.Size.Y,
+		x, y + body.Size.Y,
+
+		//left
+		x, y + body.Size.Y,
+		x, y,
+	}
+
+}
+
 func (body *Body) GetCollidingLines() []float32 {
 	collidingLines := make([]float32, 0, 16)
 	bboxLines := body.GetBBoxLines()
@@ -238,14 +264,24 @@ func (body *Body) GetCollidingLines() []float32 {
 	if body.Collisions.Left {
 		collidingLines = append(collidingLines, bboxLines[12:16]...)
 	}
+	return collidingLines
+}
 
-	// for i := 0; i < len(body.collidingLines); i += 2 {
-	// 	collidingLines = append(collidingLines, []float32{
-	// 		body.collidingLines[i],
-	// 		body.collidingLines[i+1],
-	// 	}...)
-	// }
-
+func (body *Body) GetInterpolatedCollidingLines() []float32 {
+	collidingLines := make([]float32, 0, 16)
+	bboxLines := body.GetInterpolatedBBoxLines()
+	if body.Collisions.Below {
+		collidingLines = append(collidingLines, bboxLines[0:4]...)
+	}
+	if body.Collisions.Right {
+		collidingLines = append(collidingLines, bboxLines[4:8]...)
+	}
+	if body.Collisions.Above {
+		collidingLines = append(collidingLines, bboxLines[8:12]...)
+	}
+	if body.Collisions.Left {
+		collidingLines = append(collidingLines, bboxLines[12:16]...)
+	}
 	return collidingLines
 }
 
