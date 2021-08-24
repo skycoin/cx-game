@@ -2,11 +2,13 @@ package physics
 
 import (
 	"math"
+
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
+	"github.com/skycoin/cx-game/physics/timer"
 	"github.com/skycoin/cx-game/world/worldcollider"
 )
 
@@ -15,6 +17,7 @@ const eps = 0.05
 
 type Body struct {
 	Pos       cxmath.Vec2
+	PrevPos   cxmath.Vec2
 	Vel       cxmath.Vec2
 	Size      cxmath.Vec2
 	Direction float32
@@ -29,13 +32,13 @@ type Body struct {
 	IsIgnoringPlatforms bool
 }
 
-func (body *Body) Contains(x,y,w,h float32) bool {
-	pos := mgl32.Vec2 { x,y }
+func (body *Body) Contains(x, y, w, h float32) bool {
+	pos := mgl32.Vec2{x, y}
 	disp := pos.Sub(body.Pos.Mgl32())
 	// add 0.5 to account for offset to center of point
 	contains :=
 		math32.Abs(disp.X()) < body.Size.X/2+w &&
-		math32.Abs(disp.Y()) < body.Size.Y/2+h
+			math32.Abs(disp.Y()) < body.Size.Y/2+h
 	return contains
 }
 
@@ -148,9 +151,10 @@ func (body *Body) isCollidingBottom(
 }
 
 func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
+	body.PrevPos = body.Pos
 	body.Collisions.Reset()
 
-	body.Vel.Y -= Gravity * dt
+	body.Vel.Y -= constants.Gravity * dt
 	//account drag
 	body.Vel.Y += 0.1 * body.Vel.Y * body.Vel.Y * 0.2 * dt
 	// body.Vel.X *= (1 - body.Friction)
@@ -188,11 +192,14 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	if body.Pos.Y > constants.HEIGHT_LIMIT {
 		body.Pos.Y = constants.HEIGHT_LIMIT
 	}
-	if body.Pos.Y <= 0 { body.Pos.Y = constants.HEIGHT_LIMIT }
+	if body.Pos.Y <= 0 {
+		body.Pos.Y = constants.HEIGHT_LIMIT
+	}
 
 	// move previous transform to avoid weird interpolation around boundaries
-	body.PreviousTransform = body.PreviousTransform.
-		Mul4(mgl32.Translate3D(offset.X(), offset.Y(), 0))
+	// body.PreviousTransform = body.PreviousTransform.
+	// Mul4(mgl32.Translate3D(offset.X(), offset.Y(), 0))
+	body.PrevPos = body.PrevPos.Add(cxmath.Vec2{offset[0], offset[1]})
 }
 
 func (body *Body) GetBBoxLines() []float32 {
@@ -217,6 +224,31 @@ func (body *Body) GetBBoxLines() []float32 {
 	}
 }
 
+func (body *Body) GetInterpolatedBBoxLines() []float32 {
+	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+
+	x, y := body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha)).Sub(cxmath.Vec2{body.Size.X / 2, body.Size.Y / 2}).Mgl32().Elem()
+
+	return []float32{
+		//bottom
+		x, y,
+		x + body.Size.X, y,
+
+		//right
+		x + body.Size.X, y,
+		x + body.Size.X, y + body.Size.Y,
+
+		//top
+		x + body.Size.X, y + body.Size.Y,
+		x, y + body.Size.Y,
+
+		//left
+		x, y + body.Size.Y,
+		x, y,
+	}
+
+}
+
 func (body *Body) GetCollidingLines() []float32 {
 	collidingLines := make([]float32, 0, 16)
 	bboxLines := body.GetBBoxLines()
@@ -232,14 +264,24 @@ func (body *Body) GetCollidingLines() []float32 {
 	if body.Collisions.Left {
 		collidingLines = append(collidingLines, bboxLines[12:16]...)
 	}
+	return collidingLines
+}
 
-	// for i := 0; i < len(body.collidingLines); i += 2 {
-	// 	collidingLines = append(collidingLines, []float32{
-	// 		body.collidingLines[i],
-	// 		body.collidingLines[i+1],
-	// 	}...)
-	// }
-
+func (body *Body) GetInterpolatedCollidingLines() []float32 {
+	collidingLines := make([]float32, 0, 16)
+	bboxLines := body.GetInterpolatedBBoxLines()
+	if body.Collisions.Below {
+		collidingLines = append(collidingLines, bboxLines[0:4]...)
+	}
+	if body.Collisions.Right {
+		collidingLines = append(collidingLines, bboxLines[4:8]...)
+	}
+	if body.Collisions.Above {
+		collidingLines = append(collidingLines, bboxLines[8:12]...)
+	}
+	if body.Collisions.Left {
+		collidingLines = append(collidingLines, bboxLines[12:16]...)
+	}
 	return collidingLines
 }
 
@@ -251,6 +293,6 @@ func (body *Body) Intersects(other *Body) bool {
 	disp := body.Pos.Sub(other.Pos)
 	intersects :=
 		math32.Abs(disp.X) < body.Size.X/2 &&
-		math32.Abs(disp.Y) < body.Size.Y/2
+			math32.Abs(disp.Y) < body.Size.Y/2
 	return intersects
 }

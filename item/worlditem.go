@@ -36,7 +36,7 @@ func CreateWorldItem(itemTypeId ItemTypeID, pos mgl32.Vec2) {
 		},
 		ItemTypeId: itemTypeId,
 	}
-	physics.RegisterBody(&item.Body)
+	// physics.RegisterBody(&item.Body)
 	worldItems = append(worldItems, &item)
 }
 
@@ -87,10 +87,10 @@ func (item WorldItem) Draw(cam *camera.Camera) {
 	modelView := view.Mul4(world)
 	_ = modelView
 	/*
-	spriteloader.DrawSpriteQuadMatrix(
-		modelView, spriteId,
-		spriteloader.NewDrawOptions(),
-	)
+		spriteloader.DrawSpriteQuadMatrix(
+			modelView, spriteId,
+			spriteloader.NewDrawOptions(),
+		)
 	*/
 }
 

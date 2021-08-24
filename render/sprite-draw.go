@@ -87,6 +87,8 @@ func DrawWorldSprite(transform mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) 
 	drawSprite(model, view, id, opts)
 }
 
+//draw without flushing
+
 func Flush(projection mgl32.Mat4) {
 	flushSpriteDraws(projection)
 	flushColorDraws(projection)

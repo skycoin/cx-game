@@ -2,12 +2,14 @@ package game
 
 import (
 	"github.com/skycoin/cx-game/components"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/engine/ui/console"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
+	"github.com/skycoin/cx-game/physics/timer"
 	"github.com/skycoin/cx-game/stars/starfield"
 )
 
@@ -22,9 +24,12 @@ func Update(dt float32) {
 	} else {
 		//player.Controlled = true
 		//playerPos := player.InterpolatedTransform.Col(3).Vec2()
-		playerPos :=
-			World.Entities.Agents.FromID(playerAgentID).PhysicsState.Pos
-		Cam.SetCameraPosition(playerPos.X, playerPos.Y)
+		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+		body :=
+			World.Entities.Agents.FromID(playerAgentID).PhysicsState
+		interpolatedPos := body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
+
+		Cam.SetCameraPosition(interpolatedPos.X, interpolatedPos.Y)
 	}
 	World.Planet.Update(dt)
 	Cam.Tick(dt)

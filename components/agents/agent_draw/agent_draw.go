@@ -19,7 +19,7 @@ func DrawAgents(allAgents *agents.AgentList, cam *camera.Camera) {
 	}
 	if render.IsBBoxActive() {
 		for _, agent := range agentsToDraw {
-			render.DrawBBoxLines(agent.PhysicsState.GetBBoxLines(), agent.PhysicsState.GetCollidingLines())
+			render.DrawBBoxLines(agent.PhysicsState.GetInterpolatedBBoxLines(), agent.PhysicsState.GetInterpolatedCollidingLines())
 		}
 	}
 
