@@ -60,6 +60,10 @@ func Init() {
 
 	window = win.Window
 
+	if runtime.GOOS == "darwin" {
+		render.FixRenderCOCOA(window)
+	}
+
 	window.SetMouseButtonCallback(mouseButtonCallback)
 	window.SetScrollCallback(scrollCallback)
 	//window.SetSizeCallback(windowSizeCallback)
