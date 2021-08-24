@@ -59,6 +59,7 @@ func Init() {
 	// defer glfw.Terminate()
 
 	window = win.Window
+
 	if runtime.GOOS == "darwin" {
 		render.FixRenderCOCOA(window)
 	}
