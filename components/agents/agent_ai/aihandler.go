@@ -9,9 +9,11 @@ import (
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/objects"
+	"github.com/skycoin/cx-game/world"
 )
 
 type AiContext struct {
+	World      *world.World
 	WorldWidth float32
 	PlayerPos  mgl32.Vec2
 }

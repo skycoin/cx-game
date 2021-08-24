@@ -30,6 +30,7 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 		events.OnSpiderCollisionHorizontal.Trigger(events.SpiderEventData{
 			Agent: agent,
 		})
+		// ctx.World.Planet.DamageTile(0, 0, world.TopLayer)
 	}
 
 	doJump :=
