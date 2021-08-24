@@ -23,6 +23,10 @@ const (
 var (
 	//give it initial big value so it will not jump immediately, try setting this to 0 and see result
 	jumpFrame int = 10
+
+	//these variables are for when we hold down the down key to ignore platforms
+	holdTimer float32 = 0
+	holdDelay float32 = 0.6
 )
 
 func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
@@ -47,12 +51,23 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 			jumpFrame += 1
 		}
 
+		// fmt.Println(holdTimer)
 		if input.GetButtonDown("down") {
 			player.PlayerData.IgnoringPlatformsFor = ignorePlatformTime
 		} else {
+
 			if player.PlayerData.IgnoringPlatformsFor > 0 {
 				player.PlayerData.IgnoringPlatformsFor -= constants.PHYSICS_TICK
 			}
+		}
+
+		if input.GetButton("down") {
+			holdTimer += constants.PHYSICS_TICK
+			if holdTimer > holdDelay {
+				player.PlayerData.IgnoringPlatformsFor += constants.PHYSICS_TICK
+			}
+		} else {
+			holdTimer = 0
 		}
 	}
 
