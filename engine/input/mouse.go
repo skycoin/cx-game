@@ -1,14 +1,8 @@
 package input
 
-import (
-	"github.com/go-gl/glfw/v3.3/glfw"
-)
+import "github.com/skycoin/cx-game/cxmath"
 
 var (
-	mouseCoords MouseCoords
+	MouseCoords  cxmath.Vec2
+	MousePressed bool = false
 )
-
-func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
-	mouseCoords.X = xpos
-	mouseCoords.Y = ypos
-}
