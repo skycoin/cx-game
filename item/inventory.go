@@ -332,6 +332,13 @@ func (inventory *Inventory) getGridClickPosition(
 	gridX := int(anchored.X() + 0.5)
 	gridY := int(anchored.Y() + 0.5)
 
+	if !inventory.IsOpen {
+		if gridY == -2 {
+			gridY = 0
+		} else {
+			return -1, false
+		}
+	}
 	idx = -1
 	clickIsOnGrid :=
 		gridX >= 0 && gridX < inventory.Width &&
@@ -349,14 +356,14 @@ func (inventory *Inventory) TryClickSlot(
 	screenX, screenY float32, cam *camera.Camera,
 	planet *world.Planet, player *agents.Agent,
 ) bool {
-	if !inventory.IsOpen {
-		return false
-	}
 	idx, ok := inventory.getGridClickPosition(screenX, screenY)
 	if ok {
-		inventory.TrySelectGridSlot(idx)
+		if !inventory.IsOpen {
+			inventory.SelectedBarSlotIndex = idx
+		} else {
+			inventory.TrySelectGridSlot(idx)
+		}
 	}
-
 	return ok
 }
 
