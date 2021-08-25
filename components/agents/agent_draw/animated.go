@@ -6,6 +6,7 @@ import (
 
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
@@ -28,7 +29,13 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 
 		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
 
-		interpolatedPos := agent.PhysicsState.PrevPos.Mult(1 - alpha).Add(agent.PhysicsState.Pos.Mult(alpha))
+		var interpolatedPos cxmath.Vec2
+		if !agent.PhysicsState.PrevPos.Equal(agent.PhysicsState.Pos) {
+			interpolatedPos = agent.PhysicsState.PrevPos.Mult(1 - alpha).Add(agent.PhysicsState.Pos.Mult(alpha))
+
+		} else {
+			interpolatedPos = agent.PhysicsState.Pos
+		}
 		translate := mgl32.Translate3D(
 			interpolatedPos.X,
 			interpolatedPos.Y,

@@ -5,6 +5,7 @@ import (
 
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/physics/timer"
 	"github.com/skycoin/cx-game/render"
 )
@@ -18,7 +19,13 @@ func drawPlayerSprite(
 	//drawn one frame behind
 	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
 
-	interpolatedPos := body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
+	var interpolatedPos cxmath.Vec2
+	if !body.Pos.Equal(body.PrevPos) {
+		interpolatedPos = body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
+	} else {
+		interpolatedPos = body.Pos
+
+	}
 	translate := mgl32.Translate3D(
 		interpolatedPos.X,
 		interpolatedPos.Y,
