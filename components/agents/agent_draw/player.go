@@ -26,6 +26,7 @@ func drawPlayerSprite(
 		interpolatedPos = body.Pos
 
 	}
+	// interpolatedPos.X = math32.Round(interpolatedPos.X*32) / 32
 	translate := mgl32.Translate3D(
 		interpolatedPos.X,
 		interpolatedPos.Y,

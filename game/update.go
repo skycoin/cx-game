@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/ui"
@@ -27,8 +28,14 @@ func Update(dt float32) {
 		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
 		body :=
 			World.Entities.Agents.FromID(playerAgentID).PhysicsState
-		interpolatedPos := body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
 
+		var interpolatedPos cxmath.Vec2
+		if !body.PrevPos.Equal(body.Pos) {
+			interpolatedPos = body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
+
+		} else {
+			interpolatedPos = body.Pos
+		}
 		Cam.SetCameraPosition(interpolatedPos.X, interpolatedPos.Y)
 	}
 	World.Planet.Update(dt)
