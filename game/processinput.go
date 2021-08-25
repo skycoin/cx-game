@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/ui"
@@ -44,6 +45,9 @@ func ProcessInput() {
 		if input.GetButtonDown("cycle-pixel-snap") {
 			render.CyclePixelSnap()
 		}
+		if input.GetButtonDown("cycle-camera-snap") {
+			camera.CycleSnap()
+		}
 	case input.FREECAM:
 		if input.GetButtonDown("freecam-off") {
 			Cam.TurnOffFreeCam()
@@ -53,6 +57,10 @@ func ProcessInput() {
 		}
 		if input.GetButtonDown("cycle-pixel-snap") {
 			render.CyclePixelSnap()
+		}
+		if input.GetButtonDown("cycle-camera-snap") {
+			camera.CameraSnapped = !camera.CameraSnapped
+			camera.CycleSnap()
 		}
 	}
 

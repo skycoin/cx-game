@@ -220,11 +220,12 @@ func UpdateStarField(dt float32) {
 	for _, star := range stars {
 		star.X += -dirX * speed * dt * star.Depth
 		star.Y += -dirY * speed * dt * star.Depth
-
 		if star.X > float32(windowConfig.Starfield_Width) {
 			star.X = 0
 		}
-		star.X += 7 * dt * star.Depth * (rand.Float32() - 0.5)
+		if dirX == 0 && dirY == 0 {
+			star.X += 7 * dt * star.Depth * (rand.Float32() - 0.5)
+		}
 	}
 }
 

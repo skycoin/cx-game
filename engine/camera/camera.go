@@ -2,6 +2,7 @@ package camera
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/go-gl/mathgl/mgl32"
 
@@ -29,8 +30,21 @@ var (
 	zoomLevels = []float32{
 		0.5, 1, 2, 4, 8, 16,
 	}
-	// firstTick    bool    = true
-	focus_area focusArea
+
+	currentSnapping = NO_SNAPPING
+)
+
+const (
+	//camera snapping constants
+	NO_SNAPPING = iota
+	// 1.0/32
+	NEAREST_1
+	// 1.0/32 + 1.0/64
+	NEAREST_2
+	// 1.0/16
+	NEAREST_3
+	// 1.0/16 + 1.0/32
+	NEAREST_4
 )
 
 type Camera struct {
@@ -117,12 +131,22 @@ func (camera *Camera) SetCameraCenter() {
 
 //sets camera for current position
 func (camera *Camera) SetCameraPosition(x, y float32) {
-	camera.updateFocusArea(x+1, y-3.5)
+	camera.updateFocusArea(x, y)
 	camera.UpdateFrustum()
 }
 
+var CameraSnapped bool
+
 // update focus area to include (x,y)
-func (camera *Camera) updateFocusArea(x, y float32) {
+func (camera *Camera) updateFocusArea(xPos, yPos float32) {
+	x, y := ApplySnapping(xPos, yPos)
+	/*
+		no camera snap
+		snap camera center to nearest 1.0f / 32 pixel
+		snap camera center to nearest 1.0f / 32 + 1.0f / 64 pixel
+		snap camera center to nearest 1.0f / 16 pixel
+		snap camera center to nearest 1.0f / 16 + 1.0f / 32 pixel
+	*/
 	modular := cxmath.NewModular(camera.PlanetWidth)
 	var shiftX, shiftY float32
 	if modular.IsLeft(x, camera.focus_area.left) {
@@ -144,7 +168,7 @@ func (camera *Camera) updateFocusArea(x, y float32) {
 		(camera.focus_area.top + camera.focus_area.bottom) / 2,
 	}
 
-	camera.Vel[0] = camera.focus_area.center.X() - camera.X
+	camera.Vel[0] = math32.Mod((camera.focus_area.center.X() - camera.X), 100)
 	camera.Vel[1] = camera.focus_area.center.Y() - camera.Y
 
 	camera.X = math32.
@@ -256,4 +280,45 @@ func (camera *Camera) CycleZoom() {
 
 func (c *Camera) Pos() mgl32.Vec2 {
 	return mgl32.Vec2{c.X, c.Y}
+}
+
+func CycleSnap() {
+	currentSnapping = (currentSnapping + 1) % 5
+	DebugSnapping(currentSnapping)
+}
+
+func ApplySnapping(x, y float32) (float32, float32) {
+	var newX, newY float32
+	switch currentSnapping {
+	case NO_SNAPPING:
+		return x, y
+	case NEAREST_1:
+		newX, newY = math32.Round(x*32)/32, math32.Round(y*32)/32
+	case NEAREST_2:
+		newX, newY = math32.Round(x*32)/32+1.0/64, math32.Round(y*32)/32
+	case NEAREST_3:
+		newX, newY = math32.Round(x*16)/16, math32.Round(y*16)/16
+	case NEAREST_4:
+		newX, newY = math32.Round(x*16)/16+1.0/32, math32.Round(y*16)/16
+	default:
+		log.Fatalf("Camera snapping error")
+	}
+	return newX, newY
+
+}
+
+func DebugSnapping(option int) {
+	if option == NO_SNAPPING {
+		fmt.Println("[CAMERA SNAP] No snapping")
+	} else if option == NEAREST_1 {
+		fmt.Println("[CAMERA SNAP] Nearest 1.0/32")
+	} else if option == NEAREST_2 {
+		fmt.Println("[CAMERA SNAP] Nearest 1.0/32 + 1.0/64 offset")
+	} else if option == NEAREST_3 {
+		fmt.Println("[CAMERA SNAP] Nearest 1.0/16")
+	} else if option == NEAREST_4 {
+		fmt.Println("[CAMERA SNAP] Nearest 1.0/16 + 1.0/32 offset")
+	} else {
+		log.Fatal("No such camera snapping option, crashing")
+	}
 }
