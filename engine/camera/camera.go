@@ -168,7 +168,7 @@ func (camera *Camera) updateFocusArea(xPos, yPos float32) {
 		(camera.focus_area.top + camera.focus_area.bottom) / 2,
 	}
 
-	camera.Vel[0] = camera.focus_area.center.X() - camera.X
+	camera.Vel[0] = math32.Mod((camera.focus_area.center.X() - camera.X), 100)
 	camera.Vel[1] = camera.focus_area.center.Y() - camera.Y
 
 	camera.X = math32.
