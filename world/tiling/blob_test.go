@@ -1,4 +1,4 @@
-package blob
+package tiling
 
 import (
 	"testing"

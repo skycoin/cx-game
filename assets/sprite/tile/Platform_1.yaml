@@ -1,0 +1,9 @@
+---
+
+name: tiles/platform
+autoname: index
+
+cellwidth: 16
+cellheight: 16
+
+---

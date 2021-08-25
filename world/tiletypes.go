@@ -11,7 +11,7 @@ import (
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/spriteloader/blobsprites"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/render/blob"
+	"github.com/skycoin/cx-game/world/tiling"
 )
 
 type TileConfig struct {
@@ -72,28 +72,16 @@ func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
 			TileCollisionType: tileCollisionTypeFromString(config.Collision),
 		}
 	}
-	if config.Blob == "full" {
-		ids := loadIDsFromSpritenames(config.Sprites,
-			blob.BlobSheetWidth*blob.BlobSheetHeight)
-
-		return AutoPlacer{
-			blobSpritesIDs: ids,
-			TileTypeID:     id, TilingType: blob.FullBlobTiling,
-		}
+	tilingID,ok := tiling.ByName(config.Blob)
+	if !ok {
+		log.Fatalf("unrecognized blob type: %s", config.Blob)
 	}
-	if config.Blob == "simple" {
-		ids := loadIDsFromSpritenames(
-			config.Sprites,
-			blob.SimpleBlobSheetWidth*blob.SimpleBlobSheetHeight)
-
-		return AutoPlacer{
-			blobSpritesIDs: ids,
-			TileTypeID:     id, TilingType: blob.SimpleBlobTiling,
-		}
+	ids := loadIDsFromSpritenames(config.Sprites, tilingID.Get().Count() )
+	return AutoPlacer {
+		blobSpritesIDs: ids,
+		TileTypeID: id, TilingID: tilingID,
+		TileCollisionType: tileCollisionTypeFromString(config.Collision),
 	}
-
-	log.Fatalf("unrecognized blob type: %s", config.Blob)
-	return DirectPlacer{}
 }
 
 var layerNamesToIDs = map[string]LayerID{
