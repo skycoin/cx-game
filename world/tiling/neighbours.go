@@ -1,8 +1,29 @@
-package blob
+package tiling
 
-import (
-	"log"
+type Neighbour int
+const (
+	None Neighbour = iota
+	Self
+	Solid
 )
+
+type DetailedNeighbours struct {
+	Left, Right, Up, Down Neighbour
+	UpLeft, UpRight, DownLeft, DownRight Neighbour
+}
+
+func (d DetailedNeighbours) Simplify() Neighbours {
+	return Neighbours {
+		Left: d.Left == Self,
+		Right: d.Right == Self,
+		Up: d.Up == Self,
+		Down: d.Down == Self,
+		UpLeft: d.UpLeft == Self,
+		UpRight: d.UpRight == Self,
+		DownLeft: d.DownLeft == Self,
+		DownRight: d.DownRight == Self,
+	}
+}
 
 // https://www.tilesetter.org/docs/generating_tilesets
 type Neighbours struct {
@@ -146,38 +167,4 @@ func (n Neighbours) simpleBlobCoords() (x,y int) {
 	if !n.Left && !n.Right { x = 3 }
 	if !n.Up && !n.Down { y = 3 }
 	return x,y
-}
-
-const (
-	BlobSheetWidth = 11
-	BlobSheetHeight = 5
-
-	SimpleBlobSheetWidth = 4
-	SimpleBlobSheetHeight = 4
-)
-
-func ApplyBlobTiling(neighbours Neighbours) int {
-	x,y := neighbours.blobCoords()
-	idx := y * BlobSheetWidth + x
-	return idx
-}
-
-// https://github.com/skycoin/cx-game/issues/205
-func ApplySimpleBlobTiling(neighbours Neighbours) int {
-	x,y := neighbours.simpleBlobCoords()
-	idx := y * SimpleBlobSheetWidth + x
-	return idx
-}
-
-type TilingType int
-const (
-	FullBlobTiling TilingType = iota
-	SimpleBlobTiling 
-)
-
-func ApplyTiling(tt TilingType, neighbours Neighbours) int {
-	if tt == FullBlobTiling { return ApplyBlobTiling(neighbours) }
-	if tt == SimpleBlobTiling { return ApplySimpleBlobTiling(neighbours) }
-	log.Fatalf("unknown tiling type")
-	return -1
 }

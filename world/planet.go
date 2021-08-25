@@ -14,7 +14,7 @@ import (
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/render/blob"
+	"github.com/skycoin/cx-game/world/tiling"
 )
 
 const NUM_INSTANCES = 100
@@ -84,21 +84,36 @@ func NewPlanet(x, y int32) *Planet {
 		Height:        y,
 		Layers:        NewLayers(x * y),
 		liquidProgram: newPlanetLiquidProgram(),
-	}
+	 }
 	return &planet
 }
 
-func (planet *Planet) GetNeighbours(layer []Tile, x, y int) blob.Neighbours {
-	return blob.Neighbours{
-		Up:        planet.TileExists(layer, x, y+1),
-		UpRight:   planet.TileExists(layer, x+1, y+1),
-		Right:     planet.TileExists(layer, x+1, y),
-		DownRight: planet.TileExists(layer, x+1, y-1),
-		Down:      planet.TileExists(layer, x, y-1),
-		DownLeft:  planet.TileExists(layer, x-1, y-1),
-		Left:      planet.TileExists(layer, x-1, y),
-		UpLeft:    planet.TileExists(layer, x-1, y+1),
+func (planet *Planet) GetNeighbours(
+		layer []Tile, x, y int, id TileTypeID,
+) tiling.DetailedNeighbours {
+	return tiling.DetailedNeighbours{
+		Up:        planet.GetNeighbour(layer, x, y+1, id),
+		UpRight:   planet.GetNeighbour(layer, x+1, y+1, id),
+		Right:     planet.GetNeighbour(layer, x+1, y, id),
+		DownRight: planet.GetNeighbour(layer, x+1, y-1, id),
+		Down:      planet.GetNeighbour(layer, x, y-1, id),
+		DownLeft:  planet.GetNeighbour(layer, x-1, y-1, id),
+		Left:      planet.GetNeighbour(layer, x-1, y, id),
+		UpLeft:    planet.GetNeighbour(layer, x-1, y+1, id),
 	}
+}
+
+func (planet *Planet) GetNeighbour(
+		layerTiles []Tile, x,y int, id TileTypeID,
+) tiling.Neighbour {
+	index := planet.GetTileIndex(x, y)
+	if index < 0 {
+		return tiling.None
+	}
+	tile := layerTiles[index]
+	if tile.TileTypeID == id { return tiling.Self }
+	if tile.TileCategory == TileCategoryNone { return tiling.None }
+	return tiling.Solid
 }
 
 func (planet *Planet) GetTileIndex(x, y int) int {
@@ -185,7 +200,7 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 	if rootTileIdx == -1 { return }
 	tilesInLayer[rootTileIdx] =
 		tileType.CreateTile(TileCreationOptions{
-			Neighbours: planet.GetNeighbours(tilesInLayer, x, y),
+			Neighbours: planet.GetNeighbours(tilesInLayer, x, y, tileTypeID),
 		})
 	rect := cxmath.Rect{
 		cxmath.Vec2i{int32(x), int32(y)},
@@ -233,7 +248,8 @@ func (planet *Planet) updateTile(tilesInLayer []Tile, x, y int) {
 		tile := &tilesInLayer[tileIdx]
 		tileType, ok := GetTileTypeByID(tile.TileTypeID)
 		if ok {
-			neighbours := planet.GetNeighbours(tilesInLayer, x, y)
+			neighbours :=
+				planet.GetNeighbours(tilesInLayer, x, y, tile.TileTypeID)
 			tileType.UpdateTile(TileUpdateOptions{
 				Tile: tile, Neighbours: neighbours,
 			})

@@ -15,6 +15,19 @@ regolith:
         - tiles/regolith-alt
     layer : top
 
+platform:
+    blob: platform
+    collision: platform
+    sprites: 
+        - tiles/platform
+    layer: top
+
+# stairs:
+#     blob: manhattan
+#     sprites:
+#         - tiles/platform
+#     layer: top
+
 methane-ice:
     sprite: tiles/methane-ice
     layer: top
@@ -26,15 +39,10 @@ regolith-wall:
     layer: bg
 
 pipe:
-    blob: simple
+    blob: manhattan
     sprites: 
         - tiles/ventilation-pipes
     layer: mid
-
-platform:
-    sprite: tiles/platform
-    collision: platform
-    layer: top
 
 water:
     sprite: tiles/water

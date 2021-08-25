@@ -9,7 +9,7 @@ import (
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/render/blob"
+	"github.com/skycoin/cx-game/world/tiling"
 )
 
 type Placer interface {
@@ -80,10 +80,10 @@ func (tt *TileType) Transform() mgl32.Mat4 {
 }
 
 type TileCreationOptions struct {
-	Neighbours blob.Neighbours
+	Neighbours tiling.DetailedNeighbours
 }
 type TileUpdateOptions struct {
-	Neighbours blob.Neighbours
+	Neighbours tiling.DetailedNeighbours
 	Tile       *Tile
 }
 

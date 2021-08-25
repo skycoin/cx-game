@@ -4,7 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/skycoin/cx-game/engine/spriteloader/blobsprites"
-	"github.com/skycoin/cx-game/render/blob"
+	"github.com/skycoin/cx-game/world/tiling"
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -12,16 +12,17 @@ import (
 type AutoPlacer struct {
 	blobSpritesIDs []blobsprites.BlobSpritesID
 	TileTypeID     TileTypeID
-	TilingType     blob.TilingType
+	TilingID     tiling.TilingID
+	TileCollisionType TileCollisionType
 }
 
 func (placer AutoPlacer) sprite(
-	neighbours blob.Neighbours,
+	neighbours tiling.DetailedNeighbours,
 ) render.SpriteID {
 	blobspritesID :=
 		placer.blobSpritesIDs[rand.Intn(len(placer.blobSpritesIDs))]
 	sprites := blobsprites.GetBlobSpritesById(blobspritesID)
-	idx := blob.ApplyTiling(placer.TilingType, neighbours)
+	idx := tiling.ApplyTiling(placer.TilingID, neighbours)
 	return sprites[idx]
 }
 
@@ -45,9 +46,10 @@ func (placer AutoPlacer) UpdateTile(
 		Name:         tt.Name,
 		TileCategory: TileCategoryNormal,
 		TileTypeID:   tt.ID,
+		TileCollisionType: placer.TileCollisionType,
 	}
 }
 
 func (placer AutoPlacer) ItemSpriteID() render.SpriteID {
-	return placer.sprite(blob.Neighbours{})
+	return placer.sprite(tiling.DetailedNeighbours{})
 }
