@@ -79,8 +79,8 @@ func Init() {
 	// 		}
 	// 	}
 	// }
-	cursor := glfw.CreateCursor(img, 0, 0)
-	window.SetCursor(cursor)
+	// cursor := glfw.CreateCursor(img, 0, 0)
+	// window.SetCursor(cursor)
 
 	window.SetMouseButtonCallback(mouseButtonCallback)
 	window.SetScrollCallback(scrollCallback)
