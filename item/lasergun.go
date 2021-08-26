@@ -11,7 +11,6 @@ func UseLaserGun(info ItemUseInfo) {
 	worldCoords := info.WorldCoords()
 	// adding 0.5 here because raytrace assumes top left coords,
 	// but player and tile positions are stored using centered coords
-	//playerPos := info.Player.PhysicsState.Pos
 
 	playerPos := info.PlayerCoords()
 	positions := cxmath.Raytrace(
