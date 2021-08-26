@@ -475,21 +475,37 @@ func (planet *Planet) DamageTile(
 		// invalid tile; nothing to damage
 		return
 	}
-	tile := &planet.GetLayerTiles(layerID)[tileIdx]
-	_tileCopy := *tile
+	child := &planet.GetLayerTiles(layerID)[tileIdx]
+	tileCopy = *child
+
+	parentX := x - int(child.OffsetX)
+	parentY := y - int(child.OffsetY)
+	parentIdx := planet.GetTileIndex(parentX, parentY)
+	
+	parent := &planet.GetLayerTiles(layerID)[parentIdx]
 	// TODO create tile chunk from collision point rather than tile center
 	//particles.CreateTileChunks(float32(x), float32(y), tile.SpriteID)
 	// TODO use more robust system
-	tileType, ok := GetTileTypeByID(tile.TileTypeID)
+	tileType, ok := GetTileTypeByID(parent.TileTypeID)
 	if ok && !tileType.Invulnerable {
-		tile.Durability--
+		parent.Durability--
 	}
-	_destroyed := tile.Durability <= 0
-	if _destroyed {
-		*tile = NewEmptyTile()
+	destroyed = parent.Durability <= 0
+	if destroyed {
+		for offsetY := int32(0) ; offsetY < tileType.Height ; offsetY++ {
+			for offsetX := int32(0) ; offsetX < tileType.Width ; offsetX++ {
+				childX := parentX + int(offsetX)
+				childY := parentY + int(offsetY)
+				childIdx := planet.GetTileIndex(childX,childY)
+				if childIdx >= 0 {
+					planet.GetLayerTiles(layerID)[childIdx] = NewEmptyTile()
+				}
+			}
+		}
+		*parent = NewEmptyTile()
 		planet.updateSurroundingTiles(planet.GetLayerTiles(layerID), x, y)
 	}
-	return _tileCopy, _destroyed
+	return tileCopy, destroyed
 }
 
 func (planet *Planet) WrapAround(pos mgl32.Vec2) mgl32.Vec2 {
