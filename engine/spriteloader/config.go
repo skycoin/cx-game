@@ -40,7 +40,9 @@ func (sprite SpriteConfig) Scale() mgl32.Mat3 {
 
 func (sprite SpriteConfig) Transform() mgl32.Mat3 {
 
-	translate := mgl32.Translate2D( float32(sprite.Left), float32(sprite.Top) )
+	translate := mgl32.Translate2D(
+		float32(sprite.Left),
+		float32(sprite.Top) )
 	scale := sprite.Scale()
 
 	return translate.Mul3(scale)
@@ -92,10 +94,16 @@ func (spritesheetConfig *SpriteSheetConfig) Sprite(
 ) render.Sprite {
 	scale := spritesheetConfig.spriteScale(spriteConfig)
 	local := spriteConfig.Transform()
+
+	halfPixelOffset := mgl32.Translate2D(
+		0.5 / float32(spritesheetConfig.Width),
+		0.5 / float32(spritesheetConfig.Height),
+	)
 	transform := scale.Mul3(local)
+	offsetTransform := halfPixelOffset.Mul3(transform)
 
 	return render.Sprite {
-		Name: name, Transform: transform,
+		Name: name, Transform: offsetTransform,
 		Model: spriteConfig.Model(),
 	}
 }
@@ -119,7 +127,7 @@ func (spritesheetConfig *SpriteSheetConfig) autoSprites() []render.Sprite {
 			float32(spritesheetConfig.CellHeight),
 		)
 		for idx := range sprites {
-			translate := mgl32.Translate2D(float32(x),float32(y))
+			translate := mgl32.Translate2D(float32(x)+0.5,float32(y)+0.5)
 			sprites[idx] = render.Sprite {
 				Name: fmt.Sprintf("%v:%d", spritesheetConfig.Name, idx),
 				Model: mgl32.Ident4(),
