@@ -1,5 +1,22 @@
 ---
 
+vines-1:
+    blob: full
+    sprites:
+        - tiles/vines-1-a
+        - tiles/vines-1-b
+        - tiles/vines-1-c
+    durability: 2
+    layer: mid
+
+vines-2:
+    blob: full
+    sprites:
+        - tiles/vines-2-a
+        - tiles/vines-2-b
+    durability: 2
+    layer: mid
+
 stone:
     sprite: tiles/stone
     layer: top
