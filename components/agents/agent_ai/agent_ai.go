@@ -11,6 +11,7 @@ import (
 // by filtering the world agents
 func UpdateAgents(World *world.World, player *agents.Agent) {
 	ctx := AiContext{
+		World:      World,
 		WorldWidth: float32(World.Planet.Width),
 		PlayerPos:  player.PhysicsState.Pos.Mgl32(),
 	}

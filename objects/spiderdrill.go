@@ -52,7 +52,7 @@ func (s spiderDrillBeforeJumpNotifier) OnSpiderDrillBeforeJump(data events.Spide
 }
 
 func (s spiderDrillCollisionHorizontalNotifier) OnSpiderCollisionHorizontal(data events.SpiderEventData) {
-	// if DEBUG {
-	// fmt.Println("Collision happened: ", data)
-	// }
+	if DEBUG {
+		fmt.Println("Collision happened: ", data)
+	}
 }
