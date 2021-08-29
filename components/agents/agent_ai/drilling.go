@@ -2,9 +2,9 @@ package agent_ai
 
 import (
 	"github.com/skycoin/cx-game/components/agents"
-	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/events"
+	"github.com/skycoin/cx-game/world"
 )
 
 const (
@@ -32,23 +32,23 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 		events.OnSpiderCollisionHorizontal.Trigger(events.SpiderEventData{
 			Agent: agent,
 		})
-		// ctx.World.Planet.DamageTile(0, 0, world.TopLayer)
+		ctx.World.Planet.DamageTile(int(agent.PhysicsState.Pos.X), int(agent.PhysicsState.Pos.Y+0.5), world.TopLayer)
 	}
 
-	doJump :=
-		agent.PhysicsState.Collisions.Horizontal() &&
-			agent.PhysicsState.IsOnGround() && !agent.PhysicsState.Collisions.VerticalAbove()
-	if doJump {
-		events.OnSpiderBeforeJump.Trigger(events.SpiderEventData{
-			Agent: agent,
-		})
+	// doJump :=
+	// 	agent.PhysicsState.Collisions.Horizontal() &&
+	// 		agent.PhysicsState.IsOnGround() && !agent.PhysicsState.Collisions.VerticalAbove()
+	// if doJump {
+	// 	events.OnSpiderBeforeJump.Trigger(events.SpiderEventData{
+	// 		Agent: agent,
+	// 	})
 
-		agent.PhysicsState.Vel.Y = drillJumpSpeed
-		// trigger an event when spiderdrill jump
-		events.OnSpiderJump.Trigger(events.SpiderEventData{
-			Agent: agent,
-		})
-	} else {
-		agent.PhysicsState.Vel.Y -= constants.Gravity * constants.PHYSICS_TICK
-	}
+	// 	agent.PhysicsState.Vel.Y = drillJumpSpeed
+	// 	// trigger an event when spiderdrill jump
+	// 	events.OnSpiderJump.Trigger(events.SpiderEventData{
+	// 		Agent: agent,
+	// 	})
+	// } else {
+	// 	agent.PhysicsState.Vel.Y -= constants.Gravity * constants.PHYSICS_TICK
+	// }
 }
