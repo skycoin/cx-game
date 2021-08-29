@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	drillSpeed     float32 = 3
+	drillSpeed     float32 = 0.5
 	drillJumpSpeed float32 = 15
 )
 
@@ -19,9 +19,11 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 		directionX *= -1
 	}
 	agent.PhysicsState.Direction = directionX * -1
-	if math32.Abs(dist) > 0.2 {
-		agent.PhysicsState.Vel.X = directionX * drillSpeed
+	if math32.Abs(dist) > 1 {
+		agent.AnimationPlayback.PlayRepeating("Walk")
+		agent.PhysicsState.Vel.X = directionX * walkSpeed
 	} else {
+		agent.AnimationPlayback.PlayRepeating("Attack")
 		agent.PhysicsState.Vel.X = 0
 	}
 
