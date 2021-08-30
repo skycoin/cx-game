@@ -5,7 +5,6 @@ import (
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/events"
-	"github.com/skycoin/cx-game/world"
 )
 
 const (
@@ -36,8 +35,8 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 		spiderPos := agent.PhysicsState.Pos
 		spiderPos.Y = spiderPos.Y + 0.5
 		// if ctx.World.Planet.TileIsSolid(int(spiderPos.X), int(spiderPos.Y)) {
-		tile, _ := ctx.World.Planet.DamageTile(int(spiderPos.X), int(spiderPos.Y), world.TopLayer)
-		_ = tile
+		// tile, _ := ctx.World.Planet.DamageTile(int(spiderPos.X), int(spiderPos.Y), world.TopLayer)
+		// _ = tile
 		// }
 
 	}
