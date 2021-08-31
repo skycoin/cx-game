@@ -59,7 +59,7 @@ pipe:
     blob: manhattan
     sprites: 
         - tiles/ventilation-pipes
-    layer: mid
+    layer: pipe
 
 water:
     sprite: tiles/water

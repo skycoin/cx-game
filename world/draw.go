@@ -59,6 +59,7 @@ func (planet *Planet) DrawHemisphere(
 	visible := planet.visibleTiles(layer, cam, left, right)
 	for _, positionedTile := range visible {
 		// z := -10+float32(layerID)/4
+		// TODO use a data structure instead of if/else
 		var z float32
 		if layerID == TopLayer {
 			z = constants.FRONTLAYER_Z
@@ -66,6 +67,8 @@ func (planet *Planet) DrawHemisphere(
 			z = constants.MIDLAYER_Z
 		} else if layerID == BgLayer {
 			z = constants.BGLAYER_Z
+		} else if layerID == PipeLayer {
+			z = constants.PIPELAYER_Z
 		} else {
 			log.Fatalf("error: Unknown layer!")
 		}
