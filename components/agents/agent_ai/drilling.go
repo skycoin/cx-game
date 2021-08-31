@@ -1,8 +1,6 @@
 package agent_ai
 
 import (
-	"fmt"
-
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath/math32"
@@ -34,7 +32,7 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 		events.OnSpiderCollisionHorizontal.Trigger(events.SpiderEventData{
 			Agent: agent,
 		})
-		spiderPos := agent.PhysicsState.Pos
+		// spiderPos := agent.PhysicsState.Pos
 		// tile := ctx.World.Planet.GetTile(int(spiderPos.X+spiderPos.Length()), int(spiderPos.Y), world.TopLayer)
 		// if ctx.World.Planet.TileIsSolid(int(spiderPos.X), int(spiderPos.Y)) {
 		// tile, _ := ctx.World.Planet.DamageTile(int(spiderPos.X), int(spiderPos.Y), world.TopLayer)
