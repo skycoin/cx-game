@@ -116,6 +116,11 @@ func Init() {
 			X: spawnPos.X + 6, Y: spawnPos.Y,
 		},
 	)
+	World.Entities.Agents.Spawn(
+		constants.AGENT_TYPE_GRASS_HOPPER, agents.AgentCreationOptions{
+			X: spawnPos.X + 6, Y: spawnPos.Y,
+		},
+	)
 	playerAgentID = World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_PLAYER, agents.AgentCreationOptions{
 			X: spawnPos.X, Y: spawnPos.Y,

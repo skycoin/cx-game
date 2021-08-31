@@ -26,6 +26,7 @@ func Init() {
 	RegisterAiHandler(constants.AI_HANDLER_WALK, AiHandlerWalk)
 	RegisterAiHandler(constants.AI_HANDLER_LEAP, AiHandlerLeap)
 	RegisterAiHandler(constants.AI_HANDLER_DRILL, AiHandlerDrill)
+	RegisterAiHandler(constants.AI_HANDLER_GRASSHOPPER, AiHandlerGrassHopper)
 	RegisterAiHandler(constants.AI_HANDLER_PLAYER, AiHandlerPlayer)
 
 	objects.SpiderDrillInit()
