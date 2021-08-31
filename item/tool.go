@@ -23,6 +23,14 @@ func RegisterTileToolItemType() ItemTypeID {
 	return AddItemType(itemtype)
 }
 
+func RegisterBgToolItemType() ItemTypeID {
+	itemtype := NewItemType(render.GetSpriteIDByName("dev-tile-tool"))
+	itemtype.Name = "Dev Background Tile Tool"
+	itemtype.Category = BuildTool
+	itemtype.Use = UseBuildTool
+	return AddItemType(itemtype)
+}
+
 func RegisterPipeToolItemType() ItemTypeID {
 	itemtype := NewItemType(render.GetSpriteIDByName("dev-pipe-place-tool"))
 	itemtype.Name = "Dev Pipe Place Tool"
