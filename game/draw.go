@@ -34,6 +34,7 @@ func Draw() {
 
 	//queue-draw world
 	World.Planet.Draw(Cam, world.BgLayer)
+	World.Planet.Draw(Cam, world.PipeLayer)
 	World.Planet.Draw(Cam, world.MidLayer)
 	// draw lasers between mid and top layers.
 

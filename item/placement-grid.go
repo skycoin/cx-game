@@ -1,11 +1,10 @@
 package item
 
 import (
-	"log"
-
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/cxmath/math32i"
@@ -108,15 +107,8 @@ func NewPlacementGrid() PlacementGrid {
 	return PlacementGrid{PositionedTileTypeIDs: []PositionedTileTypeID{}}
 }
 
-func (grid *PlacementGrid) Assemble(toolType string) {
-	var ids []world.TileTypeID
-	if toolType == "tile" {
-		ids = world.AllTileIDs()
-	} else if toolType == "furniture" {
-		ids = world.AllFurnitureIDs()
-	} else {
-		log.Fatalf("Unexpected tooltype: %v\n", toolType)
-	}
+func (grid *PlacementGrid) Assemble(toolType types.ToolType) {
+	ids := world.TileTypeIDsForToolType(toolType)
 	grid.PositionedTileTypeIDs = LayoutTiletypes(ids)
 }
 

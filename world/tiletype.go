@@ -6,7 +6,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/types"
-	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world/tiling"
@@ -85,6 +84,7 @@ type TileCreationOptions struct {
 type TileUpdateOptions struct {
 	Neighbours tiling.DetailedNeighbours
 	Tile       *Tile
+	Cycling    bool
 }
 
 func (tt TileType) CreateTile(opts TileCreationOptions) Tile {
@@ -101,7 +101,9 @@ var furnitureTileTypes = make([]TileType, 0)
 var tileTileTypes = make([]TileType, 0)
 var tileTypeIDsByName = make(map[string]TileTypeID)
 
-func RegisterTileType(name string, tileType TileType, ToolType types.ToolType) TileTypeID {
+func RegisterTileType(
+		name string, tileType TileType, ToolType types.ToolType,
+) TileTypeID {
 	id := TileTypeID(len(tileTypes))
 	tileType.ID = id
 	// fill in default size
@@ -159,20 +161,10 @@ func AllTileTypeIDs() []TileTypeID {
 	return ids
 }
 
-func AllFurnitureIDs() []TileTypeID {
-	ids := make([]TileTypeID, 0)
+func TileTypeIDsForToolType(toolType types.ToolType) []TileTypeID {
+	ids := []TileTypeID{}
 	for i := TileTypeID(2); int(i) < len(tileTypes); i++ {
-		if tileTypes[i].ToolType == constants.FURNITURE_TOOL {
-			ids = append(ids, i)
-		}
-	}
-	return ids
-}
-
-func AllTileIDs() []TileTypeID {
-	ids := make([]TileTypeID, 0)
-	for i := TileTypeID(2); int(i) < len(tileTypes); i++ {
-		if tileTypes[i].ToolType == constants.TILE_TOOL {
+		if tileTypes[i].ToolType == toolType {
 			ids = append(ids, i)
 		}
 	}

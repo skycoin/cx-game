@@ -3,12 +3,12 @@ package world
 import (
 	"io/ioutil"
 	"log"
-	"strings"
 
 	"github.com/go-yaml/yaml"
 
 	"github.com/skycoin/cx-game/config"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/engine/spriteloader/blobsprites"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world/tiling"
@@ -85,7 +85,7 @@ func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
 }
 
 var layerNamesToIDs = map[string]LayerID{
-	"top": TopLayer, "mid": MidLayer, "bg": BgLayer,
+	"top": TopLayer, "mid": MidLayer, "bg": BgLayer, "pipe": PipeLayer,
 }
 
 func LayerIDFromName(name string) LayerID {
@@ -120,6 +120,12 @@ func (config *TileConfig) TileType(name string, id TileTypeID) TileType {
 	}
 }
 
+func (config *TileConfig) ToolType() types.ToolType {
+	if config.Layer == "mid" { return constants.FURNITURE_TOOL }
+	if config.Layer == "pipe" { return constants.PIPE_PLACE_TOOL }
+	return constants.TILE_TOOL
+}
+
 type TileConfigs map[string]TileConfig
 
 func RegisterTileTypes() {
@@ -149,11 +155,18 @@ func RegisterConfigTileTypes() {
 		}
 		for name, config := range configs {
 			//todo this is quick hack
+			/*
 			if strings.Contains(path, "tiles.yaml") {
 				RegisterTileType(name, config.TileType(name, NextTileTypeID()), constants.TILE_TOOL)
 			} else {
 				RegisterTileType(name, config.TileType(name, NextTileTypeID()), constants.FURNITURE_TOOL)
 			}
+			*/
+			RegisterTileType(
+				name,
+				config.TileType(name, NextTileTypeID()),
+				config.ToolType(),
+			)
 		}
 	}
 }

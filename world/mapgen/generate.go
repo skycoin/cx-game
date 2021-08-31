@@ -9,9 +9,11 @@ import (
 )
 
 // TODO shove in .yaml file
-const persistence = 0.5
-const lacunarity = 2
-const xs = 3
+const (
+	persistence = 0.5
+	lacunarity = 2
+	xs = 3
+)
 
 func placeTileOnTop(planet *world.Planet, x int, tile world.Tile) int {
 	y := planet.GetHeight(x) + 1

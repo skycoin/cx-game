@@ -29,24 +29,32 @@ func (placer AutoPlacer) sprite(
 func (placer AutoPlacer) CreateTile(
 	tt TileType, createOpts TileCreationOptions,
 ) Tile {
-	tile := Tile{}
+	tile := Tile{
+		Name:         tt.Name,
+		TileCategory: TileCategoryNormal,
+		TileTypeID:   tt.ID,
+		TileCollisionType: placer.TileCollisionType,
+	}
 	updateOpts := TileUpdateOptions{
 		Neighbours: createOpts.Neighbours,
 		Tile:       &tile,
 	}
 	placer.UpdateTile(tt, updateOpts)
+
+
 	return tile
 }
 
 func (placer AutoPlacer) UpdateTile(
 	tt TileType, opts TileUpdateOptions,
 ) {
-	*opts.Tile = Tile{
-		SpriteID:     placer.sprite(opts.Neighbours),
-		Name:         tt.Name,
-		TileCategory: TileCategoryNormal,
-		TileTypeID:   tt.ID,
-		TileCollisionType: placer.TileCollisionType,
+	if opts.Cycling {
+		connectedNeighbours :=
+			ConnectedNeighbours(opts.Tile.Connections, opts.Neighbours)
+		opts.Tile.SpriteID = placer.sprite(connectedNeighbours)
+	} else {
+		opts.Tile.Connections = ConnectionsFromNeighbours(opts.Neighbours)
+		opts.Tile.SpriteID = placer.sprite(opts.Neighbours)
 	}
 }
 
