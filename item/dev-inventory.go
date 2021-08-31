@@ -33,6 +33,8 @@ func NewDevInventory() types.InventoryID {
 		InventorySlot{PipePlaceToolItemTypeID, 1, 0}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(8, 0)] =
 		InventorySlot{PipeConnectToolItemTypeID, 1, 0}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(9, 0)] =
+		InventorySlot{BgToolItemTypeID, 1, 0}
 
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 1)] = InventorySlot{
 		GetItemTypeIdForTileTypeID(world.IDFor("stone")),

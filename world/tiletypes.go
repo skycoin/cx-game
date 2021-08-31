@@ -121,6 +121,7 @@ func (config *TileConfig) TileType(name string, id TileTypeID) TileType {
 }
 
 func (config *TileConfig) ToolType() types.ToolType {
+	if config.Layer == "bg" { return constants.BG_TOOL }
 	if config.Layer == "mid" { return constants.FURNITURE_TOOL }
 	if config.Layer == "pipe" { return constants.PIPE_PLACE_TOOL }
 	return constants.TILE_TOOL
@@ -154,14 +155,6 @@ func RegisterConfigTileTypes() {
 			log.Fatalf("parse tile config %s: %v", path, err)
 		}
 		for name, config := range configs {
-			//todo this is quick hack
-			/*
-			if strings.Contains(path, "tiles.yaml") {
-				RegisterTileType(name, config.TileType(name, NextTileTypeID()), constants.TILE_TOOL)
-			} else {
-				RegisterTileType(name, config.TileType(name, NextTileTypeID()), constants.FURNITURE_TOOL)
-			}
-			*/
 			RegisterTileType(
 				name,
 				config.TileType(name, NextTileTypeID()),
