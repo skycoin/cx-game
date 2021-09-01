@@ -208,6 +208,7 @@ func (planet *Planet) TryCyclePipeConnection(x,y int) {
 	tileIdx := planet.GetTileIndex(x,y)
 	if tileIdx < 0 { return }
 	tile := &layerTiles[tileIdx]
+	if tile.TileCategory == TileCategoryNone { return }
 	oldConnections := tile.Connections
 	tile.Connections =
 		tile.Connections.Next(planet.PipeConnectionCandidates(x,y))
