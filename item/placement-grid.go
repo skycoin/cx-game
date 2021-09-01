@@ -243,7 +243,9 @@ func (grid *PlacementGrid) TryPlace(info ItemUseInfo) bool {
 	return false
 }
 
-func (grid *PlacementGrid) UpdatePreview(World *world.World, screenX, screenY float32, Cam *camera.Camera) {
+func (grid *PlacementGrid) UpdatePreview(
+		World *world.World, screenX, screenY float32, Cam *camera.Camera,
+) {
 	if !grid.HasSelected {
 		return
 	}
