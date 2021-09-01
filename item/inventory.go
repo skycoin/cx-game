@@ -17,6 +17,15 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
+const (
+	inventoryScale float32 = 2.5
+	hotbarScale float32 = 2.5
+	hotbarYOffset float32 = 0.3
+	// size of displayed item relative to slot
+	itemSize float32 = 0.8
+	borderSize float32 = 0.1
+)
+
 type InventorySlot struct {
 	ItemTypeID ItemTypeID
 	Quantity   uint32
@@ -78,11 +87,6 @@ func (inventory Inventory) ItemTypeIDs() []ItemTypeID {
 	return ids
 }
 
-var inventoryScale float32 = 2
-
-// size of displayed item relative to slot
-var itemSize float32 = 0.8
-var borderSize float32 = 0.1
 
 func (inventory Inventory) DrawGrid(ctx render.Context) {
 	gridTransform := inventory.getGridTransform()
@@ -123,12 +127,13 @@ func (inventory Inventory) DrawGrid(ctx render.Context) {
 func (inv Inventory) DrawBar(ctx render.Context) {
 	barCtx := ctx.
 		PushLocal(mgl32.Translate3D(0, 1-ctx.Size.Y()/2, 0)).
-		PushLocal(mgl32.Scale3D(2, 2, 1))
+		PushLocal(mgl32.Scale3D(hotbarScale, hotbarScale, 1))
 	//barTransform := mgl32.Translate3D(0,-3,-spriteloader.SpriteRenderDistance)
 	barSlots := inv.getBarSlots()
 	for idx, slot := range barSlots {
 		x := float32(idx) - float32(len(barSlots))/2
-		slotCtx := barCtx.PushLocal(mgl32.Translate3D(x, 0, constants.HUD_Z))
+		slotCtx := barCtx.
+			PushLocal(mgl32.Translate3D(x, hotbarYOffset, constants.HUD_Z))
 		isSelected := idx == inv.SelectedBarSlotIndex
 		inv.DrawSlot(slot, slotCtx, isSelected)
 	}
