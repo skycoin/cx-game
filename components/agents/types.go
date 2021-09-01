@@ -121,7 +121,7 @@ func createGrassHopper(opts AgentCreationOptions) *Agent {
 		AiHandlerID:   constants.AI_HANDLER_GRASSHOPPER,
 		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
 		PhysicsState: physics.Body{
-			Size: cxmath.Vec2{X: 2.0, Y: 2.0},
+			Size: cxmath.Vec2{X: 2.0, Y: 3.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
 		HealthComponent:   NewHealthComponent(5),
@@ -141,7 +141,7 @@ func createEnemySoldier(opts AgentCreationOptions) *Agent {
 		AiHandlerID:   constants.AI_HANDLER_ENEMYSOLDIER,
 		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
 		PhysicsState: physics.Body{
-			Size: cxmath.Vec2{X: 2.0, Y: 2.0},
+			Size: cxmath.Vec2{X: 2.0, Y: 3.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
 		HealthComponent:   NewHealthComponent(5),
