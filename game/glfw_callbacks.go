@@ -6,14 +6,19 @@ import (
 	"github.com/skycoin/cx-game/item"
 )
 
+var leftMouseDown = false
+
+
 func mouseButtonCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
 	if a == glfw.Press {
 		mousePressCallback(w, b, a, mk)
+		leftMouseDown = true
 	}
 	if a == glfw.Release {
 		mouseReleaseCallback(w, b, a, mk)
+		leftMouseDown = false
 	}
 }
 
@@ -77,6 +82,13 @@ func mousePressCallback(
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 	input.MouseCoords.X = float32(xpos)
 	input.MouseCoords.Y = float32(ypos)
+
+	mousePos := input.GetMousePos()
+
+	if leftMouseDown {
+		item.GetInventoryById(player.InventoryID).
+			TryUseBuildItem(mousePos.X(), mousePos.Y(), Cam, &World, player)
+	}
 
 }
 
