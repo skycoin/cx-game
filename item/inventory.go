@@ -326,7 +326,7 @@ func (inventory *Inventory) getGridClickPosition(
 	clickIsOnGrid :=
 		gridX >= 0 && gridX < inventory.Width &&
 			// y=1 is a filler row - doesn't count
-			gridY >= 0 && gridY <= int(h) && gridY != 1
+			gridY >= 0 && gridY <= int(h) // && gridY != 1
 
 	if clickIsOnGrid {
 		idx = inventory.SlotIdxForPosition(gridX, gridY)
