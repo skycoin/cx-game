@@ -108,7 +108,7 @@ func Init() {
 
 	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
-			X: spawnPos.X - 6, Y: spawnPos.Y,
+			X: spawnPos.X - 10, Y: spawnPos.Y,
 		},
 	)
 	World.Entities.Agents.Spawn(
