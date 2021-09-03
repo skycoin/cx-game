@@ -19,10 +19,10 @@ import (
 
 const (
 	inventoryScale float32 = 2.5
-	hotbarScale float32 = 2.5
-	hotbarYOffset float32 = 0.3
+	hotbarScale    float32 = 2.5
+	hotbarYOffset  float32 = 0.3
 	// size of displayed item relative to slot
-	itemSize float32 = 0.8
+	itemSize   float32 = 0.8
 	borderSize float32 = 0.1
 )
 
@@ -43,10 +43,10 @@ type Inventory struct {
 }
 
 var (
-	inventories = []Inventory{}
-	bgColor =             mgl32.Vec4{ 0.3, 0.3, 0.3, 1 }
-	borderColor =         mgl32.Vec4{ 0.8, 0.8, 0.8, 1 }
-	selectedBorderColor = mgl32.Vec4{ 0.8, 0.0, 0.0, 1 }
+	inventories         = []Inventory{}
+	bgColor             = mgl32.Vec4{0.3, 0.3, 0.3, 1}
+	borderColor         = mgl32.Vec4{0.8, 0.8, 0.8, 1}
+	selectedBorderColor = mgl32.Vec4{0.8, 0.0, 0.0, 1}
 )
 
 func NewInventory(width, height int) types.InventoryID {
@@ -58,7 +58,6 @@ func NewInventory(width, height int) types.InventoryID {
 	})
 	return types.InventoryID(len(inventories) - 1)
 }
-
 
 func GetInventoryById(id types.InventoryID) *Inventory {
 	return &inventories[id]
@@ -86,7 +85,6 @@ func (inventory Inventory) ItemTypeIDs() []ItemTypeID {
 	}
 	return ids
 }
-
 
 func (inventory Inventory) DrawGrid(ctx render.Context) {
 	gridTransform := inventory.getGridTransform()
@@ -287,11 +285,11 @@ func (inventory *Inventory) getGridClickPosition(
 	h := float32(len(inventory.Slots)) / w
 	anchored := centered.Add(mgl32.Vec2{w / 2, h / 2})
 
-	gridX := int(anchored.X() + 0.5)
-	gridY := int(anchored.Y() + 0.5)
+	gridX := int(cxmath.Floor(anchored.X() + 0.5))
+	gridY := int(cxmath.Floor(anchored.Y() + 0.5))
 
 	if !inventory.IsOpen {
-		if gridY == -2 {
+		if gridY == -1 {
 			gridY = 0
 		} else {
 			return -1, false
@@ -382,10 +380,10 @@ func (inv *Inventory) Draw(ctx render.Context, invCam mgl32.Mat4) {
 		item := slot.ItemTypeID.Get()
 		if item.Category == BuildTool {
 			// TODO do this less often
-			toolType,ok := toolTypeFromItemName(item.Name)
+			toolType, ok := toolTypeFromItemName(item.Name)
 			if !ok {
 				log.Fatalf(
-					"could not find tool type for string [%v]", item.Name )
+					"could not find tool type for string [%v]", item.Name)
 			}
 			inv.PlacementGrid.Assemble(toolType)
 			inv.PlacementGrid.Draw(ctx, invCam)
