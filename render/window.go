@@ -1,7 +1,6 @@
 package render
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -55,7 +54,6 @@ func (win *Window) SetInitialWindowDimensions() {
 }
 
 func NewWindow(width, height int, resizable bool) Window {
-	fmt.Println("windows: ", width, height)
 	glfwWindow := initGlfw(width, height, resizable)
 	initOpenGL()
 
