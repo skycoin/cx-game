@@ -16,7 +16,7 @@ const (
 	distanceBeforeJump    float32 = 7
 )
 
-func attack(distance float32, directionX float32, slimePhysicsState *physics.Body, playback *anim.Playback, agentIsWaiting bool) {
+func slimeAttack(distance float32, directionX float32, slimePhysicsState *physics.Body, playback *anim.Playback, agentIsWaiting bool) {
 	// slime start to attack the player from these distance
 	playback.PlayRepeating("Pre")
 	onGround := slimePhysicsState.Collisions.Below
@@ -44,7 +44,7 @@ func attack(distance float32, directionX float32, slimePhysicsState *physics.Bod
 
 }
 
-func idle(slimePhysicsState physics.Body, playback *anim.Playback) {
+func slimeIdle(slimePhysicsState physics.Body, playback *anim.Playback) {
 	playback.PlayRepeating("Idle")
 	slimePhysicsState.Vel.X = 0
 }
@@ -58,8 +58,8 @@ func AiHandlerLeap(agent *agents.Agent, ctx AiContext) {
 	}
 
 	if distance <= distanceBetweenPlayer {
-		attack(distance, directionX, &agent.PhysicsState, &agent.AnimationPlayback, agent.IsWaiting())
+		slimeAttack(distance, directionX, &agent.PhysicsState, &agent.AnimationPlayback, agent.IsWaiting())
 	} else {
-		idle(agent.PhysicsState, &agent.AnimationPlayback)
+		slimeIdle(agent.PhysicsState, &agent.AnimationPlayback)
 	}
 }

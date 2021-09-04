@@ -83,12 +83,12 @@ func NewPlanet(x, y int32) *Planet {
 		Height:        y,
 		Layers:        NewLayers(x * y),
 		liquidProgram: newPlanetLiquidProgram(),
-	 }
+	}
 	return &planet
 }
 
 func (planet *Planet) GetNeighbours(
-		layer []Tile, x, y int, id TileTypeID,
+	layer []Tile, x, y int, id TileTypeID,
 ) tiling.DetailedNeighbours {
 	return tiling.DetailedNeighbours{
 		Up:        planet.GetNeighbour(layer, x, y+1, id),
@@ -103,15 +103,19 @@ func (planet *Planet) GetNeighbours(
 }
 
 func (planet *Planet) GetNeighbour(
-		layerTiles []Tile, x,y int, id TileTypeID,
+	layerTiles []Tile, x, y int, id TileTypeID,
 ) tiling.Neighbour {
 	index := planet.GetTileIndex(x, y)
 	if index < 0 {
 		return tiling.None
 	}
 	tile := layerTiles[index]
-	if tile.TileTypeID == id { return tiling.Self }
-	if tile.TileCategory == TileCategoryNone { return tiling.None }
+	if tile.TileTypeID == id {
+		return tiling.Self
+	}
+	if tile.TileCategory == TileCategoryNone {
+		return tiling.None
+	}
 	return tiling.Solid
 }
 
@@ -168,7 +172,9 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 	}
 	tilesInLayer := planet.GetLayerTiles(tileType.Layer)
 	rootTileIdx := planet.GetTileIndex(x, y)
-	if rootTileIdx == -1 { return }
+	if rootTileIdx == -1 {
+		return
+	}
 	tilesInLayer[rootTileIdx] =
 		tileType.CreateTile(TileCreationOptions{
 			Neighbours: planet.GetNeighbours(tilesInLayer, x, y, tileTypeID),
@@ -203,24 +209,28 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 
 // cycle the pipe connection state at (x,y) to the next valid state.
 // also updates connections of neighbouring pipe tiles.
-func (planet *Planet) TryCyclePipeConnection(x,y int) {
+func (planet *Planet) TryCyclePipeConnection(x, y int) {
 	layerTiles := planet.GetLayerTiles(PipeLayer)
-	tileIdx := planet.GetTileIndex(x,y)
-	if tileIdx < 0 { return }
+	tileIdx := planet.GetTileIndex(x, y)
+	if tileIdx < 0 {
+		return
+	}
 	tile := &layerTiles[tileIdx]
-	if tile.TileCategory == TileCategoryNone { return }
+	if tile.TileCategory == TileCategoryNone {
+		return
+	}
 	oldConnections := tile.Connections
 	tile.Connections =
-		tile.Connections.Next(planet.PipeConnectionCandidates(x,y))
+		tile.Connections.Next(planet.PipeConnectionCandidates(x, y))
 
 	tileType := tile.TileTypeID.Get()
 	tileType.UpdateTile(TileUpdateOptions{
-		Tile: tile,
-		Cycling: true,
-		Neighbours: planet.GetNeighbours(layerTiles, x,y, tileType.ID),
+		Tile:       tile,
+		Cycling:    true,
+		Neighbours: planet.GetNeighbours(layerTiles, x, y, tileType.ID),
 	})
 
-	neighbours := pipeNeighbours(x,y, tile.Connections, oldConnections)
+	neighbours := pipeNeighbours(x, y, tile.Connections, oldConnections)
 	for _, neighbour := range neighbours {
 		neighbourTileIdx :=
 			planet.GetTileIndex(neighbour.X, neighbour.Y)
@@ -231,7 +241,7 @@ func (planet *Planet) TryCyclePipeConnection(x,y int) {
 					ApplyDiff(neighbour.ConnectionDiff)
 				neighbourTileType := neighbourTile.TileTypeID.Get()
 				neighbourTileType.UpdateTile(TileUpdateOptions{
-					Tile: neighbourTile,
+					Tile:    neighbourTile,
 					Cycling: true,
 					Neighbours: planet.GetNeighbours(
 						layerTiles,
@@ -244,11 +254,11 @@ func (planet *Planet) TryCyclePipeConnection(x,y int) {
 }
 
 // which pipes can the pipe at (x,y) be connected to?
-func (planet *Planet) PipeConnectionCandidates(x,y int) Connections {
+func (planet *Planet) PipeConnectionCandidates(x, y int) Connections {
 	layerTiles := planet.GetLayerTiles(PipeLayer)
-	return Connections {
-		Up:    planet.TileExists(layerTiles, x,   y+1),
-		Down:  planet.TileExists(layerTiles, x,   y-1),
+	return Connections{
+		Up:    planet.TileExists(layerTiles, x, y+1),
+		Down:  planet.TileExists(layerTiles, x, y-1),
 		Left:  planet.TileExists(layerTiles, x-1, y),
 		Right: planet.TileExists(layerTiles, x+1, y),
 	}
@@ -282,7 +292,6 @@ func (planet *Planet) updateTile(tilesInLayer []Tile, x, y int) {
 		}
 	}
 }
-
 
 func (planet *Planet) GetLayerTiles(layerID LayerID) []Tile {
 	return planet.Layers[layerID].Tiles
@@ -401,6 +410,10 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 	return planet.collidingLines
 }
 
+func (planet *Planet) DamageTileBy(tile Tile) (destroyed bool) {
+	return
+}
+
 func (planet *Planet) DamageTile(
 	x, y int, layerID LayerID,
 ) (tileCopy Tile, destroyed bool) {
@@ -415,7 +428,7 @@ func (planet *Planet) DamageTile(
 	parentX := x - int(child.OffsetX)
 	parentY := y - int(child.OffsetY)
 	parentIdx := planet.GetTileIndex(parentX, parentY)
-	
+
 	parent := &planet.GetLayerTiles(layerID)[parentIdx]
 	// TODO create tile chunk from collision point rather than tile center
 	//particles.CreateTileChunks(float32(x), float32(y), tile.SpriteID)
@@ -426,11 +439,11 @@ func (planet *Planet) DamageTile(
 	}
 	destroyed = parent.Durability <= 0
 	if destroyed {
-		for offsetY := int32(0) ; offsetY < tileType.Height ; offsetY++ {
-			for offsetX := int32(0) ; offsetX < tileType.Width ; offsetX++ {
+		for offsetY := int32(0); offsetY < tileType.Height; offsetY++ {
+			for offsetX := int32(0); offsetX < tileType.Width; offsetX++ {
 				childX := parentX + int(offsetX)
 				childY := parentY + int(offsetY)
-				childIdx := planet.GetTileIndex(childX,childY)
+				childIdx := planet.GetTileIndex(childX, childY)
 				if childIdx >= 0 {
 					planet.GetLayerTiles(layerID)[childIdx] = NewEmptyTile()
 				}

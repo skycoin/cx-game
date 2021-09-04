@@ -2,8 +2,8 @@ package item
 
 import (
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/particles"
+	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world"
 )
 
