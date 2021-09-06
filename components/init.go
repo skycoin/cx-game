@@ -24,11 +24,6 @@ var (
 )
 
 func Init(World *world.World, cam *camera.Camera, player *agents.Agent) {
-	/*
-		currentWorldState = planet.WorldState
-		currentPlanet = planet
-		currentCamera = cam
-	*/
 	currentPlayer = player
 
 	agent_health.Init()
@@ -50,13 +45,6 @@ func ChangeCamera(newCamera *camera.Camera) {
 func ChangeWorld(newWorld *world.World) {
 	currentWorld = newWorld
 }
-
-/*
-func ChangePlanet(newPlanet *world.Planet) {
-	currentPlanet = newPlanet
-	currentWorldState = newPlanet.WorldState
-}
-*/
 
 func ChangePlayer(newPlayer *agents.Agent) {
 	currentPlayer = newPlayer
