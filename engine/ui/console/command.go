@@ -69,12 +69,18 @@ func Teleport(line string, ctx CommandContext) string {
 	return output
 }
 
+func PrintWorldStats(line string, ctx CommandContext) string {
+	ctx.World.Stats.Print()
+	return ""
+}
+
 func init() {
 	commands["loadmap"] = LoadMap
 	commands["savemap"] = SaveMap
 	commands["newplanet"] = NewPlanet
 	commands["tp"] = Teleport
 	commands["help"] = Help
+	commands["printworldstats"] = PrintWorldStats
 }
 
 func processCommand(line string, ctx CommandContext) string {

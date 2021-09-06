@@ -1,14 +1,16 @@
 package agent_health
 
 import (
-	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/world"
 )
 
-func UpdateAgents(agentList *agents.AgentList) {
-	//todo right now only checks if agent is dead
-	for i, agent := range agentList.Agents {
+func UpdateAgents(World *world.World) {
+	for i, agent := range World.Entities.Agents.Get() {
 		if agent.Died() {
-			agentList.DestroyAgent(i)
+			ev :=
+				world.NewMobKilledEvent(agent.AgentTypeID, World.Tick)
+			World.Stats.Log(ev)
+			World.Entities.Agents.DestroyAgent(i)
 		}
 	}
 }

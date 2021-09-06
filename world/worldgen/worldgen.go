@@ -12,5 +12,6 @@ func GenerateWorld() world.World {
 			Agents: *agents.NewAgentList(),
 		},
 		Planet: *mapgen.GeneratePlanet(),
+		Stats: world.NewWorldStats(),
 	}
 }
