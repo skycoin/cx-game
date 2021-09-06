@@ -2,12 +2,13 @@ package game
 
 import (
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/item"
+	"github.com/skycoin/cx-game/world"
 )
 
 var leftMouseDown = false
-
 
 func mouseButtonCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
@@ -53,6 +54,7 @@ func mousePressCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
 	input.MousePressed = true
+
 	// we only care about mousedown events for now
 	if a != glfw.Press {
 		return
@@ -60,7 +62,32 @@ func mousePressCallback(
 
 	mousePos := input.GetMousePos()
 
+	// return
 	inventory := item.GetInventoryById(player.InventoryID)
+
+	// only if dev destroy tool selected
+	if inventory.SelectedBarSlotIndex == 0 {
+		worldCoords := Cam.GetTransform().Mul4x1(mousePos.Mul(1.0/32).Vec4(0, 1))
+
+		worldX, worldY := cxmath.RoundVec2(worldCoords.Vec2())
+
+		tile := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
+		if tile.Name == "" {
+			tile = World.Planet.GetTile(int(worldX), int(worldY), world.MidLayer)
+			if tile.Name == "" {
+				tile = World.Planet.GetTile(int(worldX), int(worldY), world.BgLayer)
+				if tile.Name != "" {
+					item.SelectedLayer = world.BgLayer
+				}
+			} else {
+				item.SelectedLayer = world.MidLayer
+			}
+		} else {
+			item.SelectedLayer = world.TopLayer
+		}
+	}
+
+	//for dev destroy tool
 
 	if b == glfw.MouseButtonRight {
 		inventory.TryCancelSelect()
