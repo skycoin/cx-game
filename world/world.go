@@ -11,8 +11,10 @@ type Entities struct {
 }
 
 type World struct {
+	Tick int
 	Entities Entities
 	Planet   Planet
+	Stats    WorldStats
 }
 
 func (world World) TileIsClear(layerID LayerID, x, y int) bool {
