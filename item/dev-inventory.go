@@ -3,8 +3,8 @@ package item
 import (
 	"log"
 
-	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/components/types"
+	"github.com/skycoin/cx-game/world"
 )
 
 func NewDevInventory() types.InventoryID {
@@ -35,6 +35,8 @@ func NewDevInventory() types.InventoryID {
 		InventorySlot{PipeConnectToolItemTypeID, 1, 0}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(9, 0)] =
 		InventorySlot{BgToolItemTypeID, 1, 0}
+	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 0)] =
+		InventorySlot{DevDestroyToolID, 1, 0}
 
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 1)] = InventorySlot{
 		GetItemTypeIdForTileTypeID(world.IDFor("stone")),

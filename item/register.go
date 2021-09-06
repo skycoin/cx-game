@@ -10,6 +10,7 @@ var (
 	EnemyToolItemTypeID       ItemTypeID
 	PipePlaceToolItemTypeID   ItemTypeID
 	PipeConnectToolItemTypeID ItemTypeID
+	DevDestroyToolID          ItemTypeID
 )
 
 func RegisterItemTypes() {
@@ -22,6 +23,7 @@ func RegisterItemTypes() {
 	PipePlaceToolItemTypeID = RegisterPipeToolItemType()
 	PipeConnectToolItemTypeID = RegisterPipeConnectToolItemType()
 	EnemyToolItemTypeID = RegisterEnemyToolItemType()
+	DevDestroyToolID = RegisterDevDestroyTool()
 
 	AddDrops()
 }
