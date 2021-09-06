@@ -27,22 +27,12 @@ func keyCallback(
 	w *glfw.Window,
 	key glfw.Key, scancode int, action glfw.Action, mk glfw.ModifierKey,
 ) {
-	// for key := range KeysPressed {
-	// 	delete(KeysPressedUp, key)
-	// }
-
-	// for key := range KeysPressedDown {
-	// 	delete(KeysPressedDown, key)
-	// }
-
-	// for key := range KeysPressed {
-	// 	delete(KeysPressed, key)
-	// }
 	KeysPressedDown = make(map[glfw.Key]bool)
 	KeysPressedUp = make(map[glfw.Key]bool)
 
 	if action == glfw.Press {
-		if key == glfw.KeyEscape {
+		//remap game quit to combination of  buttons
+		if key == glfw.KeyEscape && mk == glfw.ModControl {
 			w.SetShouldClose(true)
 
 		}
