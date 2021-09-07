@@ -5,6 +5,7 @@ import (
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/ui"
+	"github.com/skycoin/cx-game/engine"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/render"
 )
@@ -63,6 +64,8 @@ func ProcessInput() {
 			camera.CycleSnap()
 		}
 	}
+
+	if input.GetButtonDown("toggle-log") { engine.ToggleLogging(); }
 
 	input.Reset()
 
