@@ -61,6 +61,7 @@ type Planet struct {
 	collidingLinesX int
 	collidingLinesY int
 	Time            float32
+	LightingValues  []LightValue
 
 	program, liquidProgram render.Program
 }
@@ -77,10 +78,11 @@ func newPlanetLiquidProgram() render.Program {
 
 func NewPlanet(x, y int32) *Planet {
 	planet := Planet{
-		Width:         x,
-		Height:        y,
-		Layers:        NewLayers(x * y),
-		liquidProgram: newPlanetLiquidProgram(),
+		Width:          x,
+		Height:         y,
+		Layers:         NewLayers(x * y),
+		liquidProgram:  newPlanetLiquidProgram(),
+		LightingValues: make([]LightValue, x*y),
 	}
 	return &planet
 }

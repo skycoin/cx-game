@@ -88,6 +88,7 @@ func Init() {
 
 	// TODO move this to the world package or similar
 	World = worldgen.GenerateWorld()
+	World.Planet.InitLighting()
 	components.ChangeWorld(&World)
 
 	//World.Planet = *mapgen.GeneratePlanet()
@@ -141,4 +142,6 @@ func Init() {
 	//add oxygen emitter
 	particle_emitter.EmitOxygen(playerAgentID, &World.Entities.Particles)
 
+
+	
 }
