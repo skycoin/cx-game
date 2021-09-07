@@ -70,6 +70,7 @@ func registerKeyMaps() {
 	MapKeyToButton("toggle-bbox", glfw.KeyF1)
 	MapKeyToButton("cycle-pixel-snap", glfw.KeyF8)
 	MapKeyToButton("cycle-camera-snap", glfw.KeyF9)
+	MapKeyToButton("toggle-log", glfw.KeyF10)
 
 	MapKeyToButton("enemy-tool-scroll-down", glfw.KeyDown)
 	MapKeyToButton("enemy-tool-scroll-up", glfw.KeyUp)
