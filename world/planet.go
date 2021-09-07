@@ -54,7 +54,6 @@ func NewLayers(numTiles int32) Layers {
 }
 
 type Planet struct {
-	//WorldState      *WorldState
 	Width           int32
 	Height          int32
 	Layers          Layers
@@ -78,7 +77,6 @@ func newPlanetLiquidProgram() render.Program {
 
 func NewPlanet(x, y int32) *Planet {
 	planet := Planet{
-		//WorldState: NewDevWorldState(),
 		Width:         x,
 		Height:        y,
 		Layers:        NewLayers(x * y),

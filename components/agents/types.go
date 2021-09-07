@@ -76,6 +76,7 @@ func createSlime(opts AgentCreationOptions) *Agent {
 	animation := anim.LoadAnimationFromJSON("./assets/slime.json")
 	playback := animation.NewPlayback("Idle")
 	agent := Agent{
+		AgentTypeID:   constants.AGENT_TYPE_SLIME,
 		AgentCategory: constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_LEAP,
 		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
@@ -97,6 +98,7 @@ func createSpiderDrill(opts AgentCreationOptions) *Agent {
 	animation := anim.LoadAnimationFromJSON("./assets/spiderDrill.json")
 	playback := animation.NewPlayback("Walk")
 	agent := Agent{
+		AgentTypeID:   constants.AGENT_TYPE_SPIDER_DRILL,
 		AgentCategory: constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_DRILL,
 		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
@@ -117,6 +119,7 @@ func createGrassHopper(opts AgentCreationOptions) *Agent {
 	animation := anim.LoadAnimationFromJSON("./assets/grassHopper.json")
 	playback := animation.NewPlayback("Idle")
 	agent := Agent{
+		AgentTypeID:   constants.AGENT_TYPE_GRASS_HOPPER,
 		AgentCategory: constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_GRASSHOPPER,
 		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
@@ -137,6 +140,7 @@ func createEnemySoldier(opts AgentCreationOptions) *Agent {
 	animation := anim.LoadAnimationFromJSON("./assets/enemy_soldier.json")
 	playback := animation.NewPlayback("Idle")
 	agent := Agent{
+		AgentTypeID:   constants.AGENT_TYPE_ENEMY_SOLDIER,
 		AgentCategory: constants.AGENT_CATEGORY_ENEMY_MOB,
 		AiHandlerID:   constants.AI_HANDLER_ENEMYSOLDIER,
 		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
@@ -153,6 +157,7 @@ func createEnemySoldier(opts AgentCreationOptions) *Agent {
 
 func createPlayer(opts AgentCreationOptions) *Agent {
 	agent := Agent{
+		AgentTypeID:   constants.AGENT_TYPE_PLAYER,
 		AgentCategory: constants.AGENT_CATEGORY_PLAYER,
 		AiHandlerID:   constants.AI_HANDLER_PLAYER,
 		DrawHandlerID: constants.DRAW_HANDLER_PLAYER,

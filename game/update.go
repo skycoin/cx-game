@@ -63,4 +63,6 @@ func Update(dt float32) {
 		Cam,
 	)
 
+	World.Tick++
+
 }

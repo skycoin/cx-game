@@ -2,9 +2,10 @@ package item
 
 import (
 	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/world"
 )
 
 func RegisterFurnitureToolItemType() ItemTypeID {
@@ -53,6 +54,13 @@ func RegisterPipeConnectToolItemType() ItemTypeID {
 	return AddItemType(itemtype)
 }
 
+func RegisterDevDestroyTool() ItemTypeID {
+	itemtype := NewItemType(render.GetSpriteIDByName("dev-tile-tool"))
+	itemtype.Name = "Dev Destroy Tool"
+	itemtype.Category = BuildTool
+	itemtype.Use = UseDevDestroyTool
+	return AddItemType(itemtype)
+}
 func UseBuildTool(info ItemUseInfo) {
 	didSelect := info.Inventory.PlacementGrid.TrySelect(info.CamCoords())
 	if didSelect {
@@ -73,6 +81,16 @@ func UseEnemyTool(info ItemUseInfo) {
 
 func UsePipeConnectionTool(info ItemUseInfo) {
 	x32, y32 := cxmath.RoundVec2(info.WorldCoords())
-	x := int(x32) ; y := int(y32)
-	info.World.Planet.TryCyclePipeConnection(x,y)
+	x := int(x32)
+	y := int(y32)
+	info.World.Planet.TryCyclePipeConnection(x, y)
+}
+
+//temporary variable for dev tool
+var SelectedLayer world.LayerID = world.TopLayer
+
+func UseDevDestroyTool(info ItemUseInfo) {
+	worldX, worldY := cxmath.RoundVec2(info.WorldCoords())
+	info.World.Planet.DamageTile(int(worldX), int(worldY), SelectedLayer)
+
 }
