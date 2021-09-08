@@ -3,10 +3,7 @@ package main
 import "fmt"
 
 func main() {
+	tt := uint8(0)
 
-	t := 8 >> 2
-
-	tt := 8 << 2
-	fmt.Println(t, "  ", tt)
-
+	fmt.Println(tt - 1)
 }

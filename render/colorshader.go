@@ -1,9 +1,10 @@
 // super simple shader for drawing colors directly.
 // intended for UI.
-package render;
+package render
 
 import (
 	"strconv"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 
@@ -13,28 +14,30 @@ import (
 
 func NewColorShader() Program {
 	config := NewShaderConfig(
-		"./assets/shader/color.vert", "./assets/shader/color.frag" )
+		"./assets/shader/color.vert", "./assets/shader/color.frag")
 	config.Define("NUM_INSTANCES",
-		strconv.Itoa(int(constants.DRAW_COLOR_BATCH_SIZE)) )
+		strconv.Itoa(int(constants.DRAW_COLOR_BATCH_SIZE)))
 	return config.Compile()
 }
 
 var colorProgram Program
+
 func initColor() {
 	colorProgram = NewColorShader()
 }
 
 type ColorUniforms struct {
-	Count int32
+	Count      int32
 	ModelViews []mgl32.Mat4
-	Colors []mgl32.Vec4
+	Colors     []mgl32.Vec4
 }
+
 var colorUniforms ColorUniforms
 
 func (c *ColorUniforms) Add(modelView mgl32.Mat4, color mgl32.Vec4) {
 	c.Count++
-	c.ModelViews = append( c.ModelViews, modelView )
-	c.Colors = append( c.Colors, color )
+	c.ModelViews = append(c.ModelViews, modelView)
+	c.Colors = append(c.Colors, color)
 }
 
 func (c *ColorUniforms) Clear() {
@@ -45,21 +48,21 @@ func (c *ColorUniforms) Clear() {
 
 // n is batch size
 func (c ColorUniforms) Batch(n int32) []ColorUniforms {
-	batchCount := divideRoundUp(c.Count,n)
+	batchCount := divideRoundUp(c.Count, n)
 	batches := make([]ColorUniforms, batchCount)
-	for i := int32(0) ; i < batchCount ; i++ {
+	for i := int32(0); i < batchCount; i++ {
 		start := n * i
-		stop := math32i.Min(n * (i+1), c.Count)
-		batches[i] = c.Range(start,stop)
+		stop := math32i.Min(n*(i+1), c.Count)
+		batches[i] = c.Range(start, stop)
 	}
 	return batches
 }
 
-func (c ColorUniforms) Range(start,stop int32) ColorUniforms {
-	return ColorUniforms {
-		Count: stop-start,
+func (c ColorUniforms) Range(start, stop int32) ColorUniforms {
+	return ColorUniforms{
+		Count:      stop - start,
 		ModelViews: c.ModelViews[start:stop],
-		Colors: c.Colors[start:stop],
+		Colors:     c.Colors[start:stop],
 	}
 }
 
@@ -69,7 +72,7 @@ func (c ColorUniforms) Set(program Program) {
 }
 
 func DrawColorQuad(modelView mgl32.Mat4, color mgl32.Vec4) {
-	colorUniforms.Add(modelView,color)
+	colorUniforms.Add(modelView, color)
 }
 
 func flushColorDraws(projection mgl32.Mat4) {
@@ -84,7 +87,7 @@ func flushColorDraws(projection mgl32.Mat4) {
 	gl.BindVertexArray(QuadVao)
 
 	batchSize := constants.DRAW_COLOR_BATCH_SIZE
-	for _,batch := range colorUniforms.Batch(batchSize) {
+	for _, batch := range colorUniforms.Batch(batchSize) {
 		batch.Set(colorProgram)
 		gl.DrawArraysInstanced(gl.TRIANGLES, 0, 6, batch.Count)
 	}

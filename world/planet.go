@@ -478,6 +478,7 @@ func (planet *Planet) MinimizeDistance(
 
 func (planet *Planet) Update(dt float32) {
 	planet.Time += dt
+	planet.UpdateSkyLight(1000)
 }
 
 func (planet *Planet) NearOxygenGenerator(position cxmath.Vec2) bool {

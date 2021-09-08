@@ -6,7 +6,7 @@ import (
 
 var (
 	//distance from center to to left/right edges
-	halfWidth float32 = 16
+	halfWidth float32 = 24
 	//distance from center to top/bottom edges
 	halfHeight float32 = 16
 	//margin
@@ -38,14 +38,15 @@ func (camera *Camera) IsInBoundsRadius(position cxmath.Vec2, radius int) bool {
 	//https://imgur.com/a/HsuerD3
 	// (x - X )^2 + (y - Y) ^2 and if its more than R^2
 
+	// fmt.Println(camera.Frustum.Left, "   ", camera.Frustum.Right, "   ", position)
 	//check left and right
 	if position.X >= float32(camera.Frustum.Bottom) && position.Y <= float32(camera.Frustum.Top) {
-		if position.X+float32(radius) >= float32(camera.Frustum.Left) || position.X-float32(radius) <= float32(camera.Frustum.Right) {
+		if position.X+float32(radius) >= float32(camera.Frustum.Left) && position.X-float32(radius) <= float32(camera.Frustum.Right) {
 			return true
 		}
 		//up and down
 	} else if position.X >= float32(camera.Frustum.Left) && position.X <= float32(camera.Frustum.Right) {
-		if position.Y+float32(radius) >= float32(camera.Frustum.Bottom) || position.Y-float32(radius) <= float32(camera.Frustum.Top) {
+		if position.Y+float32(radius) >= float32(camera.Frustum.Bottom) && position.Y-float32(radius) <= float32(camera.Frustum.Top) {
 			return true
 		}
 	}
