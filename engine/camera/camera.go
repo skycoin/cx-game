@@ -192,6 +192,7 @@ func (camera *Camera) SetCameraZoomTarget(zoomOffset float32) {
 func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
 	if !zooming {
 		zooming = true
+		camera.UpdateFrustum()
 		zoomCurrent = zoomLevels[currentZoomIndex]
 
 		currentZoomIndex = mathi.Clamp(
