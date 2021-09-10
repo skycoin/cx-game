@@ -1,8 +1,6 @@
 package agent_ai
 
 import (
-	"fmt"
-
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
@@ -48,7 +46,6 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 		agent.PhysicsState.Vel.X = directionX * walkSpeed
 	} else {
 		// line of sigth
-		fmt.Println("player: ", ctx.PlayerPos.Y(), " spider: ", agent.PhysicsState.Pos.Y)
 		isLoS := (ctx.PlayerPos.Y() - 0.5) == agent.PhysicsState.Pos.Y
 		if isLoS {
 			spiderAttack(&agent.PhysicsState, &agent.AnimationPlayback)
