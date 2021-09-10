@@ -32,7 +32,7 @@ func keyCallback(
 
 	if action == glfw.Press {
 		//remap game quit to combination of  buttons
-		if key == glfw.KeyEscape && mk == glfw.ModControl {
+		if key == glfw.KeyEscape {
 			w.SetShouldClose(true)
 
 		}
