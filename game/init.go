@@ -89,7 +89,7 @@ func Init() {
 
 	// TODO move this to the world package or similar
 	World = worldgen.GenerateWorld()
-	World.Planet.InitLighting()
+	World.Planet.InitSkyLight()
 	components.ChangeWorld(&World)
 
 	//World.Planet = *mapgen.GeneratePlanet()

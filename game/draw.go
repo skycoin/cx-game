@@ -98,6 +98,7 @@ func Draw() {
 			gl.DrawArrays(gl.TRIANGLES, 0, 6)
 		}
 	}
+	
 	gl.Disable(gl.BLEND)
 	ui.DrawAgentHUD(player)
 	inventory := item.GetInventoryById(player.InventoryID)
