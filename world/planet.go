@@ -205,6 +205,10 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 			}
 		}
 	}
+
+	if tileType.Layer == TopLayer {
+		planet.LightAddBlock(x, y)
+	}
 }
 
 // cycle the pipe connection state at (x,y) to the next valid state.
@@ -447,6 +451,9 @@ func (planet *Planet) DamageTile(
 		}
 		*parent = NewEmptyTile()
 		planet.updateSurroundingTiles(planet.GetLayerTiles(layerID), x, y)
+		if tileType.Layer == TopLayer {
+			planet.LightAddBlock(x, y)
+		}
 	}
 	return tileCopy, destroyed
 }
@@ -478,7 +485,6 @@ func (planet *Planet) MinimizeDistance(
 
 func (planet *Planet) Update(dt float32) {
 	planet.Time += dt
-	planet.UpdateSkyLight(1000)
 }
 
 func (planet *Planet) NearOxygenGenerator(position cxmath.Vec2) bool {

@@ -64,13 +64,6 @@ func mousePressCallback(
 
 	mousePos := input.GetMousePos()
 
-	worldCoords := Cam.GetTransform().Mul4x1(mousePos.Mul(1.0/32).Vec4(0, 1)).Vec2()
-
-	worldX, worldY := cxmath.RoundVec2(worldCoords)
-	// tile := World.Planet.GetTile(int(worldCoords[0]), int(worldCoords[1]), world.TopLayer)
-	tile := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
-	idx := World.Planet.GetTileIndex(int(worldX), int(worldY))
-	fmt.Println(tile.Name, "    ", World.Planet.LightingValues[idx].GetEnvLight(), "    ", World.Planet.LightingValues[idx].GetSkyLight())
 	// return
 	inventory := item.GetInventoryById(player.InventoryID)
 
@@ -126,7 +119,20 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 			TryUseBuildItem(mousePos.X(), mousePos.Y(), Cam, &World, player)
 	}
 
+	worldCoords := Cam.GetTransform().Mul4x1(mousePos.Mul(1.0/32).Vec4(0, 1)).Vec2()
+
+	worldX, worldY := cxmath.RoundVec2(worldCoords)
+	// tile := World.Planet.GetTile(int(worldCoords[0]), int(worldCoords[1]), world.TopLayer)
+	tile := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
+	idx := World.Planet.GetTileIndex(int(worldX), int(worldY))
+	if tile == nil {
+		return
+	}
+	tileText = fmt.Sprint(tile.TileCollisionType, "   ", tile.Name, "    ", World.Planet.LightingValues[idx].GetEnvLight(), "    ", World.Planet.LightingValues[idx].GetSkyLight(), "  |  ", worldX, "  ", worldY)
+
 }
+
+var tileText string
 
 func windowSizeCallback(window *glfw.Window, width, height int) {
 	// "physical" dimensions describe actual window size

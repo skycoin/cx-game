@@ -53,6 +53,12 @@ func Draw() {
 		ui.AlignCenter,
 		topLeftCtx.PushLocal(mgl32.Translate3D(1, -5, 0)),
 	)
+	ui.DrawString(
+		tileText,
+		mgl32.Vec4{0.3, 0.9, 0.4, 1},
+		ui.AlignCenter,
+		topLeftCtx.PushLocal(mgl32.Translate3D(25, -5, 0)),
+	)
 
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
@@ -98,7 +104,7 @@ func Draw() {
 			gl.DrawArrays(gl.TRIANGLES, 0, 6)
 		}
 	}
-	
+
 	gl.Disable(gl.BLEND)
 	ui.DrawAgentHUD(player)
 	inventory := item.GetInventoryById(player.InventoryID)

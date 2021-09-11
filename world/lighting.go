@@ -3,6 +3,7 @@ package world
 import (
 	"fmt"
 	"log"
+	"time"
 )
 
 type LightValue uint16
@@ -34,7 +35,7 @@ type tilePos struct {
 var skyLightUpdateQueue []tilePos = make([]tilePos, slLengthMax)
 var slStartIndex int = 0
 var slNum int = 0
-var slLengthMax int = 10000
+var slLengthMax int = 100000
 
 func (planet *Planet) InitSkyLight() {
 	//init skylight
@@ -50,7 +51,6 @@ func (planet *Planet) InitSkyLight() {
 			planet.LightingValues[idx].SetSkyLight(255)
 			// planet.PushSkyLightUpdate(x, y)
 		}
-
 		for ; y >= 0; y-- {
 			// tile := planet.GetTile(x, y, TopLayer)
 			//tile not empty
@@ -65,31 +65,32 @@ func (planet *Planet) InitSkyLight() {
 			planet.PushSkylight(x, y)
 		}
 
-		// for slNum != 0 {
-
-		// }
+		for slNum != 0 {
+			planet.UpdateSkyLight(10000)
+		}
 	}
 
-	for slNum != 0 {
+	startTimer := time.Now()
+	for slNum != 0 && time.Since(startTimer).Seconds() < 5 {
 		planet.UpdateSkyLight(64 * 1024)
-
-		fmt.Println("COUNTER IS: ", counter)
 	}
 
+}
+
+func (planet *Planet) LightAddBlock(xtile, yTile int) {
+	planet.PushSkylight(xtile, yTile)
 }
 
 func (planet *Planet) PushSkylight(xTile, yTile int) {
 	if slNum == slLengthMax {
 		// fmt.Println("HIT SKYLIGHT LIMIT")
 		return
-	} else if len(skyLightUpdateQueue) > slLengthMax {
-		log.Fatalf("Length exceeded")
 	}
 	//adds to queue
-	slStartIndex = (slStartIndex + 1) % slLengthMax
+	// slStartIndex = (slStartIndex + 1) % slLengthMax
+	// fmt.Println(xTile, yTile)
+	skyLightUpdateQueue[(slStartIndex+slNum)%slLengthMax] = tilePos{xTile, yTile}
 	slNum++
-
-	skyLightUpdateQueue[slStartIndex] = tilePos{xTile, yTile}
 }
 
 var neighboursOffsets = []int{
@@ -99,23 +100,21 @@ var neighboursOffsets = []int{
 	-1, 0, //w
 	1, 0, //e
 	// -1, -1, //sw
-	0, 1, //s
+	0, -1, //s
 	// 1, -1, //se
 }
 
-var counter int
-
 func (planet *Planet) UpdateSkyLight(iterations int) {
-
-	counter++
+	// fmt.Println(slNum)
+	//only top tile is accounted in calculations
 	//do update tile logic on tiles in update queue
 	if slNum == 0 {
 		return
 	} else if slNum < 0 {
 		log.Fatalln("Skylight update error 1")
 	}
-	// fmt.Println(slNum)
 
+	fmt.Println("updating: ", slNum)
 	//update logic
 	for i := 0; i < iterations; i++ {
 		if slNum == 0 {
@@ -136,27 +135,68 @@ func (planet *Planet) UpdateSkyLight(iterations int) {
 		lightVal := planet.LightingValues[idx]
 		lightTile := planet.GetTile(pos.X, pos.Y, TopLayer)
 		lightSkyLightValue := lightVal.GetSkyLight()
-		valueChanged := false
 
-		if lightTile.Name == "" {
-			//is not solid block
+		topTileIdx := planet.GetTileIndex(pos.X, pos.Y+1)
+		if topTileIdx == -1 {
 			continue
 		}
-		// lightingValue := planet.LightingValues[idx]
-		// topTileIdx := planet.GetTileIndex(value.X, value.Y+1)
-		// if idx == -1 {
-		// 	log.Fatalln("Top tile lighting error")
-		// }
-		// topTileLightingValue := planet.LightingValues[idx]
+
+		topTileLightValue := planet.LightingValues[topTileIdx]
+		topTile := planet.GetTile(pos.X, pos.Y+1, TopLayer)
+
+		//placed solid block below sunlight
+		if topTile.Name == "" && topTileLightValue.GetSkyLight() == 255 {
+			//toptile is skylight
+			if lightTile.Name != "" && lightVal.GetSkyLight() != 255-2*16 {
+				//if checked tile is solid
+				planet.LightingValues[idx].SetSkyLight(255 - 2*16)
+				for i := 0; i < 4; i++ {
+					planet.PushSkylight(pos.X, pos.Y)
+					fmt.Print("NEIGHBOURS ARE: ", pos.X+neighboursOffsets[i*2], pos.Y+neighboursOffsets[i*2+1], "   ")
+
+					planet.PushSkylight(
+						pos.X+neighboursOffsets[i*2],
+						pos.Y+neighboursOffsets[i*2+1],
+					)
+
+				}
+				// fmt.Println("   POS: ", pos.X, pos.Y)
+				// fmt.Println("FIRST")
+			} else if lightTile.Name == "" && lightVal.GetSkyLight() != 255 {
+				//removed block, waiting for sunlight instead
+				fmt.Println(pos.X, pos.Y, "SECOND")
+				planet.LightingValues[idx].SetSkyLight(255)
+				for i := 0; i < 4; i++ {
+					planet.PushSkylight(pos.X, pos.Y)
+
+					if pos.X+neighboursOffsets[i*2] == 25 &&
+						pos.Y+neighboursOffsets[i*2+1] == 20 {
+						fmt.Println("YESYSEYESY SYE")
+					}
+					planet.PushSkylight(
+						pos.X+neighboursOffsets[i*2],
+						pos.Y+neighboursOffsets[i*2+1],
+					)
+				}
+			} else {
+				// fmt.Println("WTFF MANNA", "   ", pos.X, pos.Y, "     ", lightVal.GetSkyLight())
+			}
+			continue
+		}
+
+		// fmt.Println("GOT: ", pos.X, "   ", pos.Y)
 		var neighbourIndexes [4]int
 		for i := 0; i < 4; i++ {
-			idx := planet.GetTileIndex(pos.X+neighboursOffsets[i], pos.Y+neighboursOffsets[i+1])
+			idx := planet.GetTileIndex(
+				pos.X+neighboursOffsets[i*2],
+				pos.Y+neighboursOffsets[i*2+1],
+			)
 			neighbourIndexes[i] = idx
 		}
 
 		var maxSkylightValue uint8 = 0
 
-		//determine brightest neighbour out of 8
+		//determine brightest neighbour out of 4
 		for i := 0; i < 4; i++ {
 			if neighbourIndexes[i] == -1 {
 				continue
@@ -167,15 +207,31 @@ func (planet *Planet) UpdateSkyLight(iterations int) {
 			}
 		}
 
-		if lightSkyLightValue != 255 && lightSkyLightValue >= maxSkylightValue {
-			lightVal.SetSkyLight(maxSkylightValue - 16)
-			valueChanged = true
-		}
-
-		if valueChanged {
-			for i := 0; i < 4; i++ {
-				planet.PushSkylight(pos.X+neighboursOffsets[i], pos.Y+neighboursOffsets[i+1])
+		if lightSkyLightValue >= maxSkylightValue && lightSkyLightValue > 0 {
+			// if lightSkyLightValue+2*16 != maxSkylightValue {
+			// lightVal.SetSkyLight(maxSkylightValue - 2*16)
+			min := uint8(2 * 16)
+			if lightSkyLightValue == 31 {
+				min -= 1
 			}
+			planet.LightingValues[idx].SetSkyLight(lightSkyLightValue - min)
+			for i := 0; i < 4; i++ {
+				planet.PushSkylight(
+					pos.X+neighboursOffsets[i*2],
+					pos.Y+neighboursOffsets[i*2+1],
+				)
+			}
+			continue
+		}
+		if maxSkylightValue > lightSkyLightValue+2*16 {
+			planet.LightingValues[idx].SetSkyLight(maxSkylightValue - 2*16)
+			for i := 0; i < 4; i++ {
+				planet.PushSkylight(
+					pos.X+neighboursOffsets[i*2],
+					pos.Y+neighboursOffsets[i*2+1],
+				)
+			}
+			continue
 		}
 		// topTileIdx := planet.GetTileIndex(pos.X, pos.Y+1)
 		// if topTileIdx == -1 {
