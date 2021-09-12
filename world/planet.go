@@ -408,6 +408,10 @@ func (planet *Planet) GetCollidingTilesLinesRelative(x, y int) []float32 {
 	return planet.collidingLines
 }
 
+func (planet *Planet) DamageTileBy(tile Tile) (destroyed bool) {
+	return
+}
+
 func (planet *Planet) DamageTile(
 	x, y int, layerID LayerID,
 ) (tileCopy Tile, destroyed bool) {

@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	bulletSpeed float32 = 40
+	bulletSpeed      float32 = 40
 	offsetFromPlayer float32 = 2
 )
 
@@ -15,7 +15,6 @@ func UseGun(info ItemUseInfo) {
 	direction := target.Sub(info.PlayerCoords()).Normalize()
 	origin := info.PlayerCoords().Add(direction.Mul(offsetFromPlayer))
 	velocity := direction.Mul(bulletSpeed)
-
 	particle_emitter.CreateBullet(origin, velocity)
 }
 
