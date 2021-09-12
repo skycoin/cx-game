@@ -11,12 +11,12 @@ import (
 )
 
 const (
-	verticalJumpSpeed     float32 = 12
+	verticalJumpSpeed     float32 = 8
 	attackSpeed           float32 = 5
 	secondsBetweenLeaps   float32 = 2
 	distanceBetweenPlayer float32 = 8
 	distanceBeforeJump    float32 = 7
-	collissionDistanceVal float32 = 1.5
+	collissionDistanceVal float32 = 1.3
 )
 
 func slimeIdle(slimePhysicsState physics.Body, playback *anim.Playback) {
@@ -45,7 +45,7 @@ func slimeAttack(distance float32, directionX float32, slimePhysicsState *physic
 		oldDistance = directionX * (currentDistance * attackSpeed)
 		slimePhysicsState.Vel.X = oldDistance
 		slimePhysicsState.Vel.Y = playerPosY
-		fmt.Println("jump: ", currentDistance <= collissionDistanceVal, " -> currentDistance ", currentDistance, " ", collissionDistanceVal)
+		fmt.Println("jump: ", currentDistance <= collissionDistanceVal, " -> currentDistance ", currentDistance, " ", collissionDistanceVal, " playerPOSY ", playerPosY)
 		if currentDistance <= collissionDistanceVal {
 			// hit player
 			fmt.Println("hit")
@@ -57,13 +57,15 @@ func slimeAttack(distance float32, directionX float32, slimePhysicsState *physic
 
 		if isBack {
 			fmt.Println("back")
-			playback.PlayOnce("Fall")
+			playback.PlayOnce("Jump")
 			slimePhysicsState.Vel.Y = 0
-			slimePhysicsState.Vel.X = (distanceBeforeJump + 5) * (directionX * -1)
+			slimePhysicsState.Vel.X = (distanceBeforeJump) * (directionX * -1)
 			if currentDistance >= distanceBeforeJump {
+				playback.PlayOnce("Fall")
 				playback.PlayRepeating("Pre")
 				slimePhysicsState.Vel.X = 0
 				slimePhysicsState.Vel.Y = 0
+				playerPosY = verticalJumpSpeed
 				isBack = false
 				isAttacking = false
 			}
