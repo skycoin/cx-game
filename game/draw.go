@@ -96,9 +96,9 @@ func Draw() {
 			// model = model.Mul4(model.)
 			lightShader.SetMat4("model", &model)
 			lightShader.SetVec3("color", &mgl32.Vec3{
-				float32(lightValue.GetSkyLight()) / 255,
-				float32(lightValue.GetSkyLight()) / 255,
-				float32(lightValue.GetSkyLight()) / 255,
+				float32(lightValue.GetSkyLight()) / 15,
+				float32(lightValue.GetSkyLight()) / 15,
+				float32(lightValue.GetSkyLight()) / 15,
 			})
 			gl.BindVertexArray(lightVao)
 			gl.DrawArrays(gl.TRIANGLES, 0, 6)

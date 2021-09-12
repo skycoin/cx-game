@@ -7,15 +7,15 @@ import (
 )
 
 func TestLightSetValues(t *testing.T) {
-	myLight := LightValue(253 | 98<<8)
+	myLight := LightValue(15 | 7<<4)
 
-	oldSkyLight := myLight.GetSkyLight() // 128
-	oldEnvLight := myLight.GetEnvLight() // 98
+	oldSkyLight := myLight.GetSkyLight() // 7
+	oldEnvLight := myLight.GetEnvLight() // 13
 
-	assert.Equal(t, uint8(98), oldSkyLight)
-	assert.Equal(t, uint8(253), oldEnvLight)
+	assert.Equal(t, uint8(7), oldSkyLight)
+	assert.Equal(t, uint8(15), oldEnvLight)
 
-	myLight.SetSkyLight(25)
+	myLight.SetSkyLight(8)
 
-	assert.Equal(t, uint8(25), myLight.GetSkyLight())
+	assert.Equal(t, uint8(8), myLight.GetSkyLight())
 }
