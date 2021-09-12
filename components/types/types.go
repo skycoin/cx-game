@@ -18,3 +18,5 @@ type InventoryID int
 type ItemTypeID uint32
 
 type ToolType uint8
+
+type LightAttenuationType uint8

@@ -4,6 +4,7 @@ import (
 	"log"
 	"runtime"
 
+	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/components/agents"
@@ -88,6 +89,7 @@ func Init() {
 
 	// TODO move this to the world package or similar
 	World = worldgen.GenerateWorld()
+	World.Planet.InitSkyLight()
 	components.ChangeWorld(&World)
 
 	//World.Planet = *mapgen.GeneratePlanet()
@@ -141,4 +143,33 @@ func Init() {
 	//add oxygen emitter
 	particle_emitter.EmitOxygen(playerAgentID, &World.Entities.Particles)
 
+	lightConfig := render.NewShaderConfig("./assets/shader/light.vert", "./assets/shader/light.frag")
+	lightShader = lightConfig.Compile()
+	render.NewColorShader()
+
+	// var lightVao uint32
+	gl.GenVertexArrays(1, &lightVao)
+	gl.BindVertexArray(lightVao)
+
+	var lightVbo uint32
+	gl.GenBuffers(1, &lightVbo)
+	gl.BindBuffer(gl.ARRAY_BUFFER, lightVbo)
+	vertices := []float32{
+		-0.5, -0.5,
+		-0.5, 0.5,
+		0.5, -0.5,
+
+		-0.5, 0.5,
+		0.5, -0.5,
+		0.5, 0.5,
+	}
+	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(0, 2, gl.FLOAT, false, 0, gl.PtrOffset(0))
+
+	// var fbo uint32
 }
+
+var lightQuad render.Program
+var lightVao uint32
+var lightShader render.Program

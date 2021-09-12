@@ -1,13 +1,15 @@
 package game
 
 import (
+	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/engine"
 	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/ui"
-	"github.com/skycoin/cx-game/engine"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/world"
 )
 
 func ProcessInput() {
@@ -49,6 +51,9 @@ func ProcessInput() {
 		if input.GetButtonDown("cycle-camera-snap") {
 			camera.CycleSnap()
 		}
+		if input.GetButtonDown("switch-skylight") {
+			world.SwitchNeighbourCount(&World.Planet)
+		}
 	case input.FREECAM:
 		if input.GetButtonDown("freecam-off") {
 			Cam.TurnOffFreeCam()
@@ -65,7 +70,12 @@ func ProcessInput() {
 		}
 	}
 
-	if input.GetButtonDown("toggle-log") { engine.ToggleLogging(); }
+	if input.GetButtonDown("toggle-log") {
+		engine.ToggleLogging()
+	}
+	if input.GetKeyDown(glfw.KeyKP5) {
+		lightBool = !lightBool
+	}
 
 	input.Reset()
 

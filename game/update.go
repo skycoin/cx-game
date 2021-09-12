@@ -39,6 +39,7 @@ func Update(dt float32) {
 		Cam.SetCameraPosition(interpolatedPos.X, interpolatedPos.Y)
 	}
 	World.Planet.Update(dt)
+	
 	Cam.Tick(dt)
 	fps.Tick()
 	ui.TickDialogueBoxes(dt)
