@@ -1,8 +1,6 @@
 package agent_ai
 
 import (
-	"fmt"
-
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/cxmath/math32"
@@ -45,7 +43,6 @@ func slimeAttack(distance float32, directionX float32, slimePhysicsState *physic
 		oldDistance = directionX * (currentDistance * attackSpeed)
 		slimePhysicsState.Vel.X = oldDistance
 		slimePhysicsState.Vel.Y = playerPosY
-		fmt.Println("jump: ", currentDistance <= collissionDistanceVal, " -> currentDistance ", currentDistance, " ", collissionDistanceVal, " playerPOSY ", playerPosY)
 		if currentDistance <= collissionDistanceVal {
 			// hit player
 			playback.PlayRepeating("Collide")
