@@ -22,10 +22,10 @@ func NewBulletEmitter(particlelist *particles.ParticleList) *BulletEmitter {
 }
 
 const (
-	bulletSize float32 = 0.3
+	bulletSize       float32 = 0.3
 	bulletElasticity float32 = 0.5
-	bulletFriction float32 = 0.1
-	bulletDuration float32 = 3
+	bulletFriction   float32 = 0.1
+	bulletDuration   float32 = 3
 
 	bulletDamage int = 1
 )

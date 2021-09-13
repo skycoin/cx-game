@@ -282,7 +282,7 @@ func (body *ParticleBody) MoveNoBounceRaytrace(
 		body.CheckAgentCollisions(newPos, agents)
 
 	if willCollide {
-		body.Vel = cxmath.Vec2{}
+		//body.Vel = cxmath.Vec2{}
 	} else {
 		body.Pos = newPos
 	}

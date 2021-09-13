@@ -64,6 +64,8 @@ func Update(dt float32) {
 		Cam,
 	)
 
+	ui.TickDamageIndicators(dt)
+
 	World.Tick++
 
 }

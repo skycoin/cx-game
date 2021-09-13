@@ -24,11 +24,14 @@ type HealthBar struct {
 	Font                           *glfont.Font
 }
 
+var DefaultFont *glfont.Font
+
 func NewHealthBar() HealthBar {
 	font, err := glfont.LoadFont("./assets/font/GravityBold8.ttf", 24, 640, 480)
 	if err != nil {
 		log.Fatal(err)
 	}
+	DefaultFont = font
 	return HealthBar{
 		filledDivider: spriteloader.LoadSingleSprite(
 			"./assets/hud/hud_hp_bar_div1.png", "hp-bar-vertical-divider"),

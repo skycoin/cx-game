@@ -1,8 +1,11 @@
 package particle_physics
 
 import (
+	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/engine/ui"
 )
 
 func Init() {
@@ -46,14 +49,20 @@ func Update(World *world.World) {
 
 	// behaviour independent of particle type
 	for _,particle := range particleList.Particles {
-		if particle != nil {
-			if particle.IsHittingAgent && particle.Damage != 0 {
-				agent := World.Entities.Agents.
-					FromID(particle.ParticleBody.HitAgentID)
-				agent.TakeDamage(particle.Damage)
-				particle.Damage = 0 // only hit agent once
-				return // FIXME
-			}
+		isDamaging :=
+			particle != nil && particle.IsHittingAgent && particle.Damage > 0
+		if isDamaging {
+			agent := World.Entities.Agents.
+				FromID(particle.ParticleBody.HitAgentID)
+			agent.TakeDamage(particle.Damage)
+
+			ApplyKnockback(&agent.PhysicsState, particle.Vel.Mgl32())
+
+			agentPos := agent.PhysicsState.Pos
+			ui.CreateDamageIndicator(
+				particle.Damage, agentPos.Mgl32().Add(mgl32.Vec2{0,1}) )
+
+			particle.Damage = 0 // only hit agent once
 		}
 	}
 }
