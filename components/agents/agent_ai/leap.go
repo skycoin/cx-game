@@ -17,9 +17,9 @@ const (
 	collissionDistanceVal float32 = 1
 )
 
-func slimeIdle(slimePhysicsState physics.Body, playback *anim.Playback) {
+func slimeIdle(slimePhysicsState *physics.Body, playback *anim.Playback) {
 	playback.PlayRepeating("Idle")
-	slimePhysicsState.Vel.X = 0
+	if slimePhysicsState.Collisions.Below { slimePhysicsState.Vel.X = 0 }
 }
 
 var (
@@ -82,6 +82,6 @@ func AiHandlerLeap(agent *agents.Agent, ctx AiContext) {
 	if distance <= distanceBetweenPlayer {
 		slimeAttack(distance, directionX, &agent.PhysicsState, &agent.AnimationPlayback, agent.IsWaiting(), ctx.PlayerPos)
 	} else {
-		slimeIdle(agent.PhysicsState, &agent.AnimationPlayback)
+		slimeIdle(&agent.PhysicsState, &agent.AnimationPlayback)
 	}
 }
