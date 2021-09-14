@@ -47,13 +47,24 @@ const (
 )
 
 type Camera struct {
-	X           float32
-	Y           float32
+	//main camera
+	X          float32
+	Y          float32
+	Zoom       float32
+	Frustum    cxmath.Frustum
+	isOnTarget bool
+	//player position
+	PlayerX float32
+	PlayerY float32
+	// PlayerZoom float32
+	//target position
+	TargetX float32
+	TargetY float32
+	// TargetZoom float32
+	//rest of the code
 	Vel         mgl32.Vec2
-	Zoom        float32
 	movSpeed    float32
 	window      *render.Window
-	Frustum     cxmath.Frustum
 	focus_area  focusArea
 	freeCam     bool
 	PlanetWidth float32
@@ -69,24 +80,24 @@ type focusArea struct {
 
 //Initiates Camera Instances given the window
 func NewCamera(window *render.Window) *Camera {
-	size := mgl32.Vec2{3, 5}
-	xPos := float32(0)
-	yPos := float32(0)
+	// size := mgl32.Vec2{3, 5}
+	// xPos := float32(0)
+	// yPos := float32(0)
 	cam := Camera{
 		//take X,Y pos as a center to frustrum
-		X:        xPos,
-		Y:        yPos,
+		// X:        xPos,
+		// Y:        yPos,
 		Vel:      mgl32.Vec2{0, 0},
 		Zoom:     1,
 		movSpeed: 5,
 		window:   window,
-		focus_area: focusArea{
-			center: mgl32.Vec2{xPos, yPos},
-			left:   xPos - size.X()/2,
-			right:  xPos + size.X()/2,
-			top:    yPos + size.Y()/2,
-			bottom: yPos - size.Y()/2,
-		},
+		// focus_area: focusArea{
+		// 	center: mgl32.Vec2{xPos, yPos},
+		// 	left:   xPos - size.X()/2,
+		// 	right:  xPos + size.X()/2,
+		// 	top:    yPos + size.Y()/2,
+		// 	bottom: yPos - size.Y()/2,
+		// },
 		freeCam: false,
 	}
 	return &cam
@@ -119,8 +130,9 @@ func (camera *Camera) SetCameraCenter() {
 
 //sets camera for current position
 func (camera *Camera) SetCameraPosition(x, y float32) {
-	camera.updateFocusArea(x, y)
-	camera.UpdateFrustum()
+	camera.PlayerX = x
+	camera.PlayerY = y
+	// camera.updateFocusArea(x, y)
 }
 
 var CameraSnapped bool
@@ -167,8 +179,8 @@ func (camera *Camera) updateFocusArea(xPos, yPos float32) {
 
 //sets camera for target position
 func (camera *Camera) SetCameraPositionTarget(x, y float32) {
-	camera.SetCameraPosition(x, y)
-	camera.UpdateFrustum()
+	camera.TargetX = x
+	camera.TargetY = y
 }
 
 //zooms on target
@@ -204,14 +216,18 @@ func (camera Camera) GetTransform() mgl32.Mat4 {
 }
 
 func (camera *Camera) Tick(dt float32) {
-	// TODO optimize this later if necessary
-	// always update the projection matrix in case window got resized
+	if !camera.isOnTarget {
+		camera.X = camera.PlayerX
+		camera.Y = camera.PlayerY
+	} else {
+		camera.X = camera.TargetX
+		camera.Y = camera.TargetY
+	}
+	camera.UpdateFrustum()
+	camera.UpdateZoom(dt)
+}
 
-	// if firstTick {
-	// 	camera.updateProjection()
-	// 	firstTick = false
-	// }
-	// if not zooming nothing to do here
+func (camera *Camera) UpdateZoom(dt float32) {
 	if !zooming {
 		return
 	}
@@ -225,7 +241,6 @@ func (camera *Camera) Tick(dt float32) {
 		zoomProgress = 0
 	}
 }
-
 func (camera *Camera) IsFreeCam() bool {
 	return camera.freeCam
 }
@@ -257,8 +272,15 @@ func (camera *Camera) CycleZoom() {
 	fmt.Printf("Current zoom: %v\n", message)
 }
 
-func (c *Camera) Pos() mgl32.Vec2 {
-	return mgl32.Vec2{c.X, c.Y}
+func (camera *Camera) Pos() mgl32.Vec2 {
+	return mgl32.Vec2{camera.X, camera.Y}
+}
+
+func (camera *Camera) SwitchToTarget() {
+	camera.isOnTarget = true
+}
+func (camera *Camera) SwitchToPlayer() {
+	camera.isOnTarget = false
 }
 
 func CycleSnap() {
