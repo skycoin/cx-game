@@ -8,27 +8,15 @@ import (
 
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
-	"github.com/skycoin/cx-game/cxmath/mathi"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/render"
 )
 
 var (
 	//variables for smooth zooming over time
-	zooming      bool    = false // flag for to know if zooming is occuring
-	zoomDuration float32 = 0.4   // in seconds
-	zoomProgress float32
-
-	// variables for interpolation
-	zoomTarget  float32 = 1 // zoom value to end on
-	zoomCurrent float32     // zoom value to start from
-	// current zoom progress (from 0 to 1)
-
-	currentZoomIndex int = 1
-
-	zoomLevels = []float32{
-		0.5, 1, 2, 4, 8, 16,
-	}
+	// zooming      bool    = false // flag for to know if zooming is occuring
+	// zoomDuration float32 = 0.4   // in seconds
+	// 	zoomProgress float32
 
 	currentSnapping = NO_SNAPPING
 )
@@ -50,7 +38,7 @@ type Camera struct {
 	//main camera
 	X          float32
 	Y          float32
-	Zoom       float32
+	Zoom       Zoom
 	Frustum    cxmath.Frustum
 	isOnTarget bool
 	//player position
@@ -62,10 +50,10 @@ type Camera struct {
 	TargetY float32
 	// TargetZoom float32
 	//rest of the code
-	Vel         mgl32.Vec2
-	movSpeed    float32
-	window      *render.Window
-	focus_area  focusArea
+	Vel      mgl32.Vec2
+	movSpeed float32
+	window   *render.Window
+	//focus_area  focusArea
 	freeCam     bool
 	PlanetWidth float32
 }
@@ -88,7 +76,7 @@ func NewCamera(window *render.Window) *Camera {
 		// X:        xPos,
 		// Y:        yPos,
 		Vel:      mgl32.Vec2{0, 0},
-		Zoom:     1,
+		Zoom:     NewZoom(),
 		movSpeed: 5,
 		window:   window,
 		// focus_area: focusArea{
@@ -114,7 +102,7 @@ func (camera *Camera) MoveCam(dTime float32) {
 }
 
 func (camera *Camera) GetView() mgl32.Mat4 {
-	return mgl32.Translate3D(-camera.X, -camera.Y, -camera.Zoom)
+	return mgl32.Translate3D(-camera.X, -camera.Y, -camera.Zoom.Get())
 }
 
 func (camera *Camera) GetViewMatrix() mgl32.Mat4 {
@@ -138,44 +126,44 @@ func (camera *Camera) SetCameraPosition(x, y float32) {
 var CameraSnapped bool
 
 // update focus area to include (x,y)
-func (camera *Camera) updateFocusArea(xPos, yPos float32) {
-	x, y := ApplySnapping(xPos, yPos)
-	/*
-		no camera snap
-		snap camera center to nearest 1.0f / 32 pixel
-		snap camera center to nearest 1.0f / 32 + 1.0f / 64 pixel
-		snap camera center to nearest 1.0f / 16 pixel
-		snap camera center to nearest 1.0f / 16 + 1.0f / 32 pixel
-	*/
-	modular := cxmath.NewModular(camera.PlanetWidth)
-	var shiftX, shiftY float32
-	if modular.IsLeft(x, camera.focus_area.left) {
-		shiftX = modular.Disp(camera.focus_area.left, x)
-	} else if modular.IsRight(x, camera.focus_area.right) {
-		shiftX = modular.Disp(camera.focus_area.right, x)
-	}
-	if y < camera.focus_area.bottom {
-		shiftY = y - camera.focus_area.bottom
-	} else if y > camera.focus_area.top {
-		shiftY = y - camera.focus_area.top
-	}
-	camera.focus_area.left += shiftX
-	camera.focus_area.right += shiftX
-	camera.focus_area.bottom += shiftY
-	camera.focus_area.top += shiftY
-	camera.focus_area.center = mgl32.Vec2{
-		(camera.focus_area.left + camera.focus_area.right) / 2,
-		(camera.focus_area.top + camera.focus_area.bottom) / 2,
-	}
+// func (camera *Camera) updateFocusArea(xPos, yPos float32) {
+// 	x, y := ApplySnapping(xPos, yPos)
+// 	/*
+// 		no camera snap
+// 		snap camera center to nearest 1.0f / 32 pixel
+// 		snap camera center to nearest 1.0f / 32 + 1.0f / 64 pixel
+// 		snap camera center to nearest 1.0f / 16 pixel
+// 		snap camera center to nearest 1.0f / 16 + 1.0f / 32 pixel
+// 	*/
+// 	modular := cxmath.NewModular(camera.PlanetWidth)
+// 	var shiftX, shiftY float32
+// 	if modular.IsLeft(x, camera.focus_area.left) {
+// 		shiftX = modular.Disp(camera.focus_area.left, x)
+// 	} else if modular.IsRight(x, camera.focus_area.right) {
+// 		shiftX = modular.Disp(camera.focus_area.right, x)
+// 	}
+// 	if y < camera.focus_area.bottom {
+// 		shiftY = y - camera.focus_area.bottom
+// 	} else if y > camera.focus_area.top {
+// 		shiftY = y - camera.focus_area.top
+// 	}
+// 	camera.focus_area.left += shiftX
+// 	camera.focus_area.right += shiftX
+// 	camera.focus_area.bottom += shiftY
+// 	camera.focus_area.top += shiftY
+// 	camera.focus_area.center = mgl32.Vec2{
+// 		(camera.focus_area.left + camera.focus_area.right) / 2,
+// 		(camera.focus_area.top + camera.focus_area.bottom) / 2,
+// 	}
 
-	camera.Vel[0] = math32.Mod((camera.focus_area.center.X() - camera.X), 100)
-	camera.Vel[1] = camera.focus_area.center.Y() - camera.Y
+// 	camera.Vel[0] = math32.Mod((camera.focus_area.center.X() - camera.X), 100)
+// 	camera.Vel[1] = camera.focus_area.center.Y() - camera.Y
 
-	camera.X = math32.
-		PositiveModulo(camera.focus_area.center.X(), camera.PlanetWidth)
-	camera.Y = camera.focus_area.center.Y()
+// 	camera.X = math32.
+// 		PositiveModulo(camera.focus_area.center.X(), camera.PlanetWidth)
+// 	camera.Y = camera.focus_area.center.Y()
 
-}
+// }
 
 //sets camera for target position
 func (camera *Camera) SetCameraPositionTarget(x, y float32) {
@@ -184,34 +172,23 @@ func (camera *Camera) SetCameraPositionTarget(x, y float32) {
 }
 
 //zooms on target
-func (camera *Camera) SetCameraZoomTarget(zoomOffset float32) {
-	camera.SetCameraZoomPosition(zoomOffset)
-}
+// func (camera *Camera) SetCameraZoomTarget(zoomOffset float32) {
+// 	camera.TargetZoom =
+// }
 
 //zooms on current position
 func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
-	if !zooming {
-		zooming = true
-		camera.UpdateFrustum()
-		zoomCurrent = zoomLevels[currentZoomIndex]
-
-		currentZoomIndex = mathi.Clamp(
-			currentZoomIndex+int(zoomOffset),
-			0, len(zoomLevels)-1,
-		)
-		nextZoomIndex := currentZoomIndex
-
-		zoomTarget = zoomLevels[nextZoomIndex]
-		if zoomTarget == zoomCurrent {
-			zooming = false
-		}
+	if zoomOffset > 0 {
+		camera.Zoom.Up()
+		return
 	}
+	camera.Zoom.Down()
 }
 
 func (camera Camera) GetTransform() mgl32.Mat4 {
 	translate := mgl32.Translate3D(camera.X, camera.Y, 0)
 	// fmt.Println(camera.Zoom)
-	scale := mgl32.Scale3D(1/camera.Zoom, 1/camera.Zoom, 1)
+	scale := mgl32.Scale3D(1/camera.Zoom.Get(), 1/camera.Zoom.Get(), 1)
 	return translate.Mul4(scale)
 }
 
@@ -224,23 +201,9 @@ func (camera *Camera) Tick(dt float32) {
 		camera.Y = camera.TargetY
 	}
 	camera.UpdateFrustum()
-	camera.UpdateZoom(dt)
+	camera.Zoom.Tick(dt)
 }
 
-func (camera *Camera) UpdateZoom(dt float32) {
-	if !zooming {
-		return
-	}
-
-	zoomProgress += dt / zoomDuration
-
-	camera.Zoom = cxmath.Lerp(zoomCurrent, zoomTarget, zoomProgress)
-
-	if camera.Zoom == zoomTarget {
-		zooming = false
-		zoomProgress = 0
-	}
-}
 func (camera *Camera) IsFreeCam() bool {
 	return camera.freeCam
 }
@@ -255,18 +218,18 @@ func (camera *Camera) TurnOffFreeCam() {
 }
 func (camera *Camera) CycleZoom() {
 	var message string
-	switch camera.Zoom {
+	switch camera.Zoom.value {
 	case 1:
-		camera.Zoom = 0.5
+		camera.Zoom.Set(0.5)
 		message = "2 pixels per pixel"
 	case 0.5:
-		camera.Zoom = 1.0 / 3.0
+		camera.Zoom.Set(1.0 / 3.0)
 		message = "3 pixels per pixel"
 	case 1.0 / 3.0:
-		camera.Zoom = 1.0 / 4.0
+		camera.Zoom.Set(1.0 / 4.0)
 		message = "4 pixels per pixel"
 	default:
-		camera.Zoom = 1
+		camera.Zoom.Set(1)
 		message = "1 pixel per pixels"
 	}
 	fmt.Printf("Current zoom: %v\n", message)
