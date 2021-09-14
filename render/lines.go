@@ -37,7 +37,8 @@ func DrawLines(
 ) {
 	// DEBUG: check if the array have the right amount of elements
 	if len(lineArray) < 4 {
-		log.Panicln("line array doesn't enough points to draw a line")
+		return
+		// log.Panicln("line array doesn't enough points to draw a line")
 	} else if len(lineArray)%2 != 0 {
 		log.Panicln("line array doesn't have the right amount of floats values to draw the lines")
 	}

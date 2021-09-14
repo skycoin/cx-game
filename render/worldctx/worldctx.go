@@ -14,7 +14,7 @@ type worldContextImpl struct {
 }
 
 func (wc worldContextImpl) Projection() mgl32.Mat4 {
-	return wc.camera.GetProjectionMatrix()
+	return render.Projection
 }
 
 func (wc worldContextImpl) ModelToModelView(model mgl32.Mat4) mgl32.Mat4 {

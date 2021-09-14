@@ -54,6 +54,13 @@ func ProcessInput() {
 		if input.GetButtonDown("switch-skylight") {
 			world.SwitchNeighbourCount(&World.Planet)
 		}
+
+		if input.GetButtonDown("set-camera-player") {
+			Cam.SwitchToPlayer()
+		}
+		if input.GetButtonDown("set-camera-target") {
+			Cam.SwitchToTarget()
+		}
 	case input.FREECAM:
 		if input.GetButtonDown("freecam-off") {
 			Cam.TurnOffFreeCam()

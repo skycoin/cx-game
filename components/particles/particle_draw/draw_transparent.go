@@ -7,6 +7,7 @@ import (
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/render"
 )
 
 var (
@@ -41,7 +42,7 @@ func DrawTransparent(particleList []*particles.Particle, cam *camera.Camera) {
 			particle.Pos.Y,
 			0,
 		).Mul4(cxmath.Scale(particle.Size.X))
-		projection := cam.GetProjectionMatrix()
+		projection := render.Projection
 		program.SetMat4("projection", &projection)
 		view := cam.GetViewMatrix()
 		program.SetMat4("view", &view)
@@ -72,7 +73,7 @@ func DrawTransparentInstanced(particleList []*particles.Particle, cam *camera.Ca
 	program := GetProgram(constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED)
 	program.Use()
 
-	projection := cam.GetProjectionMatrix()
+	projection := render.Projection
 	program.SetMat4("projection", &projection)
 	view := cam.GetViewMatrix()
 	program.SetMat4("view", &view)

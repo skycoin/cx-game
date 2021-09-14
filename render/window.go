@@ -39,6 +39,12 @@ func (win *Window) sizeCallback(
 	windowDimensions.Viewport.Use()
 
 	win.PhysicalToViewportTransform = windowDimensions.Transform()
+
+	Projection = mgl32.Ortho(
+		-virtualWidth/2/PixelsPerTile, virtualWidth/2/PixelsPerTile,
+		-virtualHeight/2/PixelsPerTile, virtualHeight/2/PixelsPerTile,
+		-1000, 1000,
+	)
 }
 
 func (win *Window) SetInitialWindowDimensions() {
@@ -67,6 +73,11 @@ func NewWindow(width, height int, resizable bool) Window {
 		Resizable: resizable,
 		Window:    glfwWindow,
 	}
+	Projection = mgl32.Ortho(
+		-float32(window.Width)/2/PixelsPerTile, float32(window.Width)/2/PixelsPerTile,
+		-float32(window.Height)/2/PixelsPerTile, float32(window.Height)/2/PixelsPerTile,
+		-1000, 1000,
+	)
 	window.context = window.DefaultRenderContext()
 
 	return window

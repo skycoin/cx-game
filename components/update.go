@@ -17,6 +17,7 @@ func Update(dt float32) {
 	currentWorld.Entities.Particles.Update(dt)
 
 	particle_emitter.Update(dt, currentWorld)
+
 }
 
 func updateTimers(agents []*agents.Agent, dt float32) {

@@ -71,6 +71,8 @@ func registerKeyMaps() {
 	MapKeyToButton("cycle-pixel-snap", glfw.KeyF8)
 	MapKeyToButton("cycle-camera-snap", glfw.KeyF9)
 	MapKeyToButton("toggle-log", glfw.KeyF10)
+	MapKeyToButton("set-camera-player", glfw.KeyKP1)
+	MapKeyToButton("set-camera-target", glfw.KeyKP2)
 
 	MapKeyToButton("enemy-tool-scroll-down", glfw.KeyDown)
 	MapKeyToButton("enemy-tool-scroll-up", glfw.KeyUp)

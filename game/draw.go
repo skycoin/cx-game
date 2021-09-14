@@ -27,7 +27,6 @@ func Draw() {
 	baseCtx := win.DefaultRenderContext()
 	render.SetCameraTransform(Cam.GetTransform())
 	render.SetWorldWidth(float32(World.Planet.Width))
-	baseCtx.Projection = Cam.GetProjectionMatrix()
 	// camCtx := baseCtx.PushView(Cam.GetView())
 	worldCtx := worldctx.NewWorldRenderContext(Cam, &World.Planet)
 
@@ -53,12 +52,12 @@ func Draw() {
 		ui.AlignCenter,
 		topLeftCtx.PushLocal(mgl32.Translate3D(1, -5, 0)),
 	)
-	ui.DrawString(
-		tileText,
-		mgl32.Vec4{0.3, 0.9, 0.4, 1},
-		ui.AlignCenter,
-		topLeftCtx.PushLocal(mgl32.Translate3D(25, -5, 0)),
-	)
+	// ui.DrawString(
+	// 	tileText,
+	// 	mgl32.Vec4{0.3, 0.9, 0.4, 1},
+	// 	ui.AlignCenter,
+	// 	topLeftCtx.PushLocal(mgl32.Translate3D(25, -5, 0)),
+	// )
 
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
@@ -69,7 +68,7 @@ func Draw() {
 	Console.Draw(win.DefaultRenderContext())
 
 	components.Draw_Queued(&World.Entities, Cam)
-	render.Flush(Cam.GetProjectionMatrix())
+	render.Flush(render.Projection)
 
 	//draw after flushing
 	components.Draw(&World.Entities, Cam)
@@ -111,7 +110,7 @@ func Draw() {
 	invCameraTransform := Cam.GetTransform().Inv()
 	inventory.Draw(baseCtx, invCameraTransform)
 	ui.DrawDamageIndicators(invCameraTransform)
-	render.Flush(Cam.GetProjectionMatrix())
+	render.Flush(render.Projection)
 	glfw.PollEvents()
 	win.Window.SwapBuffers()
 }

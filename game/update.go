@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/skycoin/cx-game/components"
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/input"
@@ -19,6 +20,7 @@ func Update(dt float32) {
 	FixedUpdate(dt)
 	// physics.Simulate(dt, CurrentPlanet)
 	components.Update(dt)
+
 	if Cam.IsFreeCam() {
 		//player.Controlled = false
 		Cam.MoveCam(dt)
@@ -39,7 +41,6 @@ func Update(dt float32) {
 		Cam.SetCameraPosition(interpolatedPos.X, interpolatedPos.Y)
 	}
 	World.Planet.Update(dt)
-	
 	Cam.Tick(dt)
 	fps.Tick()
 	ui.TickDialogueBoxes(dt)
@@ -68,4 +69,7 @@ func Update(dt float32) {
 
 	World.Tick++
 
+	//testing camera target
+	id := World.Entities.Agents.FromID(types.AgentID(1))
+	Cam.SetCameraPositionTarget(id.PhysicsState.Pos.X, id.PhysicsState.Pos.Y)
 }

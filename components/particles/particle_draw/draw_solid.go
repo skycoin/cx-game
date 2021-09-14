@@ -6,6 +6,7 @@ import (
 	"github.com/skycoin/cx-game/components/particles"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/render"
 )
 
 func DrawSolid(particleList []*particles.Particle, cam *camera.Camera) {
@@ -22,7 +23,7 @@ func DrawSolid(particleList []*particles.Particle, cam *camera.Camera) {
 		).Mul4(mgl32.Scale3D(particle.Size.X, particle.Size.Y, 1))
 		// projection := mgl32.Ortho2D(0, 800.0/32, 0, 600.0/32)
 
-		projection := cam.GetProjectionMatrix()
+		projection := render.Projection
 
 		view := cam.GetViewMatrix()
 		program.SetMat4("view", &view)

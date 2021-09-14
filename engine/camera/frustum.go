@@ -12,10 +12,11 @@ var (
 )
 
 func (camera *Camera) UpdateFrustum() {
-	camera.Frustum.Left = int(camera.X) - int(halfWidth/camera.Zoom)
-	camera.Frustum.Right = int(camera.X) + int(halfWidth/camera.Zoom)
-	camera.Frustum.Top = int(camera.Y) + int(halfHeight/camera.Zoom)
-	camera.Frustum.Bottom = int(camera.Y) - int(halfHeight/camera.Zoom)
+	zoom := camera.Zoom.GetFrustum()
+	camera.Frustum.Left = int(camera.X) - int(halfWidth/zoom)
+	camera.Frustum.Right = int(camera.X) + int(halfWidth/zoom)
+	camera.Frustum.Top = int(camera.Y) + int(halfHeight/zoom)
+	camera.Frustum.Bottom = int(camera.Y) - int(halfHeight/zoom)
 }
 
 func (camera *Camera) IsInBounds(x, y int) bool {
