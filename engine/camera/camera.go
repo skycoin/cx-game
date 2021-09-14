@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/cxmath/mathi"
@@ -107,17 +106,6 @@ func (camera *Camera) GetView() mgl32.Mat4 {
 	return mgl32.Translate3D(-camera.X, -camera.Y, -camera.Zoom)
 }
 
-func (camera *Camera) GetProjectionMatrix() mgl32.Mat4 {
-	ppt := float32(constants.PIXELS_PER_TILE)
-	left := -float32(camera.window.Width) / 2 / ppt
-	right := float32(camera.window.Width) / 2 / ppt
-	bottom := -float32(camera.window.Height) / 2 / ppt
-	top := float32(camera.window.Height) / 2 / ppt
-	projection := mgl32.Ortho(left, right, bottom, top, -1000, 1000)
-
-	return projection
-}
-
 func (camera *Camera) GetViewMatrix() mgl32.Mat4 {
 	return camera.GetTransform().Inv()
 	// return camera.GetTransform()
@@ -215,18 +203,9 @@ func (camera Camera) GetTransform() mgl32.Mat4 {
 	return translate.Mul4(scale)
 }
 
-func (camera *Camera) updateProjection() {
-	// projection := camera.GetProjectionMatrix()
-	// gl.UseProgram(camera.window.Program)
-	// gl.UniformMatrix4fv(gl.GetUniformLocation(camera.window.Program, gl.Str("projection\x00")), 1, false, &projection[0])
-	projection := camera.GetProjectionMatrix()
-	camera.window.SetProjectionMatrix(projection)
-}
-
 func (camera *Camera) Tick(dt float32) {
 	// TODO optimize this later if necessary
 	// always update the projection matrix in case window got resized
-	camera.updateProjection()
 
 	// if firstTick {
 	// 	camera.updateProjection()
@@ -240,7 +219,6 @@ func (camera *Camera) Tick(dt float32) {
 	zoomProgress += dt / zoomDuration
 
 	camera.Zoom = cxmath.Lerp(zoomCurrent, zoomTarget, zoomProgress)
-	camera.updateProjection()
 
 	if camera.Zoom == zoomTarget {
 		zooming = false

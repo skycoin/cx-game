@@ -15,7 +15,7 @@ type Context struct {
 // from a (default) centered render context, anchor at window top left
 func CenterToTopLeft(ctx Context) Context {
 	return ctx.PushLocal(mgl32.
-		Translate3D(-ctx.Size.X()/2,+ctx.Size.Y()/2,0))
+		Translate3D(-ctx.Size.X()/2, +ctx.Size.Y()/2, 0))
 }
 
 // push a local transformation onto the render context.
@@ -45,15 +45,15 @@ const PixelsPerTile = 32
 func (window Window) DefaultRenderContext() Context {
 	w := float32(window.Width)
 	h := float32(window.Height)
-	projectTransform := mgl32.Ortho(
-		-w/2/PixelsPerTile, w/2/PixelsPerTile,
-		-h/2/PixelsPerTile, h/2/PixelsPerTile,
-		-1000, 1000,
-	)
+	// projectTransform := mgl32.Ortho(
+	// 	-w/2/PixelsPerTile, w/2/PixelsPerTile,
+	// 	-h/2/PixelsPerTile, h/2/PixelsPerTile,
+	// 	-1000, 1000,
+	// )
 	return Context{
 		World:      mgl32.Ident4(),
 		Size:       mgl32.Vec2{w / PixelsPerTile, h / PixelsPerTile},
-		Projection: projectTransform,
+		Projection: Projection,
 	}
 }
 

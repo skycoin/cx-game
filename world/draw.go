@@ -45,7 +45,7 @@ func (planet *Planet) DrawHemisphere(
 	center := float32((left + right) / 2)
 	_ = center
 
-	projection := cam.GetProjectionMatrix()
+	projection := render.Projection
 	planet.program.Use()
 	planet.program.
 		SetMat4("projection", &projection)

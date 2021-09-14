@@ -27,7 +27,6 @@ func Draw() {
 	baseCtx := win.DefaultRenderContext()
 	render.SetCameraTransform(Cam.GetTransform())
 	render.SetWorldWidth(float32(World.Planet.Width))
-	baseCtx.Projection = Cam.GetProjectionMatrix()
 	// camCtx := baseCtx.PushView(Cam.GetView())
 	worldCtx := worldctx.NewWorldRenderContext(Cam, &World.Planet)
 
@@ -69,7 +68,7 @@ func Draw() {
 	Console.Draw(win.DefaultRenderContext())
 
 	components.Draw_Queued(&World.Entities, Cam)
-	render.Flush(Cam.GetProjectionMatrix())
+	render.Flush(render.Projection)
 
 	//draw after flushing
 	components.Draw(&World.Entities, Cam)
@@ -111,7 +110,7 @@ func Draw() {
 	invCameraTransform := Cam.GetTransform().Inv()
 	inventory.Draw(baseCtx, invCameraTransform)
 	ui.DrawDamageIndicators(invCameraTransform)
-	render.Flush(Cam.GetProjectionMatrix())
+	render.Flush(render.Projection)
 	glfw.PollEvents()
 	win.Window.SwapBuffers()
 }
