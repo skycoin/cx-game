@@ -1,6 +1,7 @@
 package item
 
 import (
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/agents"
@@ -23,6 +24,8 @@ type ItemType struct {
 	Category Category
 
 	Use func(ItemUseInfo)
+	OnDrag func(ItemUseInfo, mgl32.Vec2, glfw.MouseButton)
+	MouseDownRight func(ItemUseInfo) bool
 }
 
 //type ItemTypeID uint32
@@ -68,8 +71,10 @@ var nextItemTypeID = ItemTypeID(1)
 func NewItemType(SpriteID render.SpriteID) ItemType {
 	return ItemType{
 		SpriteID: SpriteID,
-		Name:     "untitled",
+		Name:     "untitled-item",
 		Use:      func(ItemUseInfo) {},
+		OnDrag:     func(ItemUseInfo,mgl32.Vec2, glfw.MouseButton) {},
+		MouseDownRight:      func(ItemUseInfo) bool {return false},
 	}
 }
 

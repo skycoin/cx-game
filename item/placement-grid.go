@@ -243,6 +243,28 @@ func (grid *PlacementGrid) TryPlace(info ItemUseInfo) bool {
 	return false
 }
 
+func (grid *PlacementGrid) TryPlaceNoConnect(info ItemUseInfo) bool {
+	if !grid.HasSelected || grid.Selected == 0 {
+		return false
+	}
+	worldCoords := info.WorldCoords()
+	x32, y32 := cxmath.RoundVec2(worldCoords)
+	x := int(x32)
+	y := int(y32)
+
+	tt := grid.Selected.Get()
+	canPlace := tilesAreClear(
+		info.World, tt.Layer,
+		x,y,
+		x+int(tt.Width), y+int(tt.Height),
+	)
+	if canPlace {
+		info.World.Planet.PlaceTileTypeNoConnect(grid.Selected, x, y)
+		return true
+	}
+	return false
+}
+
 func (grid *PlacementGrid) UpdatePreview(
 		World *world.World, screenX, screenY float32, Cam *camera.Camera,
 ) {

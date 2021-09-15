@@ -2,6 +2,7 @@ package world
 
 import (
 	"github.com/skycoin/cx-game/world/tiling"
+	"github.com/skycoin/cx-game/cxmath"
 )
 
 type Connections struct { Up, Left, Right, Down bool }
@@ -86,4 +87,46 @@ func (c Connections) Next(valid Connections) Connections {
 		i = (i+1) % 16
 	}
 	return Connections{} // unreachable anyway
+}
+
+func FindNewConnections(disp cxmath.Vec2i) (Connections,Connections) {
+	if disp.X == 0 && disp.Y == 0 { return Connections{},Connections{} }
+	if disp.X == 0 {
+		if disp.Y > 0 {
+			return Connections { Up: true}, Connections { Down: true }
+		} else {
+			return Connections { Down: true}, Connections { Up: true }
+		}
+	} else {
+		if disp.X > 0 {
+			return Connections { Right: true}, Connections { Left: true }
+		} else {
+			return Connections { Left: true}, Connections { Right: true }
+		}
+	}
+	return Connections{},Connections{}
+}
+
+func (x Connections) OR(y Connections) Connections {
+	return Connections {
+		Up: x.Up || y.Up,
+		Down: x.Down || y.Down,
+		Left: x.Left || y.Left,
+		Right: x.Right || y.Right,
+	}
+}
+
+func (x Connections) AND(y Connections) Connections {
+	return Connections {
+		Up: x.Up && y.Up,
+		Down: x.Down && y.Down,
+		Left: x.Left && y.Left,
+		Right: x.Right && y.Right,
+	}
+}
+
+func (x Connections) NOT() Connections {
+	return Connections {
+		Up: !x.Up, Down: !x.Down, Left: !x.Left, Right: !x.Right,
+	}
 }
