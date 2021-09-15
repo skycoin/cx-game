@@ -14,6 +14,7 @@ const (
 	minFontScale float32 = 0.3
 	fontShrinkFactor float32 = 10
 	damageIndicatorLifetime float32 = 1
+	floatSpeed float32 = 0.5
 )
 
 type DamageIndicator struct {
@@ -38,6 +39,7 @@ func TickDamageIndicators(dt float32) {
 	newDamageIndicators := make([]DamageIndicator, 0, len(damageIndicators))
 	for _, damageIndicator := range damageIndicators {
 		damageIndicator.TimeToLive -= dt
+		damageIndicator.Position[1] += floatSpeed*dt
 		if damageIndicator.TimeToLive > 0 {
 			newDamageIndicators = append(newDamageIndicators, damageIndicator)
 		}
