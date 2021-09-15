@@ -8,18 +8,20 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
-var leftMouseDown = false
+var mouseDown = false
+var mouseButtonDown glfw.MouseButton
 
 func mouseButtonCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
 	if a == glfw.Press {
 		mousePressCallback(w, b, a, mk)
-		leftMouseDown = true
+		mouseDown = true
+		mouseButtonDown = b
 	}
 	if a == glfw.Release {
 		mouseReleaseCallback(w, b, a, mk)
-		leftMouseDown = false
+		mouseDown = false
 	}
 }
 
@@ -90,6 +92,9 @@ func mousePressCallback(
 	//for dev destroy tool
 
 	if b == glfw.MouseButtonRight {
+		consumed := inventory.TryMouseDownRight(
+			mousePos.X(), mousePos.Y(), Cam, &World, player )
+		if consumed { return }
 		inventory.TryCancelSelect()
 		return
 	}
@@ -106,31 +111,22 @@ func mousePressCallback(
 		TryUseItem(mousePos.X(), mousePos.Y(), Cam, &World, player)
 }
 
+var tileText string
+
 func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 	input.MouseCoords.X = float32(xpos)
 	input.MouseCoords.Y = float32(ypos)
 
 	mousePos := input.GetMousePos()
 
-	if leftMouseDown {
+	if mouseDown {
 		item.GetInventoryById(player.InventoryID).
-			TryUseBuildItem(mousePos.X(), mousePos.Y(), Cam, &World, player)
+			TryDragItem(
+				mousePos.X(), mousePos.Y(),
+				Cam, &World, player, mouseButtonDown,
+			)
 	}
-
-	// worldCoords := Cam.GetTransform().Mul4x1(mousePos.Mul(1.0/32).Vec4(0, 1)).Vec2()
-
-	// worldX, worldY := cxmath.RoundVec2(worldCoords)
-	// // tile := World.Planet.GetTile(int(worldCoords[0]), int(worldCoords[1]), world.TopLayer)
-	// tile := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
-	// idx := World.Planet.GetTileIndex(int(worldX), int(worldY))
-	// if tile == nil {
-	// 	return
-	// }
-	// tileText = fmt.Sprint(tile.TileCollisionType, "   ", tile.Name, "    ", World.Planet.LightingValues[idx].GetEnvLight(), "    ", World.Planet.LightingValues[idx].GetSkyLight(), "  |  ", worldX, "  ", worldY)
-
 }
-
-// var tileText string
 
 func windowSizeCallback(window *glfw.Window, width, height int) {
 	// "physical" dimensions describe actual window size

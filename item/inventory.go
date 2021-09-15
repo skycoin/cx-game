@@ -39,7 +39,8 @@ type Inventory struct {
 	GridHoldingIndex     int
 	PlacementGrid        PlacementGrid
 
-	IsOpen bool
+	IsOpen               bool
+	lastMouseWorldPos    mgl32.Vec2
 }
 
 var (
@@ -252,50 +253,69 @@ func (inventory *Inventory) TryUseItem(
 	World *world.World, player *agents.Agent,
 ) bool {
 	itemSlot := inventory.SelectedItemSlot()
-	if itemSlot == nil {
-		return false
-	}
+	if itemSlot == nil { return false }
 	// don't use empty items
-	if itemSlot.Quantity == 0 {
-		return false
-	}
+	if itemSlot.Quantity == 0 { return false }
 	itemType := GetItemTypeById(itemSlot.ItemTypeID)
-	itemType.Use(ItemUseInfo{
+	info := ItemUseInfo{
 		Slot:    itemSlot,
 		ScreenX: screenX, ScreenY: screenY,
 		Camera:    cam,
 		World:     World,
 		Player:    player,
 		Inventory: inventory,
-	})
+	}
+	itemType.Use(info)
+
+	inventory.lastMouseWorldPos = info.WorldCoords()
 	return true
 }
 
-func (inventory *Inventory) TryUseBuildItem(
+func (inventory *Inventory) TryMouseDownRight(
 	screenX, screenY float32, cam *camera.Camera,
-	World *world.World, player *agents.Agent) bool {
+	World *world.World, player *agents.Agent,
+) bool {
 	itemSlot := inventory.SelectedItemSlot()
-	if itemSlot == nil {
-		return false
-	}
-
-	if itemSlot.Quantity == 0 {
-		return false
-	}
-
+	if itemSlot == nil { return false }
+	// don't use empty items
+	if itemSlot.Quantity == 0 { return false }
 	itemType := GetItemTypeById(itemSlot.ItemTypeID)
-	if itemType.Category == BuildTool {
-		itemType.Use(ItemUseInfo{
-			Slot:    itemSlot,
-			ScreenX: screenX, ScreenY: screenY,
-			Camera:    cam,
-			World:     World,
-			Player:    player,
-			Inventory: inventory,
-		})
-		return true
+	info := ItemUseInfo{
+		Slot:    itemSlot,
+		ScreenX: screenX, ScreenY: screenY,
+		Camera:    cam,
+		World:     World,
+		Player:    player,
+		Inventory: inventory,
 	}
-	return false
+	consumed := itemType.MouseDownRight(info)
+	if !consumed { return false }
+
+	inventory.lastMouseWorldPos = info.WorldCoords()
+	return true
+}
+
+func (inv *Inventory) TryDragItem(
+	screenX, screenY float32, cam *camera.Camera,
+	World *world.World, player *agents.Agent,
+	b glfw.MouseButton,
+) bool {
+	itemSlot := inv.SelectedItemSlot()
+	if itemSlot == nil { return false }
+	// don't use empty items
+	if itemSlot.Quantity == 0 { return false }
+	itemType := GetItemTypeById(itemSlot.ItemTypeID)
+	info := ItemUseInfo{
+		Slot:    itemSlot,
+		ScreenX: screenX, ScreenY: screenY,
+		Camera:    cam,
+		World:     World,
+		Player:    player,
+		Inventory: inv,
+	}
+	itemType.OnDrag(info, inv.lastMouseWorldPos, b)
+	inv.lastMouseWorldPos = info.WorldCoords()
+	return true
 }
 
 func (inventory *Inventory) getGridClickPosition(

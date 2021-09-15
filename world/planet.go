@@ -165,7 +165,7 @@ func (planet *Planet) GetAllTilesUnique() []Tile {
 	return tiles
 }
 
-func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
+func (planet *Planet) PlaceTileTypeNoConnect(tileTypeID TileTypeID, x,y int) {
 	tileType, ok := GetTileTypeByID(tileTypeID)
 	if !ok {
 		log.Fatalf("cannot find tile type for id [%v]", tileTypeID)
@@ -177,14 +177,11 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 	}
 	tilesInLayer[rootTileIdx] =
 		tileType.CreateTile(TileCreationOptions{
-			Neighbours: planet.GetNeighbours(tilesInLayer, x, y, tileTypeID),
+			//Neighbours: planet.GetNeighbours(tilesInLayer, x, y, tileTypeID),
 		})
 	rect := cxmath.Rect{
 		cxmath.Vec2i{int32(x), int32(y)},
 		tileType.Size(),
-	}
-	for _, neighbour := range rect.Neighbours() {
-		planet.updateTile(tilesInLayer, int(neighbour.X), int(neighbour.Y))
 	}
 
 	// place child tiles (non-root) to prevent overlap
@@ -209,6 +206,23 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 	if tileType.Layer == TopLayer {
 		planet.LightAddBlock(x, y)
 	}
+}
+
+func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
+	tileType, ok := GetTileTypeByID(tileTypeID)
+	if !ok {
+		log.Fatalf("cannot find tile type for id [%v]", tileTypeID)
+	}
+	tilesInLayer := planet.GetLayerTiles(tileType.Layer)
+	planet.PlaceTileTypeNoConnect(tileTypeID, x,y)
+	rect := cxmath.Rect{
+		cxmath.Vec2i{int32(x), int32(y)},
+		tileType.Size(),
+	}
+	for _, neighbour := range rect.Neighbours() {
+		planet.updateTile(tilesInLayer, int(neighbour.X), int(neighbour.Y))
+	}
+	planet.updateTile(tilesInLayer, x,y)
 }
 
 // cycle the pipe connection state at (x,y) to the next valid state.

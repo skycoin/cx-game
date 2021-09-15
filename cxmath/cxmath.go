@@ -96,3 +96,8 @@ func ClampF(x, min,max float32) float32 {
 func DegToRad(x float32) float32 {
 	return x*math.Pi/180
 }
+
+func TileAt(pos mgl32.Vec2) Vec2i {
+	x,y := RoundVec2(pos)
+	return Vec2i { x,y }
+}
