@@ -4,10 +4,19 @@ import (
 	"strconv"
 
 	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/cxmath/math32"
 )
 
-const damageIndicatorLifetime float32 = 1
+const (
+	maxFontScale float32 = 0.5
+	minFontScale float32 = 0.3
+	fontShrinkFactor float32 = 10
+	damageIndicatorLifetime float32 = 1
+	floatSpeed float32 = 0.5
+)
+
 type DamageIndicator struct {
 	Damage int
 	TimeToLive float32
@@ -30,6 +39,7 @@ func TickDamageIndicators(dt float32) {
 	newDamageIndicators := make([]DamageIndicator, 0, len(damageIndicators))
 	for _, damageIndicator := range damageIndicators {
 		damageIndicator.TimeToLive -= dt
+		damageIndicator.Position[1] += floatSpeed*dt
 		if damageIndicator.TimeToLive > 0 {
 			newDamageIndicators = append(newDamageIndicators, damageIndicator)
 		}
@@ -41,9 +51,15 @@ func (d DamageIndicator) Alpha() float32 {
 	return d.TimeToLive / damageIndicatorLifetime
 }
 
-func (d DamageIndicator) Draw(invCameraTransform mgl32.Mat4) {
-	fontScale := float32(0.3)
+func (d DamageIndicator) FontScale() float32 {
+	x := 1 - d.TimeToLive / damageIndicatorLifetime // normalized time to live
+	expFactor := maxFontScale - minFontScale
+	expValue := expFactor * math32.Exp(-fontShrinkFactor*x)
 
+	return expValue + minFontScale
+}
+
+func (d DamageIndicator) Draw(invCameraTransform mgl32.Mat4) {
 	text := strconv.Itoa(d.Damage)
 
 	homogPos := d.Position.Vec4(0,1)
@@ -55,5 +71,5 @@ func (d DamageIndicator) Draw(invCameraTransform mgl32.Mat4) {
 	// copy font such that we can safely mutate the color
 	fontCopy := *DefaultFont
 	fontCopy.SetColor(1,0,0,d.Alpha())
-	fontCopy.Printf(x,y, fontScale, text)
+	fontCopy.Printf(x,y, d.FontScale(), text)
 }

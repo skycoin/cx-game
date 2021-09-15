@@ -66,3 +66,7 @@ func PositiveModulo(x, b float32) float32 {
 func Round(x float32) float32 {
 	return float32(math.Round(float64(x)))
 }
+
+func Exp(x float32) float32 {
+	return float32(math.Exp(float64(x)))
+}
