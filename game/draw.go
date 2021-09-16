@@ -16,7 +16,7 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
-var lightBool = false
+var debugTileInfo bool = true
 
 func Draw() {
 	// gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
@@ -52,12 +52,6 @@ func Draw() {
 		ui.AlignCenter,
 		topLeftCtx.PushLocal(mgl32.Translate3D(1, -5, 0)),
 	)
-	// ui.DrawString(
-	// 	tileText,
-	// 	mgl32.Vec4{0.3, 0.9, 0.4, 1},
-	// 	ui.AlignCenter,
-	// 	topLeftCtx.PushLocal(mgl32.Translate3D(25, -5, 0)),
-	// )
 
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
@@ -78,6 +72,14 @@ func Draw() {
 	World.Planet.DrawLightMap(Cam)
 
 	//draw ui
+	if debugTileInfo {
+		ui.DrawString(
+			tileText,
+			mgl32.Vec4{0.3, 0.9, 0.4, 1},
+			ui.AlignCenter,
+			topLeftCtx.PushLocal(mgl32.Translate3D(25, -5, 0)),
+		)
+	}
 	ui.DrawAgentHUD(player)
 	inventory := item.GetInventoryById(player.InventoryID)
 	invCameraTransform := Cam.GetTransform().Inv()

@@ -80,8 +80,9 @@ func ProcessInput() {
 	if input.GetButtonDown("toggle-log") {
 		engine.ToggleLogging()
 	}
-	if input.GetKeyDown(glfw.KeyKP5) {
-		lightBool = !lightBool
+
+	if input.GetKeyDown(glfw.KeyHome) {
+		debugTileInfo = !debugTileInfo
 	}
 
 	input.Reset()
