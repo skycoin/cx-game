@@ -165,7 +165,7 @@ func (planet *Planet) GetAllTilesUnique() []Tile {
 	return tiles
 }
 
-func (planet *Planet) PlaceTileTypeNoConnect(tileTypeID TileTypeID, x,y int) {
+func (planet *Planet) PlaceTileTypeNoConnect(tileTypeID TileTypeID, x, y int) {
 	tileType, ok := GetTileTypeByID(tileTypeID)
 	if !ok {
 		log.Fatalf("cannot find tile type for id [%v]", tileTypeID)
@@ -203,9 +203,7 @@ func (planet *Planet) PlaceTileTypeNoConnect(tileTypeID TileTypeID, x,y int) {
 		}
 	}
 
-	if tileType.Layer == TopLayer {
-		planet.LightAddBlock(x, y)
-	}
+	planet.LightAddBlock(x, y)
 }
 
 func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
@@ -214,7 +212,7 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 		log.Fatalf("cannot find tile type for id [%v]", tileTypeID)
 	}
 	tilesInLayer := planet.GetLayerTiles(tileType.Layer)
-	planet.PlaceTileTypeNoConnect(tileTypeID, x,y)
+	planet.PlaceTileTypeNoConnect(tileTypeID, x, y)
 	rect := cxmath.Rect{
 		cxmath.Vec2i{int32(x), int32(y)},
 		tileType.Size(),
@@ -222,7 +220,7 @@ func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
 	for _, neighbour := range rect.Neighbours() {
 		planet.updateTile(tilesInLayer, int(neighbour.X), int(neighbour.Y))
 	}
-	planet.updateTile(tilesInLayer, x,y)
+	planet.updateTile(tilesInLayer, x, y)
 }
 
 // cycle the pipe connection state at (x,y) to the next valid state.
@@ -503,6 +501,7 @@ func (planet *Planet) MinimizeDistance(
 
 func (planet *Planet) Update(dt float32) {
 	planet.Time += dt
+	planet.UpdateLighting()
 }
 
 func (planet *Planet) NearOxygenGenerator(position cxmath.Vec2) bool {
