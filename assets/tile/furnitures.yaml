@@ -125,4 +125,31 @@ seats/chair3:
     height: 3
     layer: mid
 
+lights/light_1_on:
+    sprite: lights/light_1_on
+    durability: 5
+    width: 1
+    height: 1
+    layer: mid
+
+lights/light_1_off:
+    sprite: lights/light_1_off
+    durability: 5
+    width: 1
+    height: 1
+    layer: mid
+
+lights/light_2_on:
+    sprite: lights/light_2_on
+    durability: 5
+    width: 3
+    height: 1
+    layer: mid
+
+lights/light_2_off:
+    sprite: lights/light_2_off
+    durability: 5
+    width: 3
+    height: 1
+    layer: mid
 ---
