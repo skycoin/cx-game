@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/input"
@@ -93,8 +95,10 @@ func mousePressCallback(
 
 	if b == glfw.MouseButtonRight {
 		consumed := inventory.TryMouseDownRight(
-			mousePos.X(), mousePos.Y(), Cam, &World, player )
-		if consumed { return }
+			mousePos.X(), mousePos.Y(), Cam, &World, player)
+		if consumed {
+			return
+		}
 		inventory.TryCancelSelect()
 		return
 	}
@@ -119,6 +123,25 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 
 	mousePos := input.GetMousePos()
 
+	if debugTileInfo {
+		worldCoords := Cam.GetTransform().Mul4x1(mousePos.Mul(1.0/32).Vec4(0, 1)).Vec2()
+		worldX, worldY := cxmath.RoundVec2(worldCoords)
+
+		idx := World.Planet.GetTileIndex(int(worldX), int(worldY))
+		if idx == -1 {
+			return
+		}
+		tile := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
+		if tile.Name == "" {
+			tile = World.Planet.GetTile(int(worldX), int(worldY), world.MidLayer)
+		}
+
+		tileText = fmt.Sprintf("Tile: %v,  EnvLight: %v,   SkyLight: %v\n",
+			tile.Name,
+			World.Planet.LightingValues[idx].GetEnvLight(),
+			World.Planet.LightingValues[idx].GetSkyLight(),
+		)
+	}
 	if mouseDown {
 		item.GetInventoryById(player.InventoryID).
 			TryDragItem(

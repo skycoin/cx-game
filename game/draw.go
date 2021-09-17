@@ -16,7 +16,7 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
-var lightBool = false
+var debugTileInfo bool = true
 
 func Draw() {
 	// gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
@@ -52,12 +52,6 @@ func Draw() {
 		ui.AlignCenter,
 		topLeftCtx.PushLocal(mgl32.Translate3D(1, -5, 0)),
 	)
-	// ui.DrawString(
-	// 	tileText,
-	// 	mgl32.Vec4{0.3, 0.9, 0.4, 1},
-	// 	ui.AlignCenter,
-	// 	topLeftCtx.PushLocal(mgl32.Translate3D(25, -5, 0)),
-	// )
 
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
@@ -74,37 +68,18 @@ func Draw() {
 	components.Draw(&World.Entities, Cam)
 	particles.DrawMidTopParticles(worldCtx)
 
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.DST_COLOR, gl.ZERO)
-	// gl.BlendFunc(gl.ONE, gl.ONE)
-	lightShader.Use()
+	//draw lightmap
+	World.Planet.DrawLightMap(Cam)
 
-	for x := Cam.Frustum.Left; x < Cam.Frustum.Right; x++ {
-		for y := Cam.Frustum.Bottom; y < Cam.Frustum.Top; y++ {
-			if y < 0 {
-				continue
-			}
-			wrappedPos := World.Planet.WrapAround(mgl32.Vec2{float32(x), float32(y)})
-			idx := World.Planet.GetTileIndex(int(wrappedPos[0]), int(wrappedPos[1]))
-			lightValue := World.Planet.LightingValues[idx]
-
-			lightShader.SetMat4("projection", &baseCtx.Projection)
-			view := Cam.GetViewMatrix()
-			lightShader.SetMat4("view", &view)
-			model := mgl32.Translate3D(float32(x), float32(y), 0)
-			// model = model.Mul4(model.)
-			lightShader.SetMat4("model", &model)
-			lightShader.SetVec3("color", &mgl32.Vec3{
-				float32(lightValue.GetSkyLight()) / 15,
-				float32(lightValue.GetSkyLight()) / 15,
-				float32(lightValue.GetSkyLight()) / 15,
-			})
-			gl.BindVertexArray(lightVao)
-			gl.DrawArrays(gl.TRIANGLES, 0, 6)
-		}
+	//draw ui
+	if debugTileInfo {
+		ui.DrawString(
+			tileText,
+			mgl32.Vec4{0.3, 0.9, 0.4, 1},
+			ui.AlignCenter,
+			topLeftCtx.PushLocal(mgl32.Translate3D(25, -5, 0)),
+		)
 	}
-
-	gl.Disable(gl.BLEND)
 	ui.DrawAgentHUD(player)
 	inventory := item.GetInventoryById(player.InventoryID)
 	invCameraTransform := Cam.GetTransform().Inv()

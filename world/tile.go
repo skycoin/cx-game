@@ -35,6 +35,7 @@ type Tile struct {
 	OffsetY           int8
 	Durability        int8
 	Connections       Connections
+	LightSource       bool
 }
 
 func NewEmptyTile() Tile {

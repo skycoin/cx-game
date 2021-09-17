@@ -3,8 +3,8 @@ package item
 import (
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/components/types"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/cxmath/math32i"
@@ -255,7 +255,7 @@ func (grid *PlacementGrid) TryPlaceNoConnect(info ItemUseInfo) bool {
 	tt := grid.Selected.Get()
 	canPlace := tilesAreClear(
 		info.World, tt.Layer,
-		x,y,
+		x, y,
 		x+int(tt.Width), y+int(tt.Height),
 	)
 	if canPlace {
@@ -266,7 +266,7 @@ func (grid *PlacementGrid) TryPlaceNoConnect(info ItemUseInfo) bool {
 }
 
 func (grid *PlacementGrid) UpdatePreview(
-		World *world.World, screenX, screenY float32, Cam *camera.Camera,
+	World *world.World, screenX, screenY float32, Cam *camera.Camera,
 ) {
 	if !grid.HasSelected {
 		return
@@ -281,11 +281,32 @@ func (grid *PlacementGrid) UpdatePreview(
 
 	tt := grid.Selected.Get()
 
-	grid.canPlace = tilesAreClear(
-		World,
-		tt.Layer,
-		x, y,
-		x+int(tt.Width),
-		y+int(tt.Height),
-	)
+	//midlayer and toplayer can't occupy same tile
+	if tt.Layer == world.BgLayer {
+		grid.canPlace =
+			tilesAreClear(
+				World,
+				tt.Layer,
+				x, y,
+				x+int(tt.Width),
+				y+int(tt.Height),
+			)
+	} else {
+		grid.canPlace =
+			tilesAreClear(
+				World,
+				world.MidLayer,
+				x, y,
+				x+int(tt.Width),
+				y+int(tt.Height),
+			) &&
+				tilesAreClear(
+					World,
+					world.TopLayer,
+					x, y,
+					x+int(tt.Width),
+					y+int(tt.Height),
+				)
+	}
+
 }

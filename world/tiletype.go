@@ -61,6 +61,8 @@ type TileType struct {
 	Width, Height int32
 	Drops         Drops
 	ItemSpriteID  render.SpriteID
+	LightSource   bool
+	LightAmount   uint8 // from 0 to 15
 }
 
 func (tt TileType) Size() cxmath.Vec2i {
@@ -102,7 +104,7 @@ var tileTileTypes = make([]TileType, 0)
 var tileTypeIDsByName = make(map[string]TileTypeID)
 
 func RegisterTileType(
-		name string, tileType TileType, ToolType types.ToolType,
+	name string, tileType TileType, ToolType types.ToolType,
 ) TileTypeID {
 	id := TileTypeID(len(tileTypes))
 	tileType.ID = id
