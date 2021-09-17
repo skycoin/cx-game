@@ -132,8 +132,8 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 			return
 		}
 		tile := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
-		if tile == nil {
-			return
+		if tile.Name == "" {
+			tile = World.Planet.GetTile(int(worldX), int(worldY), world.MidLayer)
 		}
 
 		tileText = fmt.Sprintf("Tile: %v,  EnvLight: %v,   SkyLight: %v\n",

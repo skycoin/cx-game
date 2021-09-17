@@ -138,7 +138,7 @@ func (planet *Planet) InitSkyLight() {
 
 }
 
-func (planet *Planet) LightAddBlock(xtile, yTile int) {
+func (planet *Planet) LightUpdateBlock(xtile, yTile int) {
 
 	idx := planet.GetTileIndex(xtile, yTile)
 	if idx == -1 {
@@ -402,10 +402,14 @@ func (planet *Planet) UpdateEnvLight(iterations int) {
 	}
 }
 
+var lightMaskOn bool = false
+
 func (planet *Planet) DrawLightMap(cam *camera.Camera) {
-	gl.Enable(gl.BLEND)
+	if !lightMaskOn {
+		gl.Enable(gl.BLEND)
+		gl.BlendFunc(gl.DST_COLOR, gl.ZERO)
+	}
 	defer gl.Disable(gl.BLEND)
-	gl.BlendFunc(gl.DST_COLOR, gl.ZERO)
 	lightShader.Use()
 
 	for x := cam.Frustum.Left; x < cam.Frustum.Right; x++ {

@@ -203,7 +203,7 @@ func (planet *Planet) PlaceTileTypeNoConnect(tileTypeID TileTypeID, x, y int) {
 		}
 	}
 
-	planet.LightAddBlock(x, y)
+	planet.LightUpdateBlock(x, y)
 }
 
 func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
@@ -468,7 +468,7 @@ func (planet *Planet) DamageTile(
 		*parent = NewEmptyTile()
 		planet.updateSurroundingTiles(planet.GetLayerTiles(layerID), x, y)
 		if tileType.Layer == TopLayer {
-			planet.LightAddBlock(x, y)
+			planet.LightUpdateBlock(x, y)
 		}
 	}
 	return tileCopy, destroyed
