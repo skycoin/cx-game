@@ -74,7 +74,7 @@ Following [this](https://golang.org/doc/install) for more.
 #### Install `git` with brew
 
 ```!bash
-brew insall git
+brew install git
 ```
 
 #### Install `sublime` with brew
@@ -147,8 +147,8 @@ Open source code in editor
 
 ## Libraries Used
 
-- [glfw](github.com/go-gl/glfw/v3.3/glfw)
-- [gl](github.com/go-gl/gl/v4.1-core/gl)
+- [glfw](https://github.com/go-gl/glfw/)
+- [gl](https://github.com/go-gl/gl/)
 
 
 
