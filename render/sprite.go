@@ -20,16 +20,16 @@ var (
 )
 
 func initSprite() {
-	config1 := NewShaderConfig(
-		"./assets/shader/spritesheet.vert", "./assets/shader/spritesheet.frag",
-	)
+	// config1 := NewShaderConfig(
+	// 	"./assets/shader/spritesheet.vert", "./assets/shader/spritesheet.frag",
+	// )
+	config1 := NewShaderConfig("./assets/shader/texture_array.vert", "./assets/shader/texture_array.frag")
 	config2 := NewShaderConfig(
 		"./assets/shader/spritesheetv2.vert", "./assets/shader/spritesheetv2.frag",
 	)
 	config3 := NewShaderConfig(
 		"./assets/shader/spritesheetv3.vert", "./assets/shader/spritesheetv3.frag",
 	)
-
 	config1.Define("NUM_INSTANCES",
 		strconv.Itoa(int(constants.DRAW_SPRITE_BATCH_SIZE)))
 

@@ -306,6 +306,37 @@ func MakeTexture(img *image.RGBA) uint32 {
 	return tex
 }
 
+//assume rgba color format
+func MakeTextureArray(img *image.RGBA, tileW, tileH, tilesX, tilesY int) uint32 {
+	var texArray uint32
+	gl.GenTextures(1, &texArray)
+	gl.BindTexture(gl.TEXTURE_2D_ARRAY, texArray)
+	// gl.GenerateMipmap(gl.TEXTURE_2D_ARRAY)
+
+	gl.TexImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, int32(tileW), int32(tileH), int32(tilesX*tilesY), 0, gl.RGBA, gl.UNSIGNED_BYTE, nil)
+
+	tileSizeX := tileW * 4
+	rowLen := tileSizeX * tilesX
+	for iy := 0; iy < tilesY; iy++ {
+		for ix := 0; ix < tilesX; ix++ {
+
+			var result []uint8
+			for i := 0; i < tileH; i++ {
+				startIndex := iy*tileH*rowLen + i*rowLen + ix*tileSizeX
+				result = append(result, img.Pix[startIndex:startIndex+tileSizeX]...)
+			}
+			i := iy*tilesX + ix
+			gl.TexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, int32(i), int32(tileW), int32(tileH), 1, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(result))
+		}
+	}
+
+	gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+	gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
+	return texArray
+}
+
 // x,y,z,u,v
 var quadVertexAttributes = []float32{
 	0.5, 0.5, 0, 1, 0,
