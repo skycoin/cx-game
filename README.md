@@ -148,7 +148,7 @@ Open source code in editor
 ## Libraries Used
 
 - [glfw](github.com/go-gl/glfw/v3.3/glfw)
-- [gl](github.com/go-gl/gl/v2.1/gl)
+- [gl](github.com/go-gl/gl/v4.1-core/gl)
 
 
 
