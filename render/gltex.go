@@ -23,6 +23,6 @@ func (t Texture) Unbind() {
 
 func (t Texture) SetTextureFiltering(minFilter, magFilter int32) {
 	//assume we already bind the texture
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter)
+	gl.TexParameteri(t.Target, gl.TEXTURE_MIN_FILTER, minFilter)
+	gl.TexParameteri(t.Target, gl.TEXTURE_MAG_FILTER, magFilter)
 }

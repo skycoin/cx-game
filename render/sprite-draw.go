@@ -40,7 +40,7 @@ type SpriteDraw struct {
 	Model       mgl32.Mat4
 	View        mgl32.Mat4
 	UVTransform mgl32.Mat3
-	LightColor mgl32.Vec3
+	LightColor  mgl32.Vec3
 	Options     SpriteDrawOptions
 }
 

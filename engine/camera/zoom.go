@@ -8,7 +8,7 @@ var (
 	// variables for interpolation
 
 	zoomLevels = []float32{
-		0.5, 1, 2, 4, 8, 16,
+		0.25, 0.5, 0.75, 1, 2, 4, 8, 16,
 	}
 )
 
@@ -29,7 +29,7 @@ func NewZoom() Zoom {
 		value:            1,
 		zoomCurrent:      1,
 		zoomNext:         1,
-		currentZoomIndex: 1,
+		currentZoomIndex: 3,
 	}
 	return zoom
 }
@@ -65,7 +65,7 @@ func (z *Zoom) SetDuration(duration float32) {
 	z.duration = duration
 }
 
-func (z Zoom) GetFrustum() float32 {
+func (z Zoom) GetZoomForFrustum() float32 {
 	if z.isZooming {
 		if z.zoomCurrent > z.zoomNext {
 			return z.zoomNext
