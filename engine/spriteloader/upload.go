@@ -43,6 +43,11 @@ func LoadTextureArrayFromFileToGPU(fname string, config SpriteSheetConfig) GPUTe
 		tileH = constants.DEFAULT_SPRITE_SIZE
 	}
 	width, height := img.Bounds().Dx(), img.Bounds().Dy()
+	if len(config.SpriteConfigs) == 0 && config.Autoname == "" {
+		//the whole picture is one sprite
+		tileW = width
+		tileH = height
+	}
 	tilesX := width / tileW
 	tilesY := height / tileH
 	tex := MakeTextureArray(img, tileW, tileH, tilesX, tilesY)
