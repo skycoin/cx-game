@@ -70,6 +70,8 @@ func Update(dt float32) {
 	World.Tick++
 
 	//testing camera target
-	id := World.Entities.Agents.FromID(types.AgentID(1))
-	Cam.SetCameraPositionTarget(id.PhysicsState.Pos.X, id.PhysicsState.Pos.Y)
+	drillAgent := World.Entities.Agents.FromID(types.AgentID(1))
+	if drillAgent != nil {
+		Cam.SetCameraPositionTarget(drillAgent.PhysicsState.Pos.X, drillAgent.PhysicsState.Pos.Y)
+	}
 }

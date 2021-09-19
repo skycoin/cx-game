@@ -14,7 +14,7 @@ func Sign(x float32) float32 {
 	return 0
 }
 
-func Min(x,y float32) float32 {
+func Min(x, y float32) float32 {
 	if x < y {
 		return x
 	} else {
@@ -23,12 +23,15 @@ func Min(x,y float32) float32 {
 }
 
 func Abs(x float32) float32 {
-	if x < 0 { x *= -1 }
+	if x < 0 {
+		x *= -1
+	}
 	return x
-} 
+}
+
 // return the value with the lesser magnitude.
 // result maintains original sign.
-func AbsMin(x,y float32) float32 {
+func AbsMin(x, y float32) float32 {
 	if Abs(x) < Abs(y) {
 		return x
 	} else {
@@ -36,8 +39,8 @@ func AbsMin(x,y float32) float32 {
 	}
 }
 
-func Mod(x,y float32) float32 {
-	return float32(math.Mod(float64(x),float64(y)))
+func Mod(x, y float32) float32 {
+	return float32(math.Mod(float64(x), float64(y)))
 }
 
 func Sin(x float32) float32 {
@@ -49,14 +52,18 @@ func Cos(x float32) float32 {
 }
 
 func Clamp(x, min, max float32) float32 {
-	if x < min { return min }
-	if x > max { return max }
+	if x < min {
+		return min
+	}
+	if x > max {
+		return max
+	}
 	return x
 }
 
 // non negative solution to x % d
 func PositiveModulo(x, b float32) float32 {
-	x = Mod(x,b)
+	x = Mod(x, b)
 	if x >= 0 {
 		return x
 	}
@@ -69,4 +76,8 @@ func Round(x float32) float32 {
 
 func Exp(x float32) float32 {
 	return float32(math.Exp(float64(x)))
+}
+
+func Ceil(x float32) float32 {
+	return float32(math.Ceil(float64(x)))
 }
