@@ -9,14 +9,15 @@ var (
 	halfWidth float32 = 24
 	//distance from center to top/bottom edges
 	halfHeight float32 = 16
+	margin     int     = 2
 )
 
 func (camera *Camera) UpdateFrustum() {
 	zoom := camera.Zoom.GetZoomForFrustum()
-	camera.Frustum.Left = int(camera.X - halfWidth/zoom - 1)
-	camera.Frustum.Right = int(camera.X + halfWidth/zoom + 1)
-	camera.Frustum.Top = int(camera.Y + halfHeight/zoom + 1)
-	camera.Frustum.Bottom = int(camera.Y - halfHeight/zoom - 1)
+	camera.Frustum.Left = int(camera.X) - int(halfWidth/zoom) - margin
+	camera.Frustum.Right = int(camera.X) + int(halfWidth/zoom) + margin
+	camera.Frustum.Top = int(camera.Y) + int(halfHeight/zoom) + margin
+	camera.Frustum.Bottom = int(camera.Y) - int(halfHeight/zoom) - margin
 }
 
 func (camera *Camera) IsInBounds(x, y int) bool {
