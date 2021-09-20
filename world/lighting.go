@@ -1,6 +1,8 @@
 package world
 
 import (
+	"image"
+	"image/color"
 	"log"
 	"time"
 
@@ -404,25 +406,92 @@ func (planet *Planet) UpdateEnvLight(iterations int) {
 
 var lightMaskOn bool = false
 
-func (planet *Planet) DrawLightMap(cam *camera.Camera) {
-	if !lightMaskOn {
-		gl.Enable(gl.BLEND)
-		gl.BlendFunc(gl.DST_COLOR, gl.ZERO)
-	}
-	defer gl.Disable(gl.BLEND)
-	lightShader.Use()
+var fbo uint32
+var fboTex uint32
+var quadVao uint32
+var textureShader render.Program
 
-	for x := cam.Frustum.Left; x < cam.Frustum.Right; x++ {
-		for y := cam.Frustum.Bottom; y < cam.Frustum.Top; y++ {
-			if y < 0 {
-				continue
-			}
-			wrappedPos := planet.WrapAround(mgl32.Vec2{float32(x), float32(y)})
-			idx := planet.GetTileIndex(int(wrappedPos[0]), int(wrappedPos[1]))
+func InitFbo() {
+	//shader
+	textureConfig := render.NewShaderConfig("./assets/shader/quad.vert", "./assets/shader/quad.frag")
+
+	textureShader = textureConfig.Compile()
+
+	//fbo
+	gl.GenFramebuffers(1, &fbo)
+	gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
+
+	gl.GenTextures(1, &fboTex)
+	gl.BindTexture(gl.TEXTURE_2D, fboTex)
+
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB, 100, 100, 0, gl.RGB, gl.UNSIGNED_BYTE, nil)
+	// gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fboTex, 0)
+	gl.BindTexture(gl.TEXTURE_2D, 0)
+	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
+
+	//vao
+
+	vertices := []float32{
+		-1, -1, 0, 1,
+		-1, 1, 0, 0,
+		1, -1, 1, 1,
+
+		-1, 1, 0, 0,
+		1, -1, 1, 1,
+		1, 1, 1, 0,
+	}
+
+	vertices = []float32{
+		-1, -1, 0, 0,
+		-1, 1, 0, 1,
+		1, -1, 1, 0,
+
+		-1, 1, 0, 1,
+		1, -1, 1, 0,
+		1, 1, 1, 1,
+	}
+
+	gl.GenVertexArrays(1, &quadVao)
+	gl.BindVertexArray(quadVao)
+	var vbo uint32
+	gl.GenBuffers(1, &vbo)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(0, 4, gl.FLOAT, false, 0, gl.PtrOffset(0))
+
+}
+
+var tickCounter int
+
+func (planet *Planet) DrawLightMap(cam *camera.Camera) {
+	tickCounter++
+	if tickCounter%5 != 0 {
+		// return
+	}
+	// gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
+	// gl.Clear(gl.COLOR_BUFFER_BIT)
+	defer gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
+
+	lightShader.Use()
+	im := image.NewRGBA(image.Rect(0, 0, 100, 100))
+
+	for x := 0; x < int(planet.Width); x++ {
+		for y := 0; y < int(planet.Height); y++ {
+			// wrappedPos := planet.WrapAround(mgl32.Vec2{float32(x), float32(y)})
+			idx := planet.GetTileIndex(x, y)
 			lightValue := planet.LightingValues[idx]
 
-			lightShader.SetMat4("projection", &render.Projection)
+			projection := mgl32.Ortho2D(0, float32(planet.Width), 0, float32(planet.Height))
+			lightShader.SetMat4("projection", &projection)
 			view := cam.GetViewMatrix()
+			view = mgl32.Ident4()
 			lightShader.SetMat4("view", &view)
 			model := mgl32.Translate3D(float32(x), float32(y), 0)
 			// model = model.Mul4(model.)
@@ -435,11 +504,52 @@ func (planet *Planet) DrawLightMap(cam *camera.Camera) {
 				float32(lightValue.MaxLightValue()) / 15,
 				float32(lightValue.MaxLightValue()) / 15,
 			})
+			v := lightValue.MaxLightValue() * 17
+			im.Set(x, y, color.RGBA{v, v, v, 1})
 			gl.BindVertexArray(lightVao)
-			gl.DrawArrays(gl.TRIANGLES, 0, 6)
+			// gl.DrawArrays(gl.TRIANGLES, 0, 6)
 		}
 	}
 
+	gl.BindTexture(gl.TEXTURE_2D, fboTex)
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 100, 100, 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(im.Pix))
+
+}
+func (planet *Planet) DrawRest(Cam *camera.Camera) {
+
+	if !lightMaskOn {
+		gl.Enable(gl.BLEND)
+		gl.BlendFunc(gl.DST_COLOR, gl.ZERO)
+	}
+	defer gl.Disable(gl.BLEND)
+	textureShader.Use()
+	mvp := mgl32.Ident4()
+	mvp = mvp.Mul4(render.Projection).Mul4(
+		Cam.GetViewMatrix(),
+	)
+	// textureShader.SetMat4("mvp", &mvp)
+	scaleW := float32(1440) / 3200 / Cam.Zoom.Get()
+	scaleH := float32(900) / 3200 / Cam.Zoom.Get()
+	offsetX := float32(Cam.X-22.5/Cam.Zoom.Get()) / 100
+	// offsetY := float32(Cam.Y / 100
+	// offsetY := float32(0.05)
+	offsetY := float32(Cam.Y-14/Cam.Zoom.Get()) / 100
+
+	// tt := Cam.GetTransform()
+
+	textureShader.SetFloat("data.scaleW", scaleW)
+	textureShader.SetFloat("data.scaleH", scaleH)
+	textureShader.SetFloat("data.offsetX", offsetX)
+	textureShader.SetFloat("data.offsetY", offsetY)
+
+	textureShader.SetInt("u_lightmap", 0)
+	gl.Enable(gl.TEXTURE_2D)
+	gl.ActiveTexture(gl.TEXTURE0)
+
+	gl.BindTexture(gl.TEXTURE_2D, fboTex)
+
+	gl.BindVertexArray(quadVao)
+	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
 
 func (planet *Planet) UpdateLighting() {

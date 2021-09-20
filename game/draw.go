@@ -70,6 +70,7 @@ func Draw() {
 
 	//draw lightmap
 	World.Planet.DrawLightMap(Cam)
+	World.Planet.DrawRest(Cam)
 
 	//draw ui
 	if debugTileInfo {

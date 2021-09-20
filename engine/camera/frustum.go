@@ -1,6 +1,8 @@
 package camera
 
 import (
+	"fmt"
+
 	"github.com/skycoin/cx-game/cxmath"
 )
 
@@ -18,6 +20,7 @@ func (camera *Camera) UpdateFrustum() {
 	camera.Frustum.Right = int(camera.X) + int(halfWidth/zoom) + margin
 	camera.Frustum.Top = int(camera.Y) + int(halfHeight/zoom) + margin
 	camera.Frustum.Bottom = int(camera.Y) - int(halfHeight/zoom) - margin
+	fmt.Println(camera.Frustum)
 }
 
 func (camera *Camera) IsInBounds(x, y int) bool {
