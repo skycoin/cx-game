@@ -427,8 +427,8 @@ func InitFbo() {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
 
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB, 100, 100, 0, gl.RGB, gl.UNSIGNED_BYTE, nil)
 	// gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fboTex, 0)
@@ -438,16 +438,6 @@ func InitFbo() {
 	//vao
 
 	vertices := []float32{
-		-1, -1, 0, 1,
-		-1, 1, 0, 0,
-		1, -1, 1, 1,
-
-		-1, 1, 0, 0,
-		1, -1, 1, 1,
-		1, 1, 1, 0,
-	}
-
-	vertices = []float32{
 		-1, -1, 0, 0,
 		-1, 1, 0, 1,
 		1, -1, 1, 0,
@@ -473,7 +463,7 @@ var tickCounter int
 func (planet *Planet) DrawLightMap(cam *camera.Camera) {
 	tickCounter++
 	if tickCounter%5 != 0 {
-		// return
+		return
 	}
 	// gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
 	// gl.Clear(gl.COLOR_BUFFER_BIT)
@@ -515,8 +505,8 @@ func (planet *Planet) DrawLightMap(cam *camera.Camera) {
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 100, 100, 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(im.Pix))
 
 }
-func (planet *Planet) DrawRest(Cam *camera.Camera) {
-
+func (planet *Planet) DrawLighting(Cam *camera.Camera) {
+	planet.DrawLightMap(Cam)
 	if !lightMaskOn {
 		gl.Enable(gl.BLEND)
 		gl.BlendFunc(gl.DST_COLOR, gl.ZERO)
