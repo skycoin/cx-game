@@ -142,14 +142,7 @@ func Init() {
 
 	//add oxygen emitter
 	particle_emitter.EmitOxygen(playerAgentID, &World.Entities.Particles)
-
-	lightConfig := render.NewShaderConfig("./assets/shader/light.vert", "./assets/shader/light.frag")
-	lightShader = lightConfig.Compile()
 	render.NewColorShader()
-
-	// var lightVao uint32
-	gl.GenVertexArrays(1, &lightVao)
-	gl.BindVertexArray(lightVao)
 
 	var lightVbo uint32
 	gl.GenBuffers(1, &lightVbo)
@@ -169,7 +162,3 @@ func Init() {
 
 	// var fbo uint32
 }
-
-var lightQuad render.Program
-var lightVao uint32
-var lightShader render.Program

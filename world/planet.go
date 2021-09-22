@@ -62,6 +62,7 @@ type Planet struct {
 	collidingLinesY int
 	Time            float32
 	LightingValues  []LightValue
+	DCC             *DayCycleController
 
 	program, liquidProgram render.Program
 }
@@ -83,6 +84,7 @@ func NewPlanet(x, y int32) *Planet {
 		Layers:         NewLayers(x * y),
 		liquidProgram:  newPlanetLiquidProgram(),
 		LightingValues: make([]LightValue, x*y),
+		DCC:            NewDayCycleController(),
 	}
 	return &planet
 }
@@ -502,6 +504,9 @@ func (planet *Planet) MinimizeDistance(
 func (planet *Planet) Update(dt float32) {
 	planet.Time += dt
 	planet.UpdateLighting()
+
+	planet.DCC.Advance(dt)
+
 }
 
 func (planet *Planet) NearOxygenGenerator(position cxmath.Vec2) bool {
