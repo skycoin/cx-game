@@ -1,6 +1,7 @@
 package world
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"log"
@@ -11,6 +12,7 @@ import (
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/camera"
+	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -45,9 +47,10 @@ type tilePos struct {
 	Y int
 }
 
-var lightQuad render.Program
 var lightVao uint32
 var lightShader render.Program
+var gradientLightTex uint32
+var smoothLighting bool = true
 
 var skyLightUpdateQueue []tilePos = make([]tilePos, slLengthMax)
 var slStartIndex int = 0
@@ -69,18 +72,51 @@ func isSolid(tile *Tile) bool {
 
 func (planet *Planet) InitLighting() {
 	planet.InitSkyLight()
+	// InitFbo()
+	quadvertices := []float32{
+		-1, -1, 0, 0,
+		-1, 1, 0, 1,
+		1, -1, 1, 0,
 
-	lightConfig := render.NewShaderConfig("./assets/shader/light.vert", "./assets/shader/light.frag")
+		-1, 1, 0, 1,
+		1, -1, 1, 0,
+		1, 1, 1, 1,
+	}
+
+	gl.GenVertexArrays(1, &quadVao)
+	gl.BindVertexArray(quadVao)
+	var vbo uint32
+	gl.GenBuffers(1, &vbo)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, len(quadvertices)*4, gl.Ptr(quadvertices), gl.STATIC_DRAW)
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(0, 4, gl.FLOAT, false, 0, gl.PtrOffset(0))
+
+	gl.GenTextures(1, &smoothTex)
+	gl.BindTexture(gl.TEXTURE_2D, smoothTex)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	// gl.TexParameteri()
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, planet.Width, planet.Height, 0, gl.RGBA, gl.UNSIGNED_BYTE, nil)
+
+	smoothLighting = true
+
+	smoothConfig := render.NewShaderConfig("./assets/shader/lighting/lighting_smooth.vert", "./assets/shader/lighting/lighting_smooth.frag")
+	smoothShader = smoothConfig.Compile()
+
+	lightConfig := render.NewShaderConfig("./assets/shader/lighting/light.vert", "./assets/shader/lighting/light.frag")
 	lightShader = lightConfig.Compile()
 
-	// var lightVao uint32
 	gl.GenVertexArrays(1, &lightVao)
 	gl.BindVertexArray(lightVao)
 
 	var lightVbo uint32
 	gl.GenBuffers(1, &lightVbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, lightVbo)
-	vertices := []float32{
+	lightvertices := []float32{
 		-0.5, -0.5,
 		-0.5, 0.5,
 		0.5, -0.5,
@@ -89,9 +125,21 @@ func (planet *Planet) InitLighting() {
 		0.5, -0.5,
 		0.5, 0.5,
 	}
-	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, len(lightvertices)*4, gl.Ptr(lightvertices), gl.STATIC_DRAW)
 	gl.EnableVertexAttribArray(0)
 	gl.VertexAttribPointer(0, 2, gl.FLOAT, false, 0, gl.PtrOffset(0))
+
+	gl.GenTextures(1, &gradientLightTex)
+	gl.BindTexture(gl.TEXTURE_1D, gradientLightTex)
+
+	_, img, _ := spriteloader.LoadPng("./assets/starfield/gradients/heightmap_gradient_07.png")
+
+	gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGBA, int32(img.Rect.Dx()), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+
+	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+
+	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+
 }
 
 //assume light attenuation for all block is 1
@@ -408,14 +456,12 @@ var lightMaskOn bool = false
 
 var fbo uint32
 var fboTex uint32
+var smoothTex uint32
 var quadVao uint32
-var textureShader render.Program
+var smoothShader render.Program
 
 func InitFbo() {
 	//shader
-	textureConfig := render.NewShaderConfig("./assets/shader/quad.vert", "./assets/shader/quad.frag")
-
-	textureShader = textureConfig.Compile()
 
 	//fbo
 	gl.GenFramebuffers(1, &fbo)
@@ -427,122 +473,138 @@ func InitFbo() {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB, 100, 100, 0, gl.RGB, gl.UNSIGNED_BYTE, nil)
-	// gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fboTex, 0)
 	gl.BindTexture(gl.TEXTURE_2D, 0)
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
 
 	//vao
 
-	vertices := []float32{
-		-1, -1, 0, 0,
-		-1, 1, 0, 1,
-		1, -1, 1, 0,
-
-		-1, 1, 0, 1,
-		1, -1, 1, 0,
-		1, 1, 1, 1,
-	}
-
-	gl.GenVertexArrays(1, &quadVao)
-	gl.BindVertexArray(quadVao)
-	var vbo uint32
-	gl.GenBuffers(1, &vbo)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
-	gl.EnableVertexAttribArray(0)
-	gl.VertexAttribPointer(0, 4, gl.FLOAT, false, 0, gl.PtrOffset(0))
-
 }
 
 var tickCounter int
 
-func (planet *Planet) DrawLightMap(cam *camera.Camera) {
+func (planet *Planet) DrawLightMap() {
 	tickCounter++
 	if tickCounter%5 != 0 {
 		return
 	}
-	// gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
-	// gl.Clear(gl.COLOR_BUFFER_BIT)
-	defer gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
-
-	lightShader.Use()
-	im := image.NewRGBA(image.Rect(0, 0, 100, 100))
+	im := image.NewRGBA(image.Rect(0, 0, int(planet.Width), int(planet.Height)))
 
 	for x := 0; x < int(planet.Width); x++ {
 		for y := 0; y < int(planet.Height); y++ {
-			// wrappedPos := planet.WrapAround(mgl32.Vec2{float32(x), float32(y)})
 			idx := planet.GetTileIndex(x, y)
 			lightValue := planet.LightingValues[idx]
+			v := lightValue.MaxLightValue() * 17
+			// result := getColor(v)
+			// im.Set(x, y, color.RGBA{
+			// 	result[0],
+			// 	result[1],
+			// 	result[2],
+			// 	result[3],
+			// })
+			im.Set(x, y, color.RGBA{
+				v, v, v, 255,
+			})
+		}
+	}
 
-			projection := mgl32.Ortho2D(0, float32(planet.Width), 0, float32(planet.Height))
-			lightShader.SetMat4("projection", &projection)
-			view := cam.GetViewMatrix()
-			view = mgl32.Ident4()
+	gl.BindTexture(gl.TEXTURE_2D, smoothTex)
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, planet.Width, planet.Height, 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(im.Pix))
+}
+
+var blue_out bool
+
+func (planet *Planet) DrawLighting(Cam *camera.Camera) {
+	if !lightMaskOn {
+		gl.Enable(gl.BLEND)
+		gl.BlendFunc(gl.DST_COLOR, gl.ZERO)
+		defer gl.Disable(gl.BLEND)
+	}
+	if smoothLighting {
+		planet.DrawLightMap()
+		smoothShader.Use()
+
+		scaleW := float32(1440) / 3200 / Cam.Zoom.Get()
+		scaleH := float32(900) / 3200 / Cam.Zoom.Get()
+		offsetX := float32(Cam.X-22/Cam.Zoom.Get()) / float32(planet.Width)
+		offsetY := float32(Cam.Y-13.5/Cam.Zoom.Get()) / float32(planet.Height)
+
+		smoothShader.SetFloat("data.scaleW", scaleW)
+		smoothShader.SetFloat("data.scaleH", scaleH)
+		smoothShader.SetFloat("data.offsetX", offsetX)
+		smoothShader.SetFloat("data.offsetY", offsetY)
+		smoothShader.SetBool("blue_out", blue_out)
+
+		smoothShader.SetInt("u_lightmap", 0)
+		smoothShader.SetInt("gradTexture", 1)
+		gl.ActiveTexture(gl.TEXTURE0)
+		gl.BindTexture(gl.TEXTURE_2D, smoothTex)
+		gl.ActiveTexture(gl.TEXTURE1)
+		gl.BindTexture(gl.TEXTURE_1D, gradientLightTex)
+
+		gl.BindVertexArray(quadVao)
+		gl.DrawArrays(gl.TRIANGLES, 0, 6)
+		return
+	}
+
+	//no smooth lighting
+	lightShader.Use()
+	for x := Cam.Frustum.Left; x < Cam.Frustum.Right; x++ {
+		for y := Cam.Frustum.Bottom; y < Cam.Frustum.Top; y++ {
+			if y < 0 {
+				continue
+			}
+			wrappedPos := planet.WrapAround(mgl32.Vec2{float32(x), float32(y)})
+			idx := planet.GetTileIndex(int(wrappedPos[0]), int(wrappedPos[1]))
+			lightValue := planet.LightingValues[idx]
+
+			lightShader.SetMat4("projection", &render.Projection)
+			view := Cam.GetViewMatrix()
 			lightShader.SetMat4("view", &view)
 			model := mgl32.Translate3D(float32(x), float32(y), 0)
-			// model = model.Mul4(model.)
 			lightShader.SetMat4("model", &model)
 			lightShader.SetVec3("color", &mgl32.Vec3{
-				// float32(lightValue.GetSkyLight()) / 15,
-				// float32(lightValue.GetSkyLight()) / 15,
-				// float32(lightValue.GetSkyLight()) / 15,
 				float32(lightValue.MaxLightValue()) / 15,
 				float32(lightValue.MaxLightValue()) / 15,
 				float32(lightValue.MaxLightValue()) / 15,
 			})
-			v := lightValue.MaxLightValue() * 17
-			im.Set(x, y, color.RGBA{v, v, v, 1})
+			lightShader.SetInt("gradTexture", 0)
+			gl.ActiveTexture(gl.TEXTURE0)
+			gl.BindTexture(gl.TEXTURE_1D, gradientLightTex)
 			gl.BindVertexArray(lightVao)
-			// gl.DrawArrays(gl.TRIANGLES, 0, 6)
+			gl.DrawArrays(gl.TRIANGLES, 0, 6)
 		}
 	}
-
-	gl.BindTexture(gl.TEXTURE_2D, fboTex)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 100, 100, 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(im.Pix))
-
-}
-func (planet *Planet) DrawLighting(Cam *camera.Camera) {
-	planet.DrawLightMap(Cam)
-	if !lightMaskOn {
-		gl.Enable(gl.BLEND)
-		gl.BlendFunc(gl.DST_COLOR, gl.ZERO)
-	}
-	defer gl.Disable(gl.BLEND)
-	textureShader.Use()
-	mvp := mgl32.Ident4()
-	mvp = mvp.Mul4(render.Projection).Mul4(
-		Cam.GetViewMatrix(),
-	)
-	// textureShader.SetMat4("mvp", &mvp)
-	scaleW := float32(1440) / 3200 / Cam.Zoom.Get()
-	scaleH := float32(900) / 3200 / Cam.Zoom.Get()
-	offsetX := float32(Cam.X-22.5/Cam.Zoom.Get()) / 100
-	// offsetY := float32(Cam.Y / 100
-	// offsetY := float32(0.05)
-	offsetY := float32(Cam.Y-14/Cam.Zoom.Get()) / 100
-
-	// tt := Cam.GetTransform()
-
-	textureShader.SetFloat("data.scaleW", scaleW)
-	textureShader.SetFloat("data.scaleH", scaleH)
-	textureShader.SetFloat("data.offsetX", offsetX)
-	textureShader.SetFloat("data.offsetY", offsetY)
-
-	textureShader.SetInt("u_lightmap", 0)
-	gl.Enable(gl.TEXTURE_2D)
-	gl.ActiveTexture(gl.TEXTURE0)
-
-	gl.BindTexture(gl.TEXTURE_2D, fboTex)
-
-	gl.BindVertexArray(quadVao)
-	gl.DrawArrays(gl.TRIANGLES, 0, 6)
 }
 
 func (planet *Planet) UpdateLighting() {
 	planet.UpdateSkyLight(1000)
 	planet.UpdateEnvLight(1000)
+}
+
+func ToggleSmoothLighting() {
+	smoothLighting = !smoothLighting
+
+	fmt.Printf("SMOOTH LIGHTING:  %v\n", smoothLighting)
+}
+
+func ToggleBlue() {
+	blue_out = !blue_out
+}
+
+var img *image.RGBA
+
+var firstTimme bool = true
+
+func getColor(v uint8) []uint8 {
+	if firstTimme {
+		firstTimme = false
+		_, img, _ = spriteloader.LoadPng("./assets/starfield/gradients/heightmap_gradient_07.png")
+	}
+
+	// fmt.Println(len(img.Pix), "LENN")
+	return img.Pix[v*4 : int(v)*4+4]
 }

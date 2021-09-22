@@ -61,6 +61,12 @@ func ProcessInput() {
 		if input.GetButtonDown("set-camera-target") {
 			Cam.SwitchToTarget()
 		}
+		if input.GetKeyDown(glfw.KeyN) {
+			world.ToggleSmoothLighting()
+		}
+		if input.GetKeyDown(glfw.KeyH) {
+			world.ToggleBlue()
+		}
 	case input.FREECAM:
 		if input.GetButtonDown("freecam-off") {
 			Cam.TurnOffFreeCam()
