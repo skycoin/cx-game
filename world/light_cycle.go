@@ -3,6 +3,8 @@ package world
 import (
 	"fmt"
 	"log"
+
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 const (
@@ -39,6 +41,8 @@ type DayCycleController struct {
 	dtime      float32 //current time of the day
 	daysPassed uint32  //how many days passed since the beginning
 	timeOfDay  TimeOfDay
+	brightness float32
+	LTG        LightTextureGenerator
 }
 
 func NewDayCycleController() *DayCycleController {
@@ -121,4 +125,25 @@ func (dcc *DayCycleController) SetTimeOfDay(tod TimeOfDay) {
 	}
 	//night
 	dcc.dtime += sunrise_length
+}
+func (dcc *DayCycleController) GetLightTexture() uint32 {
+	return dcc.LTG.GenerateLightTexture(dcc.timeOfDay)
+}
+
+type LightTextureGenerator struct {
+	lightTex uint32
+}
+
+func (ltg *LightTextureGenerator) GenerateLightTexture() uint32 {
+	//generate 16x16 texture
+	var lightTex uint32
+	gl.GenTextures(1, &lightTex)
+	gl.BindTexture(gl.TEXTURE_2D_ARRAY, lightTex)
+
+	gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+	gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+
+	gl.TexImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, 16, 16, 16*16, 0, gl.RGBA, gl.UNSIGNED_BYTE, nil)
+
+	return lightTex
 }
