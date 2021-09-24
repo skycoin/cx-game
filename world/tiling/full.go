@@ -69,10 +69,10 @@ func (t FullTiling) Index(detailed DetailedNeighbours) int {
 	}
 	if innerCorners == 3 {
 		// block from (9,2) to (10,3)
-		if n.downRightInnerCorner() { x = 9; y = 2 }
-		if n.downLeftInnerCorner() { x = 10; y = 2 }
-		if n.upRightInnerCorner() { x = 9; y = 3 }
-		if n.upLeftInnerCorner() { x= 10; y = 3 }
+		if !n.downRightInnerCorner() { x = 9; y = 2 }
+		if !n.downLeftInnerCorner() { x = 10; y = 2 }
+		if !n.upRightInnerCorner() { x = 9; y = 3 }
+		if !n.upLeftInnerCorner() { x= 10; y = 3 }
 	}
 	if innerCorners == 4 {
 		// tile at (8,4)
