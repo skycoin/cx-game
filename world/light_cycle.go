@@ -47,7 +47,6 @@ func NewDayCycleController() *DayCycleController {
 }
 
 func (dcc *DayCycleController) Advance(dt float32) {
-	fmt.Println(dcc.dtime, "   ", dcc.timeOfDay.ToString())
 	dcc.dtime += dt
 
 	if dcc.dtime > DAY_DURATION {
