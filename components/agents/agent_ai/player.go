@@ -53,18 +53,18 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 
 		// fmt.Println(holdTimer)
 		if input.GetButtonDown("down") {
-			player.PlayerData.IgnoringPlatformsFor = ignorePlatformTime
+			player.Meta.IgnoringPlatformsFor = ignorePlatformTime
 		} else {
 
-			if player.PlayerData.IgnoringPlatformsFor > 0 {
-				player.PlayerData.IgnoringPlatformsFor -= constants.PHYSICS_TICK
+			if player.Meta.IgnoringPlatformsFor > 0 {
+				player.Meta.IgnoringPlatformsFor -= constants.PHYSICS_TICK
 			}
 		}
 
 		if input.GetButton("down") {
 			holdTimer += constants.PHYSICS_TICK
 			if holdTimer > holdDelay {
-				player.PlayerData.IgnoringPlatformsFor += constants.PHYSICS_TICK
+				player.Meta.IgnoringPlatformsFor += constants.PHYSICS_TICK
 			}
 		} else {
 			holdTimer = 0
@@ -102,5 +102,5 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 
 	player.PhysicsState.Vel.Y -= constants.Gravity * constants.PHYSICS_TICK
 
-	player.PhysicsState.IsIgnoringPlatforms = player.PlayerData.IgnoringPlatformsFor > 0
+	player.PhysicsState.IsIgnoringPlatforms = player.Meta.IgnoringPlatformsFor > 0
 }

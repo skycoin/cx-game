@@ -22,13 +22,13 @@ type Agent struct {
 	Direction         int
 	InventoryID       types.InventoryID
 	// only relevant to player agents - should probably refactor
-	PlayerData
 }
 
 type AgentMeta struct {
 	Category          constants.AgentCategory
 	Type              constants.AgentTypeID
 	PhysicsParameters physics.PhysicsParameters
+	PlayerData
 }
 
 type AgentHandlers struct {

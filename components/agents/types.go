@@ -177,9 +177,14 @@ func createPlayer(opts AgentCreationOptions) *Agent {
 			AI:   constants.AI_HANDLER_PLAYER,
 			Draw: constants.DRAW_HANDLER_PLAYER,
 		},
+
 		Meta: AgentMeta{
 			Category: constants.AGENT_CATEGORY_PLAYER,
 			Type:     constants.AGENT_TYPE_PLAYER,
+			PlayerData: PlayerData{
+				HelmetSpriteID: render.GetSpriteIDByName("helmet/1"),
+				SuitSpriteID:   render.GetSpriteIDByName("suit:0"),
+			},
 		},
 		PhysicsState: physics.Body{
 			Pos:       cxmath.Vec2{X: opts.X, Y: opts.Y},
@@ -187,10 +192,6 @@ func createPlayer(opts AgentCreationOptions) *Agent {
 			Direction: 1,
 		},
 		HealthComponent: NewHealthComponent(100),
-		PlayerData: PlayerData{
-			HelmetSpriteID: render.GetSpriteIDByName("helmet/1"),
-			SuitSpriteID:   render.GetSpriteIDByName("suit:0"),
-		},
 	}
 	//physics.RegisterBody(&agent.PhysicsState)
 	return &agent
