@@ -3,20 +3,20 @@ package agent_draw
 import (
 	"github.com/go-gl/mathgl/mgl32"
 
-	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/render"
 )
 
 const TimeBeforeFadeout = float32(1.0) // in seconds
 const TimeDuringFadeout = float32(1.0) // in seconds
 
 func alphaForAgent(agent *agents.Agent) float32 {
-	if agent.TimeSinceDeath < TimeBeforeFadeout {
+	if agent.Timers.TimeSinceDeath < TimeBeforeFadeout {
 		return 1
 	}
-	x := agent.TimeSinceDeath - TimeBeforeFadeout
+	x := agent.Timers.TimeSinceDeath - TimeBeforeFadeout
 	return 1 - x/TimeDuringFadeout
 }
 
@@ -25,7 +25,7 @@ func QuadDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 	if len(agents) == 0 {
 		return
 	}
-	spriteID := getSpriteID(agents[0].AgentCategory)
+	spriteID := getSpriteID(agents[0].Meta.Category)
 	drawOpts := spriteloader.NewDrawOptions()
 	for _, agent := range agents {
 		drawOpts.Alpha = alphaForAgent(agent)
@@ -35,9 +35,9 @@ func QuadDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 			body.Pos.Y-ctx.Camera.Y,
 			0,
 		)
-		scale := mgl32.Scale3D(body.Size.X,body.Size.Y,1)
-		ctx := render.Context {
-			World: translate.Mul4(scale),
+		scale := mgl32.Scale3D(body.Size.X, body.Size.Y, 1)
+		ctx := render.Context{
+			World:      translate.Mul4(scale),
 			Projection: spriteloader.Window.GetProjectionMatrix(),
 		}
 		spriteloader.DrawSpriteQuadContext(ctx, spriteID, drawOpts)

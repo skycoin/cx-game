@@ -11,16 +11,13 @@ import (
 )
 
 type Agent struct {
-	AgentTypeID       constants.AgentTypeID
+	Meta              AgentMeta
+	Handlers          AgentHandlers
+	Timers            AgentTimers
 	AgentId           types.AgentID
-	AgentCategory     constants.AgentCategory
-	AiHandlerID       types.AgentAiHandlerID
+	Inventory         types.InventoryID
 	PhysicsState      physics.Body
-	PhysicsParameters physics.PhysicsParameters
-	DrawHandlerID     types.AgentDrawHandlerID
 	HealthComponent   HealthComponent
-	TimeSinceDeath    float32
-	WaitingFor        float32
 	AnimationPlayback anim.Playback
 	Direction         int
 	InventoryID       types.InventoryID
@@ -28,9 +25,24 @@ type Agent struct {
 	PlayerData
 }
 
+type AgentMeta struct {
+	Category          constants.AgentCategory
+	Type              constants.AgentTypeID
+	PhysicsParameters physics.PhysicsParameters
+}
+
+type AgentHandlers struct {
+	Draw types.AgentDrawHandlerID
+	AI   types.AgentAiHandlerID
+}
+
+type AgentTimers struct {
+	TimeSinceDeath float32
+	WaitingFor     float32
+}
 type PlayerData struct {
-	SuitSpriteID   render.SpriteID
-	HelmetSpriteID render.SpriteID
+	SuitSpriteID         render.SpriteID
+	HelmetSpriteID       render.SpriteID
 	IgnoringPlatformsFor float32
 }
 
@@ -44,17 +56,17 @@ func NewHealthComponent(max int) HealthComponent {
 	return HealthComponent{Current: max, Max: max, Died: false}
 }
 
-func newAgent(id int) *Agent {
-	agent := Agent{
-		AgentCategory:     constants.AGENT_CATEGORY_UNDEFINED,
-		AiHandlerID:       constants.AI_HANDLER_NULL,
-		DrawHandlerID:     constants.DRAW_HANDLER_NULL,
-		PhysicsState:      physics.Body{},
-		PhysicsParameters: physics.PhysicsParameters{Radius: 5},
-	}
+// func newAgent(id int) *Agent {
+// 	// agent := Agent{
+// 	// 	AgentCategory:     constants.AGENT_CATEGORY_UNDEFINED,
+// 	// 	AiHandlerID:       constants.AI_HANDLER_NULL,
+// 	// 	DrawHandlerID:     constants.DRAW_HANDLER_NULL,
+// 	// 	PhysicsState:      physics.Body{},
+// 	// 	PhysicsParameters: physics.PhysicsParameters{Radius: 5},
+// 	// }
 
-	return &agent
-}
+// 	return &agent
+// }
 
 func (a *Agent) FillDefaults() {
 	// if have no direction, default to right-facing / no flip
@@ -92,15 +104,15 @@ func (a *Agent) Died() bool {
 }
 
 func (a *Agent) IsWaiting() bool {
-	return a.WaitingFor > 0
+	return a.Timers.WaitingFor > 0
 }
 
 func (a *Agent) WaitFor(seconds float32) {
-	a.WaitingFor = seconds
+	a.Timers.WaitingFor = seconds
 }
 
 func (a *Agent) Validate() {
-	if a.AgentCategory == constants.AGENT_CATEGORY_UNDEFINED {
+	if a.Meta.Category == constants.AGENT_CATEGORY_UNDEFINED {
 		log.Fatalf("Cannot create agent with undefined category: %+v", a)
 	}
 }

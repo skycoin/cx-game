@@ -76,10 +76,14 @@ func createSlime(opts AgentCreationOptions) *Agent {
 	animation := anim.LoadAnimationFromJSON("./assets/slime.json")
 	playback := animation.NewPlayback("Idle")
 	agent := Agent{
-		AgentTypeID:   constants.AGENT_TYPE_SLIME,
-		AgentCategory: constants.AGENT_CATEGORY_ENEMY_MOB,
-		AiHandlerID:   constants.AI_HANDLER_LEAP,
-		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
+		Handlers: AgentHandlers{
+			AI:   constants.AI_HANDLER_LEAP,
+			Draw: constants.DRAW_HANDLER_ANIM,
+		},
+		Meta: AgentMeta{
+			Category: constants.AGENT_CATEGORY_ENEMY_MOB,
+			Type:     constants.AGENT_TYPE_SLIME,
+		},
 		PhysicsState: physics.Body{
 			Size: cxmath.Vec2{X: 2.0, Y: 2.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
@@ -98,10 +102,14 @@ func createSpiderDrill(opts AgentCreationOptions) *Agent {
 	animation := anim.LoadAnimationFromJSON("./assets/spiderDrill.json")
 	playback := animation.NewPlayback("Walk")
 	agent := Agent{
-		AgentTypeID:   constants.AGENT_TYPE_SPIDER_DRILL,
-		AgentCategory: constants.AGENT_CATEGORY_ENEMY_MOB,
-		AiHandlerID:   constants.AI_HANDLER_DRILL,
-		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
+		Handlers: AgentHandlers{
+			AI:   constants.AI_HANDLER_DRILL,
+			Draw: constants.DRAW_HANDLER_ANIM,
+		},
+		Meta: AgentMeta{
+			Category: constants.AGENT_CATEGORY_ENEMY_MOB,
+			Type:     constants.AGENT_TYPE_SPIDER_DRILL,
+		},
 		PhysicsState: physics.Body{
 			Size: cxmath.Vec2{X: 2.0, Y: 2.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
@@ -119,10 +127,14 @@ func createGrassHopper(opts AgentCreationOptions) *Agent {
 	animation := anim.LoadAnimationFromJSON("./assets/grassHopper.json")
 	playback := animation.NewPlayback("Idle")
 	agent := Agent{
-		AgentTypeID:   constants.AGENT_TYPE_GRASS_HOPPER,
-		AgentCategory: constants.AGENT_CATEGORY_ENEMY_MOB,
-		AiHandlerID:   constants.AI_HANDLER_GRASSHOPPER,
-		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
+		Handlers: AgentHandlers{
+			AI:   constants.AI_HANDLER_GRASSHOPPER,
+			Draw: constants.DRAW_HANDLER_ANIM,
+		},
+		Meta: AgentMeta{
+			Category: constants.AGENT_CATEGORY_ENEMY_MOB,
+			Type:     constants.AGENT_TYPE_GRASS_HOPPER,
+		},
 		PhysicsState: physics.Body{
 			Size: cxmath.Vec2{X: 2.0, Y: 3.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
@@ -140,10 +152,14 @@ func createEnemySoldier(opts AgentCreationOptions) *Agent {
 	animation := anim.LoadAnimationFromJSON("./assets/enemy_soldier.json")
 	playback := animation.NewPlayback("Idle")
 	agent := Agent{
-		AgentTypeID:   constants.AGENT_TYPE_ENEMY_SOLDIER,
-		AgentCategory: constants.AGENT_CATEGORY_ENEMY_MOB,
-		AiHandlerID:   constants.AI_HANDLER_ENEMYSOLDIER,
-		DrawHandlerID: constants.DRAW_HANDLER_ANIM,
+		Handlers: AgentHandlers{
+			AI:   constants.AI_HANDLER_ENEMYSOLDIER,
+			Draw: constants.DRAW_HANDLER_ANIM,
+		},
+		Meta: AgentMeta{
+			Category: constants.AGENT_CATEGORY_ENEMY_MOB,
+			Type:     constants.AGENT_TYPE_ENEMY_SOLDIER,
+		},
 		PhysicsState: physics.Body{
 			Size: cxmath.Vec2{X: 2.0, Y: 3.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
@@ -157,10 +173,14 @@ func createEnemySoldier(opts AgentCreationOptions) *Agent {
 
 func createPlayer(opts AgentCreationOptions) *Agent {
 	agent := Agent{
-		AgentTypeID:   constants.AGENT_TYPE_PLAYER,
-		AgentCategory: constants.AGENT_CATEGORY_PLAYER,
-		AiHandlerID:   constants.AI_HANDLER_PLAYER,
-		DrawHandlerID: constants.DRAW_HANDLER_PLAYER,
+		Handlers: AgentHandlers{
+			AI:   constants.AI_HANDLER_PLAYER,
+			Draw: constants.DRAW_HANDLER_PLAYER,
+		},
+		Meta: AgentMeta{
+			Category: constants.AGENT_CATEGORY_PLAYER,
+			Type:     constants.AGENT_TYPE_PLAYER,
+		},
 		PhysicsState: physics.Body{
 			Pos:       cxmath.Vec2{X: opts.X, Y: opts.Y},
 			Size:      cxmath.Vec2{X: 2.0 * constants.PLAYER_RENDER_TO_HITBOX, Y: 3},
