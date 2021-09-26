@@ -43,7 +43,7 @@ func drawPlayerSprite(
 
 func PlayerDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 	for _, agent := range agents {
-		drawPlayerSprite(agent, ctx, agent.PlayerData.SuitSpriteID, constants.PLAYER_Z)
-		drawPlayerSprite(agent, ctx, agent.PlayerData.HelmetSpriteID, constants.PLAYER_Z+1)
+		drawPlayerSprite(agent, ctx, agent.Meta.SuitSpriteID, constants.PLAYER_Z)
+		drawPlayerSprite(agent, ctx, agent.Meta.HelmetSpriteID, constants.PLAYER_Z+1)
 	}
 }
