@@ -58,6 +58,14 @@ var slNum int = 0
 var slLengthMax int = 10000
 var neighbourCount int = 4
 
+var lightMaskOn bool = false
+
+// var fbo uint32
+// var fboTex uint32
+var smoothTex uint32
+var quadVao uint32
+var smoothShader render.Program
+
 func getLightAttenuation(tile *Tile) types.LightAttenuationType {
 	switch tile.Name {
 	case "":
@@ -452,41 +460,33 @@ func (planet *Planet) UpdateEnvLight(iterations int) {
 	}
 }
 
-var lightMaskOn bool = false
+// func InitFbo() {
+// 	//shader
 
-var fbo uint32
-var fboTex uint32
-var smoothTex uint32
-var quadVao uint32
-var smoothShader render.Program
+// 	// //fbo
+// 	// gl.GenFramebuffers(1, &fbo)
+// 	// gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
 
-func InitFbo() {
-	//shader
+// 	// gl.GenTextures(1, &fboTex)
+// 	// gl.BindTexture(gl.TEXTURE_2D, fboTex)
 
-	//fbo
-	gl.GenFramebuffers(1, &fbo)
-	gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
+// 	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+// 	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 
-	gl.GenTextures(1, &fboTex)
-	gl.BindTexture(gl.TEXTURE_2D, fboTex)
+// 	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+// 	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+// 	// gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1440, 900, 0, gl.RGB, gl.UNSIGNED_BYTE, nil)
+// 	// gl.BindTexture(gl.TEXTURE_2D, 0)
+// 	// gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
 
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+// 	// //vao
 
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB, 100, 100, 0, gl.RGB, gl.UNSIGNED_BYTE, nil)
-	gl.BindTexture(gl.TEXTURE_2D, 0)
-	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
-
-	//vao
-
-}
+// }
 
 var tickCounter int
 
-func (planet *Planet) DrawLightMap() {
+func (planet *Planet) DrawLightMap(timeState *TimeState) {
 	tickCounter++
 	if tickCounter%5 != 0 {
 		return
@@ -497,17 +497,19 @@ func (planet *Planet) DrawLightMap() {
 		for y := 0; y < int(planet.Height); y++ {
 			idx := planet.GetTileIndex(x, y)
 			lightValue := planet.LightingValues[idx]
-			v := lightValue.MaxLightValue() * 17
-			// result := getColor(v)
-			// im.Set(x, y, color.RGBA{
-			// 	result[0],
-			// 	result[1],
-			// 	result[2],
-			// 	result[3],
-			// })
-			im.Set(x, y, color.RGBA{
-				v, v, v, 255,
-			})
+			// newColor := timeState.LTG.lightingCurveImage.At(
+			// 	int(lightValue.GetEnvLight()),
+			// 	int(lightValue.GetSkyLight()),
+			// )
+
+			newColor := color.RGBA{
+				lightValue.MaxLightValue() * 17,
+				lightValue.MaxLightValue() * 17,
+				lightValue.MaxLightValue() * 17,
+				255,
+			}
+			im.Set(x, y, newColor)
+
 		}
 	}
 
@@ -515,16 +517,18 @@ func (planet *Planet) DrawLightMap() {
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, planet.Width, planet.Height, 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(im.Pix))
 }
 
-var blue_out bool
-
-func (planet *Planet) DrawLighting(Cam *camera.Camera) {
+func (planet *Planet) DrawLighting(Cam *camera.Camera, timeState *TimeState) {
 	if !lightMaskOn {
 		gl.Enable(gl.BLEND)
 		gl.BlendFunc(gl.DST_COLOR, gl.ZERO)
 		defer gl.Disable(gl.BLEND)
 	}
+
+	lightTexture := timeState.LTG.lightingCurveTex
+
+	// return
 	if smoothLighting {
-		planet.DrawLightMap()
+		planet.DrawLightMap(timeState)
 		smoothShader.Use()
 
 		scaleW := float32(1440) / 3200 / Cam.Zoom.Get()
@@ -536,15 +540,9 @@ func (planet *Planet) DrawLighting(Cam *camera.Camera) {
 		smoothShader.SetFloat("data.scaleH", scaleH)
 		smoothShader.SetFloat("data.offsetX", offsetX)
 		smoothShader.SetFloat("data.offsetY", offsetY)
-		smoothShader.SetBool("blue_out", blue_out)
-
-		smoothShader.SetInt("u_lightmap", 0)
-		smoothShader.SetInt("gradTexture", 1)
+		smoothShader.SetInt("u_lightmask", 0)
 		gl.ActiveTexture(gl.TEXTURE0)
 		gl.BindTexture(gl.TEXTURE_2D, smoothTex)
-		gl.ActiveTexture(gl.TEXTURE1)
-		gl.BindTexture(gl.TEXTURE_1D, gradientLightTex)
-
 		gl.BindVertexArray(quadVao)
 		gl.DrawArrays(gl.TRIANGLES, 0, 6)
 		return
@@ -552,6 +550,9 @@ func (planet *Planet) DrawLighting(Cam *camera.Camera) {
 
 	//no smooth lighting
 	lightShader.Use()
+	lightShader.SetInt("u_lightmap", 0)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D_ARRAY, lightTexture)
 	for x := Cam.Frustum.Left; x < Cam.Frustum.Right; x++ {
 		for y := Cam.Frustum.Bottom; y < Cam.Frustum.Top; y++ {
 			if y < 0 {
@@ -566,14 +567,12 @@ func (planet *Planet) DrawLighting(Cam *camera.Camera) {
 			lightShader.SetMat4("view", &view)
 			model := mgl32.Translate3D(float32(x), float32(y), 0)
 			lightShader.SetMat4("model", &model)
-			lightShader.SetVec3("color", &mgl32.Vec3{
-				float32(lightValue.MaxLightValue()) / 15,
-				float32(lightValue.MaxLightValue()) / 15,
-				float32(lightValue.MaxLightValue()) / 15,
-			})
-			lightShader.SetInt("gradTexture", 0)
-			gl.ActiveTexture(gl.TEXTURE0)
-			gl.BindTexture(gl.TEXTURE_1D, gradientLightTex)
+
+			lightShader.SetFloat("zoffset", timeState.LTG.GetZOffset(
+				lightValue.GetSkyLight(),
+				lightValue.GetEnvLight(),
+			))
+
 			gl.BindVertexArray(lightVao)
 			gl.DrawArrays(gl.TRIANGLES, 0, 6)
 		}
@@ -589,22 +588,4 @@ func ToggleSmoothLighting() {
 	smoothLighting = !smoothLighting
 
 	fmt.Printf("SMOOTH LIGHTING:  %v\n", smoothLighting)
-}
-
-func ToggleBlue() {
-	blue_out = !blue_out
-}
-
-var img *image.RGBA
-
-var firstTimme bool = true
-
-func getColor(v uint8) []uint8 {
-	if firstTimme {
-		firstTimme = false
-		_, img, _ = spriteloader.LoadPng("./assets/starfield/gradients/heightmap_gradient_07.png")
-	}
-
-	// fmt.Println(len(img.Pix), "LENN")
-	return img.Pix[v*4 : int(v)*4+4]
 }

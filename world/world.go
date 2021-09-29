@@ -11,10 +11,10 @@ type Entities struct {
 }
 
 type World struct {
-	Tick int
-	Entities Entities
-	Planet   Planet
-	Stats    WorldStats
+	TimeState TimeState
+	Entities  Entities
+	Planet    Planet
+	Stats     WorldStats
 }
 
 func (world World) TileIsClear(layerID LayerID, x, y int) bool {
@@ -23,7 +23,7 @@ func (world World) TileIsClear(layerID LayerID, x, y int) bool {
 	tileClear := !world.Planet.TileExists(layerTiles, x, y)
 	agentsClear := world.Entities.Agents.TileIsClear(x, y)
 	isClear :=
-		 tileClear &&
-		( layerID != TopLayer || agentsClear )
+		tileClear &&
+			(layerID != TopLayer || agentsClear)
 	return isClear
 }
