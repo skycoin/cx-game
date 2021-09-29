@@ -2,7 +2,8 @@ out vec4 frag_colour;
 
 in vec2 texCoords;
 
-uniform sampler2D u_lightmap;
+uniform sampler2D u_lightmask;
+
 
 struct Data {
     float scaleW;
@@ -12,9 +13,9 @@ struct Data {
 };
 
 uniform Data data;
-uniform sampler1D gradTexture;
+const float gamma_factor = 1.0f / 2.2f;
+const vec3 gamma_factor3 = vec3(gamma_factor);
 
-uniform bool blue_out;
 
 void main(){
     // frag_colour = texture(u_lightmap, vec2(mvp*vec4(texCoords,1,1)));
@@ -22,8 +23,9 @@ void main(){
     vec2 modifiedTexCoords = texCoords * vec2(data.scaleW, data.scaleH)
     +vec2(data.offsetX,data.offsetY);
     
-    vec4 out_color = texture(u_lightmap, modifiedTexCoords);
+    vec3 out_color = texture(u_lightmask, modifiedTexCoords).rgb;
+
+    // out_color = pow(out_color, gamma_factor3);
     // vec4 gradColor = texture(gradTexture, out_color.z);
-    frag_colour = out_color;
-    
+    frag_colour = vec4(out_color, 1.0);
 }

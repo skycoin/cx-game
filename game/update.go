@@ -41,6 +41,7 @@ func Update(dt float32) {
 		Cam.SetCameraPosition(interpolatedPos.X, interpolatedPos.Y)
 	}
 	World.Planet.Update(dt)
+
 	Cam.Tick(dt)
 	fps.Tick()
 	ui.TickDialogueBoxes(dt)
@@ -66,8 +67,6 @@ func Update(dt float32) {
 	)
 
 	ui.TickDamageIndicators(dt)
-
-	World.Tick++
 
 	//testing camera target
 	drillAgent := World.Entities.Agents.FromID(types.AgentID(1))

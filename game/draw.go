@@ -69,7 +69,7 @@ func Draw() {
 	particles.DrawMidTopParticles(worldCtx)
 
 	//draw lightmap
-	World.Planet.DrawLighting(Cam)
+	World.Planet.DrawLighting(Cam, &World.TimeState)
 
 	//draw ui
 	if debugTileInfo {

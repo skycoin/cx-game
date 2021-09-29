@@ -1,9 +1,9 @@
 package worldgen
 
 import (
-	"github.com/skycoin/cx-game/world/mapgen"
-	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/world/mapgen"
 )
 
 func GenerateWorld() world.World {
@@ -11,7 +11,8 @@ func GenerateWorld() world.World {
 		Entities: world.Entities{
 			Agents: *agents.NewAgentList(),
 		},
-		Planet: *mapgen.GeneratePlanet(),
-		Stats: world.NewWorldStats(),
+		Planet:    *mapgen.GeneratePlanet(),
+		Stats:     world.NewWorldStats(),
+		TimeState: world.NewTimeState(),
 	}
 }

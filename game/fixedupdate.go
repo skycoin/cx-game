@@ -22,7 +22,8 @@ func FixedUpdate(dt float32) {
 func FixedTick() {
 	//player.FixedTick(&World.Planet)
 	components.FixedUpdate()
-	World.Planet.UpdateSkyLight(1000)
+	World.Planet.FixedUpdate()
+	World.TimeState.Advance()
 	// physics.Simulate(constants.PHYSICS_TICK, &World.Planet)
 	/*
 		pickedUpItems := item.TickWorldItems(
