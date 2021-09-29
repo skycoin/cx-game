@@ -16,6 +16,6 @@ func UpdateAgents(World *world.World, player *agents.Agent) {
 		PlayerPos:  player.PhysicsState.Pos.Mgl32(),
 	}
 	for _, agent := range World.Entities.Agents.Get() {
-		aiHandlers[agent.AiHandlerID](agent, ctx)
+		aiHandlers[agent.Handlers.AI](agent, ctx)
 	}
 }

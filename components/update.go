@@ -22,14 +22,14 @@ func Update(dt float32) {
 
 func updateTimers(agents []*agents.Agent, dt float32) {
 	for _, agent := range agents {
-		if agent.DrawHandlerID == constants.DRAW_HANDLER_ANIM {
+		if agent.Handlers.Draw == constants.DRAW_HANDLER_ANIM {
 			agent.AnimationPlayback.Update(dt)
 		}
-		if agent.WaitingFor > 0 {
-			agent.WaitingFor -= dt
+		if agent.Timers.WaitingFor > 0 {
+			agent.Timers.WaitingFor -= dt
 		}
 		if agent.Died() {
-			agent.TimeSinceDeath += dt
+			agent.Timers.TimeSinceDeath += dt
 		}
 	}
 }

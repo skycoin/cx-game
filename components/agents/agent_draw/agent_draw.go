@@ -29,7 +29,7 @@ func FrustumCull(agentlist []*agents.Agent, cam *camera.Camera) []*agents.Agent 
 	//todo
 	var agentsToDraw []*agents.Agent
 	for _, agent := range agentlist {
-		if cam.IsInBoundsRadius(agent.PhysicsState.Pos, agent.PhysicsParameters.Radius) {
+		if cam.IsInBoundsRadius(agent.PhysicsState.Pos, agent.Meta.PhysicsParameters.Radius) {
 			agentsToDraw = append(agentsToDraw, agent)
 		}
 	}
@@ -40,8 +40,8 @@ func BinByDrawHandlerID(agentlist []*agents.Agent) map[types.AgentDrawHandlerID]
 	bins := make(map[types.AgentDrawHandlerID][]*agents.Agent)
 
 	for _, agent := range agentlist {
-		bins[agent.DrawHandlerID] =
-			append(bins[agent.DrawHandlerID], agent)
+		bins[agent.Handlers.Draw] =
+			append(bins[agent.Handlers.Draw], agent)
 	}
 
 	return bins
