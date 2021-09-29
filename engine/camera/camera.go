@@ -56,6 +56,7 @@ type Camera struct {
 	//focus_area  focusArea
 	freeCam     bool
 	PlanetWidth float32
+	shake       *ShakeStruct
 }
 
 type focusArea struct {
@@ -87,6 +88,7 @@ func NewCamera(window *render.Window) *Camera {
 		// 	bottom: yPos - size.Y()/2,
 		// },
 		freeCam: false,
+		shake:   NewShakeStruct(60, 1),
 	}
 	return &cam
 }
@@ -186,7 +188,15 @@ func (camera *Camera) SetCameraZoomPosition(zoomOffset float32) {
 }
 
 func (camera Camera) GetTransform() mgl32.Mat4 {
-	translate := mgl32.Translate3D(camera.X, camera.Y, 0)
+	xoff := camera.X
+	yoff := camera.Y
+
+	if camera.shake.IsShaking {
+		xoff += camera.shake.Amplitude()
+		yoff += camera.shake.Amplitude()
+	}
+	translate := mgl32.Translate3D(xoff, yoff, 0)
+
 	// fmt.Println(camera.Zoom)
 	scale := mgl32.Scale3D(1/camera.Zoom.Get(), 1/camera.Zoom.Get(), 1)
 	return translate.Mul4(scale)
@@ -202,6 +212,7 @@ func (camera *Camera) Tick(dt float32) {
 	}
 	camera.UpdateFrustum()
 	camera.Zoom.Tick(dt)
+	camera.shake.Update(dt)
 }
 
 func (camera *Camera) IsFreeCam() bool {
@@ -285,4 +296,8 @@ func DebugSnapping(option int) {
 	} else {
 		log.Fatal("No such camera snapping option, crashing")
 	}
+}
+
+func (cam *Camera) Shake() {
+	cam.shake.Start(60, 0.8)
 }

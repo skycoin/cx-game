@@ -65,6 +65,10 @@ func ProcessInput() {
 			world.ToggleSmoothLighting()
 		}
 
+		if input.GetKeyDown(glfw.KeyB) {
+			Cam.Shake()
+		}
+
 	case input.FREECAM:
 		if input.GetButtonDown("freecam-off") {
 			Cam.TurnOffFreeCam()
