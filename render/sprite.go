@@ -47,7 +47,6 @@ func initSprite() {
 	spriteProgram = &spriteProgram1
 }
 
-func Init() { initSprite(); initColor() }
 
 type Sprite struct {
 	Name      string

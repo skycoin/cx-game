@@ -1,9 +1,15 @@
 package constants
 
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
+
 const (
-	DRAW_SPRITE_BATCH_SIZE int32 = 100
-	DRAW_COLOR_BATCH_SIZE  int32 = 100
-	PIXELS_PER_TILE        int   = 32
+	DRAW_SPRITE_BATCH_SIZE  int32 = 100
+	DRAW_COLOR_BATCH_SIZE   int32 = 100
+	PIXELS_PER_TILE         int   = 32
+	VIRTUAL_VIEWPORT_WIDTH  int32   = 1440
+	VIRTUAL_VIEWPORT_HEIGHT int32   = 900
 )
 
 const (
@@ -16,4 +22,8 @@ const (
 	AGENT_Z      float32 = -5
 	PLAYER_Z     float32 = -3
 	HUD_Z        float32 = 0
+)
+
+var (
+	OUTLINE_BORDER_COLOR = mgl32.Vec4{1,0,0,1}
 )
