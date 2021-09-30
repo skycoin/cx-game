@@ -18,7 +18,10 @@ type Viewport struct {
 	X,Y,Width,Height int32
 }
 
+var currentViewport Viewport
+
 func (v Viewport) Use() {
+	currentViewport = v
 	gl.Viewport(v.X, v.Y, v.Width, v.Height)
 }
 

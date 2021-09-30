@@ -24,6 +24,12 @@ func Draw() {
 	gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
+	render.FRAMEBUFFER_PLANET.Bind(gl.FRAMEBUFFER)
+	gl.ClearColor(0,0,0,0)
+	gl.Clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
+
+	render.FRAMEBUFFER_SCREEN.Bind(gl.FRAMEBUFFER)
+
 	baseCtx := win.DefaultRenderContext()
 	render.SetCameraTransform(Cam.GetTransform())
 	render.SetWorldWidth(float32(World.Planet.Width))

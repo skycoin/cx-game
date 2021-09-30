@@ -149,29 +149,30 @@ func getBorderColor(isSelected bool) mgl32.Vec4 {
 func (inventory Inventory) DrawSlot(
 	slot InventorySlot, ctx render.Context, isSelected bool,
 ) {
-
+	transform := ctx.World.Mul4(mgl32.Translate3D(0,0,0.2))
 	// draw border
-	render.DrawColorQuad(ctx.World, getBorderColor(isSelected))
+	render.DrawColorQuad(transform, getBorderColor(isSelected))
 	// draw bg on top of border
-	bgCtx := ctx.
-		PushLocal(mgl32.Translate3D(0, 0, 0.1)).
-		PushLocal(cxmath.Scale(1 - borderSize))
-	// bgCtx = ctx
-	render.DrawColorQuad(bgCtx.World, bgColor)
+	bgTransform := transform.
+		Mul4(mgl32.Translate3D(0, 0, 0.1)).
+		Mul4(cxmath.Scale(1 - borderSize))
+	render.DrawColorQuad(bgTransform, bgColor)
 	// draw item on top of bg
-	itemCtx := ctx.
-		PushLocal(cxmath.Scale(itemSize))
+	itemTransform := bgTransform.Mul4(cxmath.Scale(itemSize)).Mul4(
+		mgl32.Translate3D(0,0,0.1))
 
 	if slot.Quantity > 0 {
 		spriteId := itemTypes[slot.ItemTypeID].SpriteID
 		render.DrawUISprite(
-			itemCtx.World.Mul4(
+			itemTransform.Mul4(
 				mgl32.Translate3D(0, 0, 0.2)), spriteId,
 			render.NewSpriteDrawOptions())
 
-		textCtx := itemCtx.PushLocal(
-			mgl32.Translate3D(0.5, -0.05, 0.3).
-				Mul4(cxmath.Scale(0.6)))
+		textTransform := itemTransform.
+			Mul4(mgl32.Translate3D(0.5, -0.05, 0.3)).
+			Mul4(cxmath.Scale(0.6))
+		textCtx := render.Context {
+			World: textTransform, Projection: ctx.Projection }
 		ui.DrawStringRightAligned(
 			strconv.Itoa(int(slot.Quantity)),
 			mgl32.Vec4{1, 1, 1, 1},

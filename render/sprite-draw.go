@@ -29,10 +29,19 @@ func SetCameraTransform(mat mgl32.Mat4) {
 }
 
 type SpriteDrawOptions struct {
+	Outline bool
 }
 
 func NewSpriteDrawOptions() SpriteDrawOptions {
 	return SpriteDrawOptions{}
+}
+
+func (opts SpriteDrawOptions) Framebuffer() Framebuffer {
+	if opts.Outline {
+		return FRAMEBUFFER_PLANET
+	} else {
+		return FRAMEBUFFER_SCREEN
+	}
 }
 
 type SpriteDraw struct {
@@ -44,18 +53,27 @@ type SpriteDraw struct {
 	Options     SpriteDrawOptions
 }
 
-var spriteDrawsPerAtlas = map[Texture][]SpriteDraw{}
+var spriteDrawsPerAtlasPerFramebuffer =
+	map[Framebuffer]map[Texture][]SpriteDraw{}
 
 func drawSprite(model, view mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 	sprite := sprites[id]
 	atlas := sprite.Texture
-	spriteDrawsPerAtlas[atlas] = append(spriteDrawsPerAtlas[atlas],
-		SpriteDraw{
-			Sprite:      sprite,
-			Model:       model,
-			View:        view,
-			UVTransform: sprite.Transform,
-		})
+	framebuffer := opts.Framebuffer()
+	spriteDrawsPerAtlas,ok := spriteDrawsPerAtlasPerFramebuffer[framebuffer]
+	if !ok {
+		spriteDrawsPerAtlasPerFramebuffer[framebuffer] =
+			map[Texture][]SpriteDraw{}
+	}
+	spriteDrawsPerAtlas = spriteDrawsPerAtlasPerFramebuffer[framebuffer]
+	spriteDrawsPerAtlas[atlas] =
+		append( spriteDrawsPerAtlasPerFramebuffer[framebuffer][atlas],
+			SpriteDraw{
+				Sprite:      sprite,
+				Model:       model,
+				View:        view,
+				UVTransform: sprite.Transform,
+			} )
 }
 
 // unaffected by camera movement
@@ -99,6 +117,14 @@ func Flush(projection mgl32.Mat4) {
 
 }
 
+func drawFramebufferSprites(framebuffer Framebuffer) {
+	framebuffer.Bind(gl.FRAMEBUFFER)
+	spriteDrawsPerAtlas := spriteDrawsPerAtlasPerFramebuffer[framebuffer]
+	for atlas, spriteDraws := range spriteDrawsPerAtlas {
+		drawAtlasSprites(atlas, spriteDraws)
+	}
+}
+
 func flushSpriteDraws(projection mgl32.Mat4) {
 	spriteProgram.Use()
 	defer spriteProgram.StopUsing()
@@ -113,10 +139,48 @@ func flushSpriteDraws(projection mgl32.Mat4) {
 
 	spriteProgram.SetMat4("projection", &projection)
 
-	for atlas, spriteDraws := range spriteDrawsPerAtlas {
-		drawAtlasSprites(atlas, spriteDraws)
+	physicalViewport := currentViewport
+	virtualViewport :=
+		Viewport{
+			0,0,
+			constants.VIRTUAL_VIEWPORT_WIDTH,
+			constants.VIRTUAL_VIEWPORT_HEIGHT,
+		}
+	virtualViewport.Use()
+	FRAMEBUFFER_PLANET.Bind(gl.FRAMEBUFFER)
+	gl.Enable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
+	gl.DepthMask(true)
+	drawFramebufferSprites(FRAMEBUFFER_PLANET)
+
+	physicalViewport.Use()
+
+	drawFramebufferSprites(FRAMEBUFFER_SCREEN)
+
+	spriteDrawsPerAtlasPerFramebuffer = // clear sprite draws
+		make(map[Framebuffer]map[Texture][]SpriteDraw)
+
+	FRAMEBUFFER_SCREEN.Bind(gl.FRAMEBUFFER)
+
+	outlineProgram.Use()
+	defer outlineProgram.StopUsing()
+
+	projection2 := mgl32.Ortho2D(0,1,0,1)
+	outlineProgram.SetMat4("projection",&projection2)
+	texelSize := mgl32.Vec2{
+		1.0 / float32(constants.VIRTUAL_VIEWPORT_WIDTH),
+		1.0 / float32(constants.VIRTUAL_VIEWPORT_HEIGHT),
 	}
-	spriteDrawsPerAtlas = make(map[Texture][]SpriteDraw)
+	outlineProgram.SetVec2("texelSize", &texelSize)
+	outlineProgram.SetVec4("borderColor", &constants.OUTLINE_BORDER_COLOR)
+
+	gl.BindVertexArray(Quad2Vao)
+
+	gl.BindTexture(gl.TEXTURE_2D, RENDERTEXTURE_PLANET)
+	gl.DrawArrays(gl.TRIANGLES,0,6) // draw quad
+
+	gl.BindVertexArray(QuadVao)
+
 }
 
 func drawAtlasSprites(atlas Texture, spriteDraws []SpriteDraw) {

@@ -5,15 +5,17 @@ import (
 )
 
 var QuadVao uint32
+var Quad2Vao uint32
 const vertsPerQuad int32 = 6
 
 func InitQuadVao() {
-	QuadVao = MakeQuadVao()
+	QuadVao = MakeQuadVao(quadVertexAttributes)
+	Quad2Vao = MakeQuadVao(quad2VertexAttributes)
 }
 
 // x,y,z,u,v
 var quadVertexAttributes = []float32{
-	0.5, 0.5, 0, 1, 0,
+	0.5, 0.5,  0, 1, 0,
 	0.5, -0.5, 0, 1, 1,
 	-0.5, 0.5, 0, 0, 0,
 
@@ -22,8 +24,19 @@ var quadVertexAttributes = []float32{
 	-0.5, 0.5, 0, 0, 0,
 }
 
+// x,y,z,u,v
+var quad2VertexAttributes = []float32{
+	0,0, 0, 0,0,
+	0,1, 0, 0,1,
+	1,0, 0, 1,0,
 
-func MakeQuadVao() uint32 {
+	0,1, 0, 0,1,
+	1,1, 0, 1,1,
+	1,0, 0, 1,0,
+}
+
+
+func MakeQuadVao(vertexAttributes []float32) uint32 {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 
@@ -34,8 +47,8 @@ func MakeQuadVao() uint32 {
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 	gl.BufferData(
 		gl.ARRAY_BUFFER,
-		4*len(quadVertexAttributes),
-		gl.Ptr(quadVertexAttributes),
+		4*len(vertexAttributes),
+		gl.Ptr(vertexAttributes),
 		gl.STATIC_DRAW,
 	)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))

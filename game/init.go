@@ -31,11 +31,6 @@ func init() {
 	runtime.LockOSThread()
 }
 
-const (
-	INITIAL_WINDOW_WIDTH  = 1440
-	INITIAL_WINDOW_HEIGHT = 900
-)
-
 var (
 	Console console.Console
 	Cam     *camera.Camera
@@ -54,7 +49,9 @@ var (
 )
 
 func Init() {
-	win = render.NewWindow(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, true)
+	vvw := int(constants.VIRTUAL_VIEWPORT_WIDTH)
+	vvh := int(constants.VIRTUAL_VIEWPORT_HEIGHT)
+	win = render.NewWindow(vvw,vvh,true)
 	win.SetCallbacks()
 	// defer glfw.Terminate()
 
