@@ -22,6 +22,7 @@ type TileConfig struct {
 	Layer        string   `yaml:"layer"`
 	Invulnerable bool     `yaml:"invulnerable"`
 	Category     string   `yaml:"category"`
+    NeedsGround  bool
 	/*
 		Width        int32    `yaml:"width"`
 		Height       int32    `yaml:"height"`
@@ -62,14 +63,22 @@ func tileCollisionTypeFromString(str string) TileCollisionType {
 }
 
 func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
+    tile := NewNormalTile()
+    tile.NeedsGround = config.NeedsGround
+    tile.TileCategory = tileCategoryFromString(config.Category)
+    tile.TileCollisionType = tileCollisionTypeFromString(config.Collision)
+    tile.TileTypeID = id
 
 	if config.Blob == "" {
 		// TODO handle multiple sprites
 		spriteID := render.GetSpriteIDByName(config.Sprite)
 		return DirectPlacer{
+            Tile: tile,
 			SpriteID:          spriteID,
+            /*
 			Category:          tileCategoryFromString(config.Category),
 			TileCollisionType: tileCollisionTypeFromString(config.Collision),
+            */
 		}
 	}
 	tilingID,ok := tiling.ByName(config.Blob)
@@ -78,9 +87,11 @@ func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
 	}
 	ids := loadIDsFromSpritenames(config.Sprites, tilingID.Get().Count() )
 	return AutoPlacer {
-		blobSpritesIDs: ids,
+		Tile: tile, blobSpritesIDs: ids, TilingID: tilingID,
+        /*
 		TileTypeID: id, TilingID: tilingID,
 		TileCollisionType: tileCollisionTypeFromString(config.Collision),
+        */
 	}
 }
 
@@ -117,6 +128,7 @@ func (config *TileConfig) TileType(name string, id TileTypeID) TileType {
 		Placer:       config.Placer(name, id),
 		Invulnerable: config.Invulnerable,
 		Width:        width, Height: height,
+		NeedsGround:  config.NeedsGround,
 	}
 }
 
