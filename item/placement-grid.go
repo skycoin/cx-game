@@ -205,21 +205,29 @@ func (grid *PlacementGrid) TrySelect(camCoords mgl32.Vec2) bool {
 }
 
 func tilesAreClear(
-	World *world.World, layerID world.LayerID,
+	World *world.World, layerIDs []world.LayerID,
 	xstart, ystart, xstop, ystop int,
 ) bool {
-	for x := xstart; x < xstop; x++ {
-		for y := ystart; y < ystop; y++ {
-			if !World.TileIsClear(layerID, x, y) {
-				return false
+	for _,layerID := range layerIDs {
+		for x := xstart; x < xstop; x++ {
+			for y := ystart; y < ystop; y++ {
+				if !World.TileIsClear(layerID, x, y) {
+					return false
+				}
 			}
 		}
 	}
-	// if layer is midlayer, do additional top layer check
-	if layerID == world.MidLayer {
+	return true
+}
+
+func tilesAreSolid(
+	World *world.World, layerIDs []world.LayerID,
+	xstart, ystart, xstop, ystop int,
+) bool {
+	for _,layerID := range layerIDs {
 		for x := xstart; x < xstop; x++ {
 			for y := ystart; y < ystop; y++ {
-				if !World.TileIsClear(world.TopLayer, x, y) {
+				if World.TileIsClear(layerID, x, y) {
 					return false
 				}
 			}
@@ -254,7 +262,7 @@ func (grid *PlacementGrid) TryPlaceNoConnect(info ItemUseInfo) bool {
 
 	tt := grid.Selected.Get()
 	canPlace := tilesAreClear(
-		info.World, tt.Layer,
+		info.World, []world.LayerID{tt.Layer},
 		x, y,
 		x+int(tt.Width), y+int(tt.Height),
 	)
@@ -263,6 +271,14 @@ func (grid *PlacementGrid) TryPlaceNoConnect(info ItemUseInfo) bool {
 		return true
 	}
 	return false
+}
+
+func layersToCheckForPlace(placeLayer world.LayerID) []world.LayerID {
+	if placeLayer == world.BgLayer {
+		return []world.LayerID{ world.BgLayer }
+	} else {
+		return []world.LayerID{ world.MidLayer, world.TopLayer }
+	}
 }
 
 func (grid *PlacementGrid) UpdatePreview(
@@ -282,31 +298,16 @@ func (grid *PlacementGrid) UpdatePreview(
 	tt := grid.Selected.Get()
 
 	//midlayer and toplayer can't occupy same tile
-	if tt.Layer == world.BgLayer {
-		grid.canPlace =
-			tilesAreClear(
-				World,
-				tt.Layer,
-				x, y,
-				x+int(tt.Width),
-				y+int(tt.Height),
-			)
-	} else {
-		grid.canPlace =
-			tilesAreClear(
-				World,
-				world.MidLayer,
-				x, y,
-				x+int(tt.Width),
-				y+int(tt.Height),
-			) &&
-				tilesAreClear(
-					World,
-					world.TopLayer,
-					x, y,
-					x+int(tt.Width),
-					y+int(tt.Height),
-				)
-	}
+	layersToCheck := layersToCheckForPlace(tt.Layer)
+	occupyingTilesAreClear :=
+		tilesAreClear(World,layersToCheck,x,y,x+int(tt.Width),y+int(tt.Height))
 
+	grid.canPlace = occupyingTilesAreClear
+	if tt.NeedsGround {
+		belowTilesAreSolid := tilesAreSolid(
+			World, []world.LayerID { world.TopLayer },
+			x,y-1,x+int(tt.Width),y,
+		)
+		grid.canPlace = grid.canPlace && belowTilesAreSolid
+	}
 }
