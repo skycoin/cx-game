@@ -40,7 +40,7 @@ func (opts SpriteDrawOptions) Framebuffer() Framebuffer {
 	if opts.Outline {
 		return FRAMEBUFFER_PLANET
 	} else {
-		return FRAMEBUFFER_SCREEN
+		return FRAMEBUFFER_MAIN
 	}
 }
 
@@ -53,33 +53,47 @@ type SpriteDraw struct {
 	Options     SpriteDrawOptions
 }
 
-var spriteDrawsPerAtlasPerFramebuffer =
-	map[Framebuffer]map[Texture][]SpriteDraw{}
+var spriteDrawsPerAtlasPerFramebuffer = map[Framebuffer]map[Texture][]SpriteDraw{}
+var spriteDrawsPerAtlasUI = map[Texture][]SpriteDraw{}
 
 func drawSprite(model, view mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 	sprite := sprites[id]
 	atlas := sprite.Texture
 	framebuffer := opts.Framebuffer()
-	spriteDrawsPerAtlas,ok := spriteDrawsPerAtlasPerFramebuffer[framebuffer]
+	spriteDrawsPerAtlas, ok := spriteDrawsPerAtlasPerFramebuffer[framebuffer]
 	if !ok {
 		spriteDrawsPerAtlasPerFramebuffer[framebuffer] =
 			map[Texture][]SpriteDraw{}
 	}
 	spriteDrawsPerAtlas = spriteDrawsPerAtlasPerFramebuffer[framebuffer]
 	spriteDrawsPerAtlas[atlas] =
-		append( spriteDrawsPerAtlasPerFramebuffer[framebuffer][atlas],
+		append(spriteDrawsPerAtlasPerFramebuffer[framebuffer][atlas],
 			SpriteDraw{
 				Sprite:      sprite,
 				Model:       model,
 				View:        view,
 				UVTransform: sprite.Transform,
-			} )
+			})
+}
+
+func drawUISprite(model, view mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
+	sprite := sprites[id]
+	atlas := sprite.Texture
+
+	spriteDrawsPerAtlasUI[atlas] =
+		append(spriteDrawsPerAtlasUI[atlas],
+			SpriteDraw{
+				Sprite:      sprite,
+				Model:       model,
+				View:        view,
+				UVTransform: sprite.Transform,
+			})
 }
 
 // unaffected by camera movement
 func DrawUISprite(transform mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 	view := mgl32.Ident4()
-	drawSprite(transform, view, id, opts)
+	drawUISprite(transform, view, id, opts)
 }
 
 func wrapTransform(raw mgl32.Mat4) mgl32.Mat4 {
@@ -108,13 +122,18 @@ func DrawWorldSprite(transform mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) 
 
 //draw without flushing
 
-func Flush(projection mgl32.Mat4) {
-	flushSpriteDraws(projection)
-	flushColorDraws(projection)
+func Flush() {
+	flushSpriteDraws()
+	// flushColorDraws(Projection)
 	if drawBBoxLines {
-		flushBBoxLineDraws(projection)
+		flushBBoxLineDraws()
 	}
 
+}
+
+func FlushUI() {
+	flushSpriteUIDraws()
+	flushColorDraws(Projection)
 }
 
 func drawFramebufferSprites(framebuffer Framebuffer) {
@@ -125,7 +144,7 @@ func drawFramebufferSprites(framebuffer Framebuffer) {
 	}
 }
 
-func flushSpriteDraws(projection mgl32.Mat4) {
+func flushSpriteUIDraws() {
 	spriteProgram.Use()
 	defer spriteProgram.StopUsing()
 
@@ -137,12 +156,33 @@ func flushSpriteDraws(projection mgl32.Mat4) {
 
 	gl.BindVertexArray(QuadVao)
 
-	spriteProgram.SetMat4("projection", &projection)
+	spriteProgram.SetMat4("projection", &Projection)
+
+	for atlas, spriteDraws := range spriteDrawsPerAtlasUI {
+		drawAtlasSprites(atlas, spriteDraws)
+	}
+	spriteDrawsPerAtlasUI = make(map[Texture][]SpriteDraw)
+
+}
+
+func flushSpriteDraws() {
+	spriteProgram.Use()
+	defer spriteProgram.StopUsing()
+
+	gl.Enable(gl.DEPTH_TEST)
+	gl.Enable(gl.BLEND)
+	defer gl.Disable(gl.DEPTH_TEST)
+
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
+	gl.BindVertexArray(QuadVao)
+
+	spriteProgram.SetMat4("projection", &Projection)
 
 	physicalViewport := currentViewport
 	virtualViewport :=
 		Viewport{
-			0,0,
+			0, 0,
 			constants.VIRTUAL_VIEWPORT_WIDTH,
 			constants.VIRTUAL_VIEWPORT_HEIGHT,
 		}
@@ -155,18 +195,18 @@ func flushSpriteDraws(projection mgl32.Mat4) {
 
 	physicalViewport.Use()
 
-	drawFramebufferSprites(FRAMEBUFFER_SCREEN)
+	drawFramebufferSprites(FRAMEBUFFER_MAIN)
 
 	spriteDrawsPerAtlasPerFramebuffer = // clear sprite draws
 		make(map[Framebuffer]map[Texture][]SpriteDraw)
 
-	FRAMEBUFFER_SCREEN.Bind(gl.FRAMEBUFFER)
+	FRAMEBUFFER_MAIN.Bind(gl.FRAMEBUFFER)
 
 	outlineProgram.Use()
 	defer outlineProgram.StopUsing()
 
-	projection2 := mgl32.Ortho2D(0,1,0,1)
-	outlineProgram.SetMat4("projection",&projection2)
+	// projection2 := mgl32.Ortho2D(0, 1, 0, 1)
+	// outlineProgram.SetMat4("projection", &projection2)
 	texelSize := mgl32.Vec2{
 		1.0 / float32(constants.VIRTUAL_VIEWPORT_WIDTH),
 		1.0 / float32(constants.VIRTUAL_VIEWPORT_HEIGHT),
@@ -177,7 +217,7 @@ func flushSpriteDraws(projection mgl32.Mat4) {
 	gl.BindVertexArray(Quad2Vao)
 
 	gl.BindTexture(gl.TEXTURE_2D, RENDERTEXTURE_PLANET)
-	gl.DrawArrays(gl.TRIANGLES,0,6) // draw quad
+	gl.DrawArrays(gl.TRIANGLES, 0, 6) // draw quad
 
 	gl.BindVertexArray(QuadVao)
 

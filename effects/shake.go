@@ -1,4 +1,4 @@
-package camera
+package effects
 
 import (
 	"math"
@@ -49,6 +49,7 @@ func (s *ShakeStruct) Teardown() {
 	s.IsShaking = false
 }
 func (s *ShakeStruct) Update(dt float32) {
+
 	if !s.IsShaking {
 		return
 	}

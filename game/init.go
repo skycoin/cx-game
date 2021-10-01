@@ -43,6 +43,8 @@ var (
 	DrawCollisionBoxes = false
 	FPS                int
 
+
+
 	//unused
 	// isTileSelectorVisible = false
 	// worldItem             *item.WorldItem
@@ -51,7 +53,7 @@ var (
 func Init() {
 	vvw := int(constants.VIRTUAL_VIEWPORT_WIDTH)
 	vvh := int(constants.VIRTUAL_VIEWPORT_HEIGHT)
-	win = render.NewWindow(vvw,vvh,true)
+	win = render.NewWindow(vvw, vvh, true)
 	win.SetCallbacks()
 	// defer glfw.Terminate()
 

@@ -6,6 +6,7 @@ import (
 
 var QuadVao uint32
 var Quad2Vao uint32
+
 const vertsPerQuad int32 = 6
 
 func InitQuadVao() {
@@ -15,7 +16,7 @@ func InitQuadVao() {
 
 // x,y,z,u,v
 var quadVertexAttributes = []float32{
-	0.5, 0.5,  0, 1, 0,
+	0.5, 0.5, 0, 1, 0,
 	0.5, -0.5, 0, 1, 1,
 	-0.5, 0.5, 0, 0, 0,
 
@@ -26,15 +27,14 @@ var quadVertexAttributes = []float32{
 
 // x,y,z,u,v
 var quad2VertexAttributes = []float32{
-	0,0, 0, 0,0,
-	0,1, 0, 0,1,
-	1,0, 0, 1,0,
+	-1, -1, 0, 0, 0,
+	-1, 1, 0, 0, 1,
+	1, -1, 0, 1, 0,
 
-	0,1, 0, 0,1,
-	1,1, 0, 1,1,
-	1,0, 0, 1,0,
+	-1, 1, 0, 0, 1,
+	1, 1, 0, 1, 1,
+	1, -1, 0, 1, 0,
 }
-
 
 func MakeQuadVao(vertexAttributes []float32) uint32 {
 	var vbo uint32
