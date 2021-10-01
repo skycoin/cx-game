@@ -68,6 +68,10 @@ func ProcessInput() {
 		if input.GetKeyDown(glfw.KeyB) {
 			Cam.Shake()
 		}
+		if input.GetKeyDown(glfw.KeyV) {
+			Cam.ShockwaveVec(player.PhysicsState.Pos)
+			// Cam.ScreenPos(player.PhysicsState.Pos.Mgl32())
+		}
 
 	case input.FREECAM:
 		if input.GetButtonDown("freecam-off") {

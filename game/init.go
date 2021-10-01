@@ -43,7 +43,7 @@ var (
 	DrawCollisionBoxes = false
 	FPS                int
 
-	screenShader render.Program
+
 
 	//unused
 	// isTileSelectorVisible = false
@@ -141,7 +141,4 @@ func Init() {
 	//add oxygen emitter
 	particle_emitter.EmitOxygen(playerAgentID, &World.Entities.Particles)
 	render.NewColorShader()
-
-	screenShaderConfig := render.NewShaderConfig("./assets/shader/postprocessing.vert", "./assets/shader/postprocessing.frag")
-	screenShader = screenShaderConfig.Compile()
 }

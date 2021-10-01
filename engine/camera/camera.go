@@ -8,6 +8,7 @@ import (
 
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
+	"github.com/skycoin/cx-game/effects"
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/render"
 )
@@ -56,7 +57,8 @@ type Camera struct {
 	//focus_area  focusArea
 	freeCam     bool
 	PlanetWidth float32
-	shake       *ShakeStruct
+	shake       *effects.ShakeStruct
+	shockwave   *effects.Shockwave
 }
 
 type focusArea struct {
@@ -87,8 +89,9 @@ func NewCamera(window *render.Window) *Camera {
 		// 	top:    yPos + size.Y()/2,
 		// 	bottom: yPos - size.Y()/2,
 		// },
-		freeCam: false,
-		shake:   NewShakeStruct(60, 1),
+		freeCam:   false,
+		shake:     effects.NewShakeStruct(60, 1),
+		shockwave: effects.NewShockwave(),
 	}
 	return &cam
 }
@@ -213,6 +216,9 @@ func (camera *Camera) Tick(dt float32) {
 	camera.UpdateFrustum()
 	camera.Zoom.Tick(dt)
 	camera.shake.Update(dt)
+
+	camera.shockwave.SetZoom(camera.Zoom.Get())
+	camera.shockwave.Update(dt)
 }
 
 func (camera *Camera) IsFreeCam() bool {
@@ -300,4 +306,27 @@ func DebugSnapping(option int) {
 
 func (cam *Camera) Shake() {
 	cam.shake.Start(60, 0.8)
+}
+
+//start shockwave at
+func (cam *Camera) Shockwave(x, y float32) {
+
+	screenPos := cam.ScreenPos(mgl32.Vec2{x, y}).Add(mgl32.Vec2{0.5, 0.5})
+
+	cam.shockwave.SetCenter(screenPos.X(), screenPos.Y())
+	cam.shockwave.Start()
+}
+
+func (cam *Camera) ShockwaveVec(pos cxmath.Vec2) {
+	cam.Shockwave(pos.X, pos.Y)
+}
+
+//convert cam position into NDC (-1,1) coords
+func (cam *Camera) ScreenPos(pos mgl32.Vec2) mgl32.Vec2 {
+
+	converted := render.Projection.Mul4(
+		cam.GetViewMatrix()).Mul4x1(
+		pos.Vec4(0, 1),
+	)
+	return converted.Vec2()
 }

@@ -89,8 +89,10 @@ func PostProcess() {
 	render.FRAMEBUFFER_SCREEN.Bind(gl.FRAMEBUFFER)
 	gl.Clear(gl.COLOR_BUFFER_BIT)
 
-	screenShader.Use()
-	screenShader.SetInt("u_screenTexture", 0)
+	render.ScreenShader.Use()
+	render.ScreenShader.SetInt("u_screenTexture", 0)
+
+	render.SetupShockwave()
 
 	// gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, render.RENDERTEXTURE_MAIN)
