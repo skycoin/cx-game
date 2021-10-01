@@ -21,7 +21,7 @@ const (
 	FRONTLAYER_Z float32 = -8
 	AGENT_Z      float32 = -5
 	PLAYER_Z     float32 = -3
-	HUD_Z        float32 = 0
+	HUD_Z        float32 = 2
 )
 
 var (
