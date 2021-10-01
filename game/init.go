@@ -43,6 +43,8 @@ var (
 	DrawCollisionBoxes = false
 	FPS                int
 
+	screenShader render.Program
+
 	//unused
 	// isTileSelectorVisible = false
 	// worldItem             *item.WorldItem
@@ -51,7 +53,7 @@ var (
 func Init() {
 	vvw := int(constants.VIRTUAL_VIEWPORT_WIDTH)
 	vvh := int(constants.VIRTUAL_VIEWPORT_HEIGHT)
-	win = render.NewWindow(vvw,vvh,true)
+	win = render.NewWindow(vvw, vvh, true)
 	win.SetCallbacks()
 	// defer glfw.Terminate()
 
@@ -139,4 +141,7 @@ func Init() {
 	//add oxygen emitter
 	particle_emitter.EmitOxygen(playerAgentID, &World.Entities.Particles)
 	render.NewColorShader()
+
+	screenShaderConfig := render.NewShaderConfig("./assets/shader/postprocessing.vert", "./assets/shader/postprocessing.frag")
+	screenShader = screenShaderConfig.Compile()
 }

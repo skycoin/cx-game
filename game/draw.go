@@ -25,12 +25,13 @@ func Draw() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	render.FRAMEBUFFER_PLANET.Bind(gl.FRAMEBUFFER)
-	gl.ClearColor(0,0,0,0)
-	gl.Clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
+	gl.ClearColor(0, 0, 0, 0)
+	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-	render.FRAMEBUFFER_SCREEN.Bind(gl.FRAMEBUFFER)
+	render.FRAMEBUFFER_MAIN.Bind(gl.FRAMEBUFFER)
 
-	baseCtx := win.DefaultRenderContext()
+	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
 	render.SetCameraTransform(Cam.GetTransform())
 	render.SetWorldWidth(float32(World.Planet.Width))
 	// camCtx := baseCtx.PushView(Cam.GetView())
@@ -68,7 +69,7 @@ func Draw() {
 	Console.Draw(win.DefaultRenderContext())
 
 	components.Draw_Queued(&World.Entities, Cam)
-	render.Flush(render.Projection)
+	render.Flush()
 
 	//draw after flushing
 	components.Draw(&World.Entities, Cam)
@@ -77,7 +78,30 @@ func Draw() {
 	//draw lightmap
 	World.Planet.DrawLighting(Cam, &World.TimeState)
 
+	//post-process
+	PostProcess()
+
 	//draw ui
+	DrawUI()
+}
+
+func PostProcess() {
+	render.FRAMEBUFFER_SCREEN.Bind(gl.FRAMEBUFFER)
+	gl.Clear(gl.COLOR_BUFFER_BIT)
+
+	screenShader.Use()
+	screenShader.SetInt("u_screenTexture", 0)
+
+	// gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, render.RENDERTEXTURE_MAIN)
+	gl.BindVertexArray(render.Quad2Vao)
+	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+}
+
+func DrawUI() {
+	baseCtx := win.DefaultRenderContext()
+	topLeftCtx :=
+		render.CenterToTopLeft(baseCtx)
 	if debugTileInfo {
 		ui.DrawString(
 			tileText,
@@ -91,7 +115,7 @@ func Draw() {
 	invCameraTransform := Cam.GetTransform().Inv()
 	inventory.Draw(baseCtx, invCameraTransform)
 	ui.DrawDamageIndicators(invCameraTransform)
-	render.Flush(render.Projection)
+	render.FlushUI()
 	glfw.PollEvents()
 	win.Window.SwapBuffers()
 }

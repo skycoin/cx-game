@@ -17,8 +17,8 @@ func DrawBBoxLines(lines, collidingLines []float32) {
 	AllCollidingLines = append(AllCollidingLines, collidingLines...)
 }
 
-func flushBBoxLineDraws(projection mgl32.Mat4) {
-	mvp := projection.Mul4(cameraTransform.Inv())
+func flushBBoxLineDraws() {
+	mvp := Projection.Mul4(cameraTransform.Inv())
 	DrawLines(
 		AllLines,
 		mgl32.Vec3{0, 0, 1},
