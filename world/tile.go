@@ -36,8 +36,16 @@ type Tile struct {
 	Durability        int8
 	Connections       Connections
 	LightSource       bool
+    NeedsGround       bool
 }
 
 func NewEmptyTile() Tile {
 	return Tile{TileCategory: TileCategoryNone}
+}
+
+func NewNormalTile() Tile {
+    return Tile {
+        TileCategory: TileCategoryNormal,
+        TileCollisionType: TileCollisionTypeSolid,
+    }
 }

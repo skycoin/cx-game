@@ -10,10 +10,9 @@ import (
 
 // place tiles for a given tiletype using an auto-tiling mechanism
 type AutoPlacer struct {
+    Tile Tile
 	blobSpritesIDs []blobsprites.BlobSpritesID
-	TileTypeID     TileTypeID
 	TilingID     tiling.TilingID
-	TileCollisionType TileCollisionType
 }
 
 func (placer AutoPlacer) sprite(
@@ -29,12 +28,7 @@ func (placer AutoPlacer) sprite(
 func (placer AutoPlacer) CreateTile(
 	tt TileType, createOpts TileCreationOptions,
 ) Tile {
-	tile := Tile{
-		Name:         tt.Name,
-		TileCategory: TileCategoryNormal,
-		TileTypeID:   tt.ID,
-		TileCollisionType: placer.TileCollisionType,
-	}
+	tile := placer.Tile
 	updateOpts := TileUpdateOptions{
 		Neighbours: createOpts.Neighbours,
 		Tile:       &tile,
