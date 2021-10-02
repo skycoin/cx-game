@@ -40,6 +40,8 @@ func keyCallback(
 		KeysPressedDown[key] = true
 		KeysPressed[key] = true
 
+		ProcessFlags(key)
+
 	} else if action == glfw.Repeat {
 		//nothing
 	} else if action == glfw.Release {

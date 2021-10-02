@@ -76,9 +76,11 @@ func (planet *Planet) DrawHemisphere(
 		transform := positionedTile.Transform().
 			Mul4(mgl32.Translate3D(0, 0, z))
 		drawOpts := render.NewSpriteDrawOptions()
-		drawOpts.Outline = true
+		if layerID == TopLayer {
+			drawOpts.Outline = true
+		}
 		render.
-			DrawWorldSprite(transform, positionedTile.Tile.SpriteID,drawOpts)
+			DrawWorldSprite(transform, positionedTile.Tile.SpriteID, drawOpts)
 	}
 }
 
