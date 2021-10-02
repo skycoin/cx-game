@@ -1,6 +1,7 @@
 package input
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -104,4 +105,43 @@ func GetMousePos() mgl32.Vec2 {
 func Reset() {
 	//reset lastkeyPressed
 	lastKeyPressed = -1
+}
+
+//for debug purposes
+
+type Flag struct {
+	enableFunc  func()
+	disableFunc func()
+	description string
+	isEnabled   bool
+}
+
+var registeredFlags = make(map[glfw.Key]*Flag)
+
+func RegisterFlag(enableFunc func(), disableFunc func(), switchKey glfw.Key, description string) {
+	_, ok := registeredFlags[switchKey]
+	if !ok {
+		registeredFlags[switchKey] = &Flag{
+			enableFunc:  enableFunc,
+			disableFunc: disableFunc,
+			isEnabled:   false,
+			description: description,
+		}
+		return
+	}
+	log.Fatalf("Key is already reserved")
+}
+
+func ProcessFlags(key glfw.Key) {
+	flagg, ok := registeredFlags[key]
+	if ok {
+		flagg.isEnabled = !flagg.isEnabled
+		fmt.Printf("%v: %v\n", flagg.description, flagg.isEnabled)
+
+		if flagg.isEnabled {
+			flagg.enableFunc()
+		} else {
+			flagg.disableFunc()
+		}
+	}
 }
