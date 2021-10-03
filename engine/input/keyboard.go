@@ -6,17 +6,24 @@ import (
 
 var (
 	//for actions
-	KeysPressed     = make(map[glfw.Key]bool)
-	KeysPressedDown = make(map[glfw.Key]bool)
-	KeysPressedUp   = make(map[glfw.Key]bool)
+	keyPressed     = make(map[glfw.Key]bool)
+	keyPressedDown = make(map[glfw.Key]bool)
+	keysPressedUp  = make(map[glfw.Key]bool)
+
+	modifierKey glfw.ModifierKey
 
 	//for each context, have map of registered buttons to keys
-	ButtonsMap          = make(map[InputContext]map[string]glfw.Key)
-	ActiveButtonsToKeys map[string]glfw.Key
+	ButtonsMap          = make(map[InputContext]map[string]KeyComb)
+	ActiveButtonsToKeys map[string]KeyComb
 	lastKeyPressed      glfw.Key
 )
 
 type Axis int
+
+type KeyComb struct {
+	key         glfw.Key
+	modifierKey glfw.ModifierKey
+}
 
 const (
 	HORIZONTAL Axis = iota
@@ -27,8 +34,10 @@ func keyCallback(
 	w *glfw.Window,
 	key glfw.Key, scancode int, action glfw.Action, mk glfw.ModifierKey,
 ) {
-	KeysPressedDown = make(map[glfw.Key]bool)
-	KeysPressedUp = make(map[glfw.Key]bool)
+	keyPressedDown = make(map[glfw.Key]bool)
+	keysPressedUp = make(map[glfw.Key]bool)
+
+	modifierKey = mk
 
 	if action == glfw.Press {
 		//remap game quit to combination of  buttons
@@ -36,16 +45,18 @@ func keyCallback(
 			w.SetShouldClose(true)
 
 		}
-		lastKeyPressed = key
-		KeysPressedDown[key] = true
-		KeysPressed[key] = true
 
-		ProcessFlags(key)
+		ProcessFlags(key, mk)
+
+		lastKeyPressed = key
+		keyPressedDown[key] = true
+		keyPressed[key] = true
 
 	} else if action == glfw.Repeat {
 		//nothing
 	} else if action == glfw.Release {
-		KeysPressed[key] = false
-		KeysPressedUp[key] = true
+		modifierKey = 0
+		keyPressed[key] = false
+		keysPressedUp[key] = true
 	}
 }

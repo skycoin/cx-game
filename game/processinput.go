@@ -97,6 +97,5 @@ func ProcessInput() {
 		debugTileInfo = !debugTileInfo
 	}
 
-	input.Reset()
 
 }

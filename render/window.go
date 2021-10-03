@@ -6,6 +6,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/skycoin/cx-game/engine/input"
 )
 
 type Window struct {
@@ -40,6 +41,8 @@ func (win *Window) sizeCallback(
 
 	win.PhysicalToViewportTransform = windowDimensions.Transform()
 
+	input.SetPhysicalToViewportTransform(win.PhysicalToViewportTransform)
+
 	Projection = mgl32.Ortho(
 		-virtualWidth/2/PixelsPerTile, virtualWidth/2/PixelsPerTile,
 		-virtualHeight/2/PixelsPerTile, virtualHeight/2/PixelsPerTile,
@@ -57,6 +60,8 @@ func (win *Window) SetInitialWindowDimensions() {
 	windowDimensions.Viewport.Use()
 
 	win.PhysicalToViewportTransform = windowDimensions.Transform()
+	input.SetPhysicalToViewportTransform(win.PhysicalToViewportTransform)
+
 }
 
 func NewWindow(width, height int, resizable bool) Window {

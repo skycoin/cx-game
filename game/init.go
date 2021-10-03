@@ -43,8 +43,6 @@ var (
 	DrawCollisionBoxes = false
 	FPS                int
 
-
-
 	//unused
 	// isTileSelectorVisible = false
 	// worldItem             *item.WorldItem
@@ -68,7 +66,7 @@ func Init() {
 	window.SetCursorPosCallback(cursorPosCallback)
 	//window.SetSizeCallback(windowSizeCallback)
 
-	input.Init(&win)
+	input.Init(win.Window)
 	sound.Init()
 	sound.Mute()
 	spriteloader.DEBUG = false
