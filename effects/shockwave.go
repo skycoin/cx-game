@@ -2,6 +2,7 @@ package effects
 
 import (
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -9,9 +10,10 @@ import (
 var (
 	center_default            = mgl32.Vec2{0.5, 0.5}
 	force_default     float32 = 0.2
-	size_default      float32 = 0.15
+	size_default      float32 = 0.05
+	size_max_default  float32 = 0.23
 	thickness_default float32 = 0.0
-	duration_default  float32 = 1.0
+	duration_default  float32 = 0.5
 )
 
 type Shockwave struct {
@@ -57,14 +59,16 @@ func (s *Shockwave) Update(dt float32) {
 	s.CalculateSize()
 
 	render.SetShockwaveCenter(s.center.X(), s.center.Y())
-	render.SetShockwaveSize(s.size)
-	render.SetShockwaveForce(s.force)
-	render.SetShockwaveThickness(s.thickness)
+	render.SetShockwaveSize(s.size * s.zoom)
+	render.SetShockwaveForce(s.force * s.zoom)
+	render.SetShockwaveThickness(s.thickness * s.zoom)
 }
 
 //calculate size from duration, size dissappears at 0.8
 func (s *Shockwave) CalculateSize() {
-	s.size = size_default + 0.8*(1-s.timeLeft)/s.duration
+	// fmt.Println(s.timeLeft)
+	s.size = size_default + size_max_default*cxmath.Interpolate(0, 1, (s.duration-s.timeLeft)/s.duration, cxmath.EASEOUTSINE)
+
 }
 
 func (s *Shockwave) SetDuration(sec float32) {
@@ -89,5 +93,5 @@ func (s *Shockwave) Start() {
 }
 
 func (s *Shockwave) SetZoom(zoom float32) {
-
+	s.zoom = zoom
 }

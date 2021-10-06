@@ -12,4 +12,5 @@ func Init() {
 	InitMainFramebuffer()
 	InitPlanetFrameBuffer()
 	InitOutlineProgram()
+	InitShockwave()
 }
