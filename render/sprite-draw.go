@@ -122,8 +122,8 @@ func DrawWorldSprite(transform mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) 
 
 //draw without flushing
 
-func Flush() {
-	flushSpriteDraws()
+func Flush(zoom float32) {
+	flushSpriteDraws(zoom)
 	// flushColorDraws(Projection)
 	if drawBBoxLines {
 		flushBBoxLineDraws()
@@ -165,7 +165,7 @@ func flushSpriteUIDraws() {
 
 }
 
-func flushSpriteDraws() {
+func flushSpriteDraws(zoom float32) {
 	spriteProgram.Use()
 	defer spriteProgram.StopUsing()
 
@@ -205,11 +205,9 @@ func flushSpriteDraws() {
 	outlineProgram.Use()
 	defer outlineProgram.StopUsing()
 
-	// projection2 := mgl32.Ortho2D(0, 1, 0, 1)
-	// outlineProgram.SetMat4("projection", &projection2)
 	texelSize := mgl32.Vec2{
-		1.0 / float32(constants.VIRTUAL_VIEWPORT_WIDTH),
-		1.0 / float32(constants.VIRTUAL_VIEWPORT_HEIGHT),
+		zoom * 1.0 / float32(constants.VIRTUAL_VIEWPORT_WIDTH),
+		zoom * 1.0 / float32(constants.VIRTUAL_VIEWPORT_HEIGHT),
 	}
 	outlineProgram.SetVec2("texelSize", &texelSize)
 	outlineProgram.SetVec4("borderColor", &constants.OUTLINE_BORDER_COLOR)

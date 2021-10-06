@@ -69,7 +69,7 @@ func Draw() {
 	Console.Draw(win.DefaultRenderContext())
 
 	components.Draw_Queued(&World.Entities, Cam)
-	render.Flush()
+	render.Flush(Cam.Zoom.Get())
 
 	//draw after flushing
 	components.Draw(&World.Entities, Cam)
