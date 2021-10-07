@@ -1,5 +1,10 @@
 package agents
 
+import (
+	"github.com/skycoin/cx-game/components/types"
+	"github.com/skycoin/cx-game/physics"
+)
+
 // type AgentMeta struct {
 // 	MovementSpeed    float32
 // 	PlayerControlled bool
@@ -15,3 +20,13 @@ package agents
 // 	// StaticFriction float32
 // 	DynamicFriction float32
 // }
+
+type AgentMeta struct {
+	Category          types.AgentCategory
+	Type              types.AgentTypeID
+	PhysicsParameters physics.PhysicsParameters
+	PlayerData
+}
+
+//agent struct holds
+//

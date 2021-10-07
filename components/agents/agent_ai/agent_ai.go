@@ -13,9 +13,12 @@ func UpdateAgents(World *world.World, player *agents.Agent) {
 	ctx := AiContext{
 		World:      World,
 		WorldWidth: float32(World.Planet.Width),
-		PlayerPos:  player.PhysicsState.Pos.Mgl32(),
+		PlayerPos:  player.Transform.Pos.Mgl32(),
 	}
-	for _, agent := range World.Entities.Agents.Get() {
+	for _, agent := range World.Entities.Agents.GetAllAgents() {
+		if agent == nil {
+			continue
+		}
 		aiHandlers[agent.Handlers.AI](agent, ctx)
 	}
 }

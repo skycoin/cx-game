@@ -35,29 +35,29 @@ func spiderAttack(spiderDrill_PhysicsState *physics.Body, spiderDrill_playback *
 }
 
 func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
-	dist := ctx.PlayerPos.X() - agent.PhysicsState.Pos.X
+	dist := ctx.PlayerPos.X() - agent.Transform.Pos.X
 	directionX := math32.Sign(dist)
 	if math32.Abs(dist) > ctx.WorldWidth/2 {
 		directionX *= -1
 	}
-	agent.PhysicsState.Direction = directionX * -1
+	agent.Transform.Direction = directionX * -1
 	if math32.Abs(dist) > 1 {
 		agent.AnimationPlayback.PlayRepeating("Walk")
-		agent.PhysicsState.Vel.X = directionX * walkSpeed
+		agent.Transform.Vel.X = directionX * walkSpeed
 	} else {
 		// line of sigth
-		isLoS := (ctx.PlayerPos.Y() - 0.5) == agent.PhysicsState.Pos.Y
+		isLoS := (ctx.PlayerPos.Y() - 0.5) == agent.Transform.Pos.Y
 		if isLoS {
-			spiderAttack(&agent.PhysicsState, &agent.AnimationPlayback)
+			spiderAttack(&agent.Transform, &agent.AnimationPlayback)
 		}
 	}
 
-	isCollisionHorizontal := agent.PhysicsState.Collisions.Horizontal()
+	isCollisionHorizontal := agent.Transform.Collisions.Horizontal()
 	if isCollisionHorizontal {
 		// events.OnSpiderCollisionHorizontal.Trigger(events.SpiderEventData{
 		// 	Agent: agent,
 		// })
-		spiderDrilling(directionX, &agent.PhysicsState, &agent.AnimationPlayback, &ctx.World.Planet)
+		spiderDrilling(directionX, &agent.Transform, &agent.AnimationPlayback, &ctx.World.Planet)
 
 	}
 

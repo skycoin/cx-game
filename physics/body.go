@@ -22,12 +22,12 @@ type Body struct {
 	Size      cxmath.Vec2
 	Direction float32
 
-	PreviousTransform     mgl32.Mat4
-	InterpolatedTransform mgl32.Mat4
+	// PreviousTransform     mgl32.Mat4
+	// InterpolatedTransform mgl32.Mat4
 
 	Collisions CollisionInfo
 
-	Deleted bool
+	// Deleted bool
 
 	IsIgnoringPlatforms bool
 }
@@ -46,15 +46,15 @@ func (body *Body) Transform() mgl32.Mat4 {
 	return mgl32.Translate3D(body.Pos.X, body.Pos.Y, 0)
 }
 
-func (body *Body) SavePreviousTransform() {
-	body.PreviousTransform = body.Transform()
-}
+// func (body *Body) SavePreviousTransform() {
+// 	body.PreviousTransform = body.Transform()
+// }
 
-func (body *Body) UpdateInterpolatedTransform(alpha float32) {
-	prevPart := body.PreviousTransform.Mul(1 - alpha)
-	nextPart := body.Transform().Mul(alpha)
-	body.InterpolatedTransform = prevPart.Add(nextPart)
-}
+// func (body *Body) UpdateInterpolatedTransform(alpha float32) {
+// 	prevPart := body.PreviousTransform.Mul(1 - alpha)
+// 	nextPart := body.Transform().Mul(alpha)
+// 	body.InterpolatedTransform = prevPart.Add(nextPart)
+// }
 
 type bodyBounds struct {
 	left, right, top, bottom                 float32

@@ -1,40 +1,24 @@
 package particles
 
 import (
+	"log"
+
+	"github.com/skycoin/cx-game/common"
 	"github.com/skycoin/cx-game/components/types"
+	"github.com/skycoin/cx-game/constants"
 )
 
 //for now keep one global particles list, redo later
 type ParticleList struct {
 	Particles []*Particle
-	idQueue   QueueI
-}
-
-type QueueI struct {
-	queue []int
-}
-
-func NewQueue() QueueI {
-	queue := QueueI{
-		queue: make([]int, 0),
-	}
-	return queue
-}
-
-func (q *QueueI) Push(n int) {
-	q.queue = append(q.queue, n)
-}
-func (q *QueueI) Pop() int {
-	if len(q.queue) == 0 {
-		return -1
-	}
-	returnValue := q.queue[0]
-	q.queue = q.queue[1:]
-	return returnValue
+	idQueue   common.QueueI
 }
 
 func (pl *ParticleList) AddParticle(particle Particle) types.ParticleID {
 
+	if len(pl.Particles) > constants.MAX_PARTICLE_COUNT {
+		log.Fatalln("TOO MUCH PARTICLES")
+	}
 	//id should match particle id
 	newId := pl.idQueue.Pop()
 
