@@ -14,7 +14,7 @@ func drawPlayerSprite(
 	agent *agents.Agent, ctx DrawHandlerContext,
 	spriteID render.SpriteID, zOffset float32,
 ) {
-	body := &agent.PhysicsState
+	body := &agent.Transform
 
 	//drawn one frame behind
 	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
@@ -35,7 +35,7 @@ func drawPlayerSprite(
 
 	hitboxToRender := 1 / constants.PLAYER_RENDER_TO_HITBOX
 	scaleX := -body.Size.X * body.Direction * hitboxToRender
-	scale := mgl32.Scale3D(scaleX, agent.PhysicsState.Size.Y, 1)
+	scale := mgl32.Scale3D(scaleX, agent.Transform.Size.Y, 1)
 
 	transform := translate.Mul4(scale)
 	render.DrawWorldSprite(transform, spriteID, render.NewSpriteDrawOptions())

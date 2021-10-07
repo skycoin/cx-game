@@ -8,7 +8,6 @@ import (
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/objects"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -29,8 +28,6 @@ func Init() {
 	RegisterAiHandler(constants.AI_HANDLER_GRASSHOPPER, AiHandlerGrassHopper)
 	RegisterAiHandler(constants.AI_HANDLER_ENEMYSOLDIER, AiHandlerEnemySoldier)
 	RegisterAiHandler(constants.AI_HANDLER_PLAYER, AiHandlerPlayer)
-
-	objects.SpiderDrillInit()
 
 	assertAllAiHandlersRegistered()
 }

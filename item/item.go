@@ -59,7 +59,7 @@ func (info ItemUseInfo) WorldCoords() mgl32.Vec2 {
 
 func (info ItemUseInfo) PlayerCoords() mgl32.Vec2 {
 	return mgl32.Vec2{
-		info.Player.PhysicsState.Pos.X, info.Player.PhysicsState.Pos.Y}
+		info.Player.Transform.Pos.X, info.Player.Transform.Pos.Y}
 }
 
 var tileTypeIDsToItemTypeIDs = make(map[world.TileTypeID]ItemTypeID)

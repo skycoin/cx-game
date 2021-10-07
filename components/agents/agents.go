@@ -7,29 +7,20 @@ import (
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
-	"github.com/skycoin/cx-game/render"
 )
 
 type Agent struct {
+	PlayerControlled  bool
+	AgentId           types.AgentID
 	Meta              AgentMeta
 	Handlers          AgentHandlers
 	Timers            AgentTimers
-	AgentId           types.AgentID
-	Inventory         types.InventoryID
-	PhysicsState      physics.Body
-	HealthComponent   HealthComponent
+	Transform         physics.Body
+	Health            HealthComponent
 	AnimationPlayback anim.Playback
-	Direction         int
 	InventoryID       types.InventoryID
-	// only relevant to player agents - should probably refactor
 }
 
-type AgentMeta struct {
-	Category          constants.AgentCategory
-	Type              constants.AgentTypeID
-	PhysicsParameters physics.PhysicsParameters
-	PlayerData
-}
 
 type AgentHandlers struct {
 	Draw types.AgentDrawHandlerID
@@ -39,21 +30,6 @@ type AgentHandlers struct {
 type AgentTimers struct {
 	TimeSinceDeath float32
 	WaitingFor     float32
-}
-type PlayerData struct {
-	SuitSpriteID         render.SpriteID
-	HelmetSpriteID       render.SpriteID
-	IgnoringPlatformsFor float32
-}
-
-type HealthComponent struct {
-	Current int
-	Max     int
-	Died    bool
-}
-
-func NewHealthComponent(max int) HealthComponent {
-	return HealthComponent{Current: max, Max: max, Died: false}
 }
 
 // func newAgent(id int) *Agent {
@@ -70,37 +46,37 @@ func NewHealthComponent(max int) HealthComponent {
 
 func (a *Agent) FillDefaults() {
 	// if have no direction, default to right-facing / no flip
-	if a.PhysicsState.Direction == 0 {
-		a.PhysicsState.Direction = 1
+	if a.Transform.Direction == 0 {
+		a.Transform.Direction = 1
 	}
 }
 
 //prefabs
 
 func (a *Agent) SetPosition(x, y float32) {
-	a.PhysicsState.Pos.X = x
-	a.PhysicsState.Pos.Y = y
+	a.Transform.Pos.X = x
+	a.Transform.Pos.Y = y
 }
 
 func (a *Agent) SetSize(x, y float32) {
-	a.PhysicsState.Size.X = x
-	a.PhysicsState.Size.Y = y
+	a.Transform.Size.X = x
+	a.Transform.Size.Y = y
 }
 
 func (a *Agent) SetVelocity(x, y float32) {
-	a.PhysicsState.Vel.X = x
-	a.PhysicsState.Vel.Y = y
+	a.Transform.Vel.X = x
+	a.Transform.Vel.Y = y
 }
 
 func (a *Agent) TakeDamage(amount int) {
-	a.HealthComponent.Current -= amount
-	if a.HealthComponent.Current <= 0 {
-		a.HealthComponent.Died = true
+	a.Health.Current -= amount
+	if a.Health.Current <= 0 {
+		a.Health.Died = true
 	}
 }
 
 func (a *Agent) Died() bool {
-	return a.HealthComponent.Died
+	return a.Health.Died
 }
 
 func (a *Agent) IsWaiting() bool {

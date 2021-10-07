@@ -5,12 +5,15 @@ import (
 )
 
 func UpdateAgents(World *world.World) {
-	for i, agent := range World.Entities.Agents.Get() {
+	for _, agent := range World.Entities.Agents.GetAllAgents() {
+		if agent == nil {
+			continue
+		}
 		if agent.Died() {
 			ev :=
 				world.NewMobKilledEvent(agent.Meta.Type, World.TimeState.TickCount)
 			World.Stats.Log(ev)
-			World.Entities.Agents.DestroyAgent(i)
+			World.Entities.Agents.DestroyAgent(agent.AgentId)
 		}
 	}
 }

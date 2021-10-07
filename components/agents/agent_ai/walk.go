@@ -18,6 +18,6 @@ func shouldJump(agent *agents.Agent) {
 */
 
 func AiHandlerWalk(agent *agents.Agent, ctx AiContext) {
-	directionX := math32.Sign(ctx.PlayerPos.X() - agent.PhysicsState.Pos.X)
-	agent.PhysicsState.Vel.X = directionX * walkSpeed
+	directionX := math32.Sign(ctx.PlayerPos.X() - agent.Transform.Pos.X)
+	agent.Transform.Vel.X = directionX * walkSpeed
 }

@@ -54,8 +54,8 @@ func Teleport(line string, ctx CommandContext) string {
 	words := strings.Split(line, " ")
 
 	output := fmt.Sprintf( "%.2f %.2f",
-		ctx.Player.PhysicsState.Pos.X,
-		ctx.Player.PhysicsState.Pos.Y,
+		ctx.Player.Transform.Pos.X,
+		ctx.Player.Transform.Pos.Y,
 	)
 	if len(words) > 1 {
 		x,err := strconv.ParseFloat(words[1],32)
@@ -63,8 +63,8 @@ func Teleport(line string, ctx CommandContext) string {
 		y,err := strconv.ParseFloat(words[2], 32)
 		if err!=nil { log.Fatalf("Teleport() [y]: %v",err) }
 
-		ctx.Player.PhysicsState.Pos.X = float32(x)
-		ctx.Player.PhysicsState.Pos.Y = float32(y)
+		ctx.Player.Transform.Pos.X = float32(x)
+		ctx.Player.Transform.Pos.Y = float32(y)
 	}
 	return output
 }

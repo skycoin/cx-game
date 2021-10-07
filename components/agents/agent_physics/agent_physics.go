@@ -6,9 +6,12 @@ import (
 )
 
 func UpdateAgents(World *world.World) {
-	for _, agent := range World.Entities.Agents.Get() {
-		
-		agent.PhysicsState.
+	for _, agent := range World.Entities.Agents.GetAllAgents() {
+		//check for nil first
+		if agent == nil {
+			continue
+		}
+		agent.Transform.
 			Move(&World.Planet, constants.PHYSICS_TICK)
 	}
 }

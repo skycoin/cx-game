@@ -2,22 +2,22 @@ package world
 
 import (
 	"log"
+
 	"github.com/skycoin/cx-game/components/types"
-	"github.com/skycoin/cx-game/constants"
 )
 
 type WorldEventType int
 
 type WorldEvent struct {
-	Type WorldEventType
-	ItemTypeID types.ItemTypeID
-	AgentTypeID constants.AgentTypeID
-	Tick int
+	Type        WorldEventType
+	ItemTypeID  types.ItemTypeID
+	AgentTypeID types.AgentTypeID
+	Tick        int
 }
 
 // TODO pass in current world tick
-func NewMobKilledEvent(id constants.AgentTypeID, tick int) WorldEvent {
-	return WorldEvent {
+func NewMobKilledEvent(id types.AgentTypeID, tick int) WorldEvent {
+	return WorldEvent{
 		AgentTypeID: id, Type: EVENT_TYPE_MOB_KILLED,
 	}
 }
@@ -30,17 +30,17 @@ const (
 )
 
 type WorldStats struct {
-	ItemsCreated map[types.ItemTypeID]int
+	ItemsCreated  map[types.ItemTypeID]int
 	ItemsConsumed map[types.ItemTypeID]int
-	MobsKilled map[constants.AgentTypeID]int
-	EventLog []WorldEvent
+	MobsKilled    map[types.AgentTypeID]int
+	EventLog      []WorldEvent
 }
 
 func NewWorldStats() WorldStats {
-	return WorldStats {
-		ItemsCreated: make(map[types.ItemTypeID]int),
+	return WorldStats{
+		ItemsCreated:  make(map[types.ItemTypeID]int),
 		ItemsConsumed: make(map[types.ItemTypeID]int),
-		MobsKilled: make(map[constants.AgentTypeID]int),
+		MobsKilled:    make(map[types.AgentTypeID]int),
 	}
 }
 

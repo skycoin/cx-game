@@ -3,6 +3,7 @@ package agents
 import (
 	"log"
 
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
@@ -16,7 +17,7 @@ type AgentCreationOptions struct {
 
 type AgentType struct {
 	Name        string
-	Category    constants.AgentCategory
+	Category    types.AgentCategory
 	CreateAgent AgentCreator
 }
 
@@ -59,14 +60,14 @@ func init() {
 	})
 }
 
-func RegisterAgentType(id constants.AgentTypeID, agentType AgentType) {
+func RegisterAgentType(id types.AgentTypeID, agentType AgentType) {
 	if !agentType.Valid() {
 		log.Fatalf("invalid agent type %+v", agentType)
 	}
 	agentTypes[id] = agentType
 }
 
-func GetAgentType(id constants.AgentTypeID) AgentType {
+func GetAgentType(id types.AgentTypeID) AgentType {
 	return agentTypes[id]
 }
 
@@ -83,12 +84,15 @@ func createSlime(opts AgentCreationOptions) *Agent {
 		Meta: AgentMeta{
 			Category: constants.AGENT_CATEGORY_ENEMY_MOB,
 			Type:     constants.AGENT_TYPE_SLIME,
+			PhysicsParameters: physics.PhysicsParameters{
+				Radius: 1,
+			},
 		},
-		PhysicsState: physics.Body{
+		Transform: physics.Body{
 			Size: cxmath.Vec2{X: 2.0, Y: 2.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
-		HealthComponent:   NewHealthComponent(5),
+		Health:            NewHealthComponent(constants.HEALTH_SLIME),
 		AnimationPlayback: playback,
 	}
 	//physics.RegisterBody(&agent.PhysicsState)
@@ -110,11 +114,11 @@ func createSpiderDrill(opts AgentCreationOptions) *Agent {
 			Category: constants.AGENT_CATEGORY_ENEMY_MOB,
 			Type:     constants.AGENT_TYPE_SPIDER_DRILL,
 		},
-		PhysicsState: physics.Body{
+		Transform: physics.Body{
 			Size: cxmath.Vec2{X: 2.0, Y: 2.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
-		HealthComponent:   NewHealthComponent(5),
+		Health:            NewHealthComponent(constants.HEALTH_SPIDERDRILL),
 		AnimationPlayback: playback,
 	}
 	//physics.RegisterBody(&agent.PhysicsState)
@@ -135,11 +139,11 @@ func createGrassHopper(opts AgentCreationOptions) *Agent {
 			Category: constants.AGENT_CATEGORY_ENEMY_MOB,
 			Type:     constants.AGENT_TYPE_GRASS_HOPPER,
 		},
-		PhysicsState: physics.Body{
+		Transform: physics.Body{
 			Size: cxmath.Vec2{X: 2.0, Y: 3.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
-		HealthComponent:   NewHealthComponent(5),
+		Health:            NewHealthComponent(constants.HEALTH_GRASSHOPPER),
 		AnimationPlayback: playback,
 	}
 
@@ -160,11 +164,11 @@ func createEnemySoldier(opts AgentCreationOptions) *Agent {
 			Category: constants.AGENT_CATEGORY_ENEMY_MOB,
 			Type:     constants.AGENT_TYPE_ENEMY_SOLDIER,
 		},
-		PhysicsState: physics.Body{
+		Transform: physics.Body{
 			Size: cxmath.Vec2{X: 2.0, Y: 3.0},
 			Pos:  cxmath.Vec2{X: x, Y: y},
 		},
-		HealthComponent:   NewHealthComponent(5),
+		Health:            NewHealthComponent(constants.HEALTH_ENEMYSOLDIER),
 		AnimationPlayback: playback,
 	}
 
@@ -186,12 +190,12 @@ func createPlayer(opts AgentCreationOptions) *Agent {
 				SuitSpriteID:   render.GetSpriteIDByName("suit:0"),
 			},
 		},
-		PhysicsState: physics.Body{
+		Transform: physics.Body{
 			Pos:       cxmath.Vec2{X: opts.X, Y: opts.Y},
 			Size:      cxmath.Vec2{X: 2.0 * constants.PLAYER_RENDER_TO_HITBOX, Y: 3},
 			Direction: 1,
 		},
-		HealthComponent: NewHealthComponent(100),
+		Health: NewHealthComponent(constants.HEALTH_PLAYER),
 	}
 	//physics.RegisterBody(&agent.PhysicsState)
 	return &agent

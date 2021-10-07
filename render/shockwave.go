@@ -12,7 +12,7 @@ var (
 	shockwave_size          float32    = 0.3
 	shockwave_thickness     float32    = 0
 	shockwave_thickness_gap float32    = 0.03
-	shockwave_enabled       bool       = true
+	shockwave_enabled       bool       = false
 	inverted                bool       = false
 
 	slider_size          float32 = 0

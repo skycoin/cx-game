@@ -56,9 +56,9 @@ func Update(World *world.World) {
 				FromID(particle.ParticleBody.HitAgentID)
 			agent.TakeDamage(particle.Damage)
 
-			ApplyKnockback(&agent.PhysicsState, particle.Vel.Mgl32())
+			ApplyKnockback(&agent.Transform, particle.Vel.Mgl32())
 
-			agentPos := agent.PhysicsState.Pos
+			agentPos := agent.Transform.Pos
 			ui.CreateDamageIndicator(
 				particle.Damage, agentPos.Mgl32().Add(mgl32.Vec2{0,1}) )
 

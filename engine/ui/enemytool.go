@@ -4,6 +4,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
@@ -15,9 +16,9 @@ type EnemyTool struct {
 
 var enemyTool EnemyTool
 
-func mobTypeIDs() []constants.AgentTypeID {
-	ids := make([]constants.AgentTypeID, 0, constants.NUM_AGENT_TYPES)
-	for id := constants.AgentTypeID(0); id < constants.NUM_AGENT_TYPES; id++ {
+func mobTypeIDs() []types.AgentTypeID {
+	ids := make([]types.AgentTypeID, 0, constants.NUM_AGENT_TYPES)
+	for id := types.AgentTypeID(0); id < constants.NUM_AGENT_TYPES; id++ {
 		agenttype := agents.GetAgentType(id)
 		if agenttype.Category == constants.AGENT_CATEGORY_FRIENDLY_MOB ||
 			agenttype.Category == constants.AGENT_CATEGORY_ENEMY_MOB {
@@ -39,18 +40,18 @@ func (et EnemyTool) Draw(ctx render.Context) {
 }
 
 func (et EnemyTool) DrawLine(
-	ctx render.Context, agentTypeID constants.AgentTypeID,
+	ctx render.Context, agentTypeID types.AgentTypeID,
 ) {
 	agentType := agents.GetAgentType(agentTypeID)
 	DrawString(agentType.Name, mgl32.Vec4{0, 1, 0, 1}, AlignCenter, ctx)
 }
 
-func (et EnemyTool) ActiveAgentID() constants.AgentTypeID {
+func (et EnemyTool) ActiveAgentID() types.AgentTypeID {
 	mobs := mobTypeIDs()
 	idx := cxmath.PositiveModulo(et.scroll, len(mobs))
 	return mobs[idx]
 }
 
-func EnemyToolActiveAgentID() constants.AgentTypeID {
+func EnemyToolActiveAgentID() types.AgentTypeID {
 	return enemyTool.ActiveAgentID()
 }

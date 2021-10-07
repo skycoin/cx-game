@@ -183,8 +183,8 @@ func (h HUD) Draw(state HUDState) {
 
 func DrawAgentHUD(agent *agents.Agent) {
 	DrawHUD(HUDState{
-		Health:    agent.HealthComponent.Current,
-		MaxHealth: agent.HealthComponent.Max,
+		Health:    agent.Health.Current,
+		MaxHealth: agent.Health.Max,
 
 		Fullness: 1, Hydration: 1, Oxygen: 1, Fuel: 1,
 	})

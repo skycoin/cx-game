@@ -11,7 +11,7 @@ import (
 )
 
 func Update(dt float32) {
-	updateTimers(currentWorld.Entities.Agents.Get(), dt)
+	updateTimers(currentWorld.Entities.Agents.GetAllAgents(), dt)
 
 	//update lifetimes
 	currentWorld.Entities.Particles.Update(dt)
@@ -22,6 +22,9 @@ func Update(dt float32) {
 
 func updateTimers(agents []*agents.Agent, dt float32) {
 	for _, agent := range agents {
+		if agent == nil {
+			continue
+		}
 		if agent.Handlers.Draw == constants.DRAW_HANDLER_ANIM {
 			agent.AnimationPlayback.Update(dt)
 		}
