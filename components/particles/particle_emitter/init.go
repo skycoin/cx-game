@@ -9,4 +9,5 @@ func Init(particleList *particles.ParticleList) {
 		particleList,
 	)
 	sparkEmitter = NewSparkEmitter(particleList)
+	dustEmitter = NewDustEmitter(particleList)
 }

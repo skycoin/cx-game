@@ -14,6 +14,10 @@ func CreateBullet(position, velocity mgl32.Vec2) {
 	)
 }
 
+func EmitDust(position cxmath.Vec2) {
+	dustEmitter.Emit(position)
+}
+
 func EmitOxygen(agentId types.AgentID, particleList *particles.ParticleList) {
 	// create oxygen emitter.
 	// it will be added to object pool and updated each tick,

@@ -2,6 +2,7 @@ package agent_ai
 
 import (
 	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/components/particles/particle_emitter"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
@@ -79,10 +80,18 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 	} else {
 
 		player.PhysicsState.Vel.X += playerWalkAccel * inputXAxis
+
 	}
 
 	if inputXAxis != 0 {
 		player.PhysicsState.Direction = math32.Sign(inputXAxis)
+
+		if player.PhysicsState.IsOnGround() {
+			var dustPos = player.PhysicsState.Pos
+			dustPos.Y = dustPos.Y - 1.5
+			particle_emitter.EmitDust(dustPos)
+		}
+
 	}
 
 	friction :=
