@@ -2,7 +2,6 @@ package game
 
 import (
 	"github.com/skycoin/cx-game/components"
-	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/input"
@@ -29,7 +28,7 @@ func Update(dt float32) {
 		//playerPos := player.InterpolatedTransform.Col(3).Vec2()
 		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
 		body :=
-			World.Entities.Agents.FromID(playerAgentID).PhysicsState
+			World.Entities.Agents.FromID(playerAgentID).Transform
 
 		var interpolatedPos cxmath.Vec2
 		if !body.PrevPos.Equal(body.Pos) {
@@ -47,7 +46,7 @@ func Update(dt float32) {
 	ui.TickDialogueBoxes(dt)
 	particles.TickParticles(dt)
 
-	sound.SetListenerPosition(player.PhysicsState.Pos)
+	sound.SetListenerPosition(player.Transform.Pos)
 	//has to be after listener position is updated
 	sound.Update()
 
@@ -69,8 +68,8 @@ func Update(dt float32) {
 	ui.TickDamageIndicators(dt)
 
 	//testing camera target
-	drillAgent := World.Entities.Agents.FromID(types.AgentID(1))
-	if drillAgent != nil {
-		Cam.SetCameraPositionTarget(drillAgent.PhysicsState.Pos.X, drillAgent.PhysicsState.Pos.Y)
+	spiderAgent := World.Entities.Agents.GetFirstSpiderDrill()
+	if spiderAgent != nil {
+		Cam.SetCameraPositionTarget(spiderAgent.Transform.Pos.X, spiderAgent.Transform.Pos.Y)
 	}
 }

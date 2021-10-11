@@ -75,7 +75,7 @@ func (e *OxygenEmitter) Init() {
 func (emitter *OxygenEmitter) Update(dt float32, currentWorld *world.World) {
 	//change position
 	agent := currentWorld.Entities.Agents.FromID(emitter.agentId)
-	emitter.Position = agent.PhysicsState.Pos
+	emitter.Position = agent.Transform.Pos
 
 	if currentWorld.Planet.NearOxygenGenerator(emitter.Position) {
 		if emitter.TTL > 0 {

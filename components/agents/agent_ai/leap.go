@@ -72,7 +72,7 @@ func slimeAttack(distance float32, directionX float32, slimePhysicsState *physic
 }
 
 func AiHandlerLeap(agent *agents.Agent, ctx AiContext) {
-	distance := ctx.PlayerPos.X() - agent.PhysicsState.Pos.X
+	distance := ctx.PlayerPos.X() - agent.Transform.Pos.X
 
 	directionX := math32.Sign(distance)
 	if math32.Abs(distance) > ctx.WorldWidth/2 {
@@ -80,8 +80,8 @@ func AiHandlerLeap(agent *agents.Agent, ctx AiContext) {
 	}
 
 	if distance <= distanceBetweenPlayer {
-		slimeAttack(distance, directionX, &agent.PhysicsState, &agent.AnimationPlayback, agent.IsWaiting(), ctx.PlayerPos)
+		slimeAttack(distance, directionX, &agent.Transform, &agent.AnimationPlayback, agent.IsWaiting(), ctx.PlayerPos)
 	} else {
-		slimeIdle(&agent.PhysicsState, &agent.AnimationPlayback)
+		slimeIdle(&agent.Transform, &agent.AnimationPlayback)
 	}
 }

@@ -19,7 +19,7 @@ func DrawAgents(allAgents *agents.AgentList, cam *camera.Camera) {
 	}
 	if render.IsBBoxActive() {
 		for _, agent := range agentsToDraw {
-			render.DrawBBoxLines(agent.PhysicsState.GetInterpolatedBBoxLines(), agent.PhysicsState.GetInterpolatedCollidingLines())
+			render.DrawBBoxLines(agent.Transform.GetInterpolatedBBoxLines(), agent.Transform.GetInterpolatedCollidingLines())
 		}
 	}
 
@@ -29,7 +29,10 @@ func FrustumCull(agentlist []*agents.Agent, cam *camera.Camera) []*agents.Agent 
 	//todo
 	var agentsToDraw []*agents.Agent
 	for _, agent := range agentlist {
-		if cam.IsInBoundsRadius(agent.PhysicsState.Pos, agent.Meta.PhysicsParameters.Radius) {
+		if agent == nil {
+			continue
+		}
+		if cam.IsInBoundsRadius(agent.Transform.Pos, agent.Meta.PhysicsParameters.Radius) {
 			agentsToDraw = append(agentsToDraw, agent)
 		}
 	}

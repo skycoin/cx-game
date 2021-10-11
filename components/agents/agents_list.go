@@ -1,6 +1,9 @@
 package agents
 
 import (
+	"log"
+
+	"github.com/skycoin/cx-game/common"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 )
@@ -9,6 +12,8 @@ type AgentList struct {
 	// profile this to see if reducing indirection
 	// would help with performance in a significant way
 	Agents []*Agent
+	//to hold all freed ids
+	idQueue common.QueueI
 }
 
 func NewAgentList() *AgentList {
@@ -19,60 +24,79 @@ func NewAgentList() *AgentList {
 
 func NewDevAgentList() *AgentList {
 	agentList := NewAgentList()
-	// player := newAgent(len(agentList.Agents))
-	// player.AgentCategory = constants.AGENT_CATEGORY_PLAYER
-	// agentList.CreateAgent(player)
-	// enemy := newAgent(len(agentList.Agents))
-	// enemy.AgentCategory = constants.AGENT_CATEGORY_ENEMY_MOB
-	// agentList.CreateAgent(enemy)
 
 	return agentList
 }
 
-func (al *AgentList) CreatelAgent(agent *Agent) bool {
+func (al *AgentList) AddAgent(agent *Agent) bool {
 	//for now
 	if len(al.Agents) > constants.MAX_AGENTS {
-		return false
+		// return false
+		log.Fatalln("TOO MUCH AGENTS")
 	}
-	al.Agents = append(al.Agents, agent)
+	newId := al.idQueue.Pop()
+
+	if newId == -1 {
+		al.Agents = append(al.Agents, agent)
+		agent.AgentId = types.AgentID(len(al.Agents) - 1)
+	} else {
+		agent.AgentId = types.AgentID(newId)
+		al.Agents[newId] = agent
+	}
 	return true
 }
 
-func (al *AgentList) DestroyAgent(agentId int) bool {
-	if agentId < 0 || agentId >= len(al.Agents) {
-		return false
+//throw log.fatal at errors, rather than returning false
+func (al *AgentList) DestroyAgent(agentId types.AgentID) {
+	if int(agentId) < 0 || int(agentId) >= len(al.Agents) {
+		log.Fatalln("ERROR AT AGENT DELETION")
 	}
 
-	al.Agents = append(al.Agents[:agentId], al.Agents[agentId+1:]...)
-	return true
+	al.Agents[agentId] = nil
+	al.idQueue.Push(int(agentId))
 }
 
 func (al *AgentList) Spawn(
-	agentTypeID constants.AgentTypeID, opts AgentCreationOptions,
+	agentTypeID types.AgentTypeID, opts AgentCreationOptions,
 ) types.AgentID {
 	agent := GetAgentType(agentTypeID).CreateAgent(opts)
 	agent.FillDefaults()
 	agent.Validate()
-	agent.AgentId = types.AgentID(len(al.Agents))
-	al.Agents = append(al.Agents, agent)
+	al.AddAgent(agent)
 	return types.AgentID(agent.AgentId)
 }
 
-func (al *AgentList) Get() []*Agent { return al.Agents }
+func (al *AgentList) GetAllAgents() []*Agent { return al.Agents }
 
 // TODO something better than linear search
-func (al *AgentList) FromID(id types.AgentID) *Agent { 
-	for _,agent := range al.Get() {
-		if agent.AgentId == id { return agent }
+func (al *AgentList) FromID(id types.AgentID) *Agent {
+	agent := al.Agents[id]
+	if agent == nil {
+		log.Fatalln("Expect the agent to not be nil")
 	}
-	return nil
+	return agent
 }
 
 func (al *AgentList) TileIsClear(x, y int) bool {
-	for _, agent := range al.Get() {
-		if agent.PhysicsState.Contains(float32(x), float32(y), 0.5, 0.5) {
+	for _, agent := range al.GetAllAgents() {
+		if agent == nil {
+			continue
+		}
+		if agent.Transform.Contains(float32(x), float32(y), 0.5, 0.5) {
 			return false
 		}
 	}
 	return true
+}
+
+func (al *AgentList) GetFirstSpiderDrill() *Agent {
+	for _, agent := range al.Agents {
+		if agent == nil {
+			continue
+		}
+		if agent.Meta.Type == constants.AGENT_TYPE_SPIDER_DRILL {
+			return agent
+		}
+	}
+	return nil
 }

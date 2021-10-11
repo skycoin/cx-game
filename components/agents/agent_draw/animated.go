@@ -30,11 +30,11 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
 
 		var interpolatedPos cxmath.Vec2
-		if !agent.PhysicsState.PrevPos.Equal(agent.PhysicsState.Pos) {
-			interpolatedPos = agent.PhysicsState.PrevPos.Mult(1 - alpha).Add(agent.PhysicsState.Pos.Mult(alpha))
+		if !agent.Transform.PrevPos.Equal(agent.Transform.Pos) {
+			interpolatedPos = agent.Transform.PrevPos.Mult(1 - alpha).Add(agent.Transform.Pos.Mult(alpha))
 
 		} else {
-			interpolatedPos = agent.PhysicsState.Pos
+			interpolatedPos = agent.Transform.Pos
 		}
 		translate := mgl32.Translate3D(
 			interpolatedPos.X,
@@ -42,8 +42,8 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 			constants.AGENT_Z,
 		)
 		scale := mgl32.Scale3D(
-			agent.PhysicsState.Size.X*agent.PhysicsState.Direction,
-			agent.PhysicsState.Size.Y,
+			agent.Transform.Size.X*agent.Transform.Direction,
+			agent.Transform.Size.Y,
 			1,
 		)
 		transform := translate.Mul4(scale)

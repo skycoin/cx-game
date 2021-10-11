@@ -69,7 +69,7 @@ func ProcessInput() {
 			Cam.Shake()
 		}
 		if input.GetKeyDown(glfw.KeyV) {
-			Cam.ShockwaveVec(player.PhysicsState.Pos)
+			Cam.ShockwaveVec(player.Transform.Pos)
 			// Cam.ScreenPos(player.PhysicsState.Pos.Mgl32())
 		}
 
