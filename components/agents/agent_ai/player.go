@@ -79,19 +79,18 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 		player.Transform.Vel.X += playerWalkAccel * inputXAxis
 	} else {
 
-		player.PhysicsState.Vel.X += playerWalkAccel * inputXAxis
+		player.Transform.Vel.X += playerWalkAccel * inputXAxis
 
 	}
 
 	if inputXAxis != 0 {
-		player.PhysicsState.Direction = math32.Sign(inputXAxis)
+		player.Transform.Direction = math32.Sign(inputXAxis)
 
-		if player.PhysicsState.IsOnGround() {
-			var dustPos = player.PhysicsState.Pos
+		if player.Transform.IsOnGround() {
+			var dustPos = player.Transform.Pos
 			dustPos.Y = dustPos.Y - 1.5
 			particle_emitter.EmitDust(dustPos)
 		}
-
 
 	}
 
