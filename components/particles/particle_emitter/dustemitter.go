@@ -10,29 +10,29 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
-var sparkEmitter *SparkEmitter
+var dustEmitter *DustEmitter
 
-type SparkEmitter struct {
+type DustEmitter struct {
 	particleList *particles.ParticleList
 	program      *render.Program
 	minduration  float32
 	maxduration  float32
 }
 
-func NewSparkEmitter(particleList *particles.ParticleList) *SparkEmitter {
-	return &SparkEmitter{
+func NewDustEmitter(particleList *particles.ParticleList) *DustEmitter {
+	return &DustEmitter{
 		particleList: particleList,
-		minduration:  1.3,
-		maxduration:  1.5,
+		minduration:  0.3,
+		maxduration:  0.5,
 	}
 }
 
 const (
-	sparkElasticity float32 = 0
-	sparkDuration   float32 = 0
+	dustElasticity float32 = 0
+	dustDuration   float32 = 0
 )
 
-func (emitter *SparkEmitter) Emit(parent *particles.Particle) {
+func (emitter *DustEmitter) Emit(parent cxmath.Vec2) {
 	for i := 0; i < 10; i++ {
 		velocity := cxmath.Vec2{
 			X: (rand.Float32() - 0.5) * 10,
@@ -44,12 +44,12 @@ func (emitter *SparkEmitter) Emit(parent *particles.Particle) {
 				emitter.minduration
 		particle := particles.NewParticle(
 			particles.NewParticleBody(
-				parent.Pos, velocity, size, sparkElasticity, sparkDuration,
+				parent, velocity, size, dustElasticity, dustDuration,
 			),
-			spriteloader.GetSpriteIdByNameUint32("star"),
+			spriteloader.GetSpriteIdByNameUint32("dust"),
 			duration,
 			constants.PARTICLE_DRAW_HANDLER_TRANSPARENT_INSTANCED,
-			constants.PARTICLE_PHYSICS_HANDLER_NO_COLLISION_GRAVITY,
+			constants.PARTICLE_PHYSICS_HANDLER_DISSAPPEAR_ON_HIT,
 			nil,
 		)
 		emitter.particleList.AddParticle(particle)

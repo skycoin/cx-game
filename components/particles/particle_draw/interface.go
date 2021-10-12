@@ -29,6 +29,7 @@ func Init() {
 
 	spriteloader.LoadSingleSprite("./assets/particles/particle.png", "particle")
 	spriteloader.LoadSingleSprite("./assets/particles/star.png", "star")
+	spriteloader.LoadSingleSprite("./assets/particles/dust1.png", "dust")
 	quad_vao = makeQuadVao()
 	initDrawInstanced()
 }
