@@ -11,6 +11,10 @@ void main() {
 	vec4 here = texture(tex,tCoord);
 
 	float others = above.a+below.a+left.a+right.a;
-	bool isBorder = here.a < 0.1 && others > 0;
-	frag_colour = isBorder ? borderColor : here;
+	bool isEdge = here.a < 0.1 && others > 0;
+	bool isBorder = (
+		tCoord.x/2 < texelSize.x || (1-tCoord.x)/2 < texelSize.x ||
+		tCoord.y/2 < texelSize.y || (1-tCoord.y)/2 < texelSize.y
+	);
+	frag_colour = (isEdge && !isBorder) ? borderColor : here;
 }
