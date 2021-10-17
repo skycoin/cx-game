@@ -79,22 +79,35 @@ func DrawTransparentInstanced(particleList []*particles.Particle, cam *camera.Ca
 	program.SetMat4("view", &view)
 	program.SetInt("particle_texture", 0)
 
-	gl.BindTexture(gl.TEXTURE_2D, particleList[0].Texture)
-	data_list := make([]float32, 0, len(particleList)*4)
+	bins := binByTexture(particleList)
+	for texture,bin := range bins {
+		gl.BindTexture(gl.TEXTURE_2D, texture)
+		data_list := make([]float32, 0, len(bin)*4)
 
-	for _, particle := range particleList {
-		data_list = append(data_list,
-			particle.Pos.X, particle.Pos.Y, particle.Size.X,
-			particle.TimeToLive/particle.Duration,
-		)
+		for _, particle := range bin {
+			data_list = append(data_list,
+				particle.Pos.X, particle.Pos.Y, particle.Size.X,
+				particle.TimeToLive/particle.Duration,
+			)
+		}
+
+		updateBuffers(&data_list)
+
+		gl.BindVertexArray(instanced_vao)
+		gl.DrawArraysInstanced(gl.TRIANGLES, 0, 6, int32(len(particleList)))
 	}
 
-	updateBuffers(&data_list)
-
-	gl.BindVertexArray(instanced_vao)
-	gl.DrawArraysInstanced(gl.TRIANGLES, 0, 6, int32(len(particleList)))
-
 	gl.DepthMask(true)
+}
+
+func binByTexture(
+		Particles []*particles.Particle,
+) map[uint32][]*particles.Particle {
+	bins := make(map[uint32][]*particles.Particle)
+	for _,particle := range Particles {
+		bins[particle.Texture] = append(bins[particle.Texture], particle)
+	}
+	return bins
 }
 
 func initDrawInstanced() {
