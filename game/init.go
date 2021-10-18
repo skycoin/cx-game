@@ -49,8 +49,8 @@ var (
 )
 
 func Init() {
-	vvw := int(constants.VIRTUAL_VIEWPORT_WIDTH)
-	vvh := int(constants.VIRTUAL_VIEWPORT_HEIGHT)
+	vvw := int(constants.VIRTUAL_VIEWPORT_WIDTH2)
+	vvh := int(constants.VIRTUAL_VIEWPORT_HEIGHT2)
 	win = render.NewWindow(vvw, vvh, true)
 	win.SetCallbacks()
 	// defer glfw.Terminate()

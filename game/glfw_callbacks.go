@@ -152,6 +152,7 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 }
 
 func windowSizeCallback(window *glfw.Window, width, height int) {
+
 	// "physical" dimensions describe actual window size
 	// "virtual" dimensions describe scaling of both world and UI
 	// physical determines resolution.

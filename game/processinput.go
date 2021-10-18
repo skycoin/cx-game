@@ -1,7 +1,10 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine"
 	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/input"
@@ -61,6 +64,18 @@ func ProcessInput() {
 		if input.GetButtonDown("set-camera-target") {
 			Cam.SwitchToTarget()
 		}
+		//------ change resolution test------------//
+		if input.GetButtonDown("next-screen-size") {
+
+			win.ChangeResolution(constants.ChangeResolution(1))
+			fmt.Println("up")
+
+		}
+		if input.GetButtonDown("previouse-screen-size") {
+			win.ChangeResolution(constants.ChangeResolution(-1))
+			fmt.Println("down")
+		}
+		//----------------------------------------//
 		if input.GetKeyDown(glfw.KeyN) {
 			world.ToggleSmoothLighting()
 		}
@@ -96,6 +111,5 @@ func ProcessInput() {
 	if input.GetKeyDown(glfw.KeyHome) {
 		debugTileInfo = !debugTileInfo
 	}
-
 
 }

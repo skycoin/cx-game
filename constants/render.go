@@ -25,5 +25,37 @@ const (
 )
 
 var (
-	OUTLINE_BORDER_COLOR = mgl32.Vec4{1, 0, 0, 1}
+	OUTLINE_BORDER_COLOR           = mgl32.Vec4{1, 0, 0, 1}
+	VIRTUAL_VIEWPORT_WIDTH2  int32 = 1280 //1440
+	VIRTUAL_VIEWPORT_HEIGHT2 int32 = 720  //900
+	Resolution_Selected      int32 = 1
 )
+
+func ChangeResolution(resolutionTyep int32) (int, int) {
+	if resolutionTyep == 1 {
+		Resolution_Selected++
+	} else {
+		Resolution_Selected--
+	}
+	if Resolution_Selected == 1 {
+		VIRTUAL_VIEWPORT_WIDTH2 = 1280
+		VIRTUAL_VIEWPORT_HEIGHT2 = 720
+	} else if Resolution_Selected == 2 {
+		VIRTUAL_VIEWPORT_WIDTH2 = 1366
+		VIRTUAL_VIEWPORT_HEIGHT2 = 768
+	} else if Resolution_Selected == 3 {
+		VIRTUAL_VIEWPORT_WIDTH2 = 1440
+		VIRTUAL_VIEWPORT_HEIGHT2 = 900
+	} else if Resolution_Selected == 4 {
+		VIRTUAL_VIEWPORT_WIDTH2 = 1536
+		VIRTUAL_VIEWPORT_HEIGHT2 = 864
+	} else if Resolution_Selected == 5 {
+		VIRTUAL_VIEWPORT_WIDTH2 = 1600
+		VIRTUAL_VIEWPORT_HEIGHT2 = 900
+	} else if Resolution_Selected == 6 {
+		VIRTUAL_VIEWPORT_WIDTH2 = 1920
+		VIRTUAL_VIEWPORT_HEIGHT2 = 1080
+	}
+
+	return int(VIRTUAL_VIEWPORT_HEIGHT2), int(VIRTUAL_VIEWPORT_WIDTH2)
+}

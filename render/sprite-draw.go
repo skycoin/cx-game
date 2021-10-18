@@ -183,8 +183,8 @@ func flushSpriteDraws(zoom float32) {
 	virtualViewport :=
 		Viewport{
 			0, 0,
-			constants.VIRTUAL_VIEWPORT_WIDTH,
-			constants.VIRTUAL_VIEWPORT_HEIGHT,
+			constants.VIRTUAL_VIEWPORT_WIDTH2,
+			constants.VIRTUAL_VIEWPORT_HEIGHT2,
 		}
 	virtualViewport.Use()
 	FRAMEBUFFER_PLANET.Bind(gl.FRAMEBUFFER)
@@ -206,8 +206,8 @@ func flushSpriteDraws(zoom float32) {
 	defer outlineProgram.StopUsing()
 
 	texelSize := mgl32.Vec2{
-		zoom * 1.0 / float32(constants.VIRTUAL_VIEWPORT_WIDTH),
-		zoom * 1.0 / float32(constants.VIRTUAL_VIEWPORT_HEIGHT),
+		zoom * 1.0 / float32(constants.VIRTUAL_VIEWPORT_WIDTH2),
+		zoom * 1.0 / float32(constants.VIRTUAL_VIEWPORT_HEIGHT2),
 	}
 	outlineProgram.SetVec2("texelSize", &texelSize)
 	outlineProgram.SetVec4("borderColor", &constants.OUTLINE_BORDER_COLOR)
