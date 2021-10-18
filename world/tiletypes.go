@@ -6,9 +6,9 @@ import (
 
 	"github.com/go-yaml/yaml"
 
+	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/config"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/engine/spriteloader/blobsprites"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world/tiling"
@@ -22,7 +22,7 @@ type TileConfig struct {
 	Layer        string   `yaml:"layer"`
 	Invulnerable bool     `yaml:"invulnerable"`
 	Category     string   `yaml:"category"`
-    NeedsGround  bool
+	NeedsGround  bool
 	/*
 		Width        int32    `yaml:"width"`
 		Height       int32    `yaml:"height"`
@@ -63,35 +63,35 @@ func tileCollisionTypeFromString(str string) TileCollisionType {
 }
 
 func (config *TileConfig) Placer(fname string, id TileTypeID) Placer {
-    tile := NewNormalTile()
-    tile.NeedsGround = config.NeedsGround
-    tile.TileCategory = tileCategoryFromString(config.Category)
-    tile.TileCollisionType = tileCollisionTypeFromString(config.Collision)
-    tile.TileTypeID = id
+	tile := NewNormalTile()
+	tile.NeedsGround = config.NeedsGround
+	tile.TileCategory = tileCategoryFromString(config.Category)
+	tile.TileCollisionType = tileCollisionTypeFromString(config.Collision)
+	tile.TileTypeID = id
 
 	if config.Blob == "" {
 		// TODO handle multiple sprites
 		spriteID := render.GetSpriteIDByName(config.Sprite)
 		return DirectPlacer{
-            Tile: tile,
-			SpriteID:          spriteID,
-            /*
-			Category:          tileCategoryFromString(config.Category),
-			TileCollisionType: tileCollisionTypeFromString(config.Collision),
-            */
+			Tile:     tile,
+			SpriteID: spriteID,
+			/*
+				Category:          tileCategoryFromString(config.Category),
+				TileCollisionType: tileCollisionTypeFromString(config.Collision),
+			*/
 		}
 	}
-	tilingID,ok := tiling.ByName(config.Blob)
+	tilingID, ok := tiling.ByName(config.Blob)
 	if !ok {
 		log.Fatalf("unrecognized blob type: %s", config.Blob)
 	}
-	ids := loadIDsFromSpritenames(config.Sprites, tilingID.Get().Count() )
-	return AutoPlacer {
+	ids := loadIDsFromSpritenames(config.Sprites, tilingID.Get().Count())
+	return AutoPlacer{
 		Tile: tile, blobSpritesIDs: ids, TilingID: tilingID,
-        /*
-		TileTypeID: id, TilingID: tilingID,
-		TileCollisionType: tileCollisionTypeFromString(config.Collision),
-        */
+		/*
+			TileTypeID: id, TilingID: tilingID,
+			TileCollisionType: tileCollisionTypeFromString(config.Collision),
+		*/
 	}
 }
 
@@ -128,14 +128,20 @@ func (config *TileConfig) TileType(name string, id TileTypeID) TileType {
 		Placer:       config.Placer(name, id),
 		Invulnerable: config.Invulnerable,
 		Width:        width, Height: height,
-		NeedsGround:  config.NeedsGround,
+		NeedsGround: config.NeedsGround,
 	}
 }
 
 func (config *TileConfig) ToolType() types.ToolType {
-	if config.Layer == "bg" { return constants.BG_TOOL }
-	if config.Layer == "mid" { return constants.FURNITURE_TOOL }
-	if config.Layer == "pipe" { return constants.PIPE_PLACE_TOOL }
+	if config.Layer == "bg" {
+		return constants.BG_TOOL
+	}
+	if config.Layer == "mid" {
+		return constants.FURNITURE_TOOL
+	}
+	if config.Layer == "pipe" {
+		return constants.PIPE_PLACE_TOOL
+	}
 	return constants.TILE_TOOL
 }
 
@@ -146,8 +152,10 @@ func RegisterTileTypes() {
 	RegisterConfigTileTypes()
 }
 
+var TileTypeIDAir TileTypeID
+
 func RegisterEmptyTileType() {
-	RegisterTileType("air", TileType{
+	TileTypeIDAir = RegisterTileType("air", TileType{
 		Name:   "Air",
 		Placer: DirectPlacer{},
 	}, constants.NULL_TOOL)

@@ -7,6 +7,14 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
+func idFor(name string) world.TileTypeID {
+	id, ok := world.IDFor(name)
+	if !ok {
+		log.Fatalf("cannot find tile type ID for \"%s\"", name)
+	}
+	return id
+}
+
 func NewDevInventory() types.InventoryID {
 	inventoryId := NewInventory(10, 8)
 	inventory := GetInventoryById(inventoryId)
@@ -15,7 +23,7 @@ func NewDevInventory() types.InventoryID {
 	inventory.Slots[inventory.ItemSlotIndexForPosition(2, 0)] =
 		InventorySlot{GunItemTypeID, 1, 0}
 
-	pipeTileType, ok := world.GetTileTypeByID(world.IDFor("pipe"))
+	pipeTileType, ok := world.GetTileTypeByID(idFor("pipe"))
 	if !ok {
 		log.Fatal("Cannot find pipe tile type")
 	}
@@ -39,23 +47,23 @@ func NewDevInventory() types.InventoryID {
 		InventorySlot{DevDestroyToolID, 1, 0}
 
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 1)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.IDFor("stone")),
+		GetItemTypeIdForTileTypeID(idFor("stone")),
 		1, 0,
 	}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 2)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.IDFor("regolith")),
+		GetItemTypeIdForTileTypeID(idFor("regolith")),
 		1, 0,
 	}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 3)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.IDFor("regolith-wall")),
+		GetItemTypeIdForTileTypeID(idFor("regolith-wall")),
 		1, 0,
 	}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 4)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.IDFor("bedrock")),
+		GetItemTypeIdForTileTypeID(idFor("bedrock")),
 		1, 0,
 	}
 	inventory.Slots[inventory.ItemSlotIndexForPosition(0, 5)] = InventorySlot{
-		GetItemTypeIdForTileTypeID(world.IDFor("water")),
+		GetItemTypeIdForTileTypeID(idFor("water")),
 		1, 0,
 	}
 	return inventoryId

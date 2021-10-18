@@ -16,6 +16,8 @@ import (
 	"github.com/skycoin/cx-game/render"
 )
 
+const DISABLE_LIGHTING bool = true // temporarily disabled due to zoom bug
+
 type LightValue uint8
 
 //upper 4 bits
@@ -518,6 +520,9 @@ func (planet *Planet) DrawLightMap(timeState *TimeState) {
 }
 
 func (planet *Planet) DrawLighting(Cam *camera.Camera, timeState *TimeState) {
+	if DISABLE_LIGHTING {
+		return
+	}
 	if !lightMaskOn {
 		gl.Enable(gl.BLEND)
 		gl.BlendFunc(gl.DST_COLOR, gl.ZERO)

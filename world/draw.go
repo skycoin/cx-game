@@ -114,7 +114,10 @@ func (planet *Planet) visibleTiles(
 			tileIdx := planet.GetTileIndex(x, y)
 			if tileIdx != -1 {
 				tile := layer.Tiles[tileIdx]
-				if tile.TileCategory != TileCategoryNone {
+				shouldRender :=
+					tile.TileCategory != TileCategoryNone &&
+						tile.TileCategory != TileCategoryChild
+				if shouldRender {
 					positionedTiles = append(positionedTiles, PositionedTile{
 						Position: cxmath.Vec2i{X: int32(x), Y: int32(y)},
 						Tile:     tile,
