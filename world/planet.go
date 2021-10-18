@@ -10,48 +10,11 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/engine/input"
-	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world/tiling"
 )
 
 const NUM_INSTANCES = 100
-
-type LayerID int
-
-const (
-	BgLayer LayerID = iota
-	PipeLayer
-	MidLayer
-	TopLayer
-
-	NumLayers // DO NOT SET MANUALLY
-)
-
-func (id LayerID) Valid() bool {
-	return id >= 0 && id < NumLayers
-}
-
-type Layer struct {
-	Tiles       []Tile
-	Spritesheet spriteloader.Spritesheet
-}
-
-type Layers [NumLayers]Layer
-
-func NewLayer(numTiles int32) Layer {
-	return Layer{
-		Tiles: make([]Tile, numTiles),
-	}
-}
-
-func NewLayers(numTiles int32) Layers {
-	layers := Layers{}
-	for i := LayerID(0); i < NumLayers; i++ {
-		layers[i] = NewLayer(numTiles)
-	}
-	return layers
-}
 
 type Planet struct {
 	Width           int32
@@ -193,11 +156,13 @@ func (planet *Planet) PlaceTileTypeNoConnect(tileTypeID TileTypeID, x, y int) {
 					int(rect.Origin.X+offsetX),
 					int(rect.Origin.Y+offsetY),
 				)
+				if tileIdx != -1 {
 
-				tilesInLayer[tileIdx] = Tile{
-					TileCategory: TileCategoryChild,
-					OffsetX:      int8(offsetX), OffsetY: int8(offsetY),
-					Name: fmt.Sprintf("%s (child)", tileType.Name),
+					tilesInLayer[tileIdx] = Tile{
+						TileCategory: TileCategoryChild,
+						OffsetX:      int8(offsetX), OffsetY: int8(offsetY),
+						Name: fmt.Sprintf("%s (child)", tileType.Name),
+					}
 				}
 			}
 		}

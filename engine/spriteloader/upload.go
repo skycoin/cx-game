@@ -16,6 +16,8 @@ func (tex GPUTexture) Dims() cxmath.Vec2i {
 	return cxmath.Vec2i{int32(tex.Width), int32(tex.Height)}
 }
 
+var cachedGPUTextures = map[string]GPUTexture{}
+
 func LoadTextureFromFileToGPU(fname string) GPUTexture {
 	status, img, _ := LoadPng(fname)
 	if status != LoadOk {
@@ -26,6 +28,16 @@ func LoadTextureFromFileToGPU(fname string) GPUTexture {
 		Gl:    tex,
 		Width: img.Bounds().Dx(), Height: img.Bounds().Dy(),
 	}
+}
+
+func LoadTextureFromFileToGPUCached(fname string) GPUTexture {
+	gpuTexture, ok := cachedGPUTextures[fname]
+	if ok {
+		return gpuTexture
+	}
+	gpuTexture = LoadTextureFromFileToGPU(fname)
+	cachedGPUTextures[fname] = gpuTexture
+	return gpuTexture
 }
 
 func LoadTextureArrayFromFileToGPU(fname string, config SpriteSheetConfig) GPUTexture {
