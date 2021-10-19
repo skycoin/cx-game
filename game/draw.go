@@ -114,8 +114,8 @@ func DrawUI() {
 			topLeftCtx.PushLocal(mgl32.Translate3D(25, -5, 0)),
 		)
 	}
-	ui.DrawAgentHUD(player)
-	inventory := item.GetInventoryById(player.InventoryID)
+	ui.DrawAgentHUD(player.GetAgent())
+	inventory := item.GetInventoryById(player.GetAgent().InventoryID)
 	invCameraTransform := Cam.GetTransform().Inv()
 	inventory.Draw(baseCtx, invCameraTransform)
 	ui.DrawDamageIndicators(invCameraTransform)

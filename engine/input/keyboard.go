@@ -6,9 +6,7 @@ import (
 
 var (
 	//for actions
-	keyPressed     = make(map[glfw.Key]bool)
-	keyPressedDown = make(map[glfw.Key]bool)
-	keysPressedUp  = make(map[glfw.Key]bool)
+	KeyPressed = make(map[glfw.Key]bool)
 
 	modifierKey glfw.ModifierKey
 
@@ -34,29 +32,22 @@ func keyCallback(
 	w *glfw.Window,
 	key glfw.Key, scancode int, action glfw.Action, mk glfw.ModifierKey,
 ) {
-	keyPressedDown = make(map[glfw.Key]bool)
-	keysPressedUp = make(map[glfw.Key]bool)
-
 	modifierKey = mk
 
 	if action == glfw.Press {
-		//remap game quit to combination of  buttons
 		if key == glfw.KeyEscape {
 			w.SetShouldClose(true)
-
 		}
 
 		ProcessFlags(key, mk)
 
 		lastKeyPressed = key
-		keyPressedDown[key] = true
-		keyPressed[key] = true
+		KeyPressed[key] = true
 
 	} else if action == glfw.Repeat {
 		//nothing
 	} else if action == glfw.Release {
 		modifierKey = 0
-		keyPressed[key] = false
-		keysPressedUp[key] = true
+		KeyPressed[key] = false
 	}
 }

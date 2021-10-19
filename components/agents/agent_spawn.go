@@ -177,6 +177,7 @@ func createEnemySoldier(opts AgentCreationOptions) *Agent {
 
 func createPlayer(opts AgentCreationOptions) *Agent {
 	agent := Agent{
+		PlayerControlled: true,
 		Handlers: AgentHandlers{
 			AI:   constants.AI_HANDLER_PLAYER,
 			Draw: constants.DRAW_HANDLER_PLAYER,

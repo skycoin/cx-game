@@ -7,6 +7,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/components/agents"
+	"github.com/skycoin/cx-game/components/agents/player_agent"
 	"github.com/skycoin/cx-game/components/particles/particle_emitter"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
@@ -37,7 +38,8 @@ var (
 	win     render.Window
 	window  *glfw.Window
 	fps     *render.Fps
-	player  *agents.Agent
+
+	player *player_agent.PlayerAgent
 
 	World              world.World
 	DrawCollisionBoxes = false
@@ -46,6 +48,7 @@ var (
 	//unused
 	// isTileSelectorVisible = false
 	// worldItem             *item.WorldItem
+
 )
 
 func Init() {
@@ -129,9 +132,14 @@ func Init() {
 			X: spawnPos.X, Y: spawnPos.Y,
 		},
 	)
-	player = findPlayer()
-	player.InventoryID = item.NewDevInventory()
-	components.Init(&World, Cam, player)
+
+	playerAgent := findPlayer()
+	playerAgent.InventoryID = item.NewDevInventory()
+
+	components.Init(&World, Cam, playerAgent)
+
+	player = player_agent.NewPlayerAgent()
+	player.SetPlayerAgent(playerAgent)
 
 	sound.LoadSound("player_jump", "jump.wav")
 	Console = console.New()
@@ -139,4 +147,5 @@ func Init() {
 	//add oxygen emitter
 	particle_emitter.EmitOxygen(playerAgentID, &World.Entities.Particles)
 	render.NewColorShader()
+
 }

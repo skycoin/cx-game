@@ -49,7 +49,7 @@ func mouseReleaseCallback(
 	input.MousePressed = false
 	mousePos := input.GetMousePos()
 
-	inventory := item.GetInventoryById(player.InventoryID)
+	inventory := item.GetInventoryById(player.GetAgent().InventoryID)
 	player := findPlayer()
 	inventory.OnReleaseMouse(mousePos.X(), mousePos.Y(), Cam, &World.Planet, player)
 }
@@ -67,7 +67,7 @@ func mousePressCallback(
 	mousePos := input.GetMousePos()
 
 	// return
-	inventory := item.GetInventoryById(player.InventoryID)
+	inventory := item.GetInventoryById(player.GetAgent().InventoryID)
 
 	// only if dev destroy tool selected
 	if inventory.SelectedBarSlotIndex == 0 {
@@ -95,7 +95,7 @@ func mousePressCallback(
 
 	if b == glfw.MouseButtonRight {
 		consumed := inventory.TryMouseDownRight(
-			mousePos.X(), mousePos.Y(), Cam, &World, player)
+			mousePos.X(), mousePos.Y(), Cam, &World, player.GetAgent())
 		if consumed {
 			return
 		}
@@ -104,7 +104,7 @@ func mousePressCallback(
 	}
 	clickedSlot :=
 		inventory.TryClickSlot(
-			mousePos.X(), mousePos.Y(), Cam, &World.Planet, player,
+			mousePos.X(), mousePos.Y(), Cam, &World.Planet, player.GetAgent(),
 		)
 	if clickedSlot {
 		return
@@ -143,10 +143,10 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 		)
 	}
 	if mouseDown {
-		item.GetInventoryById(player.InventoryID).
+		item.GetInventoryById(player.GetAgent().InventoryID).
 			TryDragItem(
 				mousePos.X(), mousePos.Y(),
-				Cam, &World, player, mouseButtonDown,
+				Cam, &World, player.GetAgent(), mouseButtonDown,
 			)
 	}
 }

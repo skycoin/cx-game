@@ -4,3 +4,16 @@ ID ASSIGNMENT
 --- 0 and -1 is reserved
 --- 0 means unitialized, make sure to assert and fail
 --- -1 is none or intentionaly set
+
+
+
+/*
+"First, and most important, does the method need to modify the receiver? If it does, the receiver must be a pointer."
+
+"Second is the consideration of efficiency. If the receiver is large, a big struct for instance, it will be much cheaper to use a pointer receiver."
+
+"Next is consistency. If some of the methods of the type must have pointer receivers, the rest should too, so the method set is consistent regardless of how the type is used"
+
+*/
+
+https://golang.org/doc/faq#methods_on_values_or_pointers

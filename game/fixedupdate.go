@@ -24,6 +24,9 @@ func FixedTick() {
 	components.FixedUpdate()
 	World.Planet.FixedUpdate()
 	World.TimeState.Advance()
+
+	inputHandler.UpdateAgentKeyState()
+	player.SetControlState(inputHandler.AgentControlState)
 	// physics.Simulate(constants.PHYSICS_TICK, &World.Planet)
 	/*
 		pickedUpItems := item.TickWorldItems(

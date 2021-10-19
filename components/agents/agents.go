@@ -5,6 +5,7 @@ import (
 
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
 )
@@ -19,8 +20,8 @@ type Agent struct {
 	Health            HealthComponent
 	AnimationPlayback anim.Playback
 	InventoryID       types.InventoryID
+	CS                input.ControlState
 }
-
 
 type AgentHandlers struct {
 	Draw types.AgentDrawHandlerID
@@ -92,3 +93,4 @@ func (a *Agent) Validate() {
 		log.Fatalf("Cannot create agent with undefined category: %+v", a)
 	}
 }
+

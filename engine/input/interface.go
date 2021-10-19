@@ -20,7 +20,7 @@ func GetButton(button string) bool {
 		log.Printf("BUTTON [%s] IS NOT MAPPED!\n", button)
 		return false
 	}
-	pressed, ok := keyPressed[keyComb.key]
+	pressed, ok := KeyPressed[keyComb.key]
 	if !ok {
 		// log.Printf("ERROR!")
 		return false
@@ -31,53 +31,11 @@ func GetButton(button string) bool {
 	return false
 }
 
-//action keys, if pressed once
-func GetButtonDown(button string) bool {
-	keyComb, ok := ActiveButtonsToKeys[button]
-	if !ok && DEBUG {
-		log.Printf("BUTTON [%s] IS NOT MAPPED\n", button)
-		return false
-	}
-	pressed, ok := keyPressedDown[keyComb.key]
-	if !ok {
-		return false
-	}
-	if modifierKey == keyComb.modifierKey && pressed {
-		keyPressedDown[keyComb.key] = false
-		return true
-
-	}
-
-	return false
-}
-
-func GetButtonUp(button string) bool {
-	keyComb, ok := ActiveButtonsToKeys[button]
-	if !ok && DEBUG {
-		log.Printf("BUTTON [%s] IS NOT MAPPED\n", button)
-		return false
-	}
-	if modifierKey == keyComb.modifierKey {
-
-		return GetKeyDown(keyComb.key)
-	}
-	return false
-}
-
 func GetKey(key glfw.Key) bool {
 	if modifierKey == 0 {
-		return keyPressed[key]
+		return KeyPressed[key]
 	}
 	return false
-}
-
-func GetKeyDown(key glfw.Key) bool {
-	pressed, ok := keysPressedUp[key]
-	if !ok {
-		return false
-	}
-	keysPressedUp[key] = false
-	return pressed
 }
 
 func GetKeyIsUp(key glfw.Key) bool {

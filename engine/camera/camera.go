@@ -10,6 +10,7 @@ import (
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/effects"
 	"github.com/skycoin/cx-game/engine/input"
+
 	"github.com/skycoin/cx-game/render"
 )
 

@@ -1,4 +1,4 @@
-package agent_ai
+package player_agent
 
 import (
 	"github.com/skycoin/cx-game/components/agents"
@@ -7,7 +7,6 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/math32"
 	"github.com/skycoin/cx-game/engine/input"
-	"github.com/skycoin/cx-game/engine/sound"
 )
 
 const (
@@ -37,10 +36,10 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 	if input.GetInputContext() == input.GAME {
 		inputXAxis = input.GetAxis(input.HORIZONTAL)
 
-		if player.Transform.IsOnGround() && input.GetButtonDown("jump") {
-			sound.PlaySound("player_jump")
-			jumpFrame = 0
-		}
+		// if player.Transform.IsOnGround() && input.GetButtonDown("jump") {
+		// 	sound.PlaySound("player_jump")
+		// 	jumpFrame = 0
+		// }
 
 		if jumpFrame < jumpFrames {
 			player.Transform.Vel.Y += playerJumpAcceleration * constants.PHYSICS_TICK
