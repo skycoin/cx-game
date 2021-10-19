@@ -1,0 +1,182 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "/home/ted/git/cx-game/assets/tiled/Moon Bunker.tmx",
+    "automapping.whileDrawing": false,
+    "console.history": [
+        "hi",
+        "print('hi')",
+        "a=2",
+        "def f(x):",
+        "def f(x):",
+        "JSON",
+        "JSON.parse"
+    ],
+    "expandedProjectPaths": [
+        "C:/Users/Ludic Side/Desktop/Work/Sci Fi Terraria/Terrain"
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "/home/ted/git/cx-game/assets/tiled/Moon Bunker.tmx": {
+            "scale": 1,
+            "selectedLayer": 10,
+            "viewCenter": {
+                "x": 1851.5,
+                "y": 812.5
+            }
+        },
+        "/home/ted/git/cx-game/assets/tiled/Moon Bunker.tmx#Tiles_metal_slabs": {
+            "scaleInDock": 1
+        },
+        "/home/ted/git/cx-game/assets/tiled/Tiles_1.tsx": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 2
+        },
+        "/home/ted/git/cx-game/assets/tiled/galaxyBackgroundTiles.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        },
+        "Blocks_Stone.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Doors.tsx": {
+            "scaleInDock": 1
+        },
+        "Moon Bunker.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 29.75,
+                "y": 4.25
+            }
+        },
+        "Moon Bunker.tmx#Tiles_Moon": {
+            "scaleInDock": 1
+        },
+        "Moon Bunker.tmx#Tiles_metal_slabs": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "Moon_Background.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "Objects.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "Ores.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Platform_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 4,
+            "scaleInEditor": 5.5
+        },
+        "Slabs_metal_1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tiles_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5,
+            "scaleInEditor": 3
+        },
+        "Tiles_1_v1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 5.5
+        },
+        "Tiles_Metal.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tiles_Moon.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 4
+        },
+        "Tiles_metal_bulkheads.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tiles_metal_continuos.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "Tiles_metal_slabs.tsx": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "Wall_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "character.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "fluids.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "galaxyBackgroundTiles.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "pipesim.tsx": {
+            "scaleInDock": 1
+        },
+        "windows_metal.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/Ludic Side/Desktop/Work/Sci Fi Terraria/Tiled",
+    "last.imagePath": "C:/Users/Ludic Side/Desktop/Work/Sci Fi Terraria/Slabs",
+    "map.fixedSize": false,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "openFiles": [
+        "/home/ted/git/cx-game/assets/tiled/Moon Bunker.tmx",
+        "/home/ted/git/cx-game/assets/tiled/Tiles_1.tsx",
+        "fluids.tsx"
+    ],
+    "project": "Moon Bunker.tiled-project",
+    "property.type": "string",
+    "recentFiles": [
+        "fluids.tsx",
+        "/home/ted/git/cx-game/assets/tiled/Tiles_1.tsx",
+        "/home/ted/git/cx-game/assets/tiled/Moon Bunker.tmx",
+        "/home/ted/git/cx-game/assets/tiled/galaxyBackgroundTiles.tsx",
+        "Ores.tsx",
+        "Tiles_1.tsx",
+        "Moon Bunker.tmx",
+        "Tiles_metal_continuos.tsx",
+        "Tiles_metal_slabs.tsx",
+        "Tiles_metal_bulkheads.tsx",
+        "Platform_1.tsx",
+        "Tiles_Moon.tsx"
+    ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    },
+    "tileset.type": 1
+}

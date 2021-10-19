@@ -23,7 +23,7 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/stars/starfield"
 	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/world/worldgen"
+	"github.com/skycoin/cx-game/world/import"
 )
 
 func init() {
@@ -87,7 +87,8 @@ func Init() {
 	Cam = camera.NewCamera(&win)
 
 	// TODO move this to the world package or similar
-	World = worldgen.GenerateWorld()
+	//World = worldgen.GenerateWorld()
+	World = worldimport.ImportWorld("./assets/luis/tiled files/Moon Bunker.tmx")
 	World.Planet.InitLighting()
 	components.ChangeWorld(&World)
 
