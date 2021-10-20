@@ -211,6 +211,8 @@ func flushSpriteDraws(zoom float32) {
 	}
 	outlineProgram.SetVec2("texelSize", &texelSize)
 	outlineProgram.SetVec4("borderColor", &constants.OUTLINE_BORDER_COLOR)
+	outlineTransform := mgl32.Translate3D(0, 0, -constants.FRONTLAYER_Z/1000)
+	outlineProgram.SetMat4("transform", &outlineTransform)
 
 	gl.BindVertexArray(Quad2Vao)
 
