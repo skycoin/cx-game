@@ -193,8 +193,6 @@ func flushSpriteDraws(zoom float32) {
 	gl.DepthMask(true)
 	drawFramebufferSprites(FRAMEBUFFER_PLANET)
 
-	physicalViewport.Use()
-
 	drawFramebufferSprites(FRAMEBUFFER_MAIN)
 
 	spriteDrawsPerAtlasPerFramebuffer = // clear sprite draws
@@ -218,6 +216,8 @@ func flushSpriteDraws(zoom float32) {
 
 	gl.BindTexture(gl.TEXTURE_2D, RENDERTEXTURE_PLANET)
 	gl.DrawArrays(gl.TRIANGLES, 0, 6) // draw quad
+
+	physicalViewport.Use()
 
 	gl.BindVertexArray(QuadVao)
 

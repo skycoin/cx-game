@@ -9,16 +9,18 @@ import (
 
 type WindowDimensions struct {
 	PhysicalWidth, PhysicalHeight float32
-	VirtualWidth, VirtualHeight float32
-	Viewport Viewport
-	Scale float32
+	VirtualWidth, VirtualHeight   float32
+	Viewport                      Viewport
+	Scale                         float32
 }
 
 type Viewport struct {
-	X,Y,Width,Height int32
+	X, Y, Width, Height int32
 }
 
 var currentViewport Viewport
+
+func GetCurrentViewport() Viewport { return currentViewport }
 
 func (v Viewport) Use() {
 	currentViewport = v
@@ -26,7 +28,7 @@ func (v Viewport) Use() {
 }
 
 // fits target into frame, centered with black bars
-func fitCentered( virtualDims, physicalDims mgl32.Vec2) WindowDimensions {
+func fitCentered(virtualDims, physicalDims mgl32.Vec2) WindowDimensions {
 	// "physical" dimensions describe actual window size
 	// "virtual" dimensions describe scaling of both world and UI
 	// physical determines resolution.
@@ -43,15 +45,15 @@ func fitCentered( virtualDims, physicalDims mgl32.Vec2) WindowDimensions {
 
 	// scale up virtual dimensions to fit in physical dimensions.
 	// in case of aspect ratio mismatch, black bars will appear
-	viewportWidth := int32(virtualWidth*scale)
-	viewportHeight := int32(virtualHeight*scale)
+	viewportWidth := int32(virtualWidth * scale)
+	viewportHeight := int32(virtualHeight * scale)
 
 	// viewport offsets
-	x := (int32(physicalWidth) - viewportWidth)/2
-	y := (int32(physicalHeight) - viewportHeight)/2
+	x := (int32(physicalWidth) - viewportWidth) / 2
+	y := (int32(physicalHeight) - viewportHeight) / 2
 
-	viewport := Viewport { x, y, viewportWidth, viewportHeight }
-	return WindowDimensions {
+	viewport := Viewport{x, y, viewportWidth, viewportHeight}
+	return WindowDimensions{
 		physicalWidth, physicalHeight,
 		virtualWidth, virtualHeight,
 		viewport,
@@ -59,7 +61,7 @@ func fitCentered( virtualDims, physicalDims mgl32.Vec2) WindowDimensions {
 	}
 }
 
-// returns a transformation matrix which maps coordinates 
+// returns a transformation matrix which maps coordinates
 // on the physical window to the virtual window
 func (d WindowDimensions) Transform() mgl32.Mat4 {
 	// TODO
@@ -70,5 +72,5 @@ func (d WindowDimensions) Transform() mgl32.Mat4 {
 	// TODO cam zoom should only be applied to world coords.
 	// UI coords should not be affected.
 	// move this logic to the "item" package or similar.
-	return mgl32.Mat4.Mul4(scaleToVirtual,translateToCenter)
+	return mgl32.Mat4.Mul4(scaleToVirtual, translateToCenter)
 }
