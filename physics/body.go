@@ -150,6 +150,56 @@ func (body *Body) isCollidingBottom(
 	return false
 }
 
+const maxPartialDisplacement float32 = 0.5
+
+func discretizeDisplacement(totalDisplacement cxmath.Vec2) []cxmath.Vec2 {
+	n := totalDisplacement.Length()
+	normalized := totalDisplacement.Normalize().Mult(maxPartialDisplacement)
+
+	partialDisplacements := []cxmath.Vec2{}
+	for i := 0; i < int(n/maxPartialDisplacement); i++ {
+		partialDisplacement := normalized.Mult(float32(i) + 0.5)
+		partialDisplacements = append(partialDisplacements, partialDisplacement)
+	}
+	partialDisplacements = append(partialDisplacements, totalDisplacement)
+	return partialDisplacements
+}
+
+func (body *Body) checkForCollisions(
+	totalDisplacement cxmath.Vec2, collider worldcollider.WorldCollider,
+) cxmath.Vec2 {
+	partialDisplacements := discretizeDisplacement(totalDisplacement)
+	var newPos cxmath.Vec2
+	for _, partialDisplacement := range partialDisplacements {
+		newPos = body.Pos.Add(partialDisplacement)
+
+		if body.isCollidingLeft(collider, newPos) {
+			body.Collisions.Left = true
+			body.Vel.X = 0
+			newPos.X = body.bounds(newPos).left + 0.5 + body.Size.X/2
+		}
+		if body.isCollidingRight(collider, newPos) {
+			body.Collisions.Right = true
+			body.Vel.X = 0
+			newPos.X = body.bounds(newPos).right - 0.5 - body.Size.X/2
+		}
+		if body.isCollidingTop(collider, newPos) {
+			body.Collisions.Above = true
+			body.Vel.Y = 0
+			newPos.Y = body.bounds(newPos).top - 0.5 - body.Size.Y/2
+		}
+		if body.isCollidingBottom(collider, newPos) {
+			body.Collisions.Below = true
+			body.Vel.Y = 0
+			newPos.Y = body.bounds(newPos).bottom + 0.5 + body.Size.Y/2
+		}
+		if body.Collisions.Collided() {
+			return newPos
+		}
+	}
+	return newPos
+}
+
 func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	body.PrevPos = body.Pos
 	body.Collisions.Reset()
@@ -157,32 +207,10 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	body.Vel.Y -= constants.Gravity * dt
 	//account drag
 	body.Vel.Y += 0.1 * body.Vel.Y * body.Vel.Y * 0.2 * dt
-	// body.Vel.X *= (1 - body.Friction)
 
-	newPos := body.Pos.Add(body.Vel.Mult(dt))
+	totalDisplacement := body.Vel.Mult(dt)
 
-	if body.isCollidingLeft(collider, newPos) {
-		body.Collisions.Left = true
-		body.Vel.X = 0
-		newPos.X = body.bounds(newPos).left + 0.5 + body.Size.X/2
-
-	}
-	if body.isCollidingRight(collider, newPos) {
-		body.Collisions.Right = true
-		body.Vel.X = 0
-		newPos.X = body.bounds(newPos).right - 0.5 - body.Size.X/2
-
-	}
-	if body.isCollidingTop(collider, newPos) {
-		body.Collisions.Above = true
-		body.Vel.Y = 0
-		newPos.Y = body.bounds(newPos).top - 0.5 - body.Size.Y/2
-	}
-	if body.isCollidingBottom(collider, newPos) {
-		body.Collisions.Below = true
-		body.Vel.Y = 0
-		newPos.Y = body.bounds(newPos).bottom + 0.5 + body.Size.Y/2
-	}
+	newPos := body.checkForCollisions(totalDisplacement, collider)
 
 	newPosMgl32 := mgl32.Vec2{newPos.X, newPos.Y}
 	offset := collider.WrapAroundOffset(newPosMgl32)
