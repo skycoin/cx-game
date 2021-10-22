@@ -78,7 +78,6 @@ func Draw() {
 		}
 	virtualViewport.Use()
 	components.Draw_Queued(&World.Entities, Cam)
-	physicalViewport.Use()
 	render.Flush(Cam.Zoom.Get())
 
 	//draw after flushing
@@ -89,6 +88,7 @@ func Draw() {
 	World.Planet.DrawLighting(Cam, &World.TimeState)
 
 	//post-process
+	physicalViewport.Use()
 	PostProcess()
 
 	//draw ui
