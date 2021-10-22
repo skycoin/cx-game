@@ -3,8 +3,8 @@ package player_agent
 import (
 	"log"
 
+	"github.com/skycoin/cx-game/common"
 	"github.com/skycoin/cx-game/components/agents"
-	"github.com/skycoin/cx-game/engine/input"
 )
 
 type PlayerAgent struct {
@@ -26,8 +26,8 @@ func (p *PlayerAgent) GetAgent() *agents.Agent {
 	return p.agent
 }
 
-func SetControlState(cs input.ControlState) {
-	agent.SetControlState(cs)
+func (p *PlayerAgent) SetControlState(cs common.Bitset) {
+	p.agent.SetControlState(cs)
 	// assertAgentNotNil()
 }
 

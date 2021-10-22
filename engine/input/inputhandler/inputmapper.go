@@ -11,28 +11,6 @@ type InputMapper struct {
 	keyToEnum map[glfw.Key]int
 }
 
-// func (i InputMapper) RemapKey(enum int, key glfw.Key) {
-
-// 	oldKey, ok := i.enumToKey[enum]
-
-// 	if !ok {
-// 		log.Fatalf("Can't bind %v key!\n", key)
-// 	}
-
-// 	if oldKey == key {
-// 		return
-// 	}
-
-// 	//reset old key
-// 	bindEnum, ok := i.keyToEnum[key]
-
-// 	if ok {
-// 		i.enumToKey[bindEnum] = glfw.KeyUnknown
-// 	}
-
-// 	i.enumToKey[enum] = key
-// }
-
 func (i InputMapper) GetKey(enum int) glfw.Key {
 	key, ok := i.enumToKey[enum]
 

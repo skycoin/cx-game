@@ -3,9 +3,10 @@ package agents
 import (
 	"log"
 
+	"github.com/skycoin/cx-game/common"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/engine/input"
+	"github.com/skycoin/cx-game/engine/input/inputhandler"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
 )
@@ -20,7 +21,7 @@ type Agent struct {
 	Health            HealthComponent
 	AnimationPlayback anim.Playback
 	InventoryID       types.InventoryID
-	CS                input.ControlState
+	CS                common.Bitset
 }
 
 type AgentHandlers struct {
@@ -94,3 +95,15 @@ func (a *Agent) Validate() {
 	}
 }
 
+func (a *Agent) SetControlState(cs common.Bitset) {
+
+}
+
+func (a *Agent) ApplyControlState() {
+	moveLeft := a.CS.GetBit(inputhandler.MOVE_LEFT)
+	moveRight := a.CS.GetBit(inputhandler.MOVE_RIGHT)
+	jump := a.CS.GetBit(inputhandler.JUMP)
+	crouch := a.CS.GetBit(inputhandler.CROUCH)
+
+	
+}

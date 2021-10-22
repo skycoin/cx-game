@@ -50,3 +50,8 @@ func (i *AgentInputHandler) UpdateKeyState() {
 	i.AgentControlState.SetBit(CROUCH, crouch)
 	i.AgentControlState.SetBit(JET_PACK, jetpack)
 }
+
+
+func (i *AgentInputHandler) ProcessKeyEvents(){
+	
+}

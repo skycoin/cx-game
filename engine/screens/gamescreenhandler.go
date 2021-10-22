@@ -3,11 +3,14 @@ package screens
 import "github.com/skycoin/cx-game/engine/input/inputhandler"
 
 type GameScreenHandler struct {
-	inputHandler inputhandler.InputHandler
+	inputController inputhandler.InputController
 }
 
 func NewGameScreenHandler() *GameScreenHandler {
-	newScreenHandler := GameScreenHandler{}
+	newScreenHandler := GameScreenHandler{
+		inputHandler: inputhandler.NewAgentInputController(),
+		
+	}
 
 	return &newScreenHandler
 }

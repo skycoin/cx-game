@@ -94,7 +94,39 @@ func (w *Window) SetCallbacks() {
 }
 
 // initGlfw initializes glfw and returns a Window to use.
-func initGlfw(width, height int, resizable bool) *glfw.Window {
+func 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+initGlfw(width, height int, resizable bool) *glfw.Window {
 	if err := glfw.Init(); err != nil {
 		panic(err)
 	}
