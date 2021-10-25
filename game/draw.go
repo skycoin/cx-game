@@ -30,6 +30,7 @@ func Draw() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	render.FRAMEBUFFER_MAIN.Bind(gl.FRAMEBUFFER)
+	gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -42,6 +43,7 @@ func Draw() {
 	starfield.DrawStarField()
 
 	//queue-draw world
+	World.Planet.Draw(Cam, world.WindowLayer)
 	World.Planet.Draw(Cam, world.BgLayer)
 	World.Planet.Draw(Cam, world.PipeLayer)
 	World.Planet.Draw(Cam, world.MidLayer)
@@ -82,6 +84,7 @@ func Draw() {
 
 	//draw after flushing
 	components.Draw(&World.Entities, Cam)
+	gl.Disable(gl.BLEND)
 	particles.DrawMidTopParticles(worldCtx)
 
 	//draw lightmap

@@ -11,5 +11,5 @@ void main() {
 			 vec2(uvtransforms[instance] * vec3(spriteCoord,1) );
 
 		frag_colour = texture(tex, texCoord);
-		if (frag_colour.a < 0.1) { discard; }
+		if (frag_colour.a < 0.001) { discard; }
 }
