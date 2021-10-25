@@ -1,8 +1,10 @@
 package world
 
 import (
+	"log"
 	"strings"
 
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 )
 
@@ -10,6 +12,7 @@ type LayerID int
 
 const (
 	BgLayer LayerID = iota
+	WindowLayer
 	PipeLayer
 	MidLayer
 	TopLayer
@@ -45,6 +48,7 @@ func NewLayers(numTiles int32) Layers {
 var layerIDsByName = map[string]LayerID{
 	"foreground": TopLayer,
 	"objects":    MidLayer,
+	"windows":    WindowLayer,
 	"walls":      BgLayer,
 	"pipesim":    PipeLayer,
 }
@@ -53,4 +57,21 @@ func LayerIDForName(name string) (LayerID, bool) {
 	name = strings.ToLower(name)
 	layerID, ok := layerIDsByName[name]
 	return layerID, ok
+}
+
+func (layerID LayerID) Z() float32 {
+	if layerID == TopLayer {
+		return constants.FRONTLAYER_Z
+	} else if layerID == MidLayer {
+		return constants.MIDLAYER_Z
+	} else if layerID == BgLayer {
+		return constants.BGLAYER_Z
+	} else if layerID == PipeLayer {
+		return constants.PIPELAYER_Z
+	} else if layerID == WindowLayer {
+		return constants.WINDOWLAYER_Z
+	} else {
+		log.Fatalf("error: Unknown layer!")
+	}
+	return -1
 }

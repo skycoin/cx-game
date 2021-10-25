@@ -30,6 +30,7 @@ func SetCameraTransform(mat mgl32.Mat4) {
 
 type SpriteDrawOptions struct {
 	Outline bool
+	Cutout  bool
 }
 
 func NewSpriteDrawOptions() SpriteDrawOptions {
@@ -60,12 +61,12 @@ func drawSprite(model, view mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 	sprite := sprites[id]
 	atlas := sprite.Texture
 	framebuffer := opts.Framebuffer()
-	spriteDrawsPerAtlas, ok := spriteDrawsPerAtlasPerFramebuffer[framebuffer]
+	_, ok := spriteDrawsPerAtlasPerFramebuffer[framebuffer]
 	if !ok {
 		spriteDrawsPerAtlasPerFramebuffer[framebuffer] =
 			map[Texture][]SpriteDraw{}
 	}
-	spriteDrawsPerAtlas = spriteDrawsPerAtlasPerFramebuffer[framebuffer]
+	spriteDrawsPerAtlas := spriteDrawsPerAtlasPerFramebuffer[framebuffer]
 	spriteDrawsPerAtlas[atlas] =
 		append(spriteDrawsPerAtlasPerFramebuffer[framebuffer][atlas],
 			SpriteDraw{
@@ -73,6 +74,7 @@ func drawSprite(model, view mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 				Model:       model,
 				View:        view,
 				UVTransform: sprite.Transform,
+				Options:     opts,
 			})
 }
 
@@ -87,6 +89,7 @@ func drawUISprite(model, view mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) {
 				Model:       model,
 				View:        view,
 				UVTransform: sprite.Transform,
+				Options:     opts,
 			})
 }
 
@@ -136,10 +139,37 @@ func FlushUI() {
 	flushColorDraws(Projection)
 }
 
+func filterCutoutSpriteDrawsPerAtlas(
+	spriteDrawsPerAtlas map[Texture][]SpriteDraw,
+) (map[Texture][]SpriteDraw, map[Texture][]SpriteDraw) {
+	cutoutSpriteDraws := map[Texture][]SpriteDraw{}
+	nonCutoutSpriteDraws := map[Texture][]SpriteDraw{}
+	for atlas, spriteDraws := range spriteDrawsPerAtlas {
+		cutoutSpriteDraws[atlas] = []SpriteDraw{}
+		nonCutoutSpriteDraws[atlas] = []SpriteDraw{}
+		for _, spriteDraw := range spriteDraws {
+			if spriteDraw.Options.Cutout {
+				cutoutSpriteDraws[atlas] =
+					append(cutoutSpriteDraws[atlas], spriteDraw)
+			} else {
+				nonCutoutSpriteDraws[atlas] =
+					append(nonCutoutSpriteDraws[atlas], spriteDraw)
+			}
+		}
+	}
+	return cutoutSpriteDraws, nonCutoutSpriteDraws
+}
+
 func drawFramebufferSprites(framebuffer Framebuffer) {
 	framebuffer.Bind(gl.FRAMEBUFFER)
 	spriteDrawsPerAtlas := spriteDrawsPerAtlasPerFramebuffer[framebuffer]
-	for atlas, spriteDraws := range spriteDrawsPerAtlas {
+	cutoutSpriteDraws, nonCutoutSpriteDraws :=
+		filterCutoutSpriteDrawsPerAtlas(spriteDrawsPerAtlas)
+
+	for atlas, spriteDraws := range cutoutSpriteDraws {
+		drawAtlasSprites(atlas, spriteDraws)
+	}
+	for atlas, spriteDraws := range nonCutoutSpriteDraws {
 		drawAtlasSprites(atlas, spriteDraws)
 	}
 }
@@ -193,6 +223,8 @@ func flushSpriteDraws(zoom float32) {
 	gl.DepthMask(true)
 	drawFramebufferSprites(FRAMEBUFFER_PLANET)
 
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	drawFramebufferSprites(FRAMEBUFFER_MAIN)
 
 	spriteDrawsPerAtlasPerFramebuffer = // clear sprite draws
