@@ -56,6 +56,8 @@ func GetAxis(axis Axis) float32 {
 
 }
 
+var MouseCoords cxmath.Vec2
+
 func GetMouseX() float32 {
 	return float32(MouseCoords.X)
 }

@@ -5,6 +5,7 @@ import "github.com/go-gl/glfw/v3.3/glfw"
 const (
 	MOVE_LEFT = iota
 	MOVE_RIGHT
+	FALL_DOWN
 	JUMP
 	CROUCH
 	JET_PACK
@@ -21,6 +22,7 @@ func NewAgentInputMapper() InputMapper {
 
 	newInputMapper.BindKey(glfw.KeyA, MOVE_LEFT)
 	newInputMapper.BindKey(glfw.KeyD, MOVE_RIGHT)
+	newInputMapper.BindKey(glfw.KeyS, FALL_DOWN)
 	newInputMapper.BindKey(glfw.KeySpace, JUMP)
 	newInputMapper.BindKey(glfw.KeyLeftShift, CROUCH)
 	newInputMapper.BindKey(glfw.KeyT, JET_PACK)

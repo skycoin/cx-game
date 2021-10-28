@@ -13,6 +13,7 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/input"
+	"github.com/skycoin/cx-game/engine/screens"
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
@@ -23,7 +24,7 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/stars/starfield"
 	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/world/import"
+	worldimport "github.com/skycoin/cx-game/world/import"
 )
 
 func init() {
@@ -44,6 +45,8 @@ var (
 	World              world.World
 	DrawCollisionBoxes = false
 	FPS                int
+
+	ScreenManager *screens.ScreenManager
 
 	//unused
 	// isTileSelectorVisible = false
@@ -68,6 +71,8 @@ func Init() {
 	window.SetScrollCallback(scrollCallback)
 	window.SetCursorPosCallback(cursorPosCallback)
 	//window.SetSizeCallback(windowSizeCallback)
+
+	ScreenManager = screens.NewDevScreenManager()
 
 	input.Init(win.Window)
 	sound.Init()

@@ -31,6 +31,12 @@ func (i *AgentInputHandler) UpdateKeyState() {
 		right = false
 	}
 
+	down, ok := input.KeyPressed[i.Mapper.GetKey(FALL_DOWN)]
+
+	if !ok {
+		down = false
+	}
+
 	jump, ok = input.KeyPressed[i.Mapper.GetKey(JUMP)]
 	if !ok {
 		jump = false
@@ -46,12 +52,12 @@ func (i *AgentInputHandler) UpdateKeyState() {
 
 	i.AgentControlState.SetBit(MOVE_LEFT, left)
 	i.AgentControlState.SetBit(MOVE_RIGHT, right)
+	i.AgentControlState.SetBit(FALL_DOWN, down)
 	i.AgentControlState.SetBit(JUMP, jump)
 	i.AgentControlState.SetBit(CROUCH, crouch)
 	i.AgentControlState.SetBit(JET_PACK, jetpack)
 }
 
+func (i *AgentInputHandler) ProcessKeyEvents() {
 
-func (i *AgentInputHandler) ProcessKeyEvents(){
-	
 }

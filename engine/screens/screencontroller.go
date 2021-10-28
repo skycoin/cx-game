@@ -15,19 +15,24 @@ const (
 	*/
 )
 
-type ScreenController struct {
+type ScreenManager struct {
 	screenHandlers map[SCREEN]ScreenHandler
+
+	//todo have a queue of active screens
+	activeScreen SCREEN
 }
 
-func NewDevScreenController() *ScreenController {
-	newScreenController := ScreenController{
+func NewDevScreenManager() *ScreenManager {
+	newScreenController := ScreenManager{
 		screenHandlers: make(map[SCREEN]ScreenHandler),
 	}
 
-	newScreenController.screenHandlers[TITLE] = NewTitleScreenHandler()
+	// newScreenController.screenHandlers[TITLE] = NewTitleScreenHandler()
 
 	newScreenController.screenHandlers[GAME] = NewGameScreenHandler()
-	newScreenController.screenHandlers[MENU] = NewMenuScreenHandler()
-	newScreenController.screenHandlers[MAP] = NewMapScreenHandler()
-
+	newScreenController.activeScreen = GAME
+	// newScreenController.screenHandlers[MENU] = NewMenuScreenHandler()
+	// newScreenController.screenHandlers[MAP] = NewMapScreenHandler()
+	return &newScreenController
 }
+ 

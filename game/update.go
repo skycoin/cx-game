@@ -15,7 +15,7 @@ import (
 )
 
 func Update(dt float32) {
-	player = findPlayer()
+	// player = findPlayer()
 	FixedUpdate(dt)
 	// physics.Simulate(dt, CurrentPlanet)
 	components.Update(dt)
@@ -46,19 +46,19 @@ func Update(dt float32) {
 	ui.TickDialogueBoxes(dt)
 	particles.TickParticles(dt)
 
-	sound.SetListenerPosition(player.Transform.Pos)
+	sound.SetListenerPosition(player.GetAgent().Transform.Pos)
 	//has to be after listener position is updated
 	sound.Update()
 
 	commandContext := console.NewCommandContext()
 	commandContext.World = &World
-	commandContext.Player = player
+	commandContext.Player = player.GetAgent()
 	// Console.Update(window, commandContext)
 
 	starfield.UpdateStarField(dt)
 
 	mousePos := input.GetMousePos()
-	item.GetInventoryById(player.InventoryID).PlacementGrid.UpdatePreview(
+	item.GetInventoryById(player.GetAgent().InventoryID).PlacementGrid.UpdatePreview(
 		&World,
 		mousePos.X(),
 		mousePos.Y(),

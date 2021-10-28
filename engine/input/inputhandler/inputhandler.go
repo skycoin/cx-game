@@ -1,5 +1,8 @@
 package inputhandler
 
-type InputHandler interface {
-	UpdateKeyState()
-}
+//todo use interface
+
+// type InputHandler interface {
+// 	UpdateKeyState()
+// 	GetKeyState()
+// }

@@ -96,14 +96,34 @@ func (a *Agent) Validate() {
 }
 
 func (a *Agent) SetControlState(cs common.Bitset) {
-
+	//todo sanitize
+	a.CS = cs
 }
 
 func (a *Agent) ApplyControlState() {
 	moveLeft := a.CS.GetBit(inputhandler.MOVE_LEFT)
 	moveRight := a.CS.GetBit(inputhandler.MOVE_RIGHT)
-	jump := a.CS.GetBit(inputhandler.JUMP)
-	crouch := a.CS.GetBit(inputhandler.CROUCH)
+	falldown := a.CS.GetBit(inputhandler.FALL_DOWN)
 
-	
+	if falldown > constants.IGNOREPLATFORM_THRESHOLD {
+		a.Meta.IgnoringPlatformsFor = 30
+	}
+	// jump := a.CS.GetBit(inputhandler.JUMP)
+	// crouch := a.CS.GetBit(inputhandler.CROUCH)
+	// jetpack := a.CS.GetBit(inputhandler.JET_PACK)
+
+	movMultiplier := float32(0)
+
+	//todo add acceleration curve if needed
+	if moveLeft > 0 {
+		movMultiplier -= 1
+	}
+	if moveRight > 0 {
+		movMultiplier += 1
+	}
+
+	if movMultiplier != 0 {
+		//todo change this as field to agent
+		a.Transform.Vel.X = constants.PLAYER_SPEED
+	}
 }

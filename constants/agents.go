@@ -28,4 +28,8 @@ const (
 
 const (
 	PLAYER_RENDER_TO_HITBOX float32 = 43.0 / 64
+
+	PLAYER_SPEED = 5
+
+	IGNOREPLATFORM_THRESHOLD = 40
 )
