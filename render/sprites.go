@@ -13,11 +13,13 @@ func addSprite(sprite Sprite) int {
 	return id
 }
 
-func RegisterSprite(sprite Sprite) {
+func RegisterSprite(sprite Sprite) SpriteID {
 	if sprite.Name == "" {
 		log.Fatal("cannot register sprite with empty name")
 	}
-	spriteNamesToIDs[sprite.Name] = addSprite(sprite)
+	spriteID := addSprite(sprite)
+	spriteNamesToIDs[sprite.Name] = spriteID
+	return SpriteID(spriteID)
 }
 
 func GetSpriteIDByName(name string) SpriteID {

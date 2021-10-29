@@ -15,13 +15,14 @@ const (
 const (
 	BACKGROUND_Z float32 = -100
 	//2_gap between layers so we can draw something between them
-	BGLAYER_Z    float32 = -12
-	PIPELAYER_Z  float32 = -11
-	MIDLAYER_Z   float32 = -10
-	FRONTLAYER_Z float32 = -8
-	AGENT_Z      float32 = -5
-	PLAYER_Z     float32 = -3
-	HUD_Z        float32 = 2
+	BGLAYER_Z     float32 = -12
+	WINDOWLAYER_Z float32 = -11.5
+	PIPELAYER_Z   float32 = -11
+	MIDLAYER_Z    float32 = -10
+	FRONTLAYER_Z  float32 = -8
+	AGENT_Z       float32 = -5
+	PLAYER_Z      float32 = -3
+	HUD_Z         float32 = 2
 )
 
 var (

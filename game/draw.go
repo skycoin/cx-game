@@ -7,6 +7,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/components"
+	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
@@ -29,6 +30,7 @@ func Draw() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	render.FRAMEBUFFER_MAIN.Bind(gl.FRAMEBUFFER)
+	gl.ClearColor(7.0/255.0, 8.0/255.0, 25.0/255.0, 1.0)
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
@@ -41,6 +43,7 @@ func Draw() {
 	starfield.DrawStarField()
 
 	//queue-draw world
+	World.Planet.Draw(Cam, world.WindowLayer)
 	World.Planet.Draw(Cam, world.BgLayer)
 	World.Planet.Draw(Cam, world.PipeLayer)
 	World.Planet.Draw(Cam, world.MidLayer)
@@ -68,17 +71,27 @@ func Draw() {
 
 	Console.Draw(win.DefaultRenderContext())
 
+	physicalViewport := render.GetCurrentViewport()
+	virtualViewport :=
+		render.Viewport{
+			0, 0,
+			constants.VIRTUAL_VIEWPORT_WIDTH,
+			constants.VIRTUAL_VIEWPORT_HEIGHT,
+		}
+	virtualViewport.Use()
 	components.Draw_Queued(&World.Entities, Cam)
 	render.Flush(Cam.Zoom.Get())
 
 	//draw after flushing
 	components.Draw(&World.Entities, Cam)
+	gl.Disable(gl.BLEND)
 	particles.DrawMidTopParticles(worldCtx)
 
 	//draw lightmap
 	World.Planet.DrawLighting(Cam, &World.TimeState)
 
 	//post-process
+	physicalViewport.Use()
 	PostProcess()
 
 	//draw ui

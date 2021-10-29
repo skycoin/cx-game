@@ -1,8 +1,6 @@
 package world
 
 import (
-	"log"
-
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/types"
@@ -19,16 +17,16 @@ type Placer interface {
 
 // place tiles for a tiletype which has a single sprite
 type DirectPlacer struct {
-	SpriteID          render.SpriteID
-    Tile              Tile
+	SpriteID render.SpriteID
+	Tile     Tile
 }
 
 func (placer DirectPlacer) CreateTile(
 	tt TileType, opts TileCreationOptions,
 ) Tile {
-    tile := placer.Tile
-    tile.SpriteID = placer.SpriteID
-    return tile
+	tile := placer.Tile
+	tile.SpriteID = placer.SpriteID
+	return tile
 }
 
 // nothing to update
@@ -89,10 +87,7 @@ func (tt TileType) UpdateTile(opts TileUpdateOptions) {
 	tt.Placer.UpdateTile(tt, opts)
 }
 
-// add the null tile type as first element such that tileTypes[0] is empty
-var tileTypes = make([]TileType, 1)
-var furnitureTileTypes = make([]TileType, 0)
-var tileTileTypes = make([]TileType, 0)
+var tileTypes = make([]TileType, 0)
 var tileTypeIDsByName = make(map[string]TileTypeID)
 
 func RegisterTileType(
@@ -122,7 +117,7 @@ func NextTileTypeID() TileTypeID {
 }
 
 func GetTileTypeByID(id TileTypeID) (TileType, bool) {
-	ok := id >= 1 && id < TileTypeID(len(tileTypes))
+	ok := id < TileTypeID(len(tileTypes))
 	if ok {
 		return tileTypes[id], true
 	} else {
@@ -130,12 +125,9 @@ func GetTileTypeByID(id TileTypeID) (TileType, bool) {
 	}
 }
 
-func IDFor(name string) TileTypeID {
+func IDFor(name string) (TileTypeID, bool) {
 	id, ok := tileTypeIDsByName[name]
-	if !ok {
-		log.Fatalf("cannot find tile type ID for \"%s\"", name)
-	}
-	return id
+	return id, ok
 }
 
 func (id TileTypeID) Get() *TileType {

@@ -1,12 +1,9 @@
 package world
 
 import (
-	"log"
-
 	"github.com/go-gl/mathgl/mgl32"
 	//"github.com/go-gl/gl/v4.1-core/gl"
 
-	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/mathi"
 	"github.com/skycoin/cx-game/engine/camera"
@@ -58,26 +55,15 @@ func (planet *Planet) DrawHemisphere(
 
 	visible := planet.visibleTiles(layer, cam, left, right)
 	for _, positionedTile := range visible {
-		// z := -10+float32(layerID)/4
-		// TODO use a data structure instead of if/else
-		var z float32
-		if layerID == TopLayer {
-			z = constants.FRONTLAYER_Z
-		} else if layerID == MidLayer {
-			z = constants.MIDLAYER_Z
-		} else if layerID == BgLayer {
-			z = constants.BGLAYER_Z
-		} else if layerID == PipeLayer {
-			z = constants.PIPELAYER_Z
-		} else {
-			log.Fatalf("error: Unknown layer!")
-		}
-
+		z := layerID.Z()
 		transform := positionedTile.Transform().
 			Mul4(mgl32.Translate3D(0, 0, z))
 		drawOpts := render.NewSpriteDrawOptions()
 		if layerID == TopLayer {
 			drawOpts.Outline = true
+		}
+		if layerID == WindowLayer {
+			drawOpts.Cutout = true
 		}
 		render.
 			DrawWorldSprite(transform, positionedTile.Tile.SpriteID, drawOpts)
@@ -114,7 +100,10 @@ func (planet *Planet) visibleTiles(
 			tileIdx := planet.GetTileIndex(x, y)
 			if tileIdx != -1 {
 				tile := layer.Tiles[tileIdx]
-				if tile.TileCategory != TileCategoryNone {
+				shouldRender :=
+					tile.TileCategory != TileCategoryNone &&
+						tile.TileCategory != TileCategoryChild
+				if shouldRender {
 					positionedTiles = append(positionedTiles, PositionedTile{
 						Position: cxmath.Vec2i{X: int32(x), Y: int32(y)},
 						Tile:     tile,
