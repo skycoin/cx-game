@@ -19,6 +19,9 @@ import (
 	"github.com/skycoin/cx-game/world"
 )
 
+const(
+	
+)
 type GameScreenHandler struct {
 	inputHandler *inputhandler.AgentInputHandler
 }
