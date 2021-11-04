@@ -46,7 +46,7 @@ func screenPos() (float32, float32) {
 func mouseReleaseCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
-	input.MousePressed = false
+	// input.MousePressed = false
 	mousePos := input.GetMousePos()
 
 	inventory := item.GetInventoryById(player.GetAgent().InventoryID)
@@ -57,7 +57,7 @@ func mouseReleaseCallback(
 func mousePressCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
-	input.MousePressed = true
+	// input.MousePressed = true
 
 	// we only care about mousedown events for now
 	if a != glfw.Press {

@@ -179,7 +179,7 @@ func createPlayer(opts AgentCreationOptions) *Agent {
 	agent := Agent{
 		PlayerControlled: true,
 		Handlers: AgentHandlers{
-			AI:   constants.AI_HANDLER_PLAYER,
+			AI:   constants.AI_HANDLER_NULL,
 			Draw: constants.DRAW_HANDLER_PLAYER,
 		},
 

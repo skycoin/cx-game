@@ -41,17 +41,17 @@ func (console *Console) ToggleActive(window *glfw.Window) {
 }
 
 func (console *Console) Update(window *glfw.Window, ctx CommandContext) {
-	if input.GetKeyDown(glfw.KeyGraveAccent) {
-		console.ToggleActive(window)
-	}
-	if console.active {
-		if input.GetKeyDown(glfw.KeyBackspace) && len(console.line) > 0 {
-			console.line = console.line[:len(console.line)-1]
-		}
-		if input.GetKeyDown(glfw.KeyEnter) {
-			console.Command(ctx)
-		}
-	}
+	// if input.GetKeyDown(glfw.KeyGraveAccent) {
+	// 	console.ToggleActive(window)
+	// }
+	// if console.active {
+	// 	if input.GetKeyDown(glfw.KeyBackspace) && len(console.line) > 0 {
+	// 		console.line = console.line[:len(console.line)-1]
+	// 	}
+	// 	if input.GetKeyDown(glfw.KeyEnter) {
+	// 		console.Command(ctx)
+	// 	}
+	// }
 }
 
 func (console *Console) Draw(ctx render.Context) {

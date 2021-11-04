@@ -12,7 +12,10 @@ package game
 // 	"github.com/skycoin/cx-game/world"
 // )
 
-// func ProcessInput() {
+func ProcessInput() {
+	ScreenManager.ProcessInput()
+}
+
 // 	switch input.GetInputContext() {
 // 	case input.GAME:
 // 		if input.GetButtonDown("mute") {

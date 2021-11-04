@@ -13,6 +13,7 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/input"
+	"github.com/skycoin/cx-game/engine/input/inputhandler"
 	"github.com/skycoin/cx-game/engine/screens"
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/spriteloader"
@@ -67,12 +68,10 @@ func Init() {
 		render.FixRenderCOCOA(window)
 	}
 
-	window.SetMouseButtonCallback(mouseButtonCallback)
-	window.SetScrollCallback(scrollCallback)
-	window.SetCursorPosCallback(cursorPosCallback)
+	// window.SetMouseButtonCallback(mouseButtonCallback)
+	// window.SetScrollCallback(scrollCallback)
+	// window.SetCursorPosCallback(cursorPosCallback)
 	//window.SetSizeCallback(windowSizeCallback)
-
-	ScreenManager = screens.NewDevScreenManager()
 
 	input.Init(win.Window)
 	sound.Init()
@@ -148,10 +147,26 @@ func Init() {
 	player.SetPlayerAgent(playerAgent)
 
 	sound.LoadSound("player_jump", "jump.wav")
-	Console = console.New()
+	// Console = console.New()
 
 	//add oxygen emitter
 	particle_emitter.EmitOxygen(playerAgentID, &World.Entities.Particles)
 	render.NewColorShader()
 
+	ScreenManager = screens.NewDevScreenManager(&World, Cam, &win, player,fps)
+
+	RegisterActions(ScreenManager)
+}
+
+func RegisterActions(screenManager *screens.ScreenManager) {
+
+	//toggle cam
+	screenManager.RegisterButton(screens.GAME, inputhandler.ActionInfo{
+		Type: input.KEY_DOWN,
+		Key:  int(glfw.KeyP),
+		Enum: inputhandler.TOGGLE_FREECAM,
+		Action: func() {
+			Cam.ToggleFreecam()
+		},
+	})
 }

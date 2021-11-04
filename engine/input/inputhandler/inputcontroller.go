@@ -1,21 +1,21 @@
 package inputhandler
 
-// type InputController struct {
-// 	inputHandlers      []InputHandler
-// 	activeInputHandler InputHandler
-// }
+type InputController struct {
+	inputHandlers      []InputHandler
+	activeInputHandler InputHandler
+}
 
-// func NewInputController() *InputController {
-// 	newInputController := InputController{
-// 		inputHandlers: make([]InputHandler, 0),
-// 	}
+func NewInputController() *InputController {
+	newInputController := InputController{
+		inputHandlers: make([]InputHandler, 0),
+	}
 
-// 	newInputController.inputHandlers = append(
-// 		newInputController.inputHandlers,
-// 		NewAgentInputHandler(),
-// 	)
-// 	newInputController.activeInputHandler = NewAgentInputHandler()
-// 	// newInputController.SetActiveInputHandler()
+	newInputController.inputHandlers = append(
+		newInputController.inputHandlers,
+		NewAgentInputHandler(),
+	)
+	newInputController.activeInputHandler = NewAgentInputHandler()
+	// newInputController.SetActiveInputHandler()
 
-// 	return &newInputController
-// }
+	return &newInputController
+}

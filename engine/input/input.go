@@ -36,10 +36,15 @@ func Init(window *glfw.Window) {
 	window_ = window
 	registerCallbacks()
 	registerKeyMaps()
+
 }
 
 func registerCallbacks() {
 	window_.SetKeyCallback(keyCallback)
+	window_.SetMouseButtonCallback(mouseButtonCallback)
+	window_.SetCursorPosCallback(cursorPosCallback)
+	window_.SetScrollCallback(scrollCallback)
+	window_.SetSizeCallback(sizeCallback)
 }
 
 func registerKeyMaps() {

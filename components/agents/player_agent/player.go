@@ -1,6 +1,8 @@
 package player_agent
 
+/*
 import (
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/particles/particle_emitter"
 	"github.com/skycoin/cx-game/constants"
@@ -31,6 +33,7 @@ var (
 
 func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 
+	glfw.MouseButton1
 	var inputXAxis float32
 	//added this check to prevent player from moving when in "freecam" or other mode
 	if input.GetInputContext() == input.GAME {
@@ -112,3 +115,6 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 
 	player.Transform.IsIgnoringPlatforms = player.Meta.IgnoringPlatformsFor > 0
 }
+
+
+*/

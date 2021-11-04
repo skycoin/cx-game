@@ -15,8 +15,8 @@ var (
 	mousePressed map[glfw.MouseButton]bool = make(map[glfw.MouseButton]bool)
 
 	//for physics
-	FixedMouseInfo MouseInfo
-	RenderMouseInfo      MouseInfo
+	FixedMouseInfo  MouseInfo
+	RenderMouseInfo MouseInfo
 )
 
 type MouseInfo struct {
@@ -50,9 +50,42 @@ func PollMouse(window *glfw.Window, fixed bool) {
 func mouseButtonCallback(
 	w *glfw.Window, b glfw.MouseButton, a glfw.Action, mk glfw.ModifierKey,
 ) {
+	//todo add support for modifier keys
 	if a == glfw.Press {
 		mousePressed[b] = true
+		InputEvents = append(InputEvents, EventInfo{
+			Type:   MOUSE_DOWN,
+			Button: int(b),
+		})
 	} else if a == glfw.Release {
 		mousePressed[b] = false
+		InputEvents = append(InputEvents, EventInfo{
+			Type:   MOUSE_UP,
+			Button: int(b),
+		})
 	}
+}
+
+func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
+	//convenient for when we need to turn off cursor after some idle period
+	InputEvents = append(InputEvents, EventInfo{
+		Type: MOUSE_MOVED,
+	})
+}
+
+func scrollCallback(w *glfw.Window, xOff, yOff float64) {
+	var scrollEvent EventType
+	if yOff > 1 {
+		scrollEvent = MOUSE_SCROLL_DOWN
+	} else {
+		scrollEvent = MOUSE_SCROLL_UP
+	}
+
+	InputEvents = append(InputEvents, EventInfo{
+		Type: scrollEvent,
+	})
+}
+
+func sizeCallback(w *glfw.Window, width, height int) {
+	//todo
 }

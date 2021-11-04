@@ -3,6 +3,7 @@ package inputhandler
 import "github.com/go-gl/glfw/v3.3/glfw"
 
 const (
+	//states
 	MOVE_LEFT = iota
 	MOVE_RIGHT
 	FALL_DOWN
@@ -12,6 +13,17 @@ const (
 
 	//len
 	AGENT_KEYSTATE_LENGTH
+
+	// //actions
+	// ENABLE_BACKGROUND
+)
+
+type ActionEnum int
+
+const (
+	ENABLE_BACKGROUND ActionEnum = 20 + iota
+	DISABLE_BACKGROUND
+	TOGGLE_FREECAM
 )
 
 func NewAgentInputMapper() InputMapper {

@@ -13,8 +13,11 @@ func Run() {
 		dt = currTime - lastFrame
 		lastFrame = currTime
 
-		// ProcessInput()
+		ProcessInput()
 		Update(dt)
 		Draw()
+
+		win.Window.SwapBuffers()
+		glfw.PollEvents()
 	}
 }

@@ -11,7 +11,9 @@ func UpdateAgents(World *world.World) {
 		if agent == nil {
 			continue
 		}
-		agent.ApplyControlState()
+		if agent.PlayerControlled {
+			agent.ApplyControlState()
+		}
 		agent.Transform.
 			Move(&World.Planet, constants.PHYSICS_TICK)
 	}

@@ -16,6 +16,7 @@ func (i InputMapper) GetKey(enum int) glfw.Key {
 
 	if !ok {
 		log.Fatalln("No such enum!")
+		// return glfw.KeyUnknown
 	}
 
 	return key

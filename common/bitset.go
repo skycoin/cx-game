@@ -15,7 +15,10 @@ func (b Bitset) GetBit(i int) byte {
 }
 
 func (b Bitset) SetBit(i int, value bool) {
-	if value && b[i] < 255 {
+	if value {
+		if b[i] == 255 {
+			return
+		}
 		b[i]++
 	} else {
 		b[i] = 0

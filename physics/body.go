@@ -204,6 +204,7 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	body.PrevPos = body.Pos
 	body.Collisions.Reset()
 
+	//delta time is fixed
 	body.Vel.Y -= constants.Gravity * dt
 	//account drag
 	body.Vel.Y += 0.1 * body.Vel.Y * body.Vel.Y * 0.2 * dt

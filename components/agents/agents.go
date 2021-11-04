@@ -1,6 +1,7 @@
 package agents
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/skycoin/cx-game/common"
@@ -50,6 +51,9 @@ func (a *Agent) FillDefaults() {
 	// if have no direction, default to right-facing / no flip
 	if a.Transform.Direction == 0 {
 		a.Transform.Direction = 1
+	}
+	if a.PlayerControlled {
+		a.CS = common.NewBitSet(inputhandler.AGENT_KEYSTATE_LENGTH)
 	}
 }
 
@@ -105,12 +109,19 @@ func (a *Agent) ApplyControlState() {
 	moveRight := a.CS.GetBit(inputhandler.MOVE_RIGHT)
 	falldown := a.CS.GetBit(inputhandler.FALL_DOWN)
 
+	if falldown > 0 {
+		fmt.Println("FALLDOWN: ", falldown)
+	}
 	if falldown > constants.IGNOREPLATFORM_THRESHOLD {
 		a.Meta.IgnoringPlatformsFor = 30
 	}
-	// jump := a.CS.GetBit(inputhandler.JUMP)
+	jump := a.CS.GetBit(inputhandler.JUMP)
 	// crouch := a.CS.GetBit(inputhandler.CROUCH)
 	// jetpack := a.CS.GetBit(inputhandler.JET_PACK)
+
+	if jump > 0 {
+		a.Transform.Vel.Y += constants.Gravity * constants.PHYSICS_TICK * 1.5
+	}
 
 	movMultiplier := float32(0)
 
@@ -122,8 +133,6 @@ func (a *Agent) ApplyControlState() {
 		movMultiplier += 1
 	}
 
-	if movMultiplier != 0 {
-		//todo change this as field to agent
-		a.Transform.Vel.X = constants.PLAYER_SPEED
-	}
+	//todo change this as field to agent
+	a.Transform.Vel.X = constants.PLAYER_SPEED * movMultiplier
 }

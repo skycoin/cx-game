@@ -331,3 +331,7 @@ func (cam *Camera) ScreenPos(pos mgl32.Vec2) mgl32.Vec2 {
 	)
 	return converted.Vec2()
 }
+
+func (cam *Camera) ToggleFreecam() {
+	cam.freeCam = !cam.freeCam
+}

@@ -14,6 +14,29 @@ var (
 	ButtonsMap          = make(map[InputContext]map[string]KeyComb)
 	ActiveButtonsToKeys map[string]KeyComb
 	lastKeyPressed      glfw.Key
+
+	InputEvents []EventInfo
+)
+
+type EventInfo struct {
+	Type   EventType
+	Button int
+}
+
+type EventType int
+
+const (
+	KEY_DOWN EventType = iota
+	KEY_UP
+
+	//mouse events
+	MOUSE_DOWN
+	MOUSE_UP
+
+	MOUSE_SCROLL_UP
+	MOUSE_SCROLL_DOWN
+
+	MOUSE_MOVED
 )
 
 type Axis int
@@ -34,20 +57,24 @@ func keyCallback(
 ) {
 	modifierKey = mk
 
-	if action == glfw.Press {
+	newEvent := EventInfo{
+		Button: int(key),
+	}
+	switch action {
+	case glfw.Press:
 		if key == glfw.KeyEscape {
 			w.SetShouldClose(true)
 		}
-
-		ProcessFlags(key, mk)
-
-		lastKeyPressed = key
 		KeyPressed[key] = true
+		newEvent.Type = KEY_DOWN
+		lastKeyPressed = key
+		//todo check for maybe some concurrency issues, since filling and emptying array happens in different threads
 
-	} else if action == glfw.Repeat {
-		//nothing
-	} else if action == glfw.Release {
-		modifierKey = 0
+		InputEvents = append(InputEvents, newEvent)
+	case glfw.Release:
 		KeyPressed[key] = false
+		newEvent.Type = KEY_UP
+		InputEvents = append(InputEvents, newEvent)
 	}
+
 }

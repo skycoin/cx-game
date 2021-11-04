@@ -1,9 +1,9 @@
 package inputhandler
 
-import "github.com/skycoin/cx-game/common"
+// import "github.com/skycoin/cx-game/common"
 
-type AgentControlState common.Bitset
+// type AgentControlState common.Bitset
 
-func NewAgentControlState() AgentControlState {
-	return AgentControlState(common.NewBitSet(AGENT_KEYSTATE_LENGTH))
-}
+// func NewAgentControlState() AgentControlState {
+// 	return AgentControlState(common.NewBitSet(AGENT_KEYSTATE_LENGTH))
+// }
