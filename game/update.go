@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/constants"
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/particles"
@@ -21,23 +22,23 @@ func Update(dt float32) {
 	}
 	components.Update(dt)
 
-	// if Cam.IsFreeCam() {
-	// 	Cam.MoveCam(dt)
-	// } else {
-	// 	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
-	// 	body :=
-	// 		World.Entities.Agents.FromID(playerAgentID).Transform
+	if Cam.IsFreeCam() {
+		Cam.MoveCam(dt)
+	} else {
+		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+		body :=
+			World.Entities.Agents.FromID(playerAgentID).Transform
 
-	// 	var interpolatedPos cxmath.Vec2
-	// 	if !body.PrevPos.Equal(body.Pos) {
-	// 		interpolatedPos = body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
+		var interpolatedPos cxmath.Vec2
+		if !body.PrevPos.Equal(body.Pos) {
+			interpolatedPos = body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
 
-	// 	} else {
-	// 		interpolatedPos = body.Pos
-	// 	}
-	// 	Cam.SetCameraPosition(interpolatedPos.X, interpolatedPos.Y)
-	// }
-	
+		} else {
+			interpolatedPos = body.Pos
+		}
+		Cam.SetCameraPosition(interpolatedPos.X, interpolatedPos.Y)
+	}
+
 	World.Planet.Update(dt)
 	fps.Tick()
 	ui.TickDialogueBoxes(dt)

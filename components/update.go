@@ -39,8 +39,8 @@ func updateTimers(agents []*agents.Agent, dt float32) {
 
 func FixedUpdate() {
 	agent_health.UpdateAgents(currentWorld)
-	agent_physics.UpdateAgents(currentWorld)
 	agent_ai.UpdateAgents(currentWorld, currentPlayer)
+	agent_physics.UpdateAgents(currentWorld)
 	
 	particle_physics.Update(currentWorld)
 }
