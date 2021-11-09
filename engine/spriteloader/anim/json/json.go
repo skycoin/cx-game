@@ -54,8 +54,8 @@ type Meta struct {
 }
 
 type AnimatedSpritesheet struct {
-	Frames        map[string]KeyFrame `json:"frames"`
-	Meta          Meta `json:"meta"`
+	Frames map[string]KeyFrame `json:"frames"`
+	Meta   Meta                `json:"meta"`
 }
 
 func UnmarshalAnimatedSpriteSheet(buf []byte) AnimatedSpritesheet {
