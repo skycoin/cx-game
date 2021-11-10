@@ -35,10 +35,31 @@ type Slots struct {
 	Slots map[string]Slot `json:"slots"`
 }
 
+type Ikitem struct {
+	Name   string            `json:"name"`
+	Order  int               `json:"name"`
+	Bones  map[string]string `json:"bones"`
+	Target string            `json:"target"`
+}
+
 type Ik struct {
+	Ik map[string]Ikitem `json:"ik"`
+}
+
+type Back_arm struct {
+	Type   string `json:"type"`
+	Hull   int    `json:"hull"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
+}
+
+type Attachments struct {
+	Back_arm
 }
 
 type Skins struct {
+	Name        string      `json:"name"`
+	Attachments Attachments `json:"attachments"`
 }
 
 type Animations struct {
