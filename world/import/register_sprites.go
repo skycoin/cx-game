@@ -2,7 +2,6 @@ package worldimport
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/lafriks/go-tiled"
 
@@ -62,7 +61,6 @@ func findTiledSpritesInMapTilesets(
 	tiledSprites := TiledSprites{}
 
 	for _, tileset := range tiledMap.Tilesets {
-		log.Printf("registering sprites for tileset %v", tileset.Name)
 		registeredTileIDs := map[uint32]bool{}
 		for _, tilesetTile := range tileset.Tiles {
 			name := nameForTilesetTile(tileset.Name, tilesetTile.ID)

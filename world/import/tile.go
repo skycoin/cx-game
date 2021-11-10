@@ -2,7 +2,6 @@ package worldimport
 
 import (
 	"image"
-	"log"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lafriks/go-tiled"
@@ -70,13 +69,10 @@ func powerPlacerForTileSprites(tileSprites []RegisteredTiledSprite) world.Placer
 	for _, tileSprite := range tileSprites {
 		if tileSprite.Metadata.Powered.Value {
 			placer.OnSpriteID = tileSprite.SpriteID
-			log.Printf("on = %v", placer.OnSpriteID)
 		} else {
 			placer.OffSpriteID = tileSprite.SpriteID
-			log.Printf("off = %v", placer.OffSpriteID)
 		}
 	}
-	log.Printf("placer looks like %+v", placer)
 	return placer
 }
 
