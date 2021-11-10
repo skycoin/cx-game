@@ -34,7 +34,8 @@ func placeLayer(
 		height := int(depth + noiseSample*noiseScale)
 		for i := 0; i < height; i++ {
 			y := planet.GetHeight(int(x)) + 1
-			planet.PlaceTileType(tileTypeID, int(x), int(y))
+			opts := world.NewTileCreationOptions()
+			planet.PlaceTileType(tileTypeID, int(x), int(y), opts)
 			positions = append(positions, cxmath.Vec2i{x, int32(y)})
 		}
 	}
@@ -62,7 +63,8 @@ func placeOres(planet *world.Planet, tile world.Tile, threshold float32) {
 func placeBgTile(
 	planet *world.Planet, tileTypeID world.TileTypeID, pos cxmath.Vec2i,
 ) {
-	planet.PlaceTileType(tileTypeID, int(pos.X), int(pos.Y))
+	opts := world.NewTileCreationOptions()
+	planet.PlaceTileType(tileTypeID, int(pos.X), int(pos.Y), opts)
 }
 
 func placePoles(planet *world.Planet) {
@@ -84,11 +86,13 @@ func idFor(name string) world.TileTypeID {
 const poleRadius int = 4
 
 func placePole(planet *world.Planet, origin int) {
+	opts := world.NewTileCreationOptions()
+
 	for x := origin - poleRadius; x < origin+poleRadius; x++ {
 		for y := 0; y < int(planet.Height); y++ {
-			tile := planet.GetTile(x, y, world.TopLayer)
+			tile,_ := planet.GetTile(x, y, world.TopLayer)
 			if tile.TileTypeID == idFor("regolith") {
-				planet.PlaceTileType(idFor("methane-ice"), x, y)
+				planet.PlaceTileType(idFor("methane-ice"), x, y, opts)
 			}
 		}
 	}

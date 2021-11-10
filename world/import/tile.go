@@ -1,20 +1,15 @@
 package worldimport
 
 import (
-	"fmt"
 	"image"
-	"path"
+	"log"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/lafriks/go-tiled"
 
-	"github.com/skycoin/cx-game/world"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/engine/spriteloader"
-	"github.com/skycoin/cx-game/cxmath/math32"
-	"github.com/skycoin/cx-game/render"
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/skycoin/cx-game/world"
 )
 
 func defaltToolForLayer(layerID world.LayerID) types.ToolType {
@@ -24,42 +19,8 @@ func defaltToolForLayer(layerID world.LayerID) types.ToolType {
 	return constants.FURNITURE_TOOL
 }
 
-func registerTilesetTile(
-	imgPath string, id uint32,
-	transform mgl32.Mat3, model mgl32.Mat4, layerID world.LayerID,
-) world.TileTypeID {
-	tex := spriteloader.LoadTextureFromFileToGPUCached(imgPath)
-	name := fmt.Sprintf("%v:%v", imgPath, id)
-	sprite := render.Sprite{
-		Name:      name,
-		Transform: transform,
-		Model:     model,
-		Texture:   render.Texture{Target: gl.TEXTURE_2D, Texture: tex.Gl},
-	}
-	spriteID := render.RegisterSprite(sprite)
-
-	mw := int32(math32.Round(model.At(0, 0)))
-	mh := int32(math32.Round(model.At(1, 1)))
-
-	tile := world.NewNormalTile()
-	tile.Name = name
-	tile.TileTypeID = world.NextTileTypeID()
-
-	tileType := world.TileType{
-		Name:   name,
-		Layer:  layerID,
-		Placer: world.DirectPlacer{SpriteID: spriteID, Tile: tile},
-		Width:  mw, Height: mh,
-	}
-
-	tileTypeID :=
-		world.RegisterTileType(name, tileType, defaltToolForLayer(layerID))
-
-	return tileTypeID
-}
-
 func findTilesetTileForLayerTile(
-	tilesetTiles []*tiled.TilesetTile, layerTile *tiled.LayerTile,
+	layerTile *tiled.LayerTile,
 ) (*tiled.TilesetTile, bool) {
 	for _, tilesetTile := range layerTile.Tileset.Tiles {
 		if tilesetTile.ID == layerTile.ID {
@@ -83,21 +44,87 @@ func rectTransform(here image.Rectangle, parentDims image.Point) mgl32.Mat3 {
 	return translate.Mul3(scale)
 }
 
-func modelFromSize(dx int, dy int) mgl32.Mat4 {
-	return mgl32.Scale2D(float32(dx)/16, float32(dy)/16).Mat4()
-}
-
 type TilesetIDKey struct {
 	tileset *tiled.Tileset
 	id      uint32
-	scaleX  int
-	scaleY  int
 }
 
 var tilesetAndIDToCXTile = map[TilesetIDKey]world.TileTypeID{}
 
+func directPlacerForTileSprites(tileSprites []RegisteredTiledSprite) world.Placer {
+	tile := world.NewNormalTile()
+	tile.Name = tileSprites[0].Metadata.Name
+	tile.TileTypeID = world.NextTileTypeID()
+
+	return world.DirectPlacer{
+		SpriteID: tileSprites[0].SpriteID, Tile: tile,
+	}
+}
+
+func powerPlacerForTileSprites(tileSprites []RegisteredTiledSprite) world.Placer {
+	tile := world.NewNormalTile()
+	tile.Name = tileSprites[0].Metadata.Name
+	tile.TileTypeID = world.NextTileTypeID()
+
+	placer := world.LightPlacer{Tile: tile}
+	for _, tileSprite := range tileSprites {
+		if tileSprite.Metadata.Powered.Value {
+			placer.OnSpriteID = tileSprite.SpriteID
+			log.Printf("on = %v", placer.OnSpriteID)
+		} else {
+			placer.OffSpriteID = tileSprite.SpriteID
+			log.Printf("off = %v", placer.OffSpriteID)
+		}
+	}
+	log.Printf("placer looks like %+v", placer)
+	return placer
+}
+
+func placerForTileSprites(tileSprites []RegisteredTiledSprite) world.Placer {
+	// use powered placer if "powered" field is set on any relevant sprites
+	for _, tileSprite := range tileSprites {
+		if tileSprite.Metadata.Powered.Set {
+			return powerPlacerForTileSprites(tileSprites)
+		}
+	}
+	// otherwise, use direct placer (1:1 sprite:tiletype ratio)
+	return directPlacerForTileSprites(tileSprites)
+}
+
+func registerTileTypeForTileSprites(
+	tileSprites []RegisteredTiledSprite,
+) world.TileTypeID {
+	layerID := tileSprites[0].Metadata.LayerID
+	name := tileSprites[0].Metadata.Name
+	tileType := world.TileType{
+		Name:  name,
+		Width: tileSprites[0].Width, Height: tileSprites[0].Height,
+		Placer: placerForTileSprites(tileSprites),
+		Layer:  layerID,
+	}
+
+	tileTypeID :=
+		world.RegisterTileType(name, tileType, defaltToolForLayer(layerID))
+	return tileTypeID
+}
+
+func registerTileTypesForTiledSprites(
+	tiledSprites RegisteredTiledSprites,
+) map[string]world.TileTypeID {
+	tileTypeIDs := map[string]world.TileTypeID{}
+
+	for name, tileSprites := range tiledSprites {
+		if len(tileSprites)>0 {
+			tileTypeIDs[name] = registerTileTypeForTileSprites(tileSprites)
+		}
+	}
+
+	return tileTypeIDs
+}
+
 func getTileTypeID(
 	layerTile *tiled.LayerTile, tmxPath string, layerID world.LayerID,
+	tiledSprites TiledSprites,
 ) world.TileTypeID {
 	tileset := layerTile.Tileset
 	// nil entry => empty layer tile
@@ -106,8 +133,7 @@ func getTileTypeID(
 	}
 
 	// search for tile in existing tiles
-	tilesetTile, foundTilesetTile :=
-		findTilesetTileForLayerTile(tileset.Tiles, layerTile)
+	tilesetTile, foundTilesetTile := findTilesetTileForLayerTile(layerTile)
 
 	if foundTilesetTile {
 		cxtile := tilesetTile.Properties.GetString("cxtile")
@@ -117,34 +143,19 @@ func getTileTypeID(
 		}
 	}
 
-	flipX,flipY := scaleFromFlipFlags(layerTile)
-	flipTransform := mgl32.Scale2D( float32(flipX), float32(flipY) )
-	key := TilesetIDKey{tileset, layerTile.ID, flipX, flipY}
+	flipX, flipY := scaleFromFlipFlags(layerTile)
+	flipTransform := mgl32.Scale2D(float32(flipX), float32(flipY))
+	key := TilesetIDKey{tileset, layerTile.ID}
 	cachedTileTypeID, hitCache := tilesetAndIDToCXTile[key]
 	if hitCache {
 		return cachedTileTypeID
 	}
 
 	// did not find - register new tile type
-	if foundTilesetTile && tilesetTile.Image != nil {
-		imgPath := path.Join(tmxPath, "..", tilesetTile.Image.Source)
-		w := tilesetTile.Image.Width
-		h := tilesetTile.Image.Height
-		model := modelFromSize(w, h)
-		tileTypeID := registerTilesetTile(
-			imgPath, layerTile.ID, flipTransform, model, layerID)
-		tilesetAndIDToCXTile[key] = tileTypeID
-		return tileTypeID
-	}
-	// register new tile from tileset
-	imgPath := path.Join(tmxPath, "..", tileset.Image.Source)
-	rect := tileset.GetTileRect(layerTile.ID)
-	transform := rectTransform(rect,
-		image.Point{tileset.Image.Width, tileset.Image.Height},
-	)
-	transform = transform.Mul3(flipTransform)
-	tileTypeID := registerTilesetTile(
-		imgPath, layerTile.ID, transform, mgl32.Ident4(), layerID)
-	tilesetAndIDToCXTile[key] = tileTypeID
-	return tileTypeID
+	return registerTilesetTile(layerTile, TileRegistrationOptions{
+		TmxPath: tmxPath, LayerID: layerID, Tileset: tileset,
+		LayerTile: layerTile, TilesetTile: tilesetTile,
+		FlipTransform: flipTransform,
+		TiledSprites:  tiledSprites,
+	})
 }

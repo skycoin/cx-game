@@ -57,7 +57,7 @@ func Teleport(line string, ctx CommandContext) string {
 		ctx.Player.Transform.Pos.X,
 		ctx.Player.Transform.Pos.Y,
 	)
-	if len(words) > 1 {
+	if len(words) > 2 {
 		x,err := strconv.ParseFloat(words[1],32)
 		if err!=nil { log.Fatalf("Teleport() [x]: %v",err) }
 		y,err := strconv.ParseFloat(words[2], 32)
@@ -81,6 +81,7 @@ func init() {
 	commands["tp"] = Teleport
 	commands["help"] = Help
 	commands["printworldstats"] = PrintWorldStats
+	commands["power"] = Power
 }
 
 func processCommand(line string, ctx CommandContext) string {
@@ -88,8 +89,7 @@ func processCommand(line string, ctx CommandContext) string {
 	commandName := words[0]
 	command, ok := commands[commandName]
 	if !ok {
-		log.Printf("unrecognized command [%s]", commandName)
-		return ""
+		return fmt.Sprintf("unrecognized command [%s]", commandName)
 	}
 	return command(line, ctx)
 }

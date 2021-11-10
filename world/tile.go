@@ -1,6 +1,8 @@
 package world
 
 import (
+	"github.com/go-gl/mathgl/mgl32"
+
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -37,6 +39,13 @@ type Tile struct {
 	Connections       Connections
 	LightSource       bool
 	NeedsGround       bool
+	Power             TilePower
+
+	FlipTransform     mgl32.Mat4
+}
+
+type TilePower struct {
+	On bool
 }
 
 func NewEmptyTile() Tile {
@@ -48,5 +57,6 @@ func NewNormalTile() Tile {
 		TileCategory:      TileCategoryNormal,
 		TileCollisionType: TileCollisionTypeSolid,
 		Durability:        1,
+		FlipTransform:     mgl32.Ident4(),
 	}
 }
