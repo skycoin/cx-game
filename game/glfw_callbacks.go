@@ -75,11 +75,11 @@ func mousePressCallback(
 
 		worldX, worldY := cxmath.RoundVec2(worldCoords.Vec2())
 
-		tile := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
+		tile,_ := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
 		if tile.Name == "" {
-			tile = World.Planet.GetTile(int(worldX), int(worldY), world.MidLayer)
+			tile,_ = World.Planet.GetTile(int(worldX), int(worldY), world.MidLayer)
 			if tile.Name == "" {
-				tile = World.Planet.GetTile(int(worldX), int(worldY), world.BgLayer)
+				tile,_ = World.Planet.GetTile(int(worldX), int(worldY), world.BgLayer)
 				if tile.Name != "" {
 					item.SelectedLayer = world.BgLayer
 				}
@@ -131,9 +131,9 @@ func cursorPosCallback(w *glfw.Window, xpos, ypos float64) {
 		if idx == -1 {
 			return
 		}
-		tile := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
+		tile,_ := World.Planet.GetTile(int(worldX), int(worldY), world.TopLayer)
 		if tile.Name == "" {
-			tile = World.Planet.GetTile(int(worldX), int(worldY), world.MidLayer)
+			tile,_ = World.Planet.GetTile(int(worldX), int(worldY), world.MidLayer)
 		}
 
 		tileText = fmt.Sprintf("Tile: %v,  EnvLight: %v,   SkyLight: %v\n",

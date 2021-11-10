@@ -2,7 +2,6 @@ package world
 
 import (
 	"github.com/go-gl/mathgl/mgl32"
-	//"github.com/go-gl/gl/v4.1-core/gl"
 
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/cxmath/mathi"
@@ -57,7 +56,8 @@ func (planet *Planet) DrawHemisphere(
 	for _, positionedTile := range visible {
 		z := layerID.Z()
 		transform := positionedTile.Transform().
-			Mul4(mgl32.Translate3D(0, 0, z))
+			Mul4(mgl32.Translate3D(0, 0, z)).
+			Mul4(positionedTile.Tile.FlipTransform)
 		drawOpts := render.NewSpriteDrawOptions()
 		if layerID == TopLayer {
 			drawOpts.Outline = true

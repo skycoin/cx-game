@@ -83,9 +83,17 @@
   <image width="16" height="16" source="../furniture/decorations/surveillanceCamera.png"/>
  </tile>
  <tile id="26">
+  <properties>
+   <property name="cxtile" value="light1"/>
+   <property name="powered" type="bool" value="false"/>
+  </properties>
   <image width="16" height="16" source="../lights/light_1_off.png"/>
  </tile>
  <tile id="27">
+  <properties>
+   <property name="cxtile" value="light1"/>
+   <property name="powered" type="bool" value="true"/>
+  </properties>
   <image width="16" height="16" source="../lights/light_1_on.png"/>
  </tile>
  <tile id="28">

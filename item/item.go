@@ -109,7 +109,8 @@ func GetItemTypeIdForTileTypeID(id world.TileTypeID) ItemTypeID {
 		y := int(worldCoords.Y() + 0.5)
 		if !info.World.Planet.TileIsSolid(x, y) {
 			info.Slot.Quantity--
-			info.World.Planet.PlaceTileType(id, x, y)
+			opts := world.NewTileCreationOptions()
+			info.World.Planet.PlaceTileType(id, x, y, opts)
 		}
 	}
 	itemTypeID = AddItemType(itemType)
