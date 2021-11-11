@@ -245,7 +245,8 @@ func (grid *PlacementGrid) TryPlace(info ItemUseInfo) bool {
 	x := int(x32)
 	y := int(y32)
 	if grid.canPlace {
-		info.World.Planet.PlaceTileType(grid.Selected, x, y)
+		opts := world.NewTileCreationOptions()
+		info.World.Planet.PlaceTileType(grid.Selected, x, y, opts)
 		return true
 	}
 	return false
@@ -267,7 +268,8 @@ func (grid *PlacementGrid) TryPlaceNoConnect(info ItemUseInfo) bool {
 		x+int(tt.Width), y+int(tt.Height),
 	)
 	if canPlace {
-		info.World.Planet.PlaceTileTypeNoConnect(grid.Selected, x, y)
+		opts := world.NewTileCreationOptions()
+		info.World.Planet.PlaceTileTypeNoConnect(grid.Selected, x, y, opts)
 		return true
 	}
 	return false

@@ -104,13 +104,7 @@ func Init() {
 	worldTiles := World.Planet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 
-	spawnX := int(20)
-	Cam.SetCameraPosition(float32(spawnX), 5)
-
-	spawnPos := cxmath.Vec2{
-		float32(spawnX),
-		float32(World.Planet.GetHeight(spawnX) + 10),
-	}
+	spawnPos := cxmath.Vec2{ 80, 109 } // start pos for moon bunker map
 
 	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
