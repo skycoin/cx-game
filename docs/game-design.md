@@ -4,200 +4,98 @@
 > **Sci-fi sandbox game with survival elements**, inspired by games like Terraria,
 > Starbound, Oxygen Not Included, Factorio, and Dyson Sphere Program.
 
+## 🌎 **2D World Map (side view)** 🌎
+
+### _Background Layer_
+
+
+### _Middle Layer_
+This layer is mainly composed of elements fixed on the walls and pipesim ([Wires](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#wire-circuits), [Liquid Pipes](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#liquid-pipes), [Gas Pipes](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gas-pipes) and [Automation](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#-automation-system)).
+
+The **windows** are going to be put on this layer and the walls behind them are cropped by a cutout shader.
+
+### _Foreground Layer_
+
 ## 🧱 **Base elements** 🧱
 
 ### ⚡ _Power System_ 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Wire circuits
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Power Generators
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Batteries
-`Lorem ipsum` dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ---
 ### 💨 _Gases System_
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Gases
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Gas pipes
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Gas Pump
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Gas Vent
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ---
 ### 🚿 _Plumbing System_
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Liquids
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Liquid pipes
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Liquid Pump
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Liquid Vent
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ---
 ### 🍖 _Food System_
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Food
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Cultivating plants
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Creatures husbandry
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ---
 ### 👨‍💻 _Automation System_
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Automation wires
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Logic gates
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Conveyor system
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Droids
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
-
 
 ## 💊 **Survival elements** 💊
-- **HP:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-    - Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- **OXYGEN:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- **TEMPERATURE:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-    - Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- **FOOD:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- **DISEASES:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+- **HP:** 
+- **OXYGEN:** 
+- **TEMPERATURE:** 
+- **FOOD:** 
+- **DISEASES:** 
 
 ## 🚀 **Space exploration** 🚀
 ### _Spaceships_ 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Building ships
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ### _Overworld_ 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Controls
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Asteroids
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Enemies
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ### _Planets_ 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Moon
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Volcanic moon
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 ##### Ocean Planet
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Frozen Planet
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
 
 ##### Circuit Planet
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-- Pellentesque ac laoreet est, quis condimentum nibh.
-- Quisque semper ex accumsan nisl dignissim, et viverra ipsum volutpat.
