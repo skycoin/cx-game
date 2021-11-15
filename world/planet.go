@@ -106,12 +106,13 @@ func (planet *Planet) ShortestDisplacement(from, to mgl32.Vec2) mgl32.Vec2 {
 	return disp
 }
 
-func (planet *Planet) GetTile(x, y int, layerID LayerID) *Tile {
+func (planet *Planet) GetTile(x, y int, layerID LayerID) (*Tile,bool) {
 	idx := planet.GetTileIndex(x, y)
 	if idx >= 0 {
-		return &planet.GetLayerTiles(layerID)[planet.GetTileIndex(x, y)]
+		tile := &planet.GetLayerTiles(layerID)[planet.GetTileIndex(x, y)]
+		return tile, true
 	} else {
-		return nil
+		return nil, false
 	}
 }
 
@@ -128,7 +129,9 @@ func (planet *Planet) GetAllTilesUnique() []Tile {
 	return tiles
 }
 
-func (planet *Planet) PlaceTileTypeNoConnect(tileTypeID TileTypeID, x, y int) {
+func (planet *Planet) PlaceTileTypeNoConnect(
+		tileTypeID TileTypeID, x, y int, opts TileCreationOptions,
+) {
 	tileType, ok := GetTileTypeByID(tileTypeID)
 	if !ok {
 		log.Fatalf("cannot find tile type for id [%v]", tileTypeID)
@@ -138,10 +141,7 @@ func (planet *Planet) PlaceTileTypeNoConnect(tileTypeID TileTypeID, x, y int) {
 	if rootTileIdx == -1 {
 		return
 	}
-	tilesInLayer[rootTileIdx] =
-		tileType.CreateTile(TileCreationOptions{
-			//Neighbours: planet.GetNeighbours(tilesInLayer, x, y, tileTypeID),
-		})
+	tilesInLayer[rootTileIdx] = tileType.CreateTile(opts)
 	rect := cxmath.Rect{
 		cxmath.Vec2i{int32(x), int32(y)},
 		tileType.Size(),
@@ -171,13 +171,15 @@ func (planet *Planet) PlaceTileTypeNoConnect(tileTypeID TileTypeID, x, y int) {
 	planet.LightUpdateBlock(x, y)
 }
 
-func (planet *Planet) PlaceTileType(tileTypeID TileTypeID, x, y int) {
+func (planet *Planet) PlaceTileType(
+		tileTypeID TileTypeID, x, y int, opts TileCreationOptions,
+) {
 	tileType, ok := GetTileTypeByID(tileTypeID)
 	if !ok {
 		log.Fatalf("cannot find tile type for id [%v]", tileTypeID)
 	}
 	tilesInLayer := planet.GetLayerTiles(tileType.Layer)
-	planet.PlaceTileTypeNoConnect(tileTypeID, x, y)
+	planet.PlaceTileTypeNoConnect(tileTypeID, x, y, opts)
 	rect := cxmath.Rect{
 		cxmath.Vec2i{int32(x), int32(y)},
 		tileType.Size(),

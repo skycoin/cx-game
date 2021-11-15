@@ -158,7 +158,7 @@ func (planet *Planet) InitSkyLight() {
 	for x := 0; x < int(planet.Width); x++ {
 		y := int(planet.Height) - 1
 		for ; y >= 0; y-- {
-			tile := planet.GetTile(x, y, TopLayer)
+			tile,_ := planet.GetTile(x, y, TopLayer)
 			//tile not empty
 			if tile.Name != "" {
 				break
@@ -174,7 +174,7 @@ func (planet *Planet) InitSkyLight() {
 
 			topTileIdx := planet.GetTileIndex(x, y+1)
 			topTileValue := planet.LightingValues[topTileIdx]
-			lightTile := planet.GetTile(x, y, TopLayer)
+			lightTile,_ := planet.GetTile(x, y, TopLayer)
 
 			attenuation := uint8(getLightAttenuation(lightTile))
 			//avoid overflow
@@ -206,7 +206,7 @@ func (planet *Planet) LightUpdateBlock(xtile, yTile int) {
 		return
 	}
 
-	tile := planet.GetTile(xtile, yTile, TopLayer)
+	tile,_ := planet.GetTile(xtile, yTile, TopLayer)
 	tileType, ok := GetTileTypeByID(tile.TileTypeID)
 	if ok && tile.LightSource {
 		if tileType.LightAmount > 15 {
@@ -263,7 +263,7 @@ func (planet *Planet) UpdateSkyLight(iterations int) {
 
 		}
 		lightVal := planet.LightingValues[idx]
-		lightTile := planet.GetTile(pos.X, pos.Y, TopLayer)
+		lightTile,_ := planet.GetTile(pos.X, pos.Y, TopLayer)
 		lightSkyLightValue := lightVal.GetSkyLight()
 
 		topTileIdx := planet.GetTileIndex(pos.X, pos.Y+1)
@@ -272,7 +272,7 @@ func (planet *Planet) UpdateSkyLight(iterations int) {
 		}
 
 		topTileLightValue := planet.LightingValues[topTileIdx]
-		topTile := planet.GetTile(pos.X, pos.Y+1, TopLayer)
+		topTile,_ := planet.GetTile(pos.X, pos.Y+1, TopLayer)
 
 		attenuation := uint8(getLightAttenuation(lightTile))
 		//placed solid block below sunlight
@@ -399,7 +399,7 @@ func (planet *Planet) UpdateEnvLight(iterations int) {
 
 		}
 		lightVal := planet.LightingValues[idx]
-		lightTile := planet.GetTile(pos.X, pos.Y, TopLayer)
+		lightTile,_ := planet.GetTile(pos.X, pos.Y, TopLayer)
 
 		envLightValue := lightVal.GetEnvLight()
 
