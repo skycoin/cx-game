@@ -71,10 +71,29 @@ The batteries can be both a power supplier or consumer, depending on the overall
 
 #### Switches
 
+
 ---
 ### 💨 _Gases System_
 
 #### Gases
+
+Different gases will be spawned together with the world, among the caves. The gases have different densities and they slowly distribute based on this property. Less dense gases go up and more dense gases deposit on the bottom.
+
+If the gases get in contact with a vacuum area, they'll be slowly drained to that area.
+
+The player must be careful because if the gas gets drained on the surface of a planet with no atmosphere, the gas will continue to go up until it vanishes from the planet.
+
+#### Geyser
+
+Geysers are natural formations of the world, impossible to destroy. They are spawned over a black indestructible ore and releases gas from time to time in the world.
+
+Each geyser has the following properties:
+- **Gas released:** Which kind of gas does the geyser emit.
+- **Emission temperature:** The temperature of the gases that came from that geyser.
+- **Active time:** The amount of time it stays active releasing gases.
+- **Dormant time:** The amount of time until it activates again.
+- **Frequency:** The frequency it releases gases while active.
+- **Quantity of gas released:** How much gas it emits in each eruption.
 
 #### Gas pipes
 
