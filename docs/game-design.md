@@ -38,53 +38,71 @@ While editing a Pipesim element, the respective element (e.g. wires) is going to
 
 ### ⚡ _Power System_ 
 
-##### Wire circuits
+#### Wire circuits
+The wires autotiles like any other Pipesim element and each wire segment has a **circuit id**. If somehow the wires of a circuit get disconnected then it'll be split into two **circuit id**.
 
-##### Power Generators
+Each "circuit id" carries the information of:
+- **Current state:** On/Off
+- **Current power:** Current wattage into the circuit, based on the machines that are turned on.
+- **Maximum power:** The amount of wattage that this circuit would carry if all the machines connected to it are turned on.
 
-##### Batteries
+Each machine connected to a circuit should have a **circuit id**. So if we turned it on, the current power of the respective circuit is changed.
+
+#### Power Generators
+
+Machines that supply power to the circuit when turned on.
+
+These machines usually require some kind of fuel (solar, gas, etc) to generate power and the amount of power generated is different on each kind of machine.
+
+#### Power Consumers
+
+Many machines of the game are going to consume energy to work.
+
+#### Batteries
+
+#### Switches
 
 ---
 ### 💨 _Gases System_
 
-##### Gases
+#### Gases
 
-##### Gas pipes
+#### Gas pipes
 
-##### Gas Pump
+#### Gas Pump
 
-##### Gas Vent
+#### Gas Vent
 
 ---
 ### 🚿 _Plumbing System_
 
-##### Liquids
+#### Liquids
 
-##### Liquid pipes
+#### Liquid pipes
 
-##### Liquid Pump
+#### Liquid Pump
 
-##### Liquid Vent
+#### Liquid Vent
 
 ---
 ### 🍖 _Food System_
 
-##### Food
+#### Food
 
-##### Cultivating plants
+#### Cultivating plants
 
-##### Creatures husbandry
+#### Creatures husbandry
 
 ---
 ### 👨‍💻 _Automation System_
 
-##### Automation wires
+#### Automation wires
 
-##### Logic gates
+#### Logic gates
 
-##### Conveyor system
+#### Conveyor system
 
-##### Droids
+#### Droids
 
 ## 💊 **Survival elements** 💊
 - **HP:** 
@@ -96,24 +114,24 @@ While editing a Pipesim element, the respective element (e.g. wires) is going to
 ## 🚀 **Space exploration** 🚀
 ### _Spaceships_ 
 
-##### Building ships
+#### Building ships
 
 ### _Overworld_ 
 
-##### Controls
+#### Controls
 
-##### Asteroids
+#### Asteroids
 
-##### Enemies
+#### Enemies
 
 ### _Planets_ 
 
-##### Moon
+#### Moon
 
-##### Volcanic moon
+#### Volcanic moon
 
-##### Ocean Planet
+#### Ocean Planet
 
-##### Frozen Planet
+#### Frozen Planet
 
-##### Circuit Planet
+#### Circuit Planet
