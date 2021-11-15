@@ -85,7 +85,7 @@ The player must be careful because if the gas gets drained on the surface of a p
 
 #### Geyser
 
-Geysers are natural formations of the world, impossible to destroy. They are spawned over a black indestructible ore and releases gas from time to time in the world.
+Geysers are natural formations of the world, impossible to destroy. They are spawned in the [middle layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#middle-layer) over an indestructible ore and releases gas from time to time in the world.
 
 Each geyser has the following properties:
 - **Gas released:** Which kind of gas does the geyser emit.
