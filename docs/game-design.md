@@ -6,29 +6,33 @@
 
 ## 🌎 **2D World Map (side view)** 🌎
 
-### _Environment Layer_
+### 🌄 _Layers_
+
+#### 1. Environment Layer
 It's placed **behind the background layer**. Its elements are just to define the environment of the planet/asteroid, so they are **indestructible**.
 
 This layer has a small **parallax** effect on the **horizontal axis**, so its elements move less than the foreground layer.
 
-### _Background Layer_
+#### 2. Background Layer
 At first, this layer will only contain walls, that can be built by the player like any other object but **removed by a different tool** (On Terraria is the hammer).
 - **Common walls:** These are the ones used to build the base and fill caves.
 - **Mining areas:** These walls have lots of ores within. The player can put machines on the middle layer to mine these ores. These walls are probably going to use an auto tiling system to reduce their size as the resources are going to an end.
 
-### _Middle Layer_
+#### 3. Middle Layer
 This layer is mainly composed of elements fixed on the walls, **lights** and **Pipesim** ([Wires](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#wire-circuits), [Liquid Pipes](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#liquid-pipes), [Gas Pipes](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gas-pipes) and [Automation](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#-automation-system)).
 
 The **windows** are going to be put on this layer and the walls behind them are cropped by a cutout shader. A window can only be placeable if there are walls behind each of its tiles.
 
-### _Foreground Layer_
+#### 4. Foreground Layer
 Most of the game is here. This layer is going to have machines, plants, enemies, spaceships, furniture, etc. All of these elements are still behind the player.
 
-### _Layer over the player_
+#### 5. Layer over the player
 This layer contains the [liquids](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#liquids) (water, lava, biofluid, etc), [gases](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gases), and some materials that go over the player, like the top part of a glass transportation tube.
 
-### _Pipesim Overlay_
-While editing a Pipesim element, the respective element (e.g. wires) is going to be highlighted. Also, some icons will appear on the objects to indicate where the player should connect the Pipesim.
+### 🔎 _Views_
+
+#### Pipesim overlay
+While editing a Pipesim element, the respective element (e.g. wires) is going to be highlighted. Also, some icons/effects will appear on the objects to indicate where the player should connect each Pipesim.
 
 ![Overlay example](https://preview.redd.it/xhoa1gvod3v11.jpg?width=1013&format=pjpg&auto=webp&s=56e891501f255c8ae0cded9eed65c04a7dc24ff3)
 > _Example of overlay on Oxygen Not Included_
@@ -56,9 +60,14 @@ These machines usually require some kind of fuel (solar, gas, etc) to generate p
 
 #### Power Consumers
 
-Many machines of the game are going to consume energy to work.
+Many machines of the game are going to consume energy to work. These consumption values will be subtracted from the amount of power available on the respective **circuit id**.
 
 #### Batteries
+
+The batteries can be both a power supplier or consumer, depending on the overall status of the **circuit id** it's connected to.
+
+- If the **circuit is receiving more power than it needs**, the batteries will **consume power** to charge themselves.
+- If the **circuit is demanding more power than the generators are providing**, the batteries will also **supply power** to the circuit and uncharge themselves.
 
 #### Switches
 
