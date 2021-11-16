@@ -95,11 +95,43 @@ Each geyser has the following properties:
 - **Frequency:** The frequency it releases gases while active.
 - **Quantity of gas released:** How much gas it emits in each eruption.
 
-#### Gas pipes
-
 #### Gas Pump
 
+The gas pump can be fixed on any wall, and it drains any gas that touches it, pushing it into a pipe system connected to it.
+
+- **INPUT**
+  - Power source
+- **OUTPUT**
+  - Gases into a gas pipe system
+
+#### Gas Filter
+
+As the name suggests, this machine filters the different gases on a pipe system.
+
+The player chooses which gas will be filtered by the machine then the selected gas is driven to a gas pipe system and all the others in a different system.
+
+- **INPUT**
+  - Power source
+  - Gas pipe system with gases to be filtered
+- **OUTPUT**
+  - Gas pipe system for the filtered gas
+  - Gas pipe system for the remaining gases
+
 #### Gas Vent
+
+It releases the gases from a gas pipe system into the environment, but if the atmospheric pressure is too high, the vent stop working.
+
+- **INPUT**
+  - _none_
+- **OUTPUT**
+  - Gases from a gas pipe system
+
+#### Gas pipes
+
+The gases on a pipe system always flow from the input towards an output. If there are no outputs, the gases won't be drained into the pipes. In case there are already gases in the pipes and the output has stopped working or got destroyed, the gases will stay still in the pipes.
+
+In the case of bifurcations on the gas pipe system where are outputs in both ways, the gases are going to be split equally between the exits. Like, if some gas portion is droved to the bifurcation A, then the next portion will be delivered to B.
+![gas](https://user-images.githubusercontent.com/83770527/142009369-b6fc105e-dd04-4a5e-9a7c-99a866584411.gif)
 
 ---
 ### 🚿 _Plumbing System_
