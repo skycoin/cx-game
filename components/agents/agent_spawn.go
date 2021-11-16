@@ -103,6 +103,7 @@ func createSpiderDrill(opts AgentCreationOptions) *Agent {
 	x := opts.X
 	y := opts.Y
 	// TODO only load these once
+	anim.LoadAnimationBoneFromJSON("./assets/player/skeleton.json") // ignore this, only for testing purpose
 	animation := anim.LoadAnimationFromJSON("./assets/spiderDrill.json")
 	playback := animation.NewPlayback("Walk")
 	agent := Agent{
