@@ -23,19 +23,15 @@ type Bone struct {
 	Color    string `json:"color"`
 }
 
-type Bones struct {
-	Bones map[string]Bone `json:"bones"`
-}
-
 type Slot struct {
 	Name       string `json:"name"`
 	Bone       string `json:"bone"`
 	Attachment string `json:"attachment"`
 }
 
-type Slots struct {
-	Slots map[string]Slot `json:"slots"`
-}
+// type Slots struct {
+// 	Slots map[string]Slot `json:"slots"`
+// }
 
 type Ikitem struct {
 	Name   string            `json:"name"`
@@ -64,16 +60,13 @@ type Skins struct {
 	Attachments Attachments `json:"attachments"`
 }
 
-type Animations struct {
-}
-
 type AnimatedBoneSpritesheet struct {
-	Skeleton   Skeleton   `json:"skeleton"`
-	Bones      Bones      `json:"bones"`
-	Slots      Slots      `json:"slots"`
-	Ik         Ik         `json:"ik"`
-	Skins      Skins      `json:"skins"`
-	Animations Animations `json:"animations"`
+	Skeleton   Skeleton     `json:"skeleton"`
+	Bones      map[int]Bone `json:"bones"`
+	Slots      map[int]Slot `json:"slots"`
+	Ik         Ik           `json:"ik"`
+	Skins      Skins        `json:"skins"`
+	Animations interface{}  `json:"animations"`
 }
 
 func UnmarshalAnimatedBoneSpriteSheet(buf []byte) AnimatedBoneSpritesheet {
