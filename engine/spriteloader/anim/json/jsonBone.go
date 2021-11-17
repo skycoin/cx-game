@@ -61,12 +61,12 @@ type Skins struct {
 }
 
 type AnimatedBoneSpritesheet struct {
-	Skeleton   Skeleton     `json:"skeleton"`
-	Bones      map[int]Bone `json:"bones"`
-	Slots      map[int]Slot `json:"slots"`
-	Ik         Ik           `json:"ik"`
-	Skins      Skins        `json:"skins"`
-	Animations interface{}  `json:"animations"`
+	Skeleton   Skeleton    `json:"skeleton"`
+	Bones      []Bone      `json:"bones"`
+	Slots      []Slot      `json:"slots"`
+	Ik         Ik          `json:"ik"`
+	Skins      Skins       `json:"skins"`
+	Animations interface{} `json:"animations"`
 }
 
 func UnmarshalAnimatedBoneSpriteSheet(buf []byte) AnimatedBoneSpritesheet {
