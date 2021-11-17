@@ -17,9 +17,8 @@ func LoadAnimationBoneFromJSON(fname string) {
 	sheet := animjson.UnmarshalAnimatedBoneSpriteSheet(buff)
 
 	fmt.Println("Skeleton: ", sheet.Skeleton)
-	fmt.Println("Bones: ", len(sheet.Bones))
+	fmt.Println("Bones: ", sheet.Bones)
 	fmt.Println("Slots: ", len(sheet.Slots))
-	// fmt.Println("Animations: ", sheet.Animations["Crouch"])
 	m, _ := sheet.Animations.(map[string]interface{})
 	for k, _ := range m {
 		fmt.Println(k, "=>")
