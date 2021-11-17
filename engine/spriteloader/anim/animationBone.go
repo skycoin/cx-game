@@ -19,9 +19,10 @@ func LoadAnimationBoneFromJSON(fname string) {
 	fmt.Println("Skeleton: ", sheet.Skeleton)
 	fmt.Println("Bones: ", sheet.Bones)
 	fmt.Println("Slots: ", len(sheet.Slots))
+	fmt.Println("Skins: ", sheet.Skins[0].Attachments)
 	m, _ := sheet.Animations.(map[string]interface{})
-	for k, _ := range m {
-		fmt.Println(k, "=>")
+	for k, v := range m {
+		fmt.Println(k, "=>", v)
 	}
 
 	imgPath := "./assets/player/Robot.png"
