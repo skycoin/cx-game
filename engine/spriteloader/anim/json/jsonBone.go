@@ -29,10 +29,6 @@ type Slot struct {
 	Attachment string `json:"attachment"`
 }
 
-// type Slots struct {
-// 	Slots map[string]Slot `json:"slots"`
-// }
-
 type Ikitem struct {
 	Name   string            `json:"name"`
 	Order  int               `json:"name"`
@@ -51,11 +47,9 @@ type Back_arm struct {
 	Height int    `json:"height"`
 }
 
-type Attachments struct {
-	Back_arm Back_arm `json:"back_arm"`
-}
+type Attachments interface{}
 
-type Skins struct {
+type Skin struct {
 	Name        string      `json:"name"`
 	Attachments Attachments `json:"attachments"`
 }
@@ -65,7 +59,7 @@ type AnimatedBoneSpritesheet struct {
 	Bones      []Bone      `json:"bones"`
 	Slots      []Slot      `json:"slots"`
 	Ik         Ik          `json:"ik"`
-	Skins      Skins       `json:"skins"`
+	Skins      []Skin      `json:"skins"`
 	Animations interface{} `json:"animations"`
 }
 
