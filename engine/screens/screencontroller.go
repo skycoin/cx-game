@@ -1,7 +1,6 @@
 package screens
 
 import (
-	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/engine/input/inputhandler"
 )
 
@@ -30,9 +29,7 @@ func NewDevScreenManager() *ScreenManager {
 	newScreenController := ScreenManager{
 		screenHandlers: make(map[SCREEN]ScreenHandler),
 	}
-
 	// newScreenController.screenHandlers[TITLE] = NewTitleScreenHandler()
-
 	newScreenController.screenHandlers[GAME] = NewGameScreenHandler()
 	newScreenController.activeScreenIndex = GAME
 	// newScreenController.screenHandlers[MENU] = NewMenuScreenHandler()
@@ -40,13 +37,13 @@ func NewDevScreenManager() *ScreenManager {
 	return &newScreenController
 }
 
-func (s *ScreenManager) ProcessInput() {
-	//todo multiple active screens
-	s.screenHandlers[s.activeScreenIndex].ProcessInput()
+// func (s *ScreenManager) ProcessInput() {
+// 	//todo multiple active screens
+// 	s.screenHandlers[s.activeScreenIndex].ProcessInput()
 
-	//reset event queue
-	input.InputEvents = input.InputEvents[:0]
-}
+// 	//reset event queue
+// 	input.InputEvents = input.InputEvents[:0]
+// }
 
 func (s *ScreenManager) Update(dt float32) {
 	s.screenHandlers[s.activeScreenIndex].Update(dt)
@@ -55,8 +52,8 @@ func (s *ScreenManager) Update(dt float32) {
 func (s *ScreenManager) FixedUpdate() {
 	s.screenHandlers[s.activeScreenIndex].FixedUpdate()
 }
-func (s *ScreenManager) Render() {
-	s.screenHandlers[s.activeScreenIndex].Render()
+func (s *ScreenManager) Render(ctx DrawContext) {
+	s.screenHandlers[s.activeScreenIndex].Render(ctx)
 }
 
 func (s *ScreenManager) RegisterButton(screen SCREEN, info inputhandler.ActionInfo) {

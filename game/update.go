@@ -16,11 +16,11 @@ func Update(dt float32) {
 	timer.Accumulator += dt
 
 	for timer.Accumulator >= constants.PHYSICS_TICK {
-
 		FixedTick()
 		timer.Accumulator -= constants.PHYSICS_TICK
 	}
 	components.Update(dt)
+	ScreenManager.Update(dt)
 
 	if Cam.IsFreeCam() {
 		Cam.MoveCam(dt)
@@ -40,6 +40,8 @@ func Update(dt float32) {
 	}
 
 	World.Planet.Update(dt)
+
+	Cam.Tick(dt)
 	fps.Tick()
 	ui.TickDialogueBoxes(dt)
 	//obsolete
@@ -57,6 +59,7 @@ func FixedTick() {
 	components.FixedUpdate()
 	World.Planet.FixedUpdate()
 	World.TimeState.Advance()
+	ScreenManager.FixedUpdate()
 
 	// physics.Simulate(constants.PHYSICS_TICK, &World.Planet)
 	/*

@@ -104,7 +104,7 @@ func Init() {
 	worldTiles := World.Planet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 
-	spawnPos := cxmath.Vec2{ 80, 109 } // start pos for moon bunker map
+	spawnPos := cxmath.Vec2{80, 109} // start pos for moon bunker map
 
 	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
@@ -147,7 +147,7 @@ func Init() {
 	particle_emitter.EmitOxygen(playerAgentID, &World.Entities.Particles)
 	render.NewColorShader()
 
-	ScreenManager = screens.NewDevScreenManager(&World, Cam, &win, player,fps)
+	ScreenManager = screens.NewDevScreenManager()
 
 	RegisterActions(ScreenManager)
 }

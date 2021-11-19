@@ -12,9 +12,9 @@ package game
 // 	"github.com/skycoin/cx-game/world"
 // )
 
-func ProcessInput() {
-	ScreenManager.ProcessInput()
-}
+// func ProcessInput() {
+// 	ScreenManager.ProcessInput()
+// }
 
 // 	switch input.GetInputContext() {
 // 	case input.GAME:

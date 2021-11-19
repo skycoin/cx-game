@@ -6,22 +6,22 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/components"
+	"github.com/skycoin/cx-game/components/agents/player_agent"
 	"github.com/skycoin/cx-game/constants"
-	"github.com/skycoin/cx-game/cxmath"
+	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/input/inputhandler"
 	"github.com/skycoin/cx-game/engine/ui"
+	"github.com/skycoin/cx-game/engine/ui/console"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
-	"github.com/skycoin/cx-game/physics/timer"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/render/worldctx"
 	"github.com/skycoin/cx-game/stars/starfield"
 	"github.com/skycoin/cx-game/world"
 )
 
-const(
-	
-)
+const ()
+
 type GameScreenHandler struct {
 	inputHandler *inputhandler.AgentInputHandler
 }
@@ -46,7 +46,7 @@ func (g *GameScreenHandler) FixedUpdate() {
 	//player.FixedTick(&World.Planet)
 	components.FixedUpdate()
 
-	g.player.SetControlState(g.inputHandler.AgentControlState)
+	// .SetControlState(g.inputHandler.AgentControlState)
 
 	// physics.Simulate(constants.PHYSICS_TICK, &World.Planet)
 	/*
@@ -59,34 +59,45 @@ func (g *GameScreenHandler) FixedUpdate() {
 }
 
 func (g *GameScreenHandler) Update(dt float32) {
-	timer.Accumulator += dt
 
-	for timer.Accumulator >= constants.PHYSICS_TICK {
+	g.ProcessInput()
+	// timer.Accumulator += dt
 
-		g.FixedUpdate()
-		timer.Accumulator -= constants.PHYSICS_TICK
-	}
-	components.Update(dt)
+	// for timer.Accumulator >= constants.PHYSICS_TICK {
 
-	if g.Cam.IsFreeCam() {
-		//player.Controlled = false
-		g.Cam.MoveCam(dt)
-	} else {
-		//player.Controlled = true
-		//playerPos := player.InterpolatedTransform.Col(3).Vec2()
-		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
-		body :=
-			g.World.Entities.Agents.FromID(g.player.GetAgent().AgentId).Transform
+	// 	g.FixedUpdate()
+	// 	timer.Accumulator -= constants.PHYSICS_TICK
+	// }
+	// components.Update(dt)
 
-		var interpolatedPos cxmath.Vec2
-		if !body.PrevPos.Equal(body.Pos) {
-			interpolatedPos = body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
+	// if g.Cam.IsFreeCam() {
+	// 	//player.Controlled = false
+	// 	g.Cam.MoveCam(dt)
+	// } else {
+	// 	//player.Controlled = true
+	// 	//playerPos := player.InterpolatedTransform.Col(3).Vec2()
+	// 	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+	// 	body :=
+	// 		g.World.Entities.Agents.FromID(g.player.GetAgent().AgentId).Transform
 
-		} else {
-			interpolatedPos = body.Pos
-		}
-		g.Cam.SetCameraPosition(interpolatedPos.X, interpolatedPos.Y)
-	}
+	// 	var interpolatedPos cxmath.Vec2
+	// 	if !body.PrevPos.Equal(body.Pos) {
+	// 		interpolatedPos = body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha))
+
+	// 	} else {
+	// 		interpolatedPos = body.Pos
+	// 	}
+	// 	g.Cam.SetCameraPosition(interpolatedPos.X, interpolatedPos.Y)
+	// }
+}
+
+type DrawContext struct {
+	Cam     *camera.Camera
+	World   *world.World
+	Window  *render.Window
+	Console console.Console
+	Fps     *render.Fps
+	Player  *player_agent.PlayerAgent
 }
 
 func (g *GameScreenHandler) RenderWorld() {
@@ -97,7 +108,12 @@ func (g *GameScreenHandler) RenderUI() {
 
 }
 
-func (g *GameScreenHandler) Render() {
+func (g *GameScreenHandler) Render(
+	ctx DrawContext,
+) {
+
+	fmt.Println(ctx.Player.GetAgent().Transform)
+	ctx.Player.SetControlState(g.inputHandler.AgentControlState)
 	g.RenderWorld()
 	g.RenderUI()
 	// gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
@@ -114,26 +130,26 @@ func (g *GameScreenHandler) Render() {
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-	render.SetCameraTransform(Cam.GetTransform())
-	render.SetWorldWidth(float32(World.Planet.Width))
+	render.SetCameraTransform(ctx.Cam.GetTransform())
+	render.SetWorldWidth(float32(ctx.World.Planet.Width))
 	// g.CamCtx := baseCtx.PushView(g.g.Cam.GetView())
-	worldCtx := worldctx.NewWorldRenderContext(Cam, &World.Planet)
+	worldCtx := worldctx.NewWorldRenderContext(ctx.Cam, &ctx.World.Planet)
 
 	//draw starfield
 	starfield.DrawStarField()
 
 	//queue-draw world
-	World.Planet.Draw(Cam, world.WindowLayer)
-	World.Planet.Draw(Cam, world.BgLayer)
-	World.Planet.Draw(Cam, world.PipeLayer)
-	World.Planet.Draw(Cam, world.MidLayer)
+	ctx.World.Planet.Draw(ctx.Cam, world.WindowLayer)
+	ctx.World.Planet.Draw(ctx.Cam, world.BgLayer)
+	ctx.World.Planet.Draw(ctx.Cam, world.PipeLayer)
+	ctx.World.Planet.Draw(ctx.Cam, world.MidLayer)
 
 	// draw lasers between mid and top layers.
 
 	// particles.DrawTopParticles(g.CamCtx)
-	World.Planet.Draw(Cam, world.TopLayer)
+	ctx.World.Planet.Draw(ctx.Cam, world.TopLayer)
 
-	item.DrawWorldItems(Cam)
+	item.DrawWorldItems(ctx.Cam)
 
 	// FIXME: draw dialogue boxes uses alternate projection matrix;
 	// restore original projection matrix
@@ -141,7 +157,7 @@ func (g *GameScreenHandler) Render() {
 	//fix dialogboxdraw
 	// ui.DrawDialogueBoxes(g.CamCtx)
 
-	Console.Draw(win.DefaultRenderContext())
+	ctx.Console.Draw(ctx.Window.DefaultRenderContext())
 
 	physicalViewport := render.GetCurrentViewport()
 	virtualViewport :=
@@ -151,24 +167,26 @@ func (g *GameScreenHandler) Render() {
 			constants.VIRTUAL_VIEWPORT_HEIGHT,
 		}
 	virtualViewport.Use()
-	components.Draw_Queued(&World.Entities, Cam)
-	render.Flush(Cam.Zoom.Get())
+	components.Draw_Queued(&ctx.World.Entities, ctx.Cam)
+	render.Flush(ctx.Cam.Zoom.Get())
 
 	// tile := g.World.Planet.GetTile(35, 4, world.TopLayer)
 
 	// fmt.Println(tile.Name)
 	//draw after flushing
-	components.Draw(World.Entities, Cam)
+	components.Draw(&ctx.World.Entities, ctx.Cam)
 	gl.Disable(gl.BLEND)
 	particles.DrawMidTopParticles(worldCtx)
 
 	//draw lightmap
-	World.Planet.DrawLighting(Cam, &World.TimeState)
+	ctx.World.Planet.DrawLighting(ctx.Cam, &ctx.World.TimeState)
 
 	//post-process
 	physicalViewport.Use()
 	g.PostProcess()
 	//draw ui
+
+	g.DrawUI(ctx)
 }
 
 func (g *GameScreenHandler) PostProcess() {
@@ -188,15 +206,15 @@ func (g *GameScreenHandler) PostProcess() {
 
 var debugTileInfo bool = false
 
-func (g *GameScreenHandler) DrawUI() {
-	baseCtx := g.win.DefaultRenderContext()
+func (g *GameScreenHandler) DrawUI(ctx DrawContext) {
+	baseCtx := ctx.Window.DefaultRenderContext()
 	topLeftCtx :=
 		render.CenterToTopLeft(baseCtx)
 
 	//todo pass fps instance here
 
 	ui.DrawString(
-		fmt.Sprint(g.fps.CurFps),
+		fmt.Sprint(ctx.Fps.CurFps),
 		mgl32.Vec4{1, 0.2, 0.3, 1},
 		ui.AlignCenter,
 		topLeftCtx.PushLocal(mgl32.Translate3D(1, -5, 0)),
@@ -210,9 +228,9 @@ func (g *GameScreenHandler) DrawUI() {
 			topLeftCtx.PushLocal(mgl32.Translate3D(25, -5, 0)),
 		)
 	}
-	ui.DrawAgentHUD(g.player.GetAgent())
-	inventory := item.GetInventoryById(g.player.GetAgent().InventoryID)
-	invCameraTransform := g.Cam.GetTransform().Inv()
+	ui.DrawAgentHUD(ctx.Player.GetAgent())
+	inventory := item.GetInventoryById(ctx.Player.GetAgent().InventoryID)
+	invCameraTransform := ctx.Cam.GetTransform().Inv()
 	inventory.Draw(baseCtx, invCameraTransform)
 	ui.DrawDamageIndicators(invCameraTransform)
 	render.FlushUI()
