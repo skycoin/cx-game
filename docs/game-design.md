@@ -6,7 +6,7 @@
 
 ## 🌎 **2D World Map (side view)** 🌎
 
-### 🌄 _Layers_
+### 🗂 _Layers_
 
 #### 1. Environment Layer
 It's placed **behind the background layer**. Its elements are just to define the environment of the planet/asteroid, so they are **indestructible**.
@@ -77,23 +77,11 @@ The batteries can be both a power supplier or consumer, depending on the overall
 
 #### Gases
 
-Different gases will be spawned together with the world, among the caves. The gases have different densities and they slowly distribute based on this property. Less dense gases go up and more dense gases deposit on the bottom.
+Different gases will be spawned with the world, distributed among the caves. The gases have different densities and they slowly distribute based on this property. Less dense gases go up and more dense gases deposit on the bottom.
 
 If the gases get in contact with a vacuum area, they'll be slowly drained to that area.
 
 The player must be careful because if the gas gets drained on the surface of a planet with no atmosphere, the gas will continue to go up until it vanishes from the planet.
-
-#### Geyser
-
-Geysers are natural formations of the world, impossible to destroy. They are spawned in the [middle layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#3-middle-layer) over an indestructible ore and releases gas from time to time in the world.
-
-Each geyser has the following properties:
-- **Gas released:** Which kind of gas does the geyser emit.
-- **Emission temperature:** The temperature of the gases that came from that geyser.
-- **Active time:** The amount of time it stays active releasing gases.
-- **Dormant time:** The amount of time until it activates again.
-- **Frequency:** The frequency it releases gases while active.
-- **Quantity of gas released:** How much gas it emits in each eruption.
 
 #### Gas Pump
 
@@ -108,7 +96,7 @@ The gas pump can be fixed on any wall, and it drains any gas that touches it, pu
 
 As the name suggests, this machine filters the different gases on a pipe system.
 
-The player chooses which gas will be filtered by the machine then the selected gas is driven to a gas pipe system and all the others in a different system.
+The player chooses which gas will be filtered by the machine then the selected gas is driven to a gas pipe system and all the others into a different system.
 
 - **INPUT**
   - Power source
@@ -163,6 +151,26 @@ In the case of bifurcations on the gas pipe system where are outputs in both way
 #### Conveyor system
 
 #### Droids
+
+## ⛰ **Environment elements** ⛰
+
+### 🌾 Vegetation
+
+### 💎 Ores
+
+### 🌋 Geysers and Fumaroles
+
+These are natural formations of the world, impossible to destroy. They are spawned in the [middle layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#3-middle-layer) over an indestructible ore and releases [gases](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gases) or [liquids](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#liquids) from time to time in the world.
+
+Each one has the following properties:
+- **Element released:** Which kind of gas/liquid does it emit.
+- **Emission temperature:** The temperature of the gases/liquids that came from them.
+- **Active time:** The amount of time it stays active releasing gases/liquids.
+- **Dormant time:** The amount of time until it activates again.
+- **Frequency:** The frequency it releases gases/liquid while active.
+- **Quantity of element released:** How much gas/liquid it emits in each eruption.
+
+### 👾 Creatures
 
 ## 💊 **Survival elements** 💊
 - **HP:** 
