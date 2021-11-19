@@ -121,6 +121,8 @@ The gases on a pipe system always flow from the input towards an output. If ther
 In the case of bifurcations on the gas pipe system where are outputs in both ways, the gases are going to be split equally between the exits. Like, if some gas portion is droved to the bifurcation A, then the next portion will be delivered to B.
 ![gas](https://user-images.githubusercontent.com/83770527/142009369-b6fc105e-dd04-4a5e-9a7c-99a866584411.gif)
 
+The gases on the pipes keep the properties from the source, but they still can exchange temperature with the environment. To control the heat exchange, the player can use different types of pipes, some increase the heat exchange, and others slow it down.
+
 ---
 ### 🚿 _Plumbing System_
 
@@ -159,6 +161,8 @@ Similar to the [gas filter](https://github.com/skycoin/cx-game/blob/main/docs/ga
 
 #### Liquid pipes
 
+Works the same way as [gas pipes](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gas-pipes)
+
 ---
 ### 🍖 _Food System_
 
@@ -184,6 +188,10 @@ Similar to the [gas filter](https://github.com/skycoin/cx-game/blob/main/docs/ga
 ### 🌾 Vegetation
 
 ### 💎 Ores
+
+Most ores are spawned on the [foreground layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#foreground-layer) or on a [layer over the player](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#layer-over-the-player), and the player has to use some excavation/mining tool to dig it. You can check the entire list of ores and where they'll spawn [here]() `TO DO`.
+
+Also, some mining areas will spawn on the [background layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#background-layer) and the player must install an extractor machine to dig ores from them.
 
 ### 🌋 Geysers and Fumaroles
 
