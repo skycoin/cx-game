@@ -126,11 +126,38 @@ In the case of bifurcations on the gas pipe system where are outputs in both way
 
 #### Liquids
 
-#### Liquid pipes
+Different liquids will be spawned with the world, distributed among the caves. The liquid always tries to flow to the bottom of the environment around them. When mixed with other types of liquids, they'll distribute based on the densities of each one. Less dense liquids deposit on top of other dense liquids.
 
 #### Liquid Pump
 
+The liquid pump must be on the floor. It drains the liquids around it and pushes them into a pipe system.
+
+- **INPUT**
+  - Power source
+- **OUTPUT**
+  - Liquids into a pipe system
+
 #### Liquid Vent
+
+It releases the liquids from a pipe system into the environment, but if the liquid pressure around it is too high, the vent stop working. Also, this vent can be closed manually by the player.
+
+- **INPUT**
+  - _none_
+- **OUTPUT**
+  - Liquids from a pipe system
+
+#### Liquid Filter
+
+Similar to the [gas filter](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gas-filter), this machine filters the liquids from a pipe system and distributes them into two different pipes systems, one with the filtered liquid (set by the player) and another for the remaining ones.
+
+- **INPUT**
+  - Power source
+  - Pipe system with liquids to be filtered
+- **OUTPUT**
+  - Pipe system for the filtered liquid
+  - Pipe system for the remaining liquids
+
+#### Liquid pipes
 
 ---
 ### 🍖 _Food System_
