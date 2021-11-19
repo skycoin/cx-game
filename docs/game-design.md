@@ -189,13 +189,13 @@ Works the same way as [gas pipes](https://github.com/skycoin/cx-game/blob/main/d
 
 ### 💎 Ores
 
-Most ores are spawned on the [foreground layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#foreground-layer) or on a [layer over the player](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#layer-over-the-player), and the player has to use some excavation/mining tool to dig it. You can check the entire list of ores and where they'll spawn [here]() `TO DO`.
+Most ores are spawned on the [foreground layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#4-foreground-layer) or on a [layer over the player](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#5-layer-over-the-player), and the player has to use some excavation/mining tool to dig it. You can check the entire list of ores and where they'll spawn [here]() `TO DO`.
 
-Also, some mining areas will spawn on the [background layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#background-layer) and the player must install an extractor machine to dig ores from them.
+Also, some mining areas will spawn on the [background layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#2-background-layer) and the player must install an extractor machine to dig ores from them.
 
 ### 🌋 Geysers and Fumaroles
 
-These are natural formations of the world, impossible to destroy. They are spawned in the [middle layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#3-middle-layer) over an indestructible ore and releases [gases](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gases) or [liquids](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#liquids) from time to time in the world.
+These are natural formations of the world, impossible to destroy. They are spawned in the [foreground layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#4-foreground-layer) over an indestructible ore and releases [gases](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gases) or [liquids](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#liquids) from time to time in the world.
 
 Each one has the following properties:
 - **Element released:** Which kind of gas/liquid does it emit.
