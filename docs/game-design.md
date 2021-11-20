@@ -6,7 +6,7 @@
 
 ## 🌎 **2D World Map (side view)** 🌎
 
-### 🌄 _Layers_
+### 🗂 _Layers_
 
 #### 1. Environment Layer
 It's placed **behind the background layer**. Its elements are just to define the environment of the planet/asteroid, so they are **indestructible**.
@@ -77,23 +77,11 @@ The batteries can be both a power supplier or consumer, depending on the overall
 
 #### Gases
 
-Different gases will be spawned together with the world, among the caves. The gases have different densities and they slowly distribute based on this property. Less dense gases go up and more dense gases deposit on the bottom.
+Different gases will be spawned with the world, distributed among the caves. The gases have different densities and they slowly distribute based on this property. Less dense gases go up and more dense gases deposit on the bottom.
 
 If the gases get in contact with a vacuum area, they'll be slowly drained to that area.
 
 The player must be careful because if the gas gets drained on the surface of a planet with no atmosphere, the gas will continue to go up until it vanishes from the planet.
-
-#### Geyser
-
-Geysers are natural formations of the world, impossible to destroy. They are spawned in the [middle layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#3-middle-layer) over an indestructible ore and releases gas from time to time in the world.
-
-Each geyser has the following properties:
-- **Gas released:** Which kind of gas does the geyser emit.
-- **Emission temperature:** The temperature of the gases that came from that geyser.
-- **Active time:** The amount of time it stays active releasing gases.
-- **Dormant time:** The amount of time until it activates again.
-- **Frequency:** The frequency it releases gases while active.
-- **Quantity of gas released:** How much gas it emits in each eruption.
 
 #### Gas Pump
 
@@ -108,7 +96,7 @@ The gas pump can be fixed on any wall, and it drains any gas that touches it, pu
 
 As the name suggests, this machine filters the different gases on a pipe system.
 
-The player chooses which gas will be filtered by the machine then the selected gas is driven to a gas pipe system and all the others in a different system.
+The player chooses which gas will be filtered by the machine then the selected gas is driven to a gas pipe system and all the others into a different system.
 
 - **INPUT**
   - Power source
@@ -133,16 +121,47 @@ The gases on a pipe system always flow from the input towards an output. If ther
 In the case of bifurcations on the gas pipe system where are outputs in both ways, the gases are going to be split equally between the exits. Like, if some gas portion is droved to the bifurcation A, then the next portion will be delivered to B.
 ![gas](https://user-images.githubusercontent.com/83770527/142009369-b6fc105e-dd04-4a5e-9a7c-99a866584411.gif)
 
+The gases on the pipes keep the properties from the source, but they still can exchange temperature with the environment. To control the heat exchange, the player can use different types of pipes, some increase the heat exchange, and others slow it down.
+
 ---
 ### 🚿 _Plumbing System_
 
 #### Liquids
 
-#### Liquid pipes
+Different liquids will be spawned with the world, distributed among the caves. The liquid always tries to flow to the bottom of the environment around them. When mixed with other types of liquids, they'll distribute based on the densities of each one. Less dense liquids deposit on top of other dense liquids.
 
 #### Liquid Pump
 
+The liquid pump must be on the floor. It drains the liquids around it and pushes them into a pipe system.
+
+- **INPUT**
+  - Power source
+- **OUTPUT**
+  - Liquids into a pipe system
+
 #### Liquid Vent
+
+It releases the liquids from a pipe system into the environment, but if the liquid pressure around it is too high, the vent stop working. Also, this vent can be closed manually by the player.
+
+- **INPUT**
+  - _none_
+- **OUTPUT**
+  - Liquids from a pipe system
+
+#### Liquid Filter
+
+Similar to the [gas filter](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gas-filter), this machine filters the liquids from a pipe system and distributes them into two different pipes systems, one with the filtered liquid (set by the player) and another for the remaining ones.
+
+- **INPUT**
+  - Power source
+  - Pipe system with liquids to be filtered
+- **OUTPUT**
+  - Pipe system for the filtered liquid
+  - Pipe system for the remaining liquids
+
+#### Liquid pipes
+
+Works the same way as [gas pipes](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gas-pipes)
 
 ---
 ### 🍖 _Food System_
@@ -163,6 +182,30 @@ In the case of bifurcations on the gas pipe system where are outputs in both way
 #### Conveyor system
 
 #### Droids
+
+## ⛰ **Environment elements** ⛰
+
+### 🌾 Vegetation
+
+### 💎 Ores
+
+Most ores are spawned on the [foreground layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#4-foreground-layer) or on a [layer over the player](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#5-layer-over-the-player), and the player has to use some excavation/mining tool to dig it. You can check the entire list of ores and where they'll spawn [here]() `TO DO`.
+
+Also, some mining areas will spawn on the [background layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#2-background-layer) and the player must install an extractor machine to dig ores from them.
+
+### 🌋 Geysers and Fumaroles
+
+These are natural formations of the world, impossible to destroy. They are spawned in the [foreground layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#4-foreground-layer) over an indestructible ore and releases [gases](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gases) or [liquids](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#liquids) from time to time in the world.
+
+Each one has the following properties:
+- **Element released:** Which kind of gas/liquid does it emit.
+- **Emission temperature:** The temperature of the gases/liquids that came from them.
+- **Active time:** The amount of time it stays active releasing gases/liquids.
+- **Dormant time:** The amount of time until it activates again.
+- **Frequency:** The frequency it releases gases/liquid while active.
+- **Quantity of element released:** How much gas/liquid it emits in each eruption.
+
+### 👾 Creatures
 
 ## 💊 **Survival elements** 💊
 - **HP:** 
