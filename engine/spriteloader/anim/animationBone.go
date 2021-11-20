@@ -29,6 +29,6 @@ func LoadAnimationBoneFromJSON(fname string) {
 	gpuTex := spriteloader.LoadTextureFromFileToGPU(imgPath)
 	fmt.Println("gpuTex: ", gpuTex)
 
-	// Bone.DrawBone(10, 10, 20, 20)
+	BoneGenerator.DrawBone(10, 10, 20, 20)
 
 }
