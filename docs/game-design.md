@@ -62,8 +62,8 @@ Most of the game is here...
 
 #### 5. Layer over the player
 This layer contains:
- - [liquids](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#liquids) (water, lava, biofluid, etc)
- - [gases](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gases)
+ - [Liquids](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#liquids) (water, lava, biofluid, etc)
+ - [Gases](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gases)
  - Some ores that spawns over the walls on the foreground layer
  - Special FX
  - Some materials that go over the player, like the top part of a glass transportation tube.
@@ -207,7 +207,11 @@ Works the same way as [gas pipes](https://github.com/skycoin/cx-game/blob/main/d
 
 #### Food
 
+The food can be prepared by cooking plants or some creatures' meats. Some ingredients found in the environment can also be consumed raw, but it's not recommended.
+
 #### Cultivating plants
+
+Some plants drop seeds that can be planted on hydroponic vats to cultivate them into the base.
 
 #### Creatures husbandry
 
