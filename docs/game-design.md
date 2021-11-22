@@ -42,8 +42,8 @@ The **windows** are going to be put on this layer and the walls behind them are 
 Most of the game is here...
  - Doors (Must be in contact both with ceiling and floor)
  - Lights
-  - Hangable: Must be in contact with the ceiling
-  - Others: Must be in contact with the floor or another hard surface like tables or containers.
+   - Hangable: Must be in contact with the ceiling
+   - Others: Must be in contact with the floor or another hard surface like tables or containers.
  - Tables (Must be in contact with the floor)
  - Seats (Must be in contact with the floor)
  - Containers (Must be in contact with the floor or another hard surface like tables or containers)
