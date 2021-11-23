@@ -30,6 +30,7 @@ This layer is mainly composed of elements fixed on the background walls like:
  - [Gas Filters](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#gas-filter)
  - [Automation Wires](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#automation-wires)
  - [Logic gates](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#logic-gates)
+ - [Sensors](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#sensors)
  - [Conveyor System](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#conveyor-system)
  - Rails
  - Windows
@@ -222,6 +223,25 @@ Some plants drop seeds that can be planted on hydroponic vats to cultivate them 
 
 #### Logic gates
 
+ - **AND Gate:** If both signals are true, returns true. Otherwise, return false.
+ - **OR Gate:** If at least one of the input signals is true, returns true. Otherwise, return false.
+ - **XOR Gate:** If exactly one of the input signals is true, returns true. Otherwise, return false.
+ - **NOT Gate:** It returns the opposite signal received. If received true, returns false, and vice versa.
+ - **BUFFER Gate:** Returns true when its input is true, and keep sending true for a while when its input changes to false.
+ - **FILTER Gate:** The same as buffer gate but for "false" signal. Returns false when its input is false, and keep sending false for a while when its input changes to true.
+
+#### Sensors
+
+ - **Atmo Sensor:** Detects the gas pressure on the environment. It checks the pressure on the tile it's placed.
+ - **Motion Sensor:** Checks if there is any movement within a triangle area below it.
+ - **Creature Sensor:** Counts the number of creatures and/or eggs in a room and compares it with a limit set by the player.
+ - **Germ Sensor:** Detects the number of germs in the environment. It checks the germs on the tile it's placed on.
+ - **Hydro Sensor:** Detects the liquid pressure on that area. It checks the pressure on the tile it's placed.
+ - **Element Sensor:** Detects if some element (types of gases or liquids, e.g Chlorine), set by the player, is present in that area.
+ - **Thermo Sensor:** Detects the temperature of the environment. It checks the temperature on the tile it's placed on.
+ - **Wattage Sensor:** Detects wattage consumed on a circuit and compares it with a limit set by the player.
+ - **Timer Sensor:** A timer that sends true signals and false signals for specific amounts of time.
+ 
 #### Conveyor system
 
 #### Droids
