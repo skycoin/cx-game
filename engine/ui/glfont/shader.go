@@ -78,6 +78,8 @@ void main()
 {    
     vec4 sampled = vec4(1.0, 1.0, 1.0, texture(tex, fragTexCoord).r);
     outputColor = textColor * sampled;
+	if ( outputColor.a < 0.2 ) discard;
+	gl_FragDepth = -1000;
 }` + "\x00"
 
 var vertexFontShader = `#version 150 core
