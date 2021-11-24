@@ -2,7 +2,6 @@ package worldimport
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/lafriks/go-tiled"
 
