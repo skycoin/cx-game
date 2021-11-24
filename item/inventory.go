@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/components/agents"
@@ -169,15 +170,23 @@ func (inventory Inventory) DrawSlot(
 			render.NewSpriteDrawOptions())
 
 		textTransform := itemTransform.
-			Mul4(mgl32.Translate3D(0.5, -0.05, 0.3)).
+			Mul4(mgl32.Translate3D(-0.5, 0.2, 0.3)).
 			Mul4(cxmath.Scale(0.6))
 		textCtx := render.Context {
 			World: textTransform, Projection: ctx.Projection }
-		ui.DrawStringRightAligned(
-			strconv.Itoa(int(slot.Quantity)),
-			mgl32.Vec4{1, 1, 1, 1},
-			textCtx,
-		)
+		if false {
+			ui.DrawStringRightAligned(
+				strconv.Itoa(int(slot.Quantity)),
+				mgl32.Vec4{1, 1, 1, 1},
+				textCtx,
+			)
+		}
+		gl.Enable(gl.DEPTH_TEST)
+		var x float32 = 320 + textCtx.MVP().At(0,3) * 320
+		var y float32 = 240 - textCtx.MVP().At(1,3) * 240
+		log.Printf("x=%f y=%f",x,y)
+		text := strconv.Itoa(int(slot.Quantity))
+		ui.DefaultFont.Printf(x, y, 0.4, text)
 	}
 }
 
