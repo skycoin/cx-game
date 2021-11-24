@@ -26,5 +26,5 @@ const (
 )
 
 var (
-	OUTLINE_BORDER_COLOR = mgl32.Vec4{1, 0, 0, 1}
+	OUTLINE_BORDER_COLOR = mgl32.Vec4{0.106, 0.106, 0.106, 1}
 )
