@@ -49,6 +49,8 @@ var (
 )
 
 func Init() {
+	flags := ParseStartupFlags()
+
 	vvw := int(constants.VIRTUAL_VIEWPORT_WIDTH)
 	vvh := int(constants.VIRTUAL_VIEWPORT_HEIGHT)
 	win = render.NewWindow(vvw, vvh, true)
@@ -85,7 +87,7 @@ func Init() {
 
 	// TODO move this to the world package or similar
 	//World = worldgen.GenerateWorld()
-	World = worldimport.ImportWorld("./assets/luis/tiled files/Moon Bunker.tmx")
+	World = worldimport.ImportWorld(flags.TmxPath)
 	World.Planet.InitLighting()
 	components.ChangeWorld(&World)
 

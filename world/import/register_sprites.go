@@ -2,6 +2,7 @@ package worldimport
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/lafriks/go-tiled"
 
@@ -74,10 +75,18 @@ func findTiledSpritesInMapTilesets(
 			registeredTileIDs[tilesetTile.ID] = true
 		}
 		if tileset.Image != nil {
-			for id := uint32(0); id < uint32(tileset.TileCount); id++ {
+			log.Printf("%v has w=%d,h=%d, tw=%d, th=%d",
+				tileset.Name, tileset.Image.Width, tileset.Image.Height, tileset.TileWidth, tileset.TileHeight)
+			tileCount := uint32(
+				tileset.Image.Width / tileset.TileWidth *
+					tileset.Image.Height / tileset.TileHeight)
+
+			log.Printf("%v has %d tiles", tileset.Name, tileCount)
+
+			for id := uint32(0); id < tileCount; id++ {
 				name := nameForTilesetTile(tileset.Name, id)
 				metadata := NewTiledMetadata(name)
-				isRegistered, _ := registeredTileIDs[id]
+				isRegistered := registeredTileIDs[id]
 				if !isRegistered {
 					image :=
 						imageForTilesetTile(tileset, uint32(id), nil, mapDir)
@@ -101,7 +110,7 @@ func registerTiledSprites(tiledSprites TiledSprites) RegisteredTiledSprites {
 			_, ok := world.IDFor(name)
 			if !ok {
 				registeredTiledSprites[name] = append(
-					registeredTiledSprites[name], tileSprite.Register(name) )
+					registeredTiledSprites[name], tileSprite.Register(name))
 			}
 		}
 	}

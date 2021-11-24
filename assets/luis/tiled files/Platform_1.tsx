@@ -16,6 +16,21 @@
    <property name="cxtile" value="platform"/>
   </properties>
  </tile>
+ <tile id="3">
+  <properties>
+   <property name="cxtile" value="smoothplatform"/>
+  </properties>
+ </tile>
+ <tile id="4">
+  <properties>
+   <property name="cxtile" value="smoothplatform"/>
+  </properties>
+ </tile>
+ <tile id="5">
+  <properties>
+   <property name="cxtile" value="smoothplatform"/>
+  </properties>
+ </tile>
  <tile id="6">
   <properties>
    <property name="cxtile" value="platform"/>
@@ -31,6 +46,21 @@
    <property name="cxtile" value="platform"/>
   </properties>
  </tile>
+ <tile id="9">
+  <properties>
+   <property name="cxtile" value="smoothplatform"/>
+  </properties>
+ </tile>
+ <tile id="10">
+  <properties>
+   <property name="cxtile" value="smoothplatform"/>
+  </properties>
+ </tile>
+ <tile id="11">
+  <properties>
+   <property name="cxtile" value="smoothplatform"/>
+  </properties>
+ </tile>
  <tile id="12">
   <properties>
    <property name="cxtile" value="platform"/>
@@ -44,6 +74,21 @@
  <tile id="14">
   <properties>
    <property name="cxtile" value="platform"/>
+  </properties>
+ </tile>
+ <tile id="15">
+  <properties>
+   <property name="cxtile" value="smoothplatform"/>
+  </properties>
+ </tile>
+ <tile id="16">
+  <properties>
+   <property name="cxtile" value="smoothplatform"/>
+  </properties>
+ </tile>
+ <tile id="17">
+  <properties>
+   <property name="cxtile" value="smoothplatform"/>
   </properties>
  </tile>
  <wangsets>
