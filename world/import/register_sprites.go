@@ -75,13 +75,9 @@ func findTiledSpritesInMapTilesets(
 			registeredTileIDs[tilesetTile.ID] = true
 		}
 		if tileset.Image != nil {
-			log.Printf("%v has w=%d,h=%d, tw=%d, th=%d",
-				tileset.Name, tileset.Image.Width, tileset.Image.Height, tileset.TileWidth, tileset.TileHeight)
 			tileCount := uint32(
 				tileset.Image.Width / tileset.TileWidth *
 					tileset.Image.Height / tileset.TileHeight)
-
-			log.Printf("%v has %d tiles", tileset.Name, tileCount)
 
 			for id := uint32(0); id < tileCount; id++ {
 				name := nameForTilesetTile(tileset.Name, id)

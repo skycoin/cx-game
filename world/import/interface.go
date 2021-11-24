@@ -26,12 +26,6 @@ func ImportWorld(tmxPath string) world.World {
 	registeredTileSprites := registerTiledSprites(mapTiledSprites)
 	tileTypeIDs := registerTileTypesForTiledSprites(registeredTileSprites)
 
-	for name,sprites := range registeredTileSprites {
-		if true {
-			log.Printf("registered %d sprites for %s", len(sprites), name)
-		}
-	}
-
 	planet := world.NewPlanet(int32(tiledMap.Width), int32(tiledMap.Height))
 	for _, tiledLayer := range tiledMap.Layers {
 		layerID, foundLayerID := world.LayerIDForName(tiledLayer.Name)
