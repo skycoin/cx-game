@@ -236,8 +236,8 @@ func flushSpriteDraws(zoom float32) {
 	defer outlineProgram.StopUsing()
 
 	texelSize := mgl32.Vec2{
-		zoom * 1.0 / float32(constants.VIRTUAL_VIEWPORT_WIDTH),
-		zoom * 1.0 / float32(constants.VIRTUAL_VIEWPORT_HEIGHT),
+		zoom * 2.0 / float32(constants.VIRTUAL_VIEWPORT_WIDTH),
+		zoom * 2.0 / float32(constants.VIRTUAL_VIEWPORT_HEIGHT),
 	}
 	outlineProgram.SetVec2("texelSize", &texelSize)
 	outlineProgram.SetVec4("borderColor", &constants.OUTLINE_BORDER_COLOR)
