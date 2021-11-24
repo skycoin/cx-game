@@ -36,6 +36,7 @@ type TiledMetadata struct {
 	Powered OptionalBool
 	Name    string
 	LayerID world.LayerID
+	NeedsGround bool
 }
 
 func NewTiledMetadata(name string) TiledMetadata {
@@ -129,6 +130,7 @@ func (metadata *TiledMetadata) ParseFrom(properties tiled.Properties) {
 	if hasProperty(properties, "cxtile") {
 		metadata.Name = properties.GetString("cxtile")
 	}
+	metadata.NeedsGround = properties.GetBool("needsground")
 }
 
 func parseMetadataFromLayerTile(layerTile *tiled.LayerTile) TiledMetadata {

@@ -98,6 +98,7 @@ func registerTileTypeForTileSprites(
 		Width: tileSprites[0].Width, Height: tileSprites[0].Height,
 		Placer: placerForTileSprites(tileSprites),
 		Layer:  layerID,
+		NeedsGround: tileSprites[0].Metadata.NeedsGround,
 	}
 
 	tileTypeID :=
