@@ -17,21 +17,20 @@ func importTile(
 	if layerTile.Nil {
 		return
 	}
+	// correct mismatch between Tiled Y axis (downwards)
+	// and our Y axis  (upwards)
+	y := int(planet.Height) - tileIndex/int(planet.Width)
+	x := tileIndex % int(planet.Width)
+
 	name := nameForLayerTile(layerTile)
 	tileTypeID, ok := world.IDFor(name)
 	if !ok {
 		tileTypeID, ok = tileTypeIDs[name]
 		if !ok {
-			log.Fatalf("cannot found tile type ID for %v", name)
+			log.Fatalf("cannot found tile type ID for %v at %d,%d", name, x,y)
 		}
 	}
 	if tileTypeID != world.TileTypeIDAir {
-
-		// correct mismatch between Tiled Y axis (downwards)
-		// and our Y axis  (upwards)
-		y := int(planet.Height) - tileIndex/int(planet.Width)
-		x := tileIndex % int(planet.Width)
-
 		opts := world.NewTileCreationOptions()
 		flipX, flipY := scaleFromFlipFlags(layerTile)
 		opts.FlipTransform = mgl32.Scale3D(float32(flipX), float32(flipY), 1)

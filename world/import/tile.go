@@ -1,6 +1,7 @@
 package worldimport
 
 import (
+	"log"
 	"image"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -112,6 +113,8 @@ func registerTileTypesForTiledSprites(
 	for name, tileSprites := range tiledSprites {
 		if len(tileSprites)>0 {
 			tileTypeIDs[name] = registerTileTypeForTileSprites(tileSprites)
+		} else {
+			log.Printf("found 0 tileSprites for %v", name)
 		}
 	}
 

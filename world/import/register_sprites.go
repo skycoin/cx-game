@@ -74,10 +74,14 @@ func findTiledSpritesInMapTilesets(
 			registeredTileIDs[tilesetTile.ID] = true
 		}
 		if tileset.Image != nil {
-			for id := uint32(0); id < uint32(tileset.TileCount); id++ {
+			tileCount := uint32(
+				tileset.Image.Width / tileset.TileWidth *
+					tileset.Image.Height / tileset.TileHeight)
+
+			for id := uint32(0); id < tileCount; id++ {
 				name := nameForTilesetTile(tileset.Name, id)
 				metadata := NewTiledMetadata(name)
-				isRegistered, _ := registeredTileIDs[id]
+				isRegistered := registeredTileIDs[id]
 				if !isRegistered {
 					image :=
 						imageForTilesetTile(tileset, uint32(id), nil, mapDir)
@@ -101,7 +105,7 @@ func registerTiledSprites(tiledSprites TiledSprites) RegisteredTiledSprites {
 			_, ok := world.IDFor(name)
 			if !ok {
 				registeredTiledSprites[name] = append(
-					registeredTiledSprites[name], tileSprite.Register(name) )
+					registeredTiledSprites[name], tileSprite.Register(name))
 			}
 		}
 	}
