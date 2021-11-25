@@ -184,7 +184,6 @@ func (inventory Inventory) DrawSlot(
 		gl.Enable(gl.DEPTH_TEST)
 		var x float32 = 320 + textCtx.MVP().At(0,3) * 320
 		var y float32 = 240 - textCtx.MVP().At(1,3) * 240
-		log.Printf("x=%f y=%f",x,y)
 		text := strconv.Itoa(int(slot.Quantity))
 		ui.DefaultFont.Printf(x, y, 0.4, text)
 	}
