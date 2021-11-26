@@ -1,0 +1,342 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Moon Fortress3_minitest.tmx",
+    "automapping.whileDrawing": false,
+    "expandedProjectPaths": [
+        "furniture",
+        "terrains_fluids",
+        "lights",
+        "building_blocks",
+        "containers",
+        "planets_background",
+        "computers",
+        "plants",
+        "windows",
+        "geysers",
+        "gas_machines",
+        "terrains",
+        "turrets",
+        "solid_machines",
+        "radar",
+        "guns",
+        "radio",
+        "operation_table",
+        "ores",
+        "elevator",
+        "C:/Users/Ludic Side/Desktop/Work/Sci Fi Terraria/Terrain",
+        "conveyor_system",
+        "power_machines",
+        "platforms",
+        "rails",
+        "doors",
+        "pipesim",
+        "map_lab_objects"
+    ],
+    "file.lastUsedOpenFilter": "Tous les Fichiers (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "Blocks_Stone.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Doors.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Elevators.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Moon Bunker.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": -1022,
+                "y": 152.5
+            }
+        },
+        "Moon Bunker.tmx#Tiles_Moon": {
+            "scaleInDock": 1
+        },
+        "Moon Bunker.tmx#Tiles_metal_slabs": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "Moon Bunker1.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 1669.6969696969697,
+                "y": 60.60606060606074
+            }
+        },
+        "Moon Bunker1.tmx#Tiles_metal_slabs": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "Moon Fortress1.json": {
+            "scale": 0.33,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 1669.6969696969697,
+                "y": 66.66666666666674
+            }
+        },
+        "Moon Fortress1.json#Tiles_metal_slabs": {
+            "scaleInDock": 1.5
+        },
+        "Moon Fortress1.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 1669.6969696969697,
+                "y": 63.63636363636374
+            }
+        },
+        "Moon Fortress1.tmx#Tiles_metal_slabs": {
+            "scaleInDock": 1.5
+        },
+        "Moon Fortress2.json": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 718.1818181818185,
+                "y": -493.939393939394
+            }
+        },
+        "Moon Fortress2.json#Tiles_metal_slabs": {
+            "scaleInDock": 1.5
+        },
+        "Moon Fortress2.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1269.6969696969697,
+                "y": -236.36363636363637
+            }
+        },
+        "Moon Fortress2.tmx#Tiles_metal_slabs": {
+            "scaleInDock": 1.5
+        },
+        "Moon Fortress2_minitest.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 7,
+            "viewCenter": {
+                "x": 3876,
+                "y": 1000
+            }
+        },
+        "Moon Fortress2_minitest.tmx#Tiles_metal_slabs": {
+            "scaleInDock": 1.5
+        },
+        "Moon Fortress3_minitest.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 7,
+            "viewCenter": {
+                "x": 2194.666666666667,
+                "y": 1392
+            }
+        },
+        "Moon Fortress3_minitest.tmx#Tiles_metal_slabs": {
+            "scaleInDock": 1.5
+        },
+        "Moon Fortress_minitest.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 4672,
+                "y": 1065.3333333333333
+            }
+        },
+        "Moon Fortress_minitest.tmx#Tiles_metal_slabs": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5
+        },
+        "Moon_Background.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.125,
+            "scaleInEditor": 1
+        },
+        "Objects.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Ores.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Platform_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 2,
+            "scaleInEditor": 1
+        },
+        "Slabs_metal_1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Stairs_1.tsx": {
+            "scaleInDock": 1
+        },
+        "Stone Bunker 2.tmx": {
+            "scale": 0.24605855855855857,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": -20.320366132723166,
+                "y": -241.81235697940497
+            }
+        },
+        "Stone Bunker 2.tmx#Tiles_metal_slabs": {
+            "scaleInDock": 1
+        },
+        "Tables.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tile_edgewall.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tile_wallbase.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tiles_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "Tiles_1_v1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 5.5
+        },
+        "Tiles_Metal.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tiles_Moon.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 4
+        },
+        "Tiles_ceramic_blocks.tsx": {
+            "scaleInDock": 1
+        },
+        "Tiles_metal_bulkheads.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tiles_metal_continuos.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "Tiles_metal_lattice.tsx": {
+            "scaleInDock": 1
+        },
+        "Tiles_metal_slabs.tsx": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "Tiles_stone_blocks.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "Tiles_stone_bulkheads.tsx": {
+            "scaleInDock": 1
+        },
+        "Wall_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "character.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fluids.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "galaxyBackgroundTiles.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "pipesim.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "sans titre.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": -203,
+                "y": -129
+            }
+        },
+        "temp_outline.tsx": {
+            "scaleInDock": 1
+        },
+        "windows_metal.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "C:/Users/kurte/OneDrive/Bureau/Tiles",
+    "last.externalTilesetPath": "C:/Users/kurte/OneDrive/Bureau/Tiles",
+    "last.imagePath": "C:/Users/kurte/OneDrive/Bureau/Tiles/terrains",
+    "last.worldFilePath": "C:/Users/kurte/OneDrive/Bureau/Tiles",
+    "loadedWorlds": [
+        "C:/Users/kurte/OneDrive/Bureau/Tiles/MoonWorld.world",
+        "C:/Users/kurte/OneDrive/Bureau/Tiles/world.world"
+    ],
+    "map.fixedSize": false,
+    "map.lastUsedExportFilter": "Tous les Fichiers (*)",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "openFiles": [
+        "Moon Fortress3_minitest.tmx"
+    ],
+    "project": "Moon_Fortress_minitest3.tiled-project",
+    "recentFiles": [
+        "Moon Fortress3_minitest.tmx",
+        "Moon Fortress2_minitest.tmx",
+        "Moon Fortress_minitest.tmx",
+        "Moon_Background.tsx",
+        "Moon Fortress2.tmx",
+        "sans titre.tmx",
+        "Moon Fortress2.json",
+        "Moon Fortress1.json",
+        "Moon Fortress1.tmx",
+        "Moon Bunker1.tmx",
+        "Elevators.tsx",
+        "Tables.tsx"
+    ],
+    "tileset.lastUsedFilter": "Tous les Fichiers (*)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    },
+    "tileset.type": 1
+}
