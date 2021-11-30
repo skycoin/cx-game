@@ -101,6 +101,7 @@ func registerTileTypeForTileSprites(
 		Placer: placerForTileSprites(tileSprites),
 		Layer:  layerID,
 		NeedsGround: tileSprites[0].Metadata.NeedsGround,
+		NeedsRoof: tileSprites[0].Metadata.NeedsRoof,
 	}
 
 	tileTypeID :=

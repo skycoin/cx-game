@@ -23,7 +23,7 @@ type TileType struct {
 	ItemSpriteID  render.SpriteID
 	LightSource   bool
 	LightAmount   uint8 // from 0 to 15
-	NeedsGround   bool
+	NeedsGround, NeedsRoof   bool
 }
 
 func (tt TileType) Size() cxmath.Vec2i {
