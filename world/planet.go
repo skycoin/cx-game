@@ -176,7 +176,6 @@ func (planet *Planet) PlaceTileTypeNoConnect(
 	}
 
 	if tile.IsElectric() {
-		log.Printf("placing electric tile with wattage = %d", tile.Power.Wattage)
 		planet.AddCircuitTile(cxmath.Vec2i {int32(x), int32(y)})
 	}
 	planet.LightUpdateBlock(x, y)

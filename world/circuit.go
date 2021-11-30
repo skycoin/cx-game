@@ -1,7 +1,6 @@
 package world
 
 import (
-	"log"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/constants"
 )
@@ -33,17 +32,13 @@ func (bc *BoundCircuit) Tiles() []*Tile {
 func (bc *BoundCircuit) Wattage() int {
 	wattage := 0
 	for _,tile := range bc.Tiles() {
-		log.Printf("tile %s has wattage %d", tile.Name, tile.Power.Wattage)
 		wattage += tile.Power.Wattage
 	}
 	return wattage
 }
 
 func (bc *BoundCircuit) FixedTick() {
-	log.Printf("circuit wattage is %d", bc.Wattage())
-	log.Printf("circuit has %d electric tiles", len(bc.Tiles()))
 	active := bc.Wattage() > 0
-	if active { log.Printf("circuit is ON") }
 	bc.Toggle(active)
 }
 
@@ -104,10 +99,8 @@ func (planet *Planet) AddCircuitTile(at cxmath.Vec2i) {
 				// add new tile to circuit
 				planet.Circuits[circuitID] =
 					append(planet.Circuits[circuitID], hereTileIdx)
-				log.Printf("added tile to circuit")
 			}
 		}
 	}
-	log.Printf("could not find home for circuit")
 	// TODO create new circuit
 }
