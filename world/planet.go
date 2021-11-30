@@ -23,8 +23,8 @@ type Planet struct {
 	collidingLines  []float32
 	collidingLinesX int
 	collidingLinesY int
-	Time            float32
 	LightingValues  []LightValue
+	Circuits  Circuits
 
 	program, liquidProgram render.Program
 }
@@ -91,6 +91,12 @@ func (planet *Planet) GetTileIndex(x, y int) int {
 	return y*int(planet.Width) + x
 }
 
+func (planet *Planet) TileIdxToPos(idx int) cxmath.Vec2i {
+	return cxmath.Vec2i {
+		int32(idx % int(planet.Width)),
+		int32(idx / int(planet.Width)) }
+}
+
 func (planet *Planet) ShortestDisplacement(from, to mgl32.Vec2) mgl32.Vec2 {
 	disp := to.Sub(from)
 	w := float32(planet.Width)
@@ -141,7 +147,8 @@ func (planet *Planet) PlaceTileTypeNoConnect(
 	if rootTileIdx == -1 {
 		return
 	}
-	tilesInLayer[rootTileIdx] = tileType.CreateTile(opts)
+	tile := tileType.CreateTile(opts)
+	tilesInLayer[rootTileIdx] = tile
 	rect := cxmath.Rect{
 		cxmath.Vec2i{int32(x), int32(y)},
 		tileType.Size(),
@@ -168,6 +175,10 @@ func (planet *Planet) PlaceTileTypeNoConnect(
 		}
 	}
 
+	if tile.IsElectric() {
+		log.Printf("placing electric tile with wattage = %d", tile.Power.Wattage)
+		planet.AddCircuitTile(cxmath.Vec2i {int32(x), int32(y)})
+	}
 	planet.LightUpdateBlock(x, y)
 }
 
@@ -466,13 +477,10 @@ func (planet *Planet) MinimizeDistance(
 	return from, toCloser
 }
 
-func (planet *Planet) Update(dt float32) {
-	planet.Time += dt
-}
 
 func (planet *Planet) FixedUpdate() {
 	planet.UpdateLighting()
-
+	planet.UpdateCircuits()
 }
 
 func (planet *Planet) NearOxygenGenerator(position cxmath.Vec2) bool {
