@@ -7,3 +7,7 @@ func (planet *Planet) TogglePower(x,y int, on bool) {
 	tilesInLayer := planet.GetLayerTiles(MidLayer)
 	planet.updateTile(tilesInLayer, x,y)
 }
+
+func (tile *Tile) IsElectric() bool {
+	return tile.Power.Wattage != 0
+}

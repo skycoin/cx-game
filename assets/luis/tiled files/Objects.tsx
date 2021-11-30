@@ -40,6 +40,7 @@
  <tile id="6">
   <properties>
    <property name="needsground" type="bool" value="true"/>
+   <property name="wattage" type="int" value="50"/>
   </properties>
   <image width="32" height="48" source="../power_machines/battery4.png"/>
  </tile>
@@ -159,6 +160,7 @@
   <properties>
    <property name="cxtile" value="light1"/>
    <property name="powered" type="bool" value="false"/>
+   <property name="wattage" type="int" value="-5"/>
   </properties>
   <image width="16" height="16" source="../lights/light_1_off.png"/>
  </tile>
@@ -166,6 +168,7 @@
   <properties>
    <property name="cxtile" value="light1"/>
    <property name="powered" type="bool" value="true"/>
+   <property name="wattage" type="int" value="-5"/>
   </properties>
   <image width="16" height="16" source="../lights/light_1_on.png"/>
  </tile>
