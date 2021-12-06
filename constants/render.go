@@ -26,10 +26,7 @@ const (
 )
 
 var (
-	OUTLINE_BORDER_COLOR           = mgl32.Vec4{1, 0, 0, 1}
-	VIRTUAL_VIEWPORT_WIDTH2  int32 = 1280 //1440
-	VIRTUAL_VIEWPORT_HEIGHT2 int32 = 720  //900
-	Resolution_Selected      int32 = 1
+	OUTLINE_BORDER_COLOR = mgl32.Vec4{0.106, 0.106, 0.106, 1}
 )
 
 func ChangeResolution(resolutionTyep int32) (int, int) {

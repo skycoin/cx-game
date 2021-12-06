@@ -1,5 +1,7 @@
 package animjson
 
+import "encoding/json"
+
 type Skeleton struct {
 	Hash   string `json:"hash"`
 	Spine  string `json:"spine"`
@@ -21,18 +23,10 @@ type Bone struct {
 	Color    string `json:"color"`
 }
 
-type Bones struct {
-	Bones map[string]Bone `json:"bones"`
-}
-
 type Slot struct {
 	Name       string `json:"name"`
 	Bone       string `json:"bone"`
 	Attachment string `json:"attachment"`
-}
-
-type Slots struct {
-	Slots map[string]Slot `json:"slots"`
 }
 
 type Ikitem struct {
@@ -53,14 +47,24 @@ type Back_arm struct {
 	Height int    `json:"height"`
 }
 
-type Attachments struct {
-	Back_arm
-}
+type Attachments interface{}
 
-type Skins struct {
+type Skin struct {
 	Name        string      `json:"name"`
 	Attachments Attachments `json:"attachments"`
 }
 
-type Animations struct {
+type AnimatedBoneSpritesheet struct {
+	Skeleton   Skeleton    `json:"skeleton"`
+	Bones      []Bone      `json:"bones"`
+	Slots      []Slot      `json:"slots"`
+	Ik         Ik          `json:"ik"`
+	Skins      []Skin      `json:"skins"`
+	Animations interface{} `json:"animations"`
+}
+
+func UnmarshalAnimatedBoneSpriteSheet(buf []byte) AnimatedBoneSpritesheet {
+	animatedBoneSpritesheet := AnimatedBoneSpritesheet{}
+	json.Unmarshal(buf, &animatedBoneSpritesheet)
+	return animatedBoneSpritesheet
 }

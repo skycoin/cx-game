@@ -14,6 +14,7 @@ func ImportWorld(tmxPath string) world.World {
 	start := time.Now()
 	tiledMap, err := tiled.LoadFromFile(tmxPath)
 	if err != nil {
+		log.Printf("please make sure map is NOT infinite")
 		log.Fatalf("import world: %v", err)
 	}
 	elapsedTiledLoad := time.Since(start)

@@ -155,17 +155,4 @@ lights/light_1_off:
     height: 1
     layer: mid
 
-lights/light_2_on:
-    sprite: lights/light_2_on
-    durability: 5
-    width: 3
-    height: 1
-    layer: mid
-
-lights/light_2_off:
-    sprite: lights/light_2_off
-    durability: 5
-    width: 3
-    height: 1
-    layer: mid
 ---

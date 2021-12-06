@@ -39,6 +39,13 @@ platform:
         - tiles/platform
     layer: top
 
+smoothplatform:
+    blob: platform
+    collision: platform
+    sprites:
+        - tiles/smoothplatform
+    layer: top
+
 # stairs:
 #     blob: manhattan
 #     sprites:

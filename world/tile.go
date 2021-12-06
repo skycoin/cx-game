@@ -46,6 +46,7 @@ type Tile struct {
 
 type TilePower struct {
 	On bool
+	Wattage int
 }
 
 func NewEmptyTile() Tile {
