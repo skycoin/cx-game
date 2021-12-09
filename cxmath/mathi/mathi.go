@@ -13,3 +13,7 @@ func Clamp(x, min, max int) int {
 	if x > max { return max }
 	return x
 }
+
+func Abs(x int) int {
+	if x<0 { return -x } else { return x }
+}

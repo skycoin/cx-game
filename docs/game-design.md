@@ -244,6 +244,20 @@ Some plants drop seeds that can be planted on hydroponic vats to cultivate them 
  
 #### Conveyor system
 
+As Pipesim's elements, these objects belong to the [mid layer](https://github.com/skycoin/cx-game/blob/main/docs/game-design.md#3-mid-layer), but they must be built over walls.
+
+ - **Conveyor belts:** Doesn't require a power source to work and transports items from one place to another. The transported items are packs of materials that go forward the end of the belt, but they can be removed anytime and put inside machines or containers by inserters.
+  
+    ![](https://wiki.factorio.com/images/Basic_transport_belt_fulldensity.gif)
+ 
+ - **Inserters:** Inserters require a power source to work and, they are used to transfer items between belts, containers, and machines.
+
+    ![](https://wiki.factorio.com/images/Transport_belts_demo.gif)
+
+ - **Splitters/Filters:** This machine is used to split items between two belts and it also can be used as a filter, so only a specific type of item will be transferred to another belt. If no filter is selected then the packs will be split taking turns, so the first one keeps on the belt, the next one goes to another belt and so goes on.
+
+    ![](https://wiki.factorio.com/images/Transport_belts_unmerge.gif)
+
 #### Droids
 
 ## **Environment elements**

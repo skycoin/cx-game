@@ -89,6 +89,7 @@ func Init() {
 	//World = worldgen.GenerateWorld()
 	World = worldimport.ImportWorld(flags.TmxPath)
 	World.Planet.InitLighting()
+	World.Planet.DetectCircuits()
 	components.ChangeWorld(&World)
 
 	//World.Planet = *mapgen.GeneratePlanet()

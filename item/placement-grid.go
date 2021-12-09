@@ -299,17 +299,5 @@ func (grid *PlacementGrid) UpdatePreview(
 
 	tt := grid.Selected.Get()
 
-	//midlayer and toplayer can't occupy same tile
-	layersToCheck := layersToCheckForPlace(tt.Layer)
-	occupyingTilesAreClear :=
-		tilesAreClear(World,layersToCheck,x,y,x+int(tt.Width),y+int(tt.Height))
-
-	grid.canPlace = occupyingTilesAreClear
-	if tt.NeedsGround {
-		belowTilesAreSolid := tilesAreSolid(
-			World, []world.LayerID { world.TopLayer },
-			x,y-1,x+int(tt.Width),y,
-		)
-		grid.canPlace = grid.canPlace && belowTilesAreSolid
-	}
+	grid.canPlace = CanPlaceTileTypeAt(World,tt,x,y)
 }

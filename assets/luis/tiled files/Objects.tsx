@@ -40,6 +40,7 @@
  <tile id="6">
   <properties>
    <property name="needsground" type="bool" value="true"/>
+   <property name="wattage" type="int" value="50"/>
   </properties>
   <image width="32" height="48" source="../power_machines/battery4.png"/>
  </tile>
@@ -93,7 +94,7 @@
  </tile>
  <tile id="15">
   <properties>
-   <property name="needsground" type="bool" value="true"/>
+   <property name="needsroof" type="bool" value="true"/>
   </properties>
   <image width="32" height="16" source="../furniture/decorations/roofScreen.png"/>
  </tile>
@@ -118,7 +119,7 @@
  </tile>
  <tile id="19">
   <properties>
-   <property name="needsground" type="bool" value="true"/>
+   <property name="needsroof" type="bool" value="true"/>
   </properties>
   <image width="32" height="16" source="../turrets/roofLaser.png"/>
  </tile>
@@ -153,12 +154,16 @@
   <image width="32" height="32" source="../containers/metalBox_orange.png"/>
  </tile>
  <tile id="25">
+  <properties>
+   <property name="needsroof" type="bool" value="true"/>
+  </properties>
   <image width="16" height="16" source="../furniture/decorations/surveillanceCamera.png"/>
  </tile>
  <tile id="26">
   <properties>
    <property name="cxtile" value="light1"/>
    <property name="powered" type="bool" value="false"/>
+   <property name="wattage" type="int" value="-5"/>
   </properties>
   <image width="16" height="16" source="../lights/light_1_off.png"/>
  </tile>
@@ -166,19 +171,29 @@
   <properties>
    <property name="cxtile" value="light1"/>
    <property name="powered" type="bool" value="true"/>
+   <property name="wattage" type="int" value="-5"/>
   </properties>
   <image width="16" height="16" source="../lights/light_1_on.png"/>
  </tile>
  <tile id="28">
+  <properties>
+   <property name="needsroof" type="bool" value="true"/>
+  </properties>
   <image width="48" height="16" source="../lights/light_2_off.png"/>
  </tile>
  <tile id="29">
+  <properties>
+   <property name="needsroof" type="bool" value="true"/>
+  </properties>
   <image width="48" height="16" source="../lights/light_2_on.png"/>
  </tile>
  <tile id="30">
   <image width="16" height="16" source="../lights/light_3_cable.png"/>
  </tile>
  <tile id="31">
+  <properties>
+   <property name="needsroof" type="bool" value="true"/>
+  </properties>
   <image width="16" height="32" source="../lights/light_3_on.png"/>
  </tile>
  <tile id="32">
