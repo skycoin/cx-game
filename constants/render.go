@@ -20,6 +20,7 @@ const (
 	PIPELAYER_Z   float32 = -11
 	MIDLAYER_Z    float32 = -10
 	FRONTLAYER_Z  float32 = -8
+	SUPERLAYER_Z  float32 = -6
 	AGENT_Z       float32 = -5
 	PLAYER_Z      float32 = -3
 	HUD_Z         float32 = 2
