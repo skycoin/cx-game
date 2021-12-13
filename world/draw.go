@@ -65,6 +65,9 @@ func (planet *Planet) DrawHemisphere(
 		if layerID == WindowLayer {
 			drawOpts.Cutout = true
 		}
+		if layerID == SuperLayer {
+			drawOpts.Translucent = true
+		}
 		render.
 			DrawWorldSprite(transform, positionedTile.Tile.SpriteID, drawOpts)
 	}

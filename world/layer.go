@@ -15,7 +15,8 @@ const (
 	WindowLayer
 	PipeLayer
 	MidLayer
-	TopLayer
+	TopLayer // foreground layer
+	SuperLayer // layer above foreground - "superimposed" layer
 
 	NumLayers // DO NOT SET MANUALLY
 )
@@ -51,6 +52,7 @@ var layerIDsByName = map[string]LayerID{
 	"windows":    WindowLayer,
 	"walls":      BgLayer,
 	"pipesim":    PipeLayer,
+	"fluids":     SuperLayer,
 }
 
 func LayerIDForName(name string) (LayerID, bool) {
@@ -70,7 +72,9 @@ func (layerID LayerID) Z() float32 {
 		return constants.PIPELAYER_Z
 	} else if layerID == WindowLayer {
 		return constants.WINDOWLAYER_Z
-	} else {
+	} else if layerID == SuperLayer {
+		return constants.SUPERLAYER_Z
+	}else {
 		log.Fatalf("error: Unknown layer!")
 	}
 	return -1
