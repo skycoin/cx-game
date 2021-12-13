@@ -52,10 +52,6 @@ smoothplatform:
 #         - tiles/platform
 #     layer: top
 
-methane-ice:
-    sprite: tiles/methane-ice
-    layer: top
-
 regolith-wall:
     blob: full
     sprites: 
