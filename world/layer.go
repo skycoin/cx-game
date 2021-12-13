@@ -52,7 +52,9 @@ var layerIDsByName = map[string]LayerID{
 	"windows":    WindowLayer,
 	"walls":      BgLayer,
 	"pipesim":    PipeLayer,
+	// multiple Tiled layers map to the in-game SuperLayer
 	"fluids":     SuperLayer,
+	"ores":       SuperLayer,
 }
 
 func LayerIDForName(name string) (LayerID, bool) {
