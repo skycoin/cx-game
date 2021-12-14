@@ -31,6 +31,7 @@ func SetCameraTransform(mat mgl32.Mat4) {
 type SpriteDrawOptions struct {
 	Outline bool
 	Cutout  bool
+	Translucent bool
 }
 
 func NewSpriteDrawOptions() SpriteDrawOptions {
@@ -139,37 +140,54 @@ func FlushUI() {
 	flushColorDraws(Projection)
 }
 
-func filterCutoutSpriteDrawsPerAtlas(
+type SpriteDrawBins struct {
+	Cutout,Normal,Translucent map[Texture][]SpriteDraw
+}
+func NewSpriteDrawBins() SpriteDrawBins {
+	return SpriteDrawBins {
+		Cutout: map[Texture][]SpriteDraw{},
+		Normal: map[Texture][]SpriteDraw{},
+		Translucent: map[Texture][]SpriteDraw{},
+	}
+}
+
+// refactor this if it gets any more complex
+func binSpriteDrawsPerAtlas(
 	spriteDrawsPerAtlas map[Texture][]SpriteDraw,
-) (map[Texture][]SpriteDraw, map[Texture][]SpriteDraw) {
-	cutoutSpriteDraws := map[Texture][]SpriteDraw{}
-	nonCutoutSpriteDraws := map[Texture][]SpriteDraw{}
+) SpriteDrawBins {
+	bins := NewSpriteDrawBins()
 	for atlas, spriteDraws := range spriteDrawsPerAtlas {
-		cutoutSpriteDraws[atlas] = []SpriteDraw{}
-		nonCutoutSpriteDraws[atlas] = []SpriteDraw{}
+		bins.Cutout[atlas] = []SpriteDraw{}
+		bins.Normal[atlas] = []SpriteDraw{}
+		bins.Translucent[atlas] = []SpriteDraw{}
 		for _, spriteDraw := range spriteDraws {
 			if spriteDraw.Options.Cutout {
-				cutoutSpriteDraws[atlas] =
-					append(cutoutSpriteDraws[atlas], spriteDraw)
+				bins.Cutout[atlas] =
+					append(bins.Cutout[atlas], spriteDraw)
+			} else if spriteDraw.Options.Translucent {
+				bins.Translucent[atlas] =
+					append(bins.Translucent[atlas], spriteDraw)
 			} else {
-				nonCutoutSpriteDraws[atlas] =
-					append(nonCutoutSpriteDraws[atlas], spriteDraw)
+				bins.Normal[atlas] =
+					append(bins.Normal[atlas], spriteDraw)
 			}
 		}
 	}
-	return cutoutSpriteDraws, nonCutoutSpriteDraws
+	return bins
 }
 
 func drawFramebufferSprites(framebuffer Framebuffer) {
 	framebuffer.Bind(gl.FRAMEBUFFER)
 	spriteDrawsPerAtlas := spriteDrawsPerAtlasPerFramebuffer[framebuffer]
-	cutoutSpriteDraws, nonCutoutSpriteDraws :=
-		filterCutoutSpriteDrawsPerAtlas(spriteDrawsPerAtlas)
+	bins := binSpriteDrawsPerAtlas(spriteDrawsPerAtlas)
 
-	for atlas, spriteDraws := range cutoutSpriteDraws {
+	for atlas, spriteDraws := range bins.Cutout {
 		drawAtlasSprites(atlas, spriteDraws)
 	}
-	for atlas, spriteDraws := range nonCutoutSpriteDraws {
+	for atlas, spriteDraws := range bins.Normal {
+		drawAtlasSprites(atlas, spriteDraws)
+	}
+	for atlas, spriteDraws := range bins.Translucent {
 		drawAtlasSprites(atlas, spriteDraws)
 	}
 }
