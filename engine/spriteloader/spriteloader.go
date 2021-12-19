@@ -21,7 +21,7 @@ func InitSpriteloader(_window *render.Window) {
 	Window = _window
 	spriteLoaderIsInitialized = true
 	SpriteProgram = render.CompileProgram(
-		"./assets/shader/sprite.vert", "./assets/shader/sprite.frag")
+		"./../assets/shader/sprite.vert", "./../assets/shader/sprite.frag")
 }
 
 type Spritesheet struct {
@@ -85,7 +85,9 @@ func AddSpritesheetFromTexture(tex uint32) SpritesheetID {
 }
 
 func AddSpriteSheet(path string, il *ImgLoader) SpritesheetID {
+	log.Println("here %s", path)
 	img := il.GetImg(path)
+	log.Println("image %v", img)
 	if img == nil {
 		log.Fatalf("Cannot find image at path %v", path)
 	}
@@ -201,7 +203,7 @@ var SpriteRenderDistance float32 = 10
 
 //Draw sprite specified with spriteId at x,y position
 //this function is for testing, will not be used later on
-/*
+
 func DrawSpriteQuadOptions(
 	xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
 	opts DrawOptions,
@@ -212,15 +214,12 @@ func DrawSpriteQuadOptions(
 	)
 	DrawSpriteQuadMatrix(worldTransform, spriteId, opts)
 }
-*/
 
-/*
 func DrawSpriteQuad(
 	xpos, ypos, xwidth, yheight float32, spriteId SpriteID,
 ) {
 	DrawSpriteQuadOptions(xpos, ypos, xwidth, yheight, spriteId, NewDrawOptions())
 }
-*/
 
 func DrawSpriteQuadMatrix(
 	worldTransform mgl32.Mat4, spriteId SpriteID, opts DrawOptions,
