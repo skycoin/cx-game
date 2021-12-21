@@ -11,8 +11,6 @@ type Bone struct {
 	Father         *Bone
 }
 
-type Bones []Bone
-
 func DrawBone(x1, y1, x2, y2 float32) {
 	gl.Begin(gl.LINE_STRIP)
 	gl.Vertex2f(x1, y1)
@@ -20,7 +18,7 @@ func DrawBone(x1, y1, x2, y2 float32) {
 	gl.End()
 }
 
-func GenerateBones(bones Bones) {
+func GenerateBones(bones []Bone) {
 	for bone := range bones {
 		fmt.Println("bone: ", bone)
 	}
