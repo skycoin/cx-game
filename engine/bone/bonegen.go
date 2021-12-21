@@ -7,8 +7,12 @@ import (
 )
 
 type Bone struct {
-	X1, Y1, X2, Y2 float32
-	Father         *Bone
+	Name     string
+	Parent   string
+	Rotation float32
+	Length   float32
+	X        float32
+	Y        float32
 }
 
 func DrawBone(x1, y1, x2, y2 float32) {
@@ -19,7 +23,7 @@ func DrawBone(x1, y1, x2, y2 float32) {
 }
 
 func GenerateBones(bones []Bone) {
-	for bone := range bones {
+	for _, bone := range bones {
 		fmt.Println("bone: ", bone)
 	}
 }
