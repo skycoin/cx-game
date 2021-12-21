@@ -51,6 +51,7 @@ func Draw() {
 
 	// particles.DrawTopParticles(camCtx)
 	World.Planet.Draw(Cam, world.TopLayer)
+	World.Planet.Draw(Cam, world.SuperLayer)
 
 	item.DrawWorldItems(Cam)
 
