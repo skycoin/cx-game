@@ -23,16 +23,12 @@ func LoadAnimationBoneFromJSON(fname string) {
 	fmt.Println("Skins: ", sheet.Skins[0].Attachments)
 	m, _ := sheet.Animations.(map[string]interface{})
 	for k, v := range m {
-		fmt.Println(k, "=>", v)
+		fmt.Println("------>", k, "=>", v)
 	}
 
 	imgPath := "./assets/player/Robot.png"
 	gpuTex := spriteloader.LoadTextureFromFileToGPU(imgPath)
 	fmt.Println("gpuTex: ", gpuTex)
-
-	var bones = make([]bonegen.Bone, 2)
-	// bones[0] = bonegen.Bone{10, 10, 20, 20, nil}
-	// bones[1] = bonegen.Bone{5, 5, 20, 20, &bones[0]}
-	bonegen.GenerateBones(bones)
+	bonegen.GenerateBones(sheet.Bones)
 
 }
