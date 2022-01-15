@@ -4,6 +4,8 @@ import (
 	"math"
 )
 
+const Pi float32 = float32(math.Pi)
+
 func Sign(x float32) float32 {
 	if x > 0 {
 		return 1
@@ -80,4 +82,8 @@ func Exp(x float32) float32 {
 
 func Ceil(x float32) float32 {
 	return float32(math.Ceil(float64(x)))
+}
+
+func Atan2(y,x float32) float32 {
+	return float32(math.Atan2(float64(x),float64(y)))
 }
