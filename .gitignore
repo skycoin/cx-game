@@ -24,3 +24,6 @@ prof
 *.tiled-session
 # for logging
 dump
+
+# ctags
+tags
