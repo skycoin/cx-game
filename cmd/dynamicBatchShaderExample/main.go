@@ -9,6 +9,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	indexbuffer "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/IndexBuffer"
 	vertexbuffer "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/VertexBuffer"
+	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/renderer"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/shader"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexArray"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexbufferLayout"
@@ -111,20 +112,18 @@ func main() {
 	va.Unbind()
 	vb.Unbind()
 	ib.Unbind()
+
+	render := renderer.SetupRender()
 	var r float32 = 0.0
 	var increment float32 = 0.5
 
 	for !window.ShouldClose() {
-		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		render.Clear()
 
 		shader.Bind()
 		shader.SetUniForm4f("u_Color", r, 0.3, 0.8, 1.0)
-		//gl.Uniform4f(location, r, 0.3, 0.8, 1.0)
 
-		va.Bind()
-		ib.Bind()
-
-		gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, nil)
+		render.Draw(va, ib, shader)
 
 		if r > 1.9 {
 			increment = -0.05

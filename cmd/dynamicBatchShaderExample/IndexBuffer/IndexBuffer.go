@@ -22,6 +22,10 @@ func RunIndexBuffer(indices []uint32, count int) *IndexBuffer {
 	return IB
 }
 
+func (IB *IndexBuffer) GetCount() int {
+	return IB.M_count
+}
+
 func (IB *IndexBuffer) DeleteBuffer() {
 	gl.DeleteBuffers(1, &IB.M_renderID)
 }
