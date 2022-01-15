@@ -31,6 +31,6 @@ func (IB *IndexBuffer) Bind() {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, IB.M_renderID)
 }
 
-func Unbind() {
+func (IB *IndexBuffer) Unbind() {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 }
