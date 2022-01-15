@@ -140,7 +140,7 @@ func initOpenGL() {
 
 	InitDrawLines()
 	lineProgram = CompileProgram(
-		"../assets/shader/line.vert", "../assets/shader/line.frag")
+		"assets/shader/line.vert", "assets/shader/line.frag")
 }
 
 var Projection mgl32.Mat4

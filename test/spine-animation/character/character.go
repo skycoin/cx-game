@@ -5,6 +5,8 @@ import (
 	"image"
 	"os"
 	"path/filepath"
+	"strings"
+	"log"
 	
 	"github.com/skycoin/cx-game/engine/spine"
 	"github.com/skycoin/cx-game/test/spine-animation/animation"
@@ -48,10 +50,10 @@ func LoadCharacter(loc animation.Location) (*Character, error) {
 
 	char := &Character{}
 
-	char.ImagesPath = loc.Images
+	//.ImagesPath = loc.Images
 
-	char.Images = make(map[string]*cx.PictureData)
-	fmt.Printf("%v", char.Images)
+	//.Images = make(map[string]*cx.PictureData)
+	//.Printf("%v", char.Images)
 	char.Play = true
 	char.DebugBones = false
 	char.DebugCenter = false
@@ -68,10 +70,13 @@ func LoadCharacter(loc animation.Location) (*Character, error) {
 
 	char.Skeleton.UpdateAttachments()
 	char.Skeleton.Update()
+
 	fmt.Printf("%v", char)
 	return char, nil
 
 }
+
+
 
 func (char *Character) Description() string {
 	return char.Skeleton.Data.Name + " > " + char.Skeleton.Skin.Name + " > " + char.Animation.Name
@@ -110,43 +115,67 @@ func (char *Character) Update(dt float64, x, y float64) {
 	char.Skeleton.Update()
 }
 
-func (char *Character) GetImage(attachment, path string) *cx.PictureData {
-	if path != "" {
-		attachment = path
-	}
-	if pd, ok := char.Images[attachment]; ok {
-		return pd
-	}
-	fmt.Println("Loading " + attachment)
+// func getPng(dir string) []string {
+// 	var ret []string
+// 	err := filepath.Walk(dir,
+// 		func(path string, info os.FileInfo, err error) error {
+// 			if err != nil {
+// 				return err
+// 			}
+// 			if info.IsDir() {
+// 				return nil
+// 			}
+// 			if !strings.HasSuffix(path, ".png") {
+// 				return nil
+// 			}
+// 			ret = append(ret, path)
+// 			return nil
+// 		})
 
-	fallback := func() *cx.PictureData {
-		fmt.Println("missing: ", attachment)
+// 	if err != nil {
+// 		log.Printf("error dir %s\n", dir)
+// 	}
 
-		m := image.NewRGBA(image.Rect(0, 0, 10, 10))
-		for i := range m.Pix {
-			m.Pix[i] = 0x80
-		}
-		pd := cx.PictureDataFromImage(m)
-		char.Images[attachment] = pd
-		return pd
-	}
+// 	return ret
+// }
 
-	fullpath := filepath.Join(char.ImagesPath, attachment+".png")
-	file, err := os.Open(fullpath)
-	if err != nil {
-		return fallback()
-	}
+// func (char *Character) GetImage(attachment, path string) *cx.PictureData {
+// 	if path != "" {
+// 		attachment = path
+// 	}
+// 	if pd, ok := char.Images[attachment]; ok {
+// 		return pd
+// 	}
+// 	fmt.Println("Loading " + attachment)
 
-	m, _, err := image.Decode(file)
-	if err != nil {
-		return fallback()
-	}
-	pd := cx.PictureDataFromImage(m)
+// 	fallback := func() *cx.PictureData {
+// 		fmt.Println("missing: ", attachment)
 
-	char.Images[attachment] = pd
+// 		m := image.NewRGBA(image.Rect(0, 0, 10, 10))
+// 		for i := range m.Pix {
+// 			m.Pix[i] = 0x80
+// 		}
+// 		pd := cx.PictureDataFromImage(m)
+// 		char.Images[attachment] = pd
+// 		return pd
+// 	}
 
-	return pd
-}
+// 	fullpath := filepath.Join(char.ImagesPath, attachment+".png")
+// 	file, err := os.Open(fullpath)
+// 	if err != nil {
+// 		return fallback()
+// 	}
+
+// 	m, _, err := image.Decode(file)
+// 	if err != nil {
+// 		return fallback()
+// 	}
+// 	pd := cx.PictureDataFromImage(m)
+
+// 	char.Images[attachment] = pd
+
+// 	return pd
+// }
 
 // func (char *Character) GetImage(attachment, path string) *image.RGBA {
 // if path != "" {

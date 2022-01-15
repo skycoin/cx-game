@@ -22,7 +22,7 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/stars/starfield"
 	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/world/import"
+	worldimport "github.com/skycoin/cx-game/world/import"
 )
 
 func init() {
@@ -100,33 +100,38 @@ func Init() {
 	worldTiles := World.Planet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 
-	spawnPos := cxmath.Vec2{ 80, 109 } // start pos for moon bunker map
+	spawnPos := cxmath.Vec2{80, 109} // start pos for moon bunker map
 
-	World.Entities.Agents.Spawn(
-		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
+	// World.Entities.Agents.Spawn(
+	// 	constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
+	// 		X: spawnPos.X - 10, Y: spawnPos.Y,
+	// 	},
+	// )
+	playerAgentID = World.Entities.Agents.Spawn(
+		constants.AGENT_TYPE_SPINE_TEST, agents.AgentCreationOptions{
 			X: spawnPos.X - 10, Y: spawnPos.Y,
 		},
 	)
-	World.Entities.Agents.Spawn(
-		constants.AGENT_TYPE_SPIDER_DRILL, agents.AgentCreationOptions{
-			X: spawnPos.X + 6, Y: spawnPos.Y,
-		},
-	)
-	World.Entities.Agents.Spawn(
-		constants.AGENT_TYPE_GRASS_HOPPER, agents.AgentCreationOptions{
-			X: spawnPos.X + 10, Y: spawnPos.Y,
-		},
-	)
-	World.Entities.Agents.Spawn(
-		constants.AGENT_TYPE_ENEMY_SOLDIER, agents.AgentCreationOptions{
-			X: spawnPos.X + 15, Y: spawnPos.Y,
-		},
-	)
-	playerAgentID = World.Entities.Agents.Spawn(
-		constants.AGENT_TYPE_PLAYER, agents.AgentCreationOptions{
-			X: spawnPos.X, Y: spawnPos.Y,
-		},
-	)
+	// World.Entities.Agents.Spawn(
+	// 	constants.AGENT_TYPE_SPIDER_DRILL, agents.AgentCreationOptions{
+	// 		X: spawnPos.X + 6, Y: spawnPos.Y,
+	// 	},
+	// )
+	// World.Entities.Agents.Spawn(
+	// 	constants.AGENT_TYPE_GRASS_HOPPER, agents.AgentCreationOptions{
+	// 		X: spawnPos.X + 10, Y: spawnPos.Y,
+	// 	},
+	// )
+	// World.Entities.Agents.Spawn(
+	// 	constants.AGENT_TYPE_ENEMY_SOLDIER, agents.AgentCreationOptions{
+	// 		X: spawnPos.X + 15, Y: spawnPos.Y,
+	// 	},
+	// )
+	// playerAgentID = World.Entities.Agents.Spawn(
+	// 	constants.AGENT_TYPE_PLAYER, agents.AgentCreationOptions{
+	// 		X: spawnPos.X, Y: spawnPos.Y,
+	// 	},
+	// )
 	player = findPlayer()
 	player.InventoryID = item.NewDevInventory()
 	components.Init(&World, Cam, player)

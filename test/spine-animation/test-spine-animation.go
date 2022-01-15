@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/go-gl/gl/v4.1-core/gl" // OR: github.com/go-gl/gl/v2.1/gl
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -34,8 +35,13 @@ func main() {
 	program := initOpenGL()
 
 	test()
-
+	last := time.Now()
 	for !window.ShouldClose() {
+		dt := time.Since(last).Seconds()
+		last = time.Now()
+		// center := cx.Vec{X:100,Y:100}
+		// center.Y = 100
+		character.Update(dt, 250, 250)
 		draw(window, program)
 	}
 }
@@ -66,7 +72,6 @@ func getPng(dir string) []string {
 
 func test() {
 
-	var characters []*c.Character
 	for _, loc := range animation.LoadList("./animation") {
 		character, err := c.LoadCharacter(loc)
 		if err != nil {
@@ -86,7 +91,7 @@ func test() {
 		characters = append(characters, character)
 	}
 
-	var character *c.Character
+	// var character *c.Character
 	characterIndex := 0
 	character = characters[characterIndex]
 

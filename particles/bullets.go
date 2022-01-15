@@ -21,7 +21,7 @@ var (
 )
 
 func InitBullets() {
-	return 
+	return
 	bulletProgram = render.CompileProgram(
 		"./assets/shader/mvp.vert", "./assets/shader/color.frag")
 	bulletProgram.Use()
@@ -37,7 +37,7 @@ func CreateBullet(origin mgl32.Vec2, velocity mgl32.Vec2) {
 	})
 
 	//todo call emitter only for effect
-	
+
 }
 
 func (bullet Bullet) WorldTransform() mgl32.Mat4 {

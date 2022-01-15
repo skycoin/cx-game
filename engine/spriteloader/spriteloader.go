@@ -21,7 +21,7 @@ func InitSpriteloader(_window *render.Window) {
 	Window = _window
 	spriteLoaderIsInitialized = true
 	SpriteProgram = render.CompileProgram(
-		"./../assets/shader/sprite.vert", "./../assets/shader/sprite.frag")
+		"assets/shader/sprite.vert", "assets/shader/sprite.frag")
 }
 
 type Spritesheet struct {

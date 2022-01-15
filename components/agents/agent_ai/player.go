@@ -113,3 +113,86 @@ func AiHandlerPlayer(player *agents.Agent, ctx AiContext) {
 
 	player.Transform.IsIgnoringPlatforms = player.Meta.IgnoringPlatformsFor > 0
 }
+func AiHandlerSpine(player *agents.Agent, ctx AiContext) {
+
+	var inputXAxis float32
+	//added this check to prevent player from moving when in "freecam" or other mode
+	if input.GetInputContext() == input.GAME {
+		inputXAxis = input.GetAxis(input.HORIZONTAL)
+
+		if player.Transform.IsOnGround() && input.GetButtonDown("jump") {
+			sound.PlaySound("player_jump")
+			jumpFrame = 0
+		}
+
+		if jumpFrame < jumpFrames {
+			player.Transform.Vel.Y += playerJumpAcceleration * constants.PHYSICS_TICK
+			jumpFrame += 1
+		} else if !player.Transform.IsOnGround() &&
+			input.GetButton("jump") &&
+			jumpFrame < jumpMaxFrames {
+			player.Transform.Vel.Y += playerJumpAcceleration / 3 * constants.PHYSICS_TICK
+			jumpFrame += 1
+		}
+
+		// fmt.Println(holdTimer)
+		if input.GetButtonDown("down") {
+			player.Meta.IgnoringPlatformsFor_2 = ignorePlatformTime
+		} else {
+
+			if player.Meta.IgnoringPlatformsFor > 0 {
+				player.Meta.IgnoringPlatformsFor -= constants.PHYSICS_TICK
+			}
+		}
+
+		if input.GetButton("down") {
+			holdTimer += constants.PHYSICS_TICK
+			if holdTimer > holdDelay {
+				player.Meta.IgnoringPlatformsFor += constants.PHYSICS_TICK
+			}
+		} else {
+			holdTimer = 0
+		}
+	}
+
+	// player.PhysicsState.Vel.X += playerWalkAccel * inputXAxis
+
+	if !player.Transform.IsOnGround() {
+
+		player.Transform.Vel.X += playerWalkAccel * inputXAxis
+	} else {
+
+		player.Transform.Vel.X += playerWalkAccel * inputXAxis
+
+	}
+
+	if inputXAxis != 0 {
+		player.Transform.Direction = math32.Sign(inputXAxis)
+
+		if player.Transform.IsOnGround() {
+			var dustPos = player.Transform.Pos
+			dustPos.Y = dustPos.Y - 1.5
+			particle_emitter.EmitDust(dustPos)
+		}
+
+	}
+
+	friction :=
+		cxmath.Sign(player.Transform.Vel.X) * frictionFactor
+
+	if math32.Abs(friction) < math32.Abs(player.Transform.Vel.X) {
+		player.Transform.Vel.X -= friction
+	} else {
+		player.Transform.Vel.X = 0
+	}
+
+	player.Transform.Vel.X = math32.Clamp(player.Transform.Vel.X, -maxPlayerWalkSpeed, maxPlayerWalkSpeed)
+	// if math32.Abs(player.PhysicsState.Vel.X) > maxPlayerWalkSpeed {
+	// 	player.PhysicsState.Vel.X =
+	// 		math32.Sign(player.PhysicsState.Vel.X) * maxPlayerWalkSpeed
+	// }
+
+	player.Transform.Vel.Y -= constants.Gravity * constants.PHYSICS_TICK
+
+	player.Transform.IsIgnoringPlatforms = player.Meta.IgnoringPlatformsFor > 0
+}

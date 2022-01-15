@@ -9,6 +9,7 @@ import (
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/test/spine-animation/animation"
 )
 
 type AgentCreationOptions struct {
@@ -38,6 +39,15 @@ func init() {
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
 		CreateAgent: createSlime,
 	})
+
+	//********** SPINE TEST *************/////
+	RegisterAgentType(constants.AGENT_TYPE_SPINE_TEST, AgentType{
+		Name:        "Spine",
+		Category:    constants.AGENT_CATEGORY_SPINE,
+		CreateAgent: createSpine,
+	})
+	//***************************************//
+
 	RegisterAgentType(constants.AGENT_TYPE_SPIDER_DRILL, AgentType{
 		Name:        "Spider Drill",
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
@@ -173,6 +183,43 @@ func createEnemySoldier(opts AgentCreationOptions) *Agent {
 		AnimationPlayback: playback,
 	}
 
+	return &agent
+}
+
+func createSpine(opts AgentCreationOptions) *Agent {
+	agent := Agent{
+		Handlers: AgentHandlers{
+			AI:   constants.AI_HANDLER_SPINE,
+			Draw: constants.DRAW_HANDLER_SPINE,
+		},
+
+		Meta: AgentMeta{
+			Category: constants.AGENT_CATEGORY_SPINE,
+			Type:     constants.AGENT_TYPE_PLAYER,
+			SpineData: SpineData{
+				Back_armSpriteID:   render.GetSpriteIDByName("back_arm:0"),
+				Back_footSpriteID:  render.GetSpriteIDByName("back_foot:0"),
+				Back_handSpriteID:  render.GetSpriteIDByName("back_hand:0"),
+				Back_legSpriteID:   render.GetSpriteIDByName("back_leg:0"),
+				BodySpriteID:       render.GetSpriteIDByName("body:0"),
+				Front_armSpriteID:  render.GetSpriteIDByName("front_arm:0"),
+				Front_footSpriteID: render.GetSpriteIDByName("front_foot:0"),
+				Front_handSpriteID: render.GetSpriteIDByName("front_hand:0"),
+				Front_legtSpriteID: render.GetSpriteIDByName("front_leg:0"),
+				HeadSpriteID:       render.GetSpriteIDByName("head:0"),
+			},
+		},
+		Transform: physics.Body{
+			Pos:       cxmath.Vec2{X: opts.X, Y: opts.Y},
+			Size:      cxmath.Vec2{X: 2.0 * constants.PLAYER_RENDER_TO_HITBOX, Y: 3},
+			Direction: 1,
+		},
+		Health: NewHealthComponent(constants.HEALTH_PLAYER),
+	}
+	for _, loc := range animation.LoadList("./test/spine-animation/animation") {
+		agent.LoadCharacter(loc)
+	}
+	//physics.RegisterBody(&agent.PhysicsState)
 	return &agent
 }
 

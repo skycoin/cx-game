@@ -26,6 +26,7 @@ type AgentMeta struct {
 	Type              types.AgentTypeID
 	PhysicsParameters physics.PhysicsParameters
 	PlayerData
+	SpineData
 }
 
 //agent struct holds
