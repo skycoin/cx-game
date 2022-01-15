@@ -6,35 +6,42 @@ import (
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexbufferLayout"
 )
 
-type vertexArray struct {
+type VertexArray struct {
+	M_renderID uint32
 }
 
-func (va *vertexArray) AddBuffer(vb *vertexbuffer.VertexBuffer, vbl *vertexbufferLayout.VertexbufferLayout) {
+func SetUpVertxArray() *VertexArray {
+	VA := &VertexArray{}
+	gl.GenVertexArrays(1, &VA.M_renderID)
+
+	return VA
+}
+
+func (va *VertexArray) AddBuffer(vb *vertexbuffer.VertexBuffer, vbl *vertexbufferLayout.VertexbufferLayout) {
+	va.Bind()
+	vb.Bind()
+	var index uint32
+	var offset uint32 = 0
+	elements := vbl.GetElements()
+
+	for index = 0; index < uint32(len(elements)); index++ {
+		element := elements[index]
+		gl.EnableVertexAttribArray(index)
+		gl.VertexAttribPointer(index, int32(element.Count), element.Type, element.Normalized, int32(vbl.GetStride()), gl.PtrOffset(int(offset)))
+		offset += element.Count * element.TypeSize
+	}
 
 }
 
-func RunVertxArray(indices []int, count int) *IndexBuffer {
-	IB := &IndexBuffer{}
-	IB.M_count = count
-	gl.GenBuffers(1, &IB.M_renderID)
+func (VA *VertexArray) DeleteBuffer() {
+	gl.DeleteVertexArrays(1, &VA.M_renderID)
+}
+
+func (VA *VertexArray) Bind() {
 	//	fmt.Println("this is the ID Buffer: ", IB.M_renderID)
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, IB.M_renderID)
-	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, count*4, gl.Ptr(indices), gl.STATIC_DRAW)
-
-	return IB
+	gl.BindVertexArray(VA.M_renderID)
 }
 
-func AddBuffer(vb *vertexbuffer.VertexBuffer)
-
-func (IB *IndexBuffer) DeleteBuffer() {
-	gl.DeleteBuffers(1, &IB.M_renderID)
-}
-
-func (IB *IndexBuffer) Bind() {
-	//	fmt.Println("this is the ID Buffer: ", IB.M_renderID)
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, IB.M_renderID)
-}
-
-func Unbind() {
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
+func (VA *VertexArray) Unbind() {
+	gl.BindVertexArray(0)
 }

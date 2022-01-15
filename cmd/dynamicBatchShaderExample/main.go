@@ -13,6 +13,8 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	indexbuffer "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/IndexBuffer"
 	vertexbuffer "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/VertexBuffer"
+	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexArray"
+	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexbufferLayout"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -93,6 +95,8 @@ func initOpenGL() uint32 {
 
 var ib *indexbuffer.IndexBuffer
 var vb *vertexbuffer.VertexBuffer
+var va *vertexArray.VertexArray
+var vbl *vertexbufferLayout.VertexbufferLayout
 
 // makeVao initializes and returns a vertex array from the points provided.
 func makeVao(points []float32) {
@@ -123,18 +127,16 @@ func main() {
 	gl.UseProgram(program)
 	location := gl.GetUniformLocation(program, gl.Str("u_Color\x00"))
 
-	var vao uint32
-	gl.GenVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
-
-	//var vbo uint32
+	//setup vertex array
+	va = vertexArray.SetUpVertxArray()
+	// setup and run vertex buffer
 	vb = vertexbuffer.RunVertexBuffer(positions, len(positions)*2*4)
-
-	gl.VertexAttribPointer(0, 2, gl.FLOAT, false, 2*4, gl.PtrOffset(0))
-	gl.EnableVertexAttribArray(0)
-	/// index buffer
-	//var ibo uint32
-
+	//setup vertex layout
+	vbl = &vertexbufferLayout.VertexbufferLayout{}
+	//add vertex buffer to vertex bufferlayout
+	vbl.Push(gl.FLOAT, 2)
+	va.AddBuffer(vb, vbl)
+	// setup and run index buffer
 	ib = indexbuffer.RunIndexBuffer(indices, 6)
 
 	var r float32 = 0.0
@@ -146,8 +148,8 @@ func main() {
 		gl.UseProgram(program)
 		gl.Uniform4f(location, r, 0.3, 0.8, 1.0)
 
-		//	gl.BindVertexArray(vao)
-		//ib.Bind()
+		va.Bind()
+		ib.Bind()
 
 		gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, nil)
 		//	renderer.GLCheckError()
