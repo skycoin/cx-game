@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 type Shader struct {
@@ -39,6 +40,15 @@ func SetupShader(filepath string) *Shader {
 
 func (s *Shader) SetUniForm4f(name string, v0, v1, v2, v3 float32) {
 	gl.Uniform4f(s.getUniformLocation(name), v0, v1, v2, v3)
+}
+func (s *Shader) SetUniFormMat4f(name string, matrix mgl32.Mat4) {
+	gl.UniformMatrix4fv(s.getUniformLocation(name), 1, false, &matrix[0])
+}
+func (s *Shader) SetUniForm1f(name string, value float32) {
+	gl.Uniform1f(s.getUniformLocation(name), value)
+}
+func (s *Shader) SetUniForm1i(name string, value int32) {
+	gl.Uniform1i(s.getUniformLocation(name), value)
 }
 
 func (s *Shader) getUniformLocation(name string) int32 {

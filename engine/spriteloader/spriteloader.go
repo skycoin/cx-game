@@ -24,6 +24,10 @@ func InitSpriteloader(_window *render.Window) {
 		"assets/shader/sprite.vert", "assets/shader/sprite.frag")
 }
 
+func InitSpriteloaderDev() {
+	spriteLoaderIsInitialized = true
+}
+
 type Spritesheet struct {
 	tex            uint32
 	xScale, yScale float32

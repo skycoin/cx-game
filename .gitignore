@@ -24,3 +24,5 @@ prof
 *.tiled-session
 # for logging
 dump
+
+cmd/dynamicBatchShaderExample/UI_Injector/

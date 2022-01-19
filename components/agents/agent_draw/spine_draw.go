@@ -42,7 +42,7 @@ func drawSpineSprite(
 	scale := mgl32.Scale3D(scaleX, agent.Transform.Size.Y, 2)
 
 	transform := translate.Mul4(scale)
-	render.DrawWorldSpineSprite(transform, spriteID, render.NewSpriteDrawOptions())
+	// render.DrawWorldSpineSprite(transform, spriteID, render.NewSpriteDrawOptions())
 
 	for _, slot := range agent.Skeleton.Order {
 		//win.SetComposeMethod(pixel.ComposeOver)
