@@ -11,7 +11,7 @@ import (
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/physics/timer"
-	"github.com/skycoin/cx-game/stars/starfield"
+	"github.com/skycoin/cx-game/starfield"
 )
 
 func Update(dt float32) {
