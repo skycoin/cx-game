@@ -265,7 +265,7 @@ func (body *Body) GetBBoxLines() []float32 {
 }
 
 func (body *Body) GetInterpolatedBBoxLines() []float32 {
-	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+	alpha := timer.GetTimeBetweenTicks() / constants.MS_PER_TICK
 
 	x, y := body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha)).Sub(cxmath.Vec2{body.Size.X / 2, body.Size.Y / 2}).Mgl32().Elem()
 
