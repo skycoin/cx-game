@@ -13,7 +13,7 @@ import (
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/render/worldctx"
-	"github.com/skycoin/cx-game/stars/starfield"
+	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/world"
 )
 

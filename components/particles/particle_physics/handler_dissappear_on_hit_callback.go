@@ -13,7 +13,7 @@ func PhysicsHandlerDissappearOnHitCallback(
 	for _, par := range Particles {
 		par.MoveNoBounceRaytrace(
 			&World.Planet, World.Entities.Agents.GetAllAgents(),
-			constants.PHYSICS_TICK, cxmath.Vec2{} )
+			constants.MS_PER_TICK, cxmath.Vec2{} )
 		if par.Collisions.Collided() {
 			par.OnCollideCallback(par)
 			par.Die()

@@ -15,7 +15,6 @@ import (
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	perlin "github.com/skycoin/cx-game/procgen"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/stars/starmap"
 )
 
 func init() {
@@ -118,8 +117,8 @@ var (
 	}
 
 	//variable for star move speed
-	speed   float32 = 4
-	program render.Program
+	speed float32 = 4
+	// program render.Program
 )
 
 func SwitchBackgrounds(bg Background) {
@@ -204,8 +203,8 @@ func InitStarField(window *render.Window, cam *camera.Camera) {
 		}
 		stars = append(stars, star)
 	}
-	starmap.Init(window)
-	starmap.Generate(256, 0.04, 8)
+	Init(window)
+	Generate(256, 0.04, 8)
 }
 
 //updates position of each star at each game iteration
@@ -250,7 +249,7 @@ func DrawStarField() {
 	gl.Disable(gl.DEPTH_TEST)
 	gl.BlendFunc(gl.ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	if background == BACKGROUND_NEBULA {
-		starmap.Draw()
+		Draw()
 	}
 	program.Use()
 	defer program.StopUsing()

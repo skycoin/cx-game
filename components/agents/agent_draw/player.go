@@ -17,7 +17,7 @@ func drawPlayerSprite(
 	body := &agent.Transform
 
 	//drawn one frame behind
-	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+	alpha := timer.GetTimeBetweenTicks() / constants.MS_PER_TICK
 
 	var interpolatedPos cxmath.Vec2
 	if !body.Pos.Equal(body.PrevPos) {
