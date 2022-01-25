@@ -48,56 +48,30 @@
     <div class="slidecontainer" style="
     ">
       
-      <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectX"><p>X Value Offset: <span id="ObjectValueX">0</span></p>    
+      <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectX"><p>X Value Offset: <span id="ObjectValueX">50</span></p>    
     </div>
     <div class="slidecontainer" style="
     ">
       
-      <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectY"><p>Y Value Offset: <span id="ObjectValueY">0</span></p>    
+      <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectY"><p>Y Value Offset: <span id="ObjectValueY">CameraY</span></p>    
     </div><div class="slidecontainer" style="
     ">
       
-      <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectZ"><p>Z Value offset: <span id="ObjectValueZ">0</span></p>    
+      <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectZ"><p>Z Value offset: <span id="ObjectValueZ">CameraZ</span></p>    
     </div></div>
     
     </div>
-
-        <div style="
-        flex: 1 1 0;
-        padding: 10px 10px 10px 10px;
-        min-width: 150px;
-    ">
-    <h1>Object2</h1>
-    <div style="
-        /* display: flex; */
-        width: 100%;
-    ">
-    <div class="slidecontainer" style="
-    ">
-      
-      <input type="range" step="0.0039" min="0" max="1" value="0" class="slider" id="Object2X"><p>R: <span id="Object2ValueX">0</span></p>    
-    </div>
-    <div class="slidecontainer">
-      
-      <input type="range" step="0.0039" min="0" max="1" value="0" class="slider" id="Object2Y"><p>G: <span id="Object2ValueY">0</span></p>    
-    </div><div class="slidecontainer">
-      
-     <input type="range" step="0.0039" min="0" max="1"  value="0" class="slider" id="Object2Z"><p>B: <span id="Object2ValueZ">0</span></p>    
-    </div></div>
-    
-    </div>
-
 
     <div class="ScaneButtons">
-      <p>Scane Button List</p>
-      <div class="Buttons">
-          
-          <button class="buttonClass" onclick="OpenScane(0)" >Main Menu</button>
-          <button class="buttonClass" onclick="OpenScane(1)" >Clear Color Test</button>
-          <button class="buttonClass" onclick="OpenScane(2)" >Multi Object Test</button>
-          <button class="buttonClass" onclick="OpenScane(3)" >Batch Rendering Test</button>
-      </div>
-  </div>
+        <p>Scane Button List</p>
+        <div class="Buttons">
+            
+            <button class="buttonClass" onclick="OpenScane(0)" >Main Menu</button>
+            <button class="buttonClass" onclick="OpenScane(1)" >Clear Color Test</button>
+            <button class="buttonClass" onclick="OpenScane(2)" >Multi Object Test</button>
+            <button class="buttonClass" onclick="OpenScane(3)" >Batch Rendering Test</button>
+        </div>
+    </div>
 
 
     
@@ -124,15 +98,6 @@
 
     var ObjectSlider3 = document.getElementById("ObjectZ");
     var ObjectOutput3 = document.getElementById("ObjectValueZ");
-    
-    var Object2Slider1 = document.getElementById("Object2X");
-    var Object2Output1 = document.getElementById("Object2ValueX");
-
-    var Object2Slider2= document.getElementById("Object2Y");
-    var Object2Output2= document.getElementById("Object2ValueY");
-
-    var Object2Slider3 = document.getElementById("Object2Z");
-    var Object2Output3 = document.getElementById("Object2ValueZ");
 
     
    
@@ -150,13 +115,7 @@
            if(a.charAt(0) == "C"){
             data = "Name=Camera"+"&X="+CameraSlider1.value.toString()+"&Y="+CameraSlider2.value.toString()+"&Z="+CameraSlider3.value.toString();
            } else if (a.charAt(0) == "O"){
-             if (a.includes("Object2")){
-              data = "Name=Object2"+"&X="+Object2Slider1.value.toString()+"&Y="+Object2Slider2.value.toString()+"&Z="+Object2Slider3.value.toString();
-             } else {
-              data = "Name=Object"+"&X="+ObjectSlider1.value.toString()+"&Y="+ObjectSlider2.value.toString()+"&Z="+ObjectSlider3.value.toString();
-             }
-            
-           
+            data = "Name=Object"+"&X="+ObjectSlider1.value.toString()+"&Y="+ObjectSlider2.value.toString()+"&Z="+ObjectSlider3.value.toString();
            }
             var xhr = new XMLHttpRequest();
            // output.innerHTML = document.getElementById(a).value;
@@ -189,7 +148,6 @@
 
 
         }
-        
         ObjectSlider1.oninput = function(){
            slide(ObjectSlider1.id);
            ObjectOutput1.innerHTML = this.value;
@@ -203,43 +161,32 @@
            ObjectOutput3.innerHTML = this.value;
         }
 
-        Object2Slider1.oninput = function(){
-           slide(Object2Slider1.id);
-           Object2Output1.innerHTML = this.value;
+        function OpenScane(num){
+           
+           
+            data = "Name=Scane"+"&Number="+number
+           
+            var xhr = new XMLHttpRequest();
+           // output.innerHTML = document.getElementById(a).value;
+        
+        //xhr.open("GET", "/posts/more", true);
+		xhr.open("POST", "/posts/more", true);
+      //  xhr.setRequestHeader("Accept", "application/json");
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhr.onreadystatechange = function() {
+
+			if (xhr.readyState == 4 && xhr.status == 200) {
+//output.innerText = xhr.responseText;
+			}
+		}
+		
+		try { xhr.send(data); } catch (err) { /* handle error */ }
         }
-        Object2Slider2.oninput = function(){
-           slide(Object2Slider2.id);
-           Object2Output2.innerHTML = this.value;
-        }
-        Object2Slider3.oninput = function(){
-           slide(Object2Slider3.id);
-           Object2Output3.innerHTML = this.value;
-        }
+
+
     // slider.oninput = function() {
         
-      function OpenScane(num){
-           
-           
-           data = "Name=Scane"+"&Number="+number
-          
-           var xhr = new XMLHttpRequest();
-          // output.innerHTML = document.getElementById(a).value;
-       
-          //xhr.open("GET", "/posts/more", true);
-          xhr.open("POST", "/posts/more", true);
-         //  xhr.setRequestHeader("Accept", "application/json");
-         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-          xhr.onreadystatechange = function() {
-
-        if (xhr.readyState == 4 && xhr.status == 200) {
-          //output.innerText = xhr.responseText;
-          }
-        }
-        
-        try { xhr.send(data); } catch (err) { /* handle error */ }
-            }
-
-    
+    // }
     </script>
     
     

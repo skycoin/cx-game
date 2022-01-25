@@ -1,4 +1,4 @@
-package testClearColor
+package TestClearColor
 
 import (
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -24,7 +24,7 @@ func (test *TestClearColor) OnUpdate(deltaTime float32) {
 }
 func (test *TestClearColor) OnRender() {
 	gl.ClearColor(test.M_ClearColor[0], test.M_ClearColor[1], test.M_ClearColor[2], test.M_ClearColor[3])
-	gl.CLEAR(gl.COLOR_BUFFER_BIT)
+	gl.Clear(gl.COLOR_BUFFER_BIT)
 }
 func (test *TestClearColor) OnUIRender() {
 
