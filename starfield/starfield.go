@@ -13,7 +13,7 @@ import (
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/engine/camera"
 	"github.com/skycoin/cx-game/engine/spriteloader"
-	perlin "github.com/skycoin/cx-game/procgen"
+	"github.com/skycoin/cx-game/procgen/perlin"
 	"github.com/skycoin/cx-game/render"
 )
 
