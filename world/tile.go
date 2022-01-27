@@ -4,6 +4,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/world/pipesim"
 )
 
 type TileCategory uint32
@@ -36,7 +37,7 @@ type Tile struct {
 	OffsetX           int8
 	OffsetY           int8
 	Durability        int8
-	Connections       Connections
+	Connections       pipesim.Connections
 	LightSource       bool
 	NeedsGround       bool
 	Power             TilePower

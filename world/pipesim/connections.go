@@ -1,4 +1,4 @@
-package world
+package pipesim
 
 import (
 	"github.com/skycoin/cx-game/world/tiling"

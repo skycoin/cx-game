@@ -98,7 +98,6 @@ func Draw() {
 	//draw ui
 	DrawUI()
 
-	// common.GlAssert(gl.DEPTH_TEST, true)
 }
 
 func PostProcess() {
