@@ -9,6 +9,7 @@ import (
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/world"
+	"github.com/skycoin/cx-game/world/pipesim"
 )
 
 func pipetoolMouseDownRight(info ItemUseInfo) bool {
@@ -49,7 +50,7 @@ func pipetoolMouseDrag(
 	prevTile := &pipeLayerTiles[prevTileIdx]
 	currTile := &pipeLayerTiles[currTileIdx]
 
-	if didPlace { currTile.Connections = world.Connections{} }
+	if didPlace { currTile.Connections = pipesim.Connections{} }
 
 	// abort if either involved tiles are empty
 	if currTile.TileCategory == world.TileCategoryNone { return }
@@ -60,7 +61,7 @@ func pipetoolMouseDrag(
 	// connect prev tile to new tile
 
 	disp := currMouseTile.Sub(prevMouseTile)
-	prevNewConnections, currNewConnections := world.FindNewConnections(disp)
+	prevNewConnections, currNewConnections := pipesim.FindNewConnections(disp)
 
 	if b == glfw.MouseButtonLeft {
 		prevTile.Connections = prevTile.Connections.OR(prevNewConnections)

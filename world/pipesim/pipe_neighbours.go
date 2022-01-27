@@ -1,4 +1,4 @@
-package world
+package pipesim
 
 // a BoolDiff describes the difference between two boolean states.
 // one can apply this diff to force another boolean on or off,
@@ -42,7 +42,7 @@ type PipeNeighbour struct {
 
 // returns a list of pipes which need updating,
 // including connections that need to be modified.
-func pipeNeighbours(
+func PipeNeighbours(
 		x,y int, connections, oldConnections Connections,
 ) []PipeNeighbour {
 	diff := oldConnections.Diff(connections)
