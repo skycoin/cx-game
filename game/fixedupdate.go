@@ -12,10 +12,10 @@ import (
 func FixedUpdate(dt float32) {
 	timer.Accumulator += dt
 
-	for timer.Accumulator >= constants.PHYSICS_TICK {
+	for timer.Accumulator >= constants.MS_PER_TICK {
 
 		FixedTick()
-		timer.Accumulator -= constants.PHYSICS_TICK
+		timer.Accumulator -= constants.MS_PER_TICK
 	}
 }
 

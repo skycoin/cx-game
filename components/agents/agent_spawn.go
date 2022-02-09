@@ -38,6 +38,11 @@ func init() {
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
 		CreateAgent: createSlime,
 	})
+	RegisterAgentType(constants.AGENT_TYPE_ENEMY_FLOATING, AgentType {
+		Name:        "Floater",
+		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
+		CreateAgent: createFloatingEnemy,
+	})
 	RegisterAgentType(constants.AGENT_TYPE_SPIDER_DRILL, AgentType{
 		Name:        "Spider Drill",
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
@@ -177,6 +182,29 @@ func createEnemySoldier(opts AgentCreationOptions) *Agent {
 		AnimationPlayback: playback,
 	}
 
+	return &agent
+}
+
+func createFloatingEnemy(opts AgentCreationOptions) *Agent {
+	agent := Agent{
+		Handlers: AgentHandlers{
+			AI:   constants.AI_HANDLER_FLOATING,
+			Draw: constants.DRAW_HANDLER_COLOR,
+		},
+		Meta: AgentMeta{
+			Category: constants.AGENT_CATEGORY_ENEMY_MOB,
+			Type:     constants.AGENT_TYPE_ENEMY_FLOATING,
+			PhysicsParameters: physics.PhysicsParameters{
+				Radius: 1,
+			},
+		},
+		Transform: physics.Body{
+			Size:           cxmath.Vec2{X: 2.0, Y: 2.0},
+			Pos:            cxmath.Vec2{X: opts.X, Y: opts.Y},
+			IgnoresGravity: true,
+		},
+		Health: NewHealthComponent(constants.HEALTH_ENEMYFLOATING),
+	}
 	return &agent
 }
 

@@ -3,7 +3,7 @@ package agents
 import (
 	"log"
 
-	"github.com/skycoin/cx-game/common"
+	"github.com/skycoin/cx-game/components/datastructs"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 )
@@ -13,7 +13,7 @@ type AgentList struct {
 	// would help with performance in a significant way
 	Agents []*Agent
 	//to hold all freed ids
-	idQueue common.QueueI
+	idQueue datastructs.QueueI
 }
 
 func NewAgentList() *AgentList {

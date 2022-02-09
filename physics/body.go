@@ -14,6 +14,10 @@ import (
 
 // epsilon parameter for values that are "close enough"
 const eps = 0.05
+// maximum allowable speed.
+// This cap is important for performance reasons 
+// because we discretize the displacements.
+const safeSpeed = 20
 
 type Body struct {
 	Pos       cxmath.Vec2
@@ -30,6 +34,7 @@ type Body struct {
 	// Deleted bool
 
 	IsIgnoringPlatforms bool
+	IgnoresGravity      bool
 }
 
 func (body *Body) Contains(x, y, w, h float32) bool {
@@ -204,9 +209,16 @@ func (body *Body) Move(collider worldcollider.WorldCollider, dt float32) {
 	body.PrevPos = body.Pos
 	body.Collisions.Reset()
 
-	body.Vel.Y -= constants.Gravity * dt
+	if !body.IgnoresGravity {
+		body.Vel.Y -= constants.Gravity * dt
+	}
 	//account drag
 	body.Vel.Y += 0.1 * body.Vel.Y * body.Vel.Y * 0.2 * dt
+
+	rawSpeed := body.Vel.Length()
+	if rawSpeed > safeSpeed {
+		body.Vel = body.Vel.Mult(safeSpeed/rawSpeed)
+	}
 
 	totalDisplacement := body.Vel.Mult(dt)
 
@@ -253,7 +265,7 @@ func (body *Body) GetBBoxLines() []float32 {
 }
 
 func (body *Body) GetInterpolatedBBoxLines() []float32 {
-	alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+	alpha := timer.GetTimeBetweenTicks() / constants.MS_PER_TICK
 
 	x, y := body.PrevPos.Mult(1 - alpha).Add(body.Pos.Mult(alpha)).Sub(cxmath.Vec2{body.Size.X / 2, body.Size.Y / 2}).Mgl32().Elem()
 
