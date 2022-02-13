@@ -50,6 +50,9 @@ func (s *Shader) SetUniForm1f(name string, value float32) {
 func (s *Shader) SetUniForm1i(name string, value int32) {
 	gl.Uniform1i(s.getUniformLocation(name), value)
 }
+func (s *Shader) SetUniform1iv(name string, count int32, value *int32) {
+	gl.Uniform1iv(s.getUniformLocation(name), count, value)
+}
 
 func (s *Shader) getUniformLocation(name string) int32 {
 

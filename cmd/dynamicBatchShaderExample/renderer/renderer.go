@@ -5,8 +5,10 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	indexbuffer "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/IndexBuffer"
+	indexbufferDY "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/IndexBufferDY"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/shader"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexArray"
+	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexArrayDY"
 )
 
 type GL_ERROR_CODE int32
@@ -36,6 +38,13 @@ func GLCheckError() {
 }
 
 func (R *Render) Draw(va *vertexArray.VertexArray, ib *indexbuffer.IndexBuffer, shader *shader.Shader) {
+	shader.Bind()
+	va.Bind()
+	ib.Bind()
+
+	gl.DrawElements(gl.TRIANGLES, int32(ib.GetCount()), gl.UNSIGNED_INT, nil)
+}
+func (R *Render) DrawDY(va *vertexArrayDY.VertexArray, ib *indexbufferDY.IndexBuffer, shader *shader.Shader) {
 	shader.Bind()
 	va.Bind()
 	ib.Bind()
