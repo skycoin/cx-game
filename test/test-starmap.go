@@ -7,7 +7,6 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/stars/starmap"
 )
 
 func init() {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ikemen-engine/go-openal/openal"
+	"github.com/skycoin/cx-game/lib/openal"
 	"github.com/skycoin/cx-game/engine/sound"
 )
 

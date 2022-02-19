@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/skycoin/cx-game/cxmath"
-	"github.com/ted537/go-openal/openal"
+	"github.com/skycoin/cx-game/lib/openal"
 )
 
 /* in OpenAL, there are 3 types of entities: Listener, Source and Buffer
