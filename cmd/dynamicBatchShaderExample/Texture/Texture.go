@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/skycoin/cx-game/engine/spriteloader"
+	"github.com/skycoin/cx-game/test/spine-animation/animation"
 )
 
 type Texture struct {
@@ -15,7 +16,14 @@ type Texture struct {
 	M_width          int
 	M_height         int
 	M_BPP            int
+
+	//	M_matrix geometry.Matrix
+	GeoM   animation.GeoM
+	ColorM animation.ColorM
 }
+type Matrix [6]float64
+
+var IM = Matrix{1, 0, 0, 1, 0, 0}
 
 func SetUpTexture(path string) *Texture {
 
@@ -35,11 +43,27 @@ func SetUpTexture(path string) *Texture {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(img.Rect.Dx()), int32(img.Rect.Dy()), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+	// use to flip image
+	//imgData := FlipTexturePixels(img)
+	imgData := img.Pix
+	//
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(img.Rect.Size().X), int32(img.Rect.Size().Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(imgData))
 	gl.BindTexture(gl.TEXTURE_2D, 0)
 
 	return texture
 
+}
+
+func FlipTexturePixels(img *image.RGBA) []byte {
+	data := make([]byte, img.Rect.Dx()*img.Rect.Dy()*4)
+	lineLen := img.Rect.Dx() * 4
+	dest := len(data) - lineLen
+	for src := 0; src < len(img.Pix); src += img.Stride {
+		copy(data[dest:dest+lineLen], img.Pix[src:src+img.Stride])
+		dest -= lineLen
+	}
+
+	return data
 }
 
 func (tex *Texture) DeleteTexture() {

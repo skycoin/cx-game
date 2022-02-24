@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	_ "image/png"
+	"log"
 	"runtime"
 
 	//"github.com/go-gl/gl/v2.1/gl"
@@ -10,13 +11,16 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	indexbuffer "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/IndexBufferDY"
-	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/Texture"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/UI_Injector"
 	vertexbuffer "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/VertexBufferDY"
+	n "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/character"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/renderer"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/shader"
 	vertexArray "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexArrayDY"
 	vertexbufferLayout "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexbufferLayoutDY"
+	"github.com/skycoin/cx-game/engine/spine"
+	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/test/spine-animation/animation"
 	"github.com/skycoin/cx-game/world"
 )
 
@@ -28,6 +32,7 @@ func init() {
 
 var (
 	DrawCollisionBoxes = false
+	fps                *render.Fps
 	FPS                int
 )
 
@@ -36,6 +41,12 @@ var CurrentPlanet *world.Planet
 const (
 	width  = 960
 	height = 540
+)
+
+var (
+	characters     []*n.Character
+	character      *n.Character
+	characterIndex int
 )
 
 var (
@@ -60,8 +71,8 @@ var (
 	// 	4, 5, 6,
 	// 	6, 7, 4,
 	// }
-	samplers = [2]int32{
-		0, 1,
+	samplers = [31]int32{
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
 	}
 )
 
@@ -176,6 +187,9 @@ func main() {
 	window := initGlfw()
 	defer glfw.Terminate()
 	initOpenGL()
+
+	fps = render.NewFps(false)
+
 	var UI *UI_Injector.UI_Injector
 
 	UI = UI_Injector.SetUpUI()
@@ -188,6 +202,27 @@ func main() {
 	shader := shader.SetupShader("./../../assets/shader/spine/basic.shader")
 	shader.Bind()
 	shader.SetUniForm4f("u_Color", 0.8, 0.3, 0.8, 1.0)
+
+	for _, loc := range animation.LoadList("./../../test/spine-animation/animation") {
+		character, err := n.LoadCharacter(loc)
+		if err != nil {
+			log.Println(loc.Name, err)
+			break
+		}
+
+		for _, skin := range character.Skeleton.Data.Skins {
+			for _, att := range skin.Attachments {
+				if _, ismesh := att.(*spine.MeshAttachment); ismesh {
+					log.Println(loc.Name, "Unsupported")
+					break
+				}
+			}
+		}
+
+		characters = append(characters, character)
+	}
+
+	character = characters[0]
 
 	const MaxQuadCount = 1000
 	const MaxVertexCount = MaxQuadCount * 4
@@ -223,22 +258,22 @@ func main() {
 	// setup and run index buffer
 	ib = indexbuffer.RunIndexBuffer(indices, len(indices))
 
-	tex := Texture.SetUpTexture("./cat.png")
-	tex1 := Texture.SetUpTexture("./sprite.png")
+	//	tex := Texture.SetUpTexture("./cat.png")
+	//	tex1 := Texture.SetUpTexture("./sprite.png")
 
-	//tex.Bind(0)
-	//tex1.Bind(0)
+	//	tex.Bind(0)
+	//	tex1.Bind(1)
 	renderer.GLClearError()
 	//	gl.Uniform1iv(location int32, count int32, value *int32)
 	//loc := gl.GetUniformLocation(shader.M_renderID, gl.Str("u_Texture\x00"))
 	//gl.Uniform1iv(loc, 2, &samplers[0])
-	shader.SetUniform1iv("u_Texture", 2, &samplers[0])
+	shader.SetUniform1iv("u_Texture", int32(len(samplers)), &samplers[0])
 	//shader.SetUniForm1i("u_Texture", 0)
 	renderer.GLCheckError()
-	va.Unbind()
-	vb.Unbind()
-	ib.Unbind()
-	shader.UnBind()
+	// va.Unbind()
+	// vb.Unbind()
+	// ib.Unbind()
+	// shader.UnBind()
 
 	var translationA = mgl32.Translate3D(400+objectAdjustment.Object[0].X, 200+objectAdjustment.Object[0].Y, objectAdjustment.Object[0].Z)
 
@@ -259,23 +294,67 @@ func main() {
 		// test1.OnRender()
 		// test1.M_ClearColor = [4]float32{objectAdjustment.Object[2].X, objectAdjustment.Object[2].Y, objectAdjustment.Object[2].Z}
 		// fmt.Println(test1.M_ClearColor)
+		{
+			fps.Tick()
+			// if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+			// 	characterIndex = (characterIndex + len(characters) - 1) % len(characters)
+			// 	character = characters[characterIndex]
+			// }
+			// if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
+			// 	characterIndex = (characterIndex + len(characters) + 1) % len(characters)
+			// 	character = characters[characterIndex]
+			// }
+
+			// if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+			// 	character.NextAnimation(-1)
+			// }
+			// if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+			// 	character.NextAnimation(1)
+			// }
+
+			// if inpututil.IsKeyJustPressed(ebiten.KeyW) {
+			// 	character.NextSkin(-1)
+			// }
+			// if inpututil.IsKeyJustPressed(ebiten.KeyS) {
+			// 	character.NextSkin(1)
+			// }
+
+			character.Update(1/float64(fps.GetCurFps()), width/2, height/2)
+
+			// if ebiten.IsRunningSlowly() {
+			// 	return nil
+			// }
+
+			//	screen.Clear()
+
+			//	character.Draw(screen)
+
+			//	ebitenutil.DebugPrint(screen, character.Description())
+		}
+
 		//************** Code Before Tests scanes ***********************//
 		{
-			{
-				var positions []float32
-				q0 := CreateQuad(objectAdjustment.Object[1].X+(-50.0), objectAdjustment.Object[1].Y+(-50.0), 0.0)
-				q1 := CreateQuad(50.0, -50.0, 1.0)
-				positions = append(positions, q0...)
-				positions = append(positions, q1...)
-				fmt.Println(q0)
-
-				vb.Bind()
-				gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(positions)*5*4, gl.Ptr(positions))
-			}
 
 			render.Clear()
-			tex.Bind(0)
-			tex1.Bind(1)
+			{
+				var positions []float32
+				// q0 := CreateQuad(objectAdjustment.Object[1].X+(-50.0), objectAdjustment.Object[1].Y+(-50.0), 0.0)
+				// q1 := CreateQuad(150.0, -50.0, 1.0)
+				// q2 := CreateQuad(250.0, -50.0, 1.0)
+				// q3 := CreateQuad(350.0, -50.0, 1.0)
+				// positions = append(positions, q0...)
+				// positions = append(positions, q1...)
+				// positions = append(positions, q2...)
+				// positions = append(positions, q3...)
+				positions = character.Draw()
+				//fmt.Println(q0)
+
+				vb.Bind()
+				//gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(positions)*5*4, gl.Ptr(positions))
+				vb.BufferSubData(positions)
+			}
+			//tex.Bind(0)
+			//tex1.Bind(1)
 			//fmt.Println(translation)
 			// shader.SetUniForm4f("u_Color", r, 0.3, 0.8, 1.0)
 

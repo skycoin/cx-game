@@ -15,7 +15,7 @@ var list = []Location{
 	// {"Alien Pro", "alien", "alien-pro.json", "alien.atlas", ""},
 	// {"Goblins", "goblins", "goblins-ess.json", "goblins.atlas", ""},
 	// {"Goblins Pro", "goblins", "goblins-pro.json", "goblins.atlas", ""},
-	// {"Powerup", "powerup", "powerup-ess.json", "powerup.atlas", ""},
+	{"Powerup", "powerup", "powerup-ess.json", "powerup.atlas", ""},
 	// {"Powerup Pro", "powerup", "powerup-pro.json", "powerup.atlas", ""},
 	// {"Raptor", "raptor", "raptor-pro.json", "raptor.atlas", ""},
 	// {"Speedy", "speedy", "speedy-ess.json", "speedy.atlas", ""},
@@ -25,7 +25,7 @@ var list = []Location{
 	// {"Stretchyman", "stretchyman", "stretchyman-pro.json", "stretchyman.atlas", ""},
 	// {"Tank", "tank", "tank-pro.json", "tank.atlas", ""},
 	// {"Vine", "vine", "vine-pro.json", "vine.atlas", ""},
-	{"Robot2", "skeleton", "skeleton.json", "Robot2.atlas", ""},
+	// {"Robot2", "skeleton", "skeleton.json", "Robot2.atlas", ""},
 }
 
 // TODO: read this from folder structure instead

@@ -25,7 +25,7 @@ in vec2 v_TexCoord;
 in float v_TexIndex;
 
 uniform vec4 u_Color;
-uniform sampler2D u_Texture[2];
+uniform sampler2D u_Texture[31];
 
 void main(){
     int index = int(v_TexIndex);
