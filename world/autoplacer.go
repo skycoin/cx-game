@@ -5,6 +5,7 @@ import (
 
 	"github.com/skycoin/cx-game/engine/spriteloader/blobsprites"
 	"github.com/skycoin/cx-game/world/tiling"
+	"github.com/skycoin/cx-game/world/pipesim"
 	"github.com/skycoin/cx-game/render"
 )
 
@@ -44,10 +45,11 @@ func (placer AutoPlacer) UpdateTile(
 ) {
 	if opts.Cycling {
 		connectedNeighbours :=
-			ConnectedNeighbours(opts.Tile.Connections, opts.Neighbours)
+			pipesim.ConnectedNeighbours(opts.Tile.Connections, opts.Neighbours)
 		opts.Tile.SpriteID = placer.sprite(connectedNeighbours)
 	} else {
-		opts.Tile.Connections = ConnectionsFromNeighbours(opts.Neighbours)
+		opts.Tile.Connections =
+			pipesim.ConnectionsFromNeighbours(opts.Neighbours)
 		opts.Tile.SpriteID = placer.sprite(opts.Neighbours)
 	}
 }

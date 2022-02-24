@@ -1,4 +1,4 @@
-package common
+package datastructs
 
 type QueueI struct {
 	queue []int

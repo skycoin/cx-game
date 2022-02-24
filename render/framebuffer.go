@@ -55,7 +55,7 @@ func InitPlanetFrameBuffer() {
 
 	gl.TexImage2D(
 		gl.TEXTURE_2D, 0, gl.RGBA,
-		constants.VIRTUAL_VIEWPORT_WIDTH2, constants.VIRTUAL_VIEWPORT_HEIGHT2,
+		constants.VIRTUAL_VIEWPORT_WIDTH, constants.VIRTUAL_VIEWPORT_HEIGHT,
 		0, gl.RGBA, gl.UNSIGNED_BYTE, nil,
 	)
 
@@ -68,7 +68,7 @@ func InitPlanetFrameBuffer() {
 
 	gl.TexImage2D(
 		gl.TEXTURE_2D, 0, gl.DEPTH24_STENCIL8,
-		constants.VIRTUAL_VIEWPORT_WIDTH2, constants.VIRTUAL_VIEWPORT_HEIGHT2, 0,
+		constants.VIRTUAL_VIEWPORT_WIDTH, constants.VIRTUAL_VIEWPORT_HEIGHT, 0,
 		gl.DEPTH_STENCIL, gl.UNSIGNED_INT_24_8, nil,
 	)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
@@ -94,7 +94,7 @@ func InitMainFramebuffer() {
 
 	gl.TexImage2D(
 		gl.TEXTURE_2D, 0, gl.RGBA,
-		constants.VIRTUAL_VIEWPORT_WIDTH2, constants.VIRTUAL_VIEWPORT_HEIGHT2,
+		constants.VIRTUAL_VIEWPORT_WIDTH, constants.VIRTUAL_VIEWPORT_HEIGHT,
 		0, gl.RGBA, gl.UNSIGNED_BYTE, nil,
 	)
 
@@ -107,7 +107,7 @@ func InitMainFramebuffer() {
 
 	gl.TexImage2D(
 		gl.TEXTURE_2D, 0, gl.DEPTH24_STENCIL8,
-		constants.VIRTUAL_VIEWPORT_WIDTH2, constants.VIRTUAL_VIEWPORT_HEIGHT2, 0,
+		constants.VIRTUAL_VIEWPORT_WIDTH, constants.VIRTUAL_VIEWPORT_HEIGHT, 0,
 		gl.DEPTH_STENCIL, gl.UNSIGNED_INT_24_8, nil,
 	)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
