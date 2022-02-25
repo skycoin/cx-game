@@ -7,15 +7,16 @@ import (
 )
 
 type UI_Injector struct {
-	Object [4]ObjectOffset
+	Object [5]ObjectOffset
 }
 
 type ObjectOffset struct {
-	Name  string
-	X     float32
-	Y     float32
-	Z     float32
-	Scane int32
+	Name                string
+	X                   float32
+	Y                   float32
+	Z                   float32
+	Scane               int32
+	CharacterAnimButton int32
 }
 
 func SetUpUI() *UI_Injector {
@@ -39,18 +40,23 @@ func (UiObjs *UI_Injector) ListenForChanges() UI_Injector {
 			objType = 2
 		} else if r.FormValue("Name") == "Scane" {
 			objType = 3
+		} else if r.FormValue("Name") == "CharacterAnimation" {
+			objType = 4
 		}
+
 		tempX, _ := strconv.ParseFloat(r.FormValue("X"), 32)
 		tempY, _ := strconv.ParseFloat(r.FormValue("Y"), 32)
 		tempZ, _ := strconv.ParseFloat(r.FormValue("Z"), 32)
 		tempScane, _ := strconv.ParseInt(r.FormValue("Number"), 0, 32)
+		tempCharAnim, _ := strconv.ParseInt(r.FormValue("ButtonNumber"), 0, 32)
 
 		UiObjs.Object[objType] = ObjectOffset{
-			Name:  r.FormValue("Name"),
-			X:     float32(tempX),
-			Y:     float32(tempY),
-			Z:     float32(tempZ),
-			Scane: int32(tempScane),
+			Name:                r.FormValue("Name"),
+			X:                   float32(tempX),
+			Y:                   float32(tempY),
+			Z:                   float32(tempZ),
+			Scane:               int32(tempScane),
+			CharacterAnimButton: int32(tempCharAnim),
 		}
 		// if r.FormValue("Name")== "Camera"{
 		// }

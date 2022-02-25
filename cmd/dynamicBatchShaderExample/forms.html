@@ -97,6 +97,19 @@
           <button class="buttonClass" onclick="OpenScane(2)" >Multi Object Test</button>
           <button class="buttonClass" onclick="OpenScane(3)" >Batch Rendering Test</button>
       </div>
+
+      <p>animation Character Controller</p>
+      <div class="Buttons">
+          
+          <button class="buttonClass" onclick="CharacterAnimationButtons(0)" >Previous Character</button>
+          <button class="buttonClass" onclick="CharacterAnimationButtons(1)" >Next Character</button>
+          <button class="buttonClass" onclick="CharacterAnimationButtons(2)" >Play Animation</button>
+          <button class="buttonClass" onclick="CharacterAnimationButtons(3)" >Stop Animation</button>
+          <button class="buttonClass" onclick="CharacterAnimationButtons(4)" >Next Animation</button>
+          <button class="buttonClass" onclick="CharacterAnimationButtons(5)" >Previous Animation</button>
+          <button class="buttonClass" onclick="CharacterAnimationButtons(6)" >Previous Skin</button>
+          <button class="buttonClass" onclick="CharacterAnimationButtons(7)" >Next Skin</button>
+      </div>
   </div>
 
 
@@ -220,7 +233,31 @@
       function OpenScane(num){
            
            
-           data = "Name=Scane"+"&Number="+number
+           data = "Name=Scane"+"&Number="+num
+          
+           var xhr = new XMLHttpRequest();
+          // output.innerHTML = document.getElementById(a).value;
+       
+          //xhr.open("GET", "/posts/more", true);
+          xhr.open("POST", "/posts/more", true);
+         //  xhr.setRequestHeader("Accept", "application/json");
+         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          xhr.onreadystatechange = function() {
+
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          //output.innerText = xhr.responseText;
+          }
+        }
+        
+        try { xhr.send(data); } catch (err) { /* handle error */ }
+            }
+
+    
+        
+      function CharacterAnimationButtons(num){
+           
+           
+           data = "Name=CharacterAnimation"+"&ButtonNumber="+num
           
            var xhr = new XMLHttpRequest();
           // output.innerHTML = document.getElementById(a).value;

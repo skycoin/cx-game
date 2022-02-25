@@ -195,6 +195,7 @@ func main() {
 	UI = UI_Injector.SetUpUI()
 	go UI.ListenForChanges()
 	var objectAdjustment = UI
+	objectAdjustment.Object[0].CharacterAnimButton = -1
 	var proj mgl32.Mat4 = mgl32.Ortho(0.0, 960.0, 0.0, 540.0, -1.0, 1.0)
 	var view mgl32.Mat4 = mgl32.Translate3D(0.0, 0.0, 0.0)
 	gl.Enable(gl.BLEND)
@@ -275,7 +276,7 @@ func main() {
 	// ib.Unbind()
 	// shader.UnBind()
 
-	var translationA = mgl32.Translate3D(400+objectAdjustment.Object[0].X, 200+objectAdjustment.Object[0].Y, objectAdjustment.Object[0].Z)
+	var translationA = mgl32.Translate3D(objectAdjustment.Object[0].X, objectAdjustment.Object[0].Y, objectAdjustment.Object[0].Z)
 
 	// var translationB = mgl32.Translate3D(400+objectAdjustment.Object[1].X, 200+objectAdjustment.Object[1].Y, objectAdjustment.Object[1].Z)
 
@@ -296,29 +297,30 @@ func main() {
 		// fmt.Println(test1.M_ClearColor)
 		{
 			fps.Tick()
-			// if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
-			// 	characterIndex = (characterIndex + len(characters) - 1) % len(characters)
-			// 	character = characters[characterIndex]
-			// }
-			// if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
-			// 	characterIndex = (characterIndex + len(characters) + 1) % len(characters)
-			// 	character = characters[characterIndex]
-			// }
+			if objectAdjustment.Object[4].CharacterAnimButton == 0 {
+				characterIndex = (characterIndex + len(characters) - 1) % len(characters)
+				character = characters[characterIndex]
+			}
+			if objectAdjustment.Object[4].CharacterAnimButton == 1 {
+				characterIndex = (characterIndex + len(characters) + 1) % len(characters)
+				character = characters[characterIndex]
+			}
 
-			// if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
-			// 	character.NextAnimation(-1)
-			// }
-			// if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
-			// 	character.NextAnimation(1)
-			// }
+			if objectAdjustment.Object[4].CharacterAnimButton == 5 {
+				character.NextAnimation(-1)
+			}
+			if objectAdjustment.Object[4].CharacterAnimButton == 4 {
+				character.NextAnimation(1)
+			}
 
-			// if inpututil.IsKeyJustPressed(ebiten.KeyW) {
-			// 	character.NextSkin(-1)
-			// }
-			// if inpututil.IsKeyJustPressed(ebiten.KeyS) {
-			// 	character.NextSkin(1)
-			// }
+			if objectAdjustment.Object[4].CharacterAnimButton == 6 {
+				character.NextSkin(-1)
+			}
+			if objectAdjustment.Object[1].CharacterAnimButton == 7 {
+				character.NextSkin(1)
+			}
 
+			objectAdjustment.Object[4].CharacterAnimButton = -1
 			character.Update(1/float64(fps.GetCurFps()), width/2, height/2)
 
 			// if ebiten.IsRunningSlowly() {
@@ -382,6 +384,7 @@ func main() {
 			r = r + increment
 
 		}
+
 		//****************************************************************//
 		glfw.PollEvents()
 		window.SwapBuffers()

@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/Texture"
+	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/geometry"
 	"github.com/skycoin/cx-game/engine/spine"
 	"github.com/skycoin/cx-game/test/spine-animation/animation"
 
@@ -61,7 +62,7 @@ func LoadCharacter(loc animation.Location) (*Character, error) {
 	char.AnimationIndex = 0
 	char.SkinIndex = 0
 
-	char.Skeleton.FlipY = true
+	char.Skeleton.FlipY = false
 
 	char.Skeleton.UpdateAttachments()
 	char.Skeleton.Update()
@@ -101,7 +102,7 @@ func (char *Character) Update(dt float64, x, y float64) {
 	}
 
 	char.Skeleton.Local.Translate.Set(float32(x), float32(y))
-	// char.Skeleton.Local.Scale.Set(0.5, 0.5)
+	char.Skeleton.Local.Scale.Set(1, 1)
 	char.Animation.Apply(char.Skeleton, float32(char.Time), true)
 	char.Skeleton.Update()
 }
@@ -224,19 +225,22 @@ func (char *Character) Draw() []float32 {
 			geom.SetElement(1, 2, float64(final.M12))
 
 			m := char.GetImage(attachment.Name, attachment.Path)
+			xform := geometry.Matrix(final.Col64())
 			//box := m.Bounds()
 
-			var draw Texture.Texture
+			//var draw Texture.Texture
 
 			// flip image and set origin to center
-			draw.GeoM.Translate(-float64(m.M_width)*0.5, -float64(m.M_height)*0.5)
-			draw.GeoM.Scale(1, -1)
-			draw.GeoM.Concat(geom)
+			m.GeoM.Translate(-float64(m.M_width)*0.5, -float64(m.M_height)*0.5)
+			m.GeoM.Scale(1, -1)
+			m.GeoM.Concat(geom)
 			// tint the texture
-			draw.ColorM.Scale(slot.Color.NRGBA64())
+			m.ColorM.Scale(slot.Color.NRGBA64())
 
 			//x, y := draw.GeoM.Apply(float64(m.M_width), float64(m.M_height))
-			//	x, y := final.Translation().XY()
+
+			// _, _, _, _, x, y := m.GeoM.GetElements()
+			x, y := final.Translation().XY()
 
 			// set blending mode
 			// BUG: incorrect, should use blending mode not compositing mode
@@ -254,11 +258,17 @@ func (char *Character) Draw() []float32 {
 			//_, _, _, _, tx, ty := draw.GeoM.GetElements()
 			// poject := Project(mgl32.Vec2{final.Translation().X, final.Translation().Y}, final)
 			m.Bind(uint32(i))
+			// if attachment.Name == "goggles" {
+			// 	fmt.Println("goggles sizex:", m.M_width)
+			// 	fmt.Println("goggles sizey:", m.M_height)
+			// 	fmt.Println("goggles transform:", final.Translation().Y)
 
-			q := CreateQuad(float32(local.Translation().X), float32(local.Translation().Y)+offset, float32(m.M_height), float32(m.M_width), float32(i))
+			// }
+			//if attachment.Name == "gun" || attachment.Name == "head" || attachment.Name == "goggles" {
+			q := CreateQuad(float32(x), float32(y)+offset, float32(m.M_height), float32(m.M_width), float32(i), xform, m)
 			pos = append(pos, q...)
-
-			fmt.Println(i)
+			//}
+			// fmt.Println(i)
 			//offset += 50.0
 			count += 1
 			//target.DrawImage(m, &draw)
@@ -277,25 +287,51 @@ type Vertex struct {
 	TexID     float32
 }
 
+// var QuadPosition [4]mgl32.Vec4
+
 func Project(u mgl32.Vec2, m spine.Affine) mgl32.Vec2 {
 	return mgl32.Vec2{m.M00*u.X() + m.M01*u.Y() + m.M02, m.M10*u.X() + m.M11*u.Y() + m.M12}
 }
 
-func CreateQuad(x, y, h, w, textureID float32) []float32 {
+func CreateQuad(x, y, h, w, textureID float32, matrix geometry.Matrix, m *Texture.Texture) []float32 {
+	// QuadPosition[0] = mgl32.Vec4{-0.5, -0.5,0.0,1.0}
+	// QuadPosition[1] = mgl32.Vec4{0.5, -0.5,0.0,1.0}
+	// QuadPosition[2] = mgl32.Vec4{0.5, 0.5,0.0,1.0}
+	// QuadPosition[3] = mgl32.Vec4{-0.5, 0.5,0.0,1.0}
+	var (
+		//center     = s.frame.Center()
+		horizontal = geometry.V(float64(w/2), 0)
+		vertical   = geometry.V(0, float64(h/2))
+	)
 
+	dirty := false
+	if matrix != m.M_metrix {
+		m.M_metrix = matrix
+		dirty = true
+	}
+	if dirty {
+
+	}
 	//	var size float32 = 100.0
 	var pos []float32
 	v0 := Vertex{}
-	v0.Position = mgl32.Vec2{x, y}
+	// v0.Position = mgl32.Vec2{x, y}
 	v0.TexCoords = mgl32.Vec2{0.0, 0.0}
 	v0.TexID = textureID
-	//v0.Position = Project(v0.Position, final)
+	t0 := geometry.Vec{}.Sub(horizontal).Sub(vertical)
+
+	xy0 := m.M_metrix.Project(t0)
+	v0.Position = mgl32.Vec2{float32(xy0.X), float32(xy0.Y)}
+	//	v0.Position = Project(v0.Position, final)
 	pos = append(pos, v0.Position.X(), v0.Position.Y(), v0.TexCoords.X(), v0.TexCoords.Y(), v0.TexID)
 
 	v1 := Vertex{}
-	v1.Position = mgl32.Vec2{x + w, y}
+	//v1.Position = mgl32.Vec2{x + w, y}
 	v1.TexCoords = mgl32.Vec2{1.0, 0.0}
 	v1.TexID = textureID
+	t1 := geometry.Vec{}.Add(horizontal).Sub(vertical)
+	xy1 := m.M_metrix.Project(t1)
+	v1.Position = mgl32.Vec2{float32(xy1.X), float32(xy1.Y)}
 	//v1.Position = Project(v1.Position, final)
 	pos = append(pos, v1.Position.X(), v1.Position.Y(), v1.TexCoords.X(), v1.TexCoords.Y(), v1.TexID)
 
@@ -303,6 +339,9 @@ func CreateQuad(x, y, h, w, textureID float32) []float32 {
 	v2.Position = mgl32.Vec2{x + w, y + h}
 	v2.TexCoords = mgl32.Vec2{1.0, 1.0}
 	v2.TexID = textureID
+	t2 := geometry.Vec{}.Add(horizontal).Add(vertical)
+	xy2 := m.M_metrix.Project(t2)
+	v2.Position = mgl32.Vec2{float32(xy2.X), float32(xy2.Y)}
 	//	v2.Position = Project(v2.Position, final)
 	pos = append(pos, v2.Position.X(), v2.Position.Y(), v2.TexCoords.X(), v2.TexCoords.Y(), v2.TexID)
 
@@ -310,6 +349,9 @@ func CreateQuad(x, y, h, w, textureID float32) []float32 {
 	v3.Position = mgl32.Vec2{x, y + h}
 	v3.TexCoords = mgl32.Vec2{0.0, 1.0}
 	v3.TexID = textureID
+	t3 := geometry.Vec{}.Sub(horizontal).Add(vertical)
+	xy3 := m.M_metrix.Project(t3)
+	v3.Position = mgl32.Vec2{float32(xy3.X), float32(xy3.Y)}
 	//v3.Position = Project(v3.Position, final)
 	pos = append(pos, v3.Position.X(), v3.Position.Y(), v3.TexCoords.X(), v3.TexCoords.Y(), v3.TexID)
 

@@ -13,34 +13,34 @@ const GeoMDim = affine.GeoMDim
 //
 // The initial value is identity.
 type GeoM struct {
-	impl *affine.GeoM
+	Impl *affine.GeoM
 }
 
 // String returns a string representation of GeoM.
 func (g *GeoM) String() string {
-	a, b, c, d, tx, ty := g.impl.Elements()
+	a, b, c, d, tx, ty := g.Impl.Elements()
 	return fmt.Sprintf("[[%f, %f, %f], [%f, %f, %f]]", a, b, tx, c, d, ty)
 }
 func (g *GeoM) GetElements() (a, b, c, d, tx, ty float64) {
-	_a, _b, _c, _d, _tx, _ty := g.impl.Elements()
+	_a, _b, _c, _d, _tx, _ty := g.Impl.Elements()
 	return _a, _b, _c, _d, _tx, _ty
 }
 
 // Reset resets the GeoM as identity.
 func (g *GeoM) Reset() {
-	g.impl = nil
+	g.Impl = nil
 }
 
 // Apply pre-multiplies a vector (x, y, 1) by the matrix.
 // In other words, Apply calculates GeoM * (x, y, 1)^T.
 // The return value is x and y values of the result vector.
 func (g *GeoM) Apply(x, y float64) (x2, y2 float64) {
-	return g.impl.Apply(x, y)
+	return g.Impl.Apply(x, y)
 }
 
 // Element returns a value of a matrix at (i, j).
 func (g *GeoM) Element(i, j int) float64 {
-	a, b, c, d, tx, ty := g.impl.Elements()
+	a, b, c, d, tx, ty := g.Impl.Elements()
 	switch {
 	case i == 0 && j == 0:
 		return a
@@ -62,46 +62,46 @@ func (g *GeoM) Element(i, j int) float64 {
 // Concat multiplies a geometry matrix with the other geometry matrix.
 // This is same as muptiplying the matrix other and the matrix g in this order.
 func (g *GeoM) Concat(other GeoM) {
-	g.impl = g.impl.Concat(other.impl)
+	g.Impl = g.Impl.Concat(other.Impl)
 }
 
 // Add is deprecated as of 1.5.0-alpha.
 // Note that this doesn't make sense as an operation for affine matrices.
 func (g *GeoM) Add(other GeoM) {
-	g.impl = g.impl.Add(other.impl)
+	g.Impl = g.Impl.Add(other.Impl)
 }
 
 // Scale scales the matrix by (x, y).
 func (g *GeoM) Scale(x, y float64) {
-	g.impl = g.impl.Scale(x, y)
+	g.Impl = g.Impl.Scale(x, y)
 }
 
 // Translate translates the matrix by (tx, ty).
 func (g *GeoM) Translate(tx, ty float64) {
-	g.impl = g.impl.Translate(tx, ty)
+	g.Impl = g.Impl.Translate(tx, ty)
 }
 
 // IsInvertible returns a boolean value indicating
 // whether the matrix g is invertible or not.
 func (g *GeoM) IsInvertible() bool {
-	return g.impl.IsInvertible()
+	return g.Impl.IsInvertible()
 }
 
 // Invert inverts the matrix.
 // If g is not invertible, Invert panics.
 func (g *GeoM) Invert() {
-	g.impl = g.impl.Invert()
+	g.Impl = g.Impl.Invert()
 }
 
 // Rotate rotates the matrix by theta.
 // The unit is radian.
 func (g *GeoM) Rotate(theta float64) {
-	g.impl = g.impl.Rotate(theta)
+	g.Impl = g.Impl.Rotate(theta)
 }
 
 // SetElement sets an element at (i, j).
 func (g *GeoM) SetElement(i, j int, element float64) {
-	g.impl = g.impl.SetElement(i, j, element)
+	g.Impl = g.Impl.SetElement(i, j, element)
 }
 
 // ScaleGeo is deprecated as of 1.2.0-alpha. Use Scale instead.

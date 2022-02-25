@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/geometry"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/test/spine-animation/animation"
 )
@@ -16,14 +17,16 @@ type Texture struct {
 	M_width          int
 	M_height         int
 	M_BPP            int
+	M_metrix         geometry.Matrix
 
 	//	M_matrix geometry.Matrix
 	GeoM   animation.GeoM
 	ColorM animation.ColorM
 }
-type Matrix [6]float64
 
-var IM = Matrix{1, 0, 0, 1, 0, 0}
+// type Matrix [6]float64
+
+// var IM = Matrix{1, 0, 0, 1, 0, 0}
 
 func SetUpTexture(path string) *Texture {
 
@@ -44,8 +47,8 @@ func SetUpTexture(path string) *Texture {
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 
 	// use to flip image
-	//imgData := FlipTexturePixels(img)
-	imgData := img.Pix
+	imgData := FlipTexturePixels(img)
+	// imgData := img.Pix
 	//
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(img.Rect.Size().X), int32(img.Rect.Size().Y), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(imgData))
 	gl.BindTexture(gl.TEXTURE_2D, 0)
