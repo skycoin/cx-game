@@ -40,7 +40,7 @@
         padding: 10px 10px 10px 10px;
         min-width: 150px;
     ">
-    <h1>Joint1</h1>
+    <h1>Object1</h1>
     <div style="
         /* display: flex; */
         width: 100%;
@@ -48,23 +48,17 @@
     <div class="slidecontainer" style="
     ">
       
-      <input type="range" min="-100" max="100" value="0" class="slider" id="JointX"><p>X Value Offset: <span id="JointValueX">50</span></p>    
+      <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectX"><p>X Value Offset: <span id="ObjectValueX">50</span></p>    
     </div>
     <div class="slidecontainer" style="
     ">
       
-      <input type="range" min="-100" max="100" value="0" class="slider" id="JointY"><p>Y Value Offset: <span id="JointValueY">0</span></p>    
-    </div>
-    <div class="slidecontainer" style="">
+      <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectY"><p>Y Value Offset: <span id="ObjectValueY">CameraY</span></p>    
+    </div><div class="slidecontainer" style="
+    ">
       
-      <input type="range" min="-100" max="100" value="0" class="slider" id="JointZ"><p>Z Value offset: <span id="JointValueZ">0</span></p>    
-    </div>
-
-    <div class="slidecontainer" style="">
-      
-      <input type="range" min="0" max="360" value="0" class="slider" id="JointRotate"><p>Z Value offset: <span id="JointRotateValue">0</span></p>    
-    </div>
-  </div>
+      <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectZ"><p>Z Value offset: <span id="ObjectValueZ">CameraZ</span></p>    
+    </div></div>
     
     </div>
 
@@ -86,17 +80,14 @@
     var CameraOutput3 = document.getElementById("CameraValueZ");
 
     
-    var JointSlider1 = document.getElementById("JointX");
-    var JointOutput1 = document.getElementById("JointValueX");
+    var ObjectSlider1 = document.getElementById("ObjectX");
+    var ObjectOutput1 = document.getElementById("ObjectValueX");
 
-    var JointSlider2= document.getElementById("JointY");
-    var JointOutput2= document.getElementById("JointValueY");
+    var ObjectSlider2= document.getElementById("ObjectY");
+    var ObjectOutput2= document.getElementById("ObjectValueY");
 
-    var JointSlider3 = document.getElementById("JointZ");
-    var JointOutput3 = document.getElementById("JointValueZ");
-
-    var JointSlider4 = document.getElementById("JointRotate");
-    var JointOutput4 = document.getElementById("JointRotateValue");
+    var ObjectSlider3 = document.getElementById("ObjectZ");
+    var ObjectOutput3 = document.getElementById("ObjectValueZ");
 
     
    
@@ -114,7 +105,7 @@
            if(a.charAt(0) == "C"){
             data = "Name=Camera"+"&X="+CameraSlider1.value.toString()+"&Y="+CameraSlider2.value.toString()+"&Z="+CameraSlider3.value.toString();
            } else if (a.charAt(0) == "O"){
-            data = "Name=Joint"+"&X="+JointSlider1.value.toString()+"&Y="+JointSlider2.value.toString()+"&Z="+JointSlider3.value.toString()+"&R="+JointSlider4.value.toString();
+            data = "Name=Object"+"&X="+ObjectSlider1.value.toString()+"&Y="+ObjectSlider2.value.toString()+"&Z="+ObjectSlider3.value.toString();
            }
             var xhr = new XMLHttpRequest();
            // output.innerHTML = document.getElementById(a).value;
@@ -147,23 +138,18 @@
 
 
         }
-        JointSlider1.oninput = function(){
-           slide(JointSlider1.id);
-           JointOutput1.innerHTML = this.value;
+        ObjectSlider1.oninput = function(){
+           slide(ObjectSlider1.id);
+           ObjectOutput1.innerHTML = this.value;
         }
-        JointSlider2.oninput = function(){
-           slide(JointSlider2.id);
-           JointOutput2.innerHTML = this.value;
+        ObjectSlider2.oninput = function(){
+           slide(ObjectSlider2.id);
+           ObjectOutput2.innerHTML = this.value;
         }
-        JointSlider3.oninput = function(){
-           slide(JointSlider3.id);
-           JointOutput3.innerHTML = this.value;
+        ObjectSlider3.oninput = function(){
+           slide(ObjectSlider3.id);
+           ObjectOutput3.innerHTML = this.value;
         }
-        JointSlider4.oninput = function(){
-           slide(JointSlider4.id);
-           JointOutput4.innerHTML = this.value;
-        }
-      
 
         function OpenScane(num){
            

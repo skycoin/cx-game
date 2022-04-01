@@ -31,6 +31,15 @@ type Character struct {
 
 	DebugCenter bool
 	DebugBones  bool
+
+	C_BoneOffset [4]BoneOffset
+}
+
+type BoneOffset struct {
+	X float32
+	Y float32
+	Z float32
+	R int
 }
 
 func LoadCharacter(loc animation.Location) (*Character, error) {
@@ -205,8 +214,7 @@ func (char *Character) GetImage(attachment, path string) *Texture.Texture {
 
 func (char *Character) Draw() []float32 {
 	var pos []float32
-	var offset float32 = 0
-	var count = 0
+
 	for i, slot := range char.Skeleton.Order {
 		bone := slot.Bone
 		switch attachment := slot.Attachment.(type) {
@@ -265,6 +273,11 @@ func (char *Character) Draw() []float32 {
 
 			// }
 			//if attachment.Name == "gun" || attachment.Name == "head" || attachment.Name == "goggles" {
+			if char.C_BoneOffset[i] {
+				x = x + char.C_BoneOffset[i].X
+				y = y + char.C_BoneOffset[i].Y
+			}
+
 			q := CreateQuad(float32(x), float32(y)+offset, float32(m.M_height), float32(m.M_width), float32(i), xform, m)
 			pos = append(pos, q...)
 			//}

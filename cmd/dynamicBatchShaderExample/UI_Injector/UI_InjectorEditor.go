@@ -33,8 +33,14 @@ func (UiObjs *UI_Injector) ListenForChanges() UI_Injector {
 		}
 		if r.FormValue("Name") == "Camera" {
 			objType = 0
-		} else if r.FormValue("Name") == "Object" {
+		} else if r.FormValue("Name") == "joint1" {
 			objType = 1
+		} else if r.FormValue("Name") == "joint2" {
+			objType = 2
+		} else if r.FormValue("Name") == "joint3" {
+			objType = 3
+		} else if r.FormValue("Name") == "joint4" {
+			objType = 4
 		}
 
 		tempX, _ := strconv.ParseFloat(r.FormValue("X"), 32)
