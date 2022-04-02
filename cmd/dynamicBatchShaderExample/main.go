@@ -297,30 +297,51 @@ func main() {
 		// fmt.Println(test1.M_ClearColor)
 		{
 			fps.Tick()
-			if objectAdjustment.Object[4].CharacterAnimButton == 0 {
-				characterIndex = (characterIndex + len(characters) - 1) % len(characters)
-				character = characters[characterIndex]
-			}
-			if objectAdjustment.Object[4].CharacterAnimButton == 1 {
-				characterIndex = (characterIndex + len(characters) + 1) % len(characters)
-				character = characters[characterIndex]
-			}
 
-			if objectAdjustment.Object[4].CharacterAnimButton == 5 {
-				character.NextAnimation(-1)
-			}
-			if objectAdjustment.Object[4].CharacterAnimButton == 4 {
-				character.NextAnimation(1)
-			}
+			character.Character.C_BoneOffset[0].X = objectAdjustment.Object[1].X
+			character.Character.C_BoneOffset[0].X = objectAdjustment.Object[1].Y
+			character.Character.C_BoneOffset[0].X = objectAdjustment.Object[1].Z
+			character.Character.C_BoneOffset[0].X = objectAdjustment.Object[1].R
 
-			if objectAdjustment.Object[4].CharacterAnimButton == 6 {
-				character.NextSkin(-1)
-			}
-			if objectAdjustment.Object[1].CharacterAnimButton == 7 {
-				character.NextSkin(1)
-			}
+			character.Character.C_BoneOffset[1].X = objectAdjustment.Object[2].X
+			character.Character.C_BoneOffset[1].X = objectAdjustment.Object[2].Y
+			character.Character.C_BoneOffset[1].X = objectAdjustment.Object[2].Z
+			character.Character.C_BoneOffset[1].X = objectAdjustment.Object[2].R
 
-			objectAdjustment.Object[4].CharacterAnimButton = -1
+			character.Character.C_BoneOffset[2].X = objectAdjustment.Object[3].X
+			character.Character.C_BoneOffset[2].X = objectAdjustment.Object[3].Y
+			character.Character.C_BoneOffset[2].X = objectAdjustment.Object[3].Z
+			character.Character.C_BoneOffset[2].X = objectAdjustment.Object[3].R
+
+			character.Character.C_BoneOffset[3].X = objectAdjustment.Object[4].X
+			character.Character.C_BoneOffset[3].X = objectAdjustment.Object[4].Y
+			character.Character.C_BoneOffset[3].X = objectAdjustment.Object[4].Z
+			character.Character.C_BoneOffset[3].X = objectAdjustment.Object[4].R
+
+			// if objectAdjustment.Object[4].CharacterAnimButton == 0 {
+			// 	characterIndex = (characterIndex + len(characters) - 1) % len(characters)
+			// 	character = characters[characterIndex]
+			// }
+			// if objectAdjustment.Object[4].CharacterAnimButton == 1 {
+			// 	characterIndex = (characterIndex + len(characters) + 1) % len(characters)
+			// 	character = characters[characterIndex]
+			// }
+
+			// if objectAdjustment.Object[4].CharacterAnimButton == 5 {
+			// 	character.NextAnimation(-1)
+			// }
+			// if objectAdjustment.Object[4].CharacterAnimButton == 4 {
+			// 	character.NextAnimation(1)
+			// }
+
+			// if objectAdjustment.Object[4].CharacterAnimButton == 6 {
+			// 	character.NextSkin(-1)
+			// }
+			// if objectAdjustment.Object[1].CharacterAnimButton == 7 {
+			// 	character.NextSkin(1)
+			// }
+
+			//objectAdjustment.Object[4].CharacterAnimButton = -1
 			character.Update(1/float64(fps.GetCurFps()), width/2, height/2)
 
 			// if ebiten.IsRunningSlowly() {
