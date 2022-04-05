@@ -25,7 +25,7 @@ var list = []Location{
 	// {"Stretchyman", "stretchyman", "stretchyman-pro.json", "stretchyman.atlas", ""},
 	// {"Tank", "tank", "tank-pro.json", "tank.atlas", ""},
 	// {"Vine", "vine", "vine-pro.json", "vine.atlas", ""},
-	{"Robot2", "skeleton", "skeleton.json", "Robot2.atlas", ""},
+	{"Robot2", "skeleton", "skeleton.json", "skeleton.atlas", ""},
 }
 
 // TODO: read this from folder structure instead

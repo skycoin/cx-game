@@ -1,238 +1,224 @@
 <html><head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  </head>
+  <body>
+  <div style="
+      display: flex;
+  ">
+  <div style="
+      flex: 1 1 0;
+      padding: 10px 10px 10px 10px;
+      min-width: 150px;
+  ">
+  <h1>Camera</h1>
+  <div style="
+      /* display: flex; */
+      width: 100%;
+  ">
+  <div class="slidecontainer" style="
+  ">
     
-    </head>
-    <body>
-    <div style="
-        display: flex;
-    ">
-    <div style="
-        flex: 1 1 0;
-        padding: 10px 10px 10px 10px;
-        min-width: 150px;
-    ">
-    <h1>Camera</h1>
-    <div style="
-        /* display: flex; */
-        width: 100%;
-    ">
-    <div class="slidecontainer" style="
-    ">
-      
-      <input type="range" min="-100" max="100" value="0" class="slider" id="CameraX"><p>X Value Offset: <span id="CameraValueX">0</span></p>    
-    </div>
-    <div class="slidecontainer" style="">
-      
-      <input type="range" min="-100" max="100" value="0" class="slider" id="CameraY"><p>Y Value Offset: <span id="CameraValueY">0</span></p>    
-    </div><div class="slidecontainer" style="
-    ">
-      
-      <input type="range" min="-100" max="100" value="0" class="slider" id="CameraZ"><p>Z Value offset: <span id="CameraValueZ">0</span></p>    
-    </div></div>
-    
-    
-    
-    
-    </div>
-            
-        <div style="
-        flex: 1 1 0;
-        padding: 10px 10px 10px 10px;
-        min-width: 150px;
-    ">
-    <h1>Joint1</h1>
-    <div style="
-        /* display: flex; */
-        width: 100%;
-    ">
-    <div class="slidecontainer" style="
-    ">
-      
-      <input type="range" min="-100" max="100" value="0" class="slider" id="JointX"><p>X Value Offset: <span id="JointValueX">50</span></p>    
-    </div>
-    <div class="slidecontainer" style="
-    ">
-      
-      <input type="range" min="-100" max="100" value="0" class="slider" id="JointY"><p>Y Value Offset: <span id="JointValueY">0</span></p>    
-    </div>
-    <div class="slidecontainer" style="">
-      
-      <input type="range" min="-100" max="100" value="0" class="slider" id="JointZ"><p>Z Value offset: <span id="JointValueZ">0</span></p>    
-    </div>
-
-    <div class="slidecontainer" style="">
-      
-      <input type="range" min="0" max="360" value="0" class="slider" id="JointRotate"><p>Z Value offset: <span id="JointRotateValue">0</span></p>    
-    </div>
+    <input type="range" min="-100" max="100" value="0" class="slider" id="CameraX"><p>X Value Offset: <span id="CameraValueX">0</span></p>    
   </div>
+  <div class="slidecontainer" style="">
     
-    </div>
-
-   
-
+    <input type="range" min="-100" max="100" value="0" class="slider" id="CameraY"><p>Y Value Offset: <span id="CameraValueY">0</span></p>    
+  </div><div class="slidecontainer" style="
+  ">
     
+    <input type="range" min="-100" max="100" value="0" class="slider" id="CameraZ"><p>Z Value offset: <span id="CameraValueZ">0</span></p>    
+  </div></div>
+  
+  
+  
+  
+  </div>
+          
+      <div style="
+      flex: 1 1 0;
+      padding: 10px 10px 10px 10px;
+      min-width: 150px;
+  ">
+  <h1>Object1</h1>
+  <div style="
+      /* display: flex; */
+      width: 100%;
+  ">
+  <div class="slidecontainer" style="
+  ">
+    
+    <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectX"><p>X Value Offset: <span id="ObjectValueX">50</span></p>    
+  </div>
+  <div class="slidecontainer" style="
+  ">
+    
+    <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectY"><p>Y Value Offset: <span id="ObjectValueY">CameraY</span></p>    
+  </div><div class="slidecontainer" style="
+  ">
+    
+    <input type="range" min="-100" max="100" value="0" class="slider" id="ObjectZ"><p>Z Value offset: <span id="ObjectValueZ">CameraZ</span></p>    
+  </div></div>
+  
+  </div>
+
+ 
+
+  
 </div>
-    
-    
-    
-    <script>
-    var CameraSlider1 = document.getElementById("CameraX");
-    var CameraOutput1 = document.getElementById("CameraValueX");
+  
+  
+  
+  <script>
+  var CameraSlider1 = document.getElementById("CameraX");
+  var CameraOutput1 = document.getElementById("CameraValueX");
 
-    var CameraSlider2= document.getElementById("CameraY");
-    var CameraOutput2= document.getElementById("CameraValueY");
+  var CameraSlider2= document.getElementById("CameraY");
+  var CameraOutput2= document.getElementById("CameraValueY");
 
-    var CameraSlider3 = document.getElementById("CameraZ");
-    var CameraOutput3 = document.getElementById("CameraValueZ");
+  var CameraSlider3 = document.getElementById("CameraZ");
+  var CameraOutput3 = document.getElementById("CameraValueZ");
 
-    
-    var JointSlider1 = document.getElementById("JointX");
-    var JointOutput1 = document.getElementById("JointValueX");
+  
+  var ObjectSlider1 = document.getElementById("ObjectX");
+  var ObjectOutput1 = document.getElementById("ObjectValueX");
 
-    var JointSlider2= document.getElementById("JointY");
-    var JointOutput2= document.getElementById("JointValueY");
+  var ObjectSlider2= document.getElementById("ObjectY");
+  var ObjectOutput2= document.getElementById("ObjectValueY");
 
-    var JointSlider3 = document.getElementById("JointZ");
-    var JointOutput3 = document.getElementById("JointValueZ");
+  var ObjectSlider3 = document.getElementById("ObjectZ");
+  var ObjectOutput3 = document.getElementById("ObjectValueZ");
 
-    var JointSlider4 = document.getElementById("JointRotate");
-    var JointOutput4 = document.getElementById("JointRotateValue");
+  
+ 
 
-    
+
+
+
+  var url = "http://localhost/forms?KEY=";
+//  output.innerHTML = slider.value;
+  var data = ""
    
 
-
-
-
-    var url = "http://localhost/forms?KEY=";
-  //  output.innerHTML = slider.value;
-    var data = ""
-     
-
-        function slide(a){
-           
-           if(a.charAt(0) == "C"){
-            data = "Name=Camera"+"&X="+CameraSlider1.value.toString()+"&Y="+CameraSlider2.value.toString()+"&Z="+CameraSlider3.value.toString();
-           } else if (a.charAt(0) == "O"){
-            data = "Name=Joint"+"&X="+JointSlider1.value.toString()+"&Y="+JointSlider2.value.toString()+"&Z="+JointSlider3.value.toString()+"&R="+JointSlider4.value.toString();
-           }
-            var xhr = new XMLHttpRequest();
-           // output.innerHTML = document.getElementById(a).value;
-        
-        //xhr.open("GET", "/posts/more", true);
-		xhr.open("POST", "/posts/more", true);
-      //  xhr.setRequestHeader("Accept", "application/json");
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		xhr.onreadystatechange = function() {
-
-			if (xhr.readyState == 4 && xhr.status == 200) {
-//output.innerText = xhr.responseText;
-			}
-		}
-		
-		try { xhr.send(data); } catch (err) { /* handle error */ }
-        }
-
-        CameraSlider1.oninput = function(){
-           slide(CameraSlider1.id);
-           CameraOutput1.innerHTML = this.value;
-        }
-        CameraSlider2.oninput = function(){
-           slide(CameraSlider2.id);
-           CameraOutput2.innerHTML = this.value;
-        }
-        CameraSlider3.oninput = function(){
-           slide(CameraSlider3.id);
-           CameraOutput3.innerHTML = this.value;
-
-
-        }
-        JointSlider1.oninput = function(){
-           slide(JointSlider1.id);
-           JointOutput1.innerHTML = this.value;
-        }
-        JointSlider2.oninput = function(){
-           slide(JointSlider2.id);
-           JointOutput2.innerHTML = this.value;
-        }
-        JointSlider3.oninput = function(){
-           slide(JointSlider3.id);
-           JointOutput3.innerHTML = this.value;
-        }
-        JointSlider4.oninput = function(){
-           slide(JointSlider4.id);
-           JointOutput4.innerHTML = this.value;
-        }
+      function slide(a){
+         
+         if(a.charAt(0) == "C"){
+          data = "Name=Camera"+"&X="+CameraSlider1.value.toString()+"&Y="+CameraSlider2.value.toString()+"&Z="+CameraSlider3.value.toString();
+         } else if (a.charAt(0) == "O"){
+          data = "Name=Object"+"&X="+ObjectSlider1.value.toString()+"&Y="+ObjectSlider2.value.toString()+"&Z="+ObjectSlider3.value.toString();
+         }
+          var xhr = new XMLHttpRequest();
+         // output.innerHTML = document.getElementById(a).value;
       
+      //xhr.open("GET", "/posts/more", true);
+  xhr.open("POST", "/posts/more", true);
+    //  xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.onreadystatechange = function() {
 
-        function OpenScane(num){
-           
-           
-            data = "Name=Scane"+"&Number="+number
-           
-            var xhr = new XMLHttpRequest();
-           // output.innerHTML = document.getElementById(a).value;
-        
-        //xhr.open("GET", "/posts/more", true);
-		xhr.open("POST", "/posts/more", true);
-      //  xhr.setRequestHeader("Accept", "application/json");
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		xhr.onreadystatechange = function() {
-
-			if (xhr.readyState == 4 && xhr.status == 200) {
+    if (xhr.readyState == 4 && xhr.status == 200) {
 //output.innerText = xhr.responseText;
-			}
-		}
-		
-		try { xhr.send(data); } catch (err) { /* handle error */ }
-        }
+    }
+  }
+  
+  try { xhr.send(data); } catch (err) { /* handle error */ }
+      }
+
+      CameraSlider1.oninput = function(){
+         slide(CameraSlider1.id);
+         CameraOutput1.innerHTML = this.value;
+      }
+      CameraSlider2.oninput = function(){
+         slide(CameraSlider2.id);
+         CameraOutput2.innerHTML = this.value;
+      }
+      CameraSlider3.oninput = function(){
+         slide(CameraSlider3.id);
+         CameraOutput3.innerHTML = this.value;
 
 
-    // slider.oninput = function() {
-        
-    // }
-    </script>
-    
-    
-    </body>
-    <style>
-        .slidecontainer {
-          width: 100%;
-        }
-        
-        .slider {
-          -webkit-appearance: none;
-          width: 100%;
-          height: 15px;
-          border-radius: 5px;
-          background: #d3d3d3;
-          outline: none;
-          opacity: 0.7;
-          -webkit-transition: .2s;
-          transition: opacity .2s;
-        }
-        
-        .slider:hover {
-          opacity: 1;
-        }
-        
-        .slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 25px;
-          height: 25px;
-          border-radius: 50%;
-          background: #04AA6D;
-          cursor: pointer;
-        }
-        
-        .slider::-moz-range-thumb {
-          width: 25px;
-          height: 25px;
-          border-radius: 50%;
-          background: #04AA6D;
-          cursor: pointer;
-        }
-        </style>
-    
-    </html>
+      }
+      ObjectSlider1.oninput = function(){
+         slide(ObjectSlider1.id);
+         ObjectOutput1.innerHTML = this.value;
+      }
+      ObjectSlider2.oninput = function(){
+         slide(ObjectSlider2.id);
+         ObjectOutput2.innerHTML = this.value;
+      }
+      ObjectSlider3.oninput = function(){
+         slide(ObjectSlider3.id);
+         ObjectOutput3.innerHTML = this.value;
+      }
+
+      function OpenScane(num){
+         
+         
+          data = "Name=Scane"+"&Number="+number
+         
+          var xhr = new XMLHttpRequest();
+         // output.innerHTML = document.getElementById(a).value;
+      
+      //xhr.open("GET", "/posts/more", true);
+  xhr.open("POST", "/posts/more", true);
+    //  xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.onreadystatechange = function() {
+
+    if (xhr.readyState == 4 && xhr.status == 200) {
+//output.innerText = xhr.responseText;
+    }
+  }
+  
+  try { xhr.send(data); } catch (err) { /* handle error */ }
+      }
+
+
+  // slider.oninput = function() {
+      
+  // }
+  </script>
+  
+  
+  </body>
+  <style>
+      .slidecontainer {
+        width: 100%;
+      }
+      
+      .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 15px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+      }
+      
+      .slider:hover {
+        opacity: 1;
+      }
+      
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #04AA6D;
+        cursor: pointer;
+      }
+      
+      .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #04AA6D;
+        cursor: pointer;
+      }
+      </style>
+  
+  </html>
