@@ -196,18 +196,6 @@ func createSpine(opts AgentCreationOptions) *Agent {
 		Meta: AgentMeta{
 			Category: constants.AGENT_CATEGORY_SPINE,
 			Type:     constants.AGENT_TYPE_PLAYER,
-			SpineData: SpineData{
-				Back_armSpriteID:   render.GetSpriteIDByName("back_arm:0"),
-				Back_footSpriteID:  render.GetSpriteIDByName("back_foot:0"),
-				Back_handSpriteID:  render.GetSpriteIDByName("back_hand:0"),
-				Back_legSpriteID:   render.GetSpriteIDByName("back_leg:0"),
-				BodySpriteID:       render.GetSpriteIDByName("body:0"),
-				Front_armSpriteID:  render.GetSpriteIDByName("front_arm:0"),
-				Front_footSpriteID: render.GetSpriteIDByName("front_foot:0"),
-				Front_handSpriteID: render.GetSpriteIDByName("front_hand:0"),
-				Front_legtSpriteID: render.GetSpriteIDByName("front_leg:0"),
-				HeadSpriteID:       render.GetSpriteIDByName("head:0"),
-			},
 		},
 		Transform: physics.Body{
 			Pos:       cxmath.Vec2{X: opts.X, Y: opts.Y},
