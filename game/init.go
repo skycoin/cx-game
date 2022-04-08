@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/character"
 	"github.com/skycoin/cx-game/components"
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/components/particles/particle_emitter"
@@ -75,6 +76,7 @@ func Init() {
 	spriteloader.InitSpriteloader(&win)
 	spriteloader.LoadSpritesFromConfigs()
 	anim.InitAnimatedSpriteLoader()
+	character.InitSpineProgram()
 	world.Init()
 	item.InitWorldItem()
 	ui.Init()

@@ -1,6 +1,6 @@
 module github.com/skycoin/cx-game
 
-go 1.13
+go 1.17
 
 require (
 	github.com/go-gl/gl v0.0.0-20210315015930-ae072cafe09d
@@ -13,13 +13,17 @@ require (
 	github.com/lafriks/go-tiled v0.5.0
 	github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
 	github.com/seehuhn/mt19937 v1.0.0
-	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/ted537/go-openal v0.0.0-20210618203930-fa36a2aaf89e
 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8
-	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
-	golang.org/x/tools/gopls v0.7.4 // indirect
 	gopkg.in/yaml.v2 v2.2.4
-	honnef.co/go/tools v0.2.2 // indirect
-	mvdan.cc/gofumpt v0.2.1 // indirect
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/kr/pretty v0.3.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/rogpeppe/go-internal v1.8.1 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )

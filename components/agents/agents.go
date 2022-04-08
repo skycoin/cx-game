@@ -8,6 +8,7 @@ import (
 
 	//"github.com/skycoin/cx-game/components/agents/agent_draw"
 	//	"github.com/skycoin/cx-game/components/agents/agent_draw"
+	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/Texture"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/cxmath"
@@ -32,8 +33,13 @@ type Agent struct {
 	Play  bool
 	Speed float64
 
-	Skeleton       *spine.Skeleton
-	Animation      *spine.Animation
+	// TODO: replace this with atlas
+	ImagesPath string
+	Images     map[string]*Texture.Texture
+
+	Skeleton  *spine.Skeleton
+	Animation *spine.Animation
+
 	SkinIndex      int
 	AnimationIndex int
 
@@ -73,7 +79,7 @@ func (a *Agent) LoadCharacter(loc animation.Location) (*Agent, error) {
 	a.Speed = 1
 	a.Skeleton = spine.NewSkeleton(data)
 	a.Skeleton.Skin = a.Skeleton.Data.DefaultSkin
-	a.Animation = a.Skeleton.Data.Animations[0]
+	a.Animation = a.Skeleton.Data.Animations[3]
 
 	a.AnimationIndex = 0
 	a.SkinIndex = 0
@@ -112,8 +118,8 @@ func (char *Agent) Update(dt float64, center cxmath.Vec2) {
 		char.Time += dt * char.Speed
 	}
 
-	char.Skeleton.Local.Translate.Set(float32(center.X), float32(center.Y))
-	char.Skeleton.Local.Scale.Set(10, 10)
+	// char.Skeleton.Local.Translate.Set(float32(center.X), float32(center.Y))
+	// 	char.Skeleton.Local.Scale.Set(10, 10)
 	char.Animation.Apply(char.Skeleton, float32(char.Time), true)
 	char.Skeleton.Update()
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/Texture"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/geometry"
+	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/shader"
 	"github.com/skycoin/cx-game/engine/spine"
 	"github.com/skycoin/cx-game/test/spine-animation/animation"
 
@@ -31,6 +32,12 @@ type Character struct {
 
 	DebugCenter bool
 	DebugBones  bool
+}
+
+var Shader *shader.Shader
+
+func InitSpineProgram() {
+	Shader = shader.SetupShader("./assets/shader/spine/basic.shader")
 }
 
 func LoadCharacter(loc animation.Location) (*Character, error) {
@@ -57,7 +64,7 @@ func LoadCharacter(loc animation.Location) (*Character, error) {
 	char.Speed = 1
 	char.Skeleton = spine.NewSkeleton(data)
 	char.Skeleton.Skin = char.Skeleton.Data.DefaultSkin
-	char.Animation = char.Skeleton.Data.Animations[0]
+	char.Animation = char.Skeleton.Data.Animations[1]
 
 	char.AnimationIndex = 0
 	char.SkinIndex = 0
@@ -206,72 +213,77 @@ func (char *Character) GetImage(attachment, path string) *Texture.Texture {
 func (char *Character) Draw() []float32 {
 	var pos []float32
 	var offset float32 = 0
-	var count = 0
+	var count = 20
 	for i, slot := range char.Skeleton.Order {
 		bone := slot.Bone
 		switch attachment := slot.Attachment.(type) {
 		case nil:
 		case *spine.RegionAttachment:
-			local := attachment.Local.Affine()
-			final := bone.World.Mul(local)
+			if attachment.Name != "body1" {
+				//attachment.Local.Rotate = 90
 
-			// BUG: inconvenient
-			var geom animation.GeoM
-			geom.SetElement(0, 0, float64(final.M00))
-			geom.SetElement(0, 1, float64(final.M01))
-			geom.SetElement(0, 2, float64(final.M02))
-			geom.SetElement(1, 0, float64(final.M10))
-			geom.SetElement(1, 1, float64(final.M11))
-			geom.SetElement(1, 2, float64(final.M12))
+				local := attachment.Local.Affine()
+				final := bone.World.Mul(local)
 
-			m := char.GetImage(attachment.Name, attachment.Path)
-			xform := geometry.Matrix(final.Col64())
-			//box := m.Bounds()
+				// BUG: inconvenient
+				var geom animation.GeoM
+				geom.SetElement(0, 0, float64(final.M00))
+				geom.SetElement(0, 1, float64(final.M01))
+				geom.SetElement(0, 2, float64(final.M02))
+				geom.SetElement(1, 0, float64(final.M10))
+				geom.SetElement(1, 1, float64(final.M11))
+				geom.SetElement(1, 2, float64(final.M12))
 
-			//var draw Texture.Texture
+				m := char.GetImage(attachment.Name, attachment.Path)
+				xform := geometry.Matrix(final.Col64())
+				//	m.M_renderID = uint32(render.GetSpriteIDByName(attachment.Name + ":0"))
+				//box := m.Bounds()
 
-			// flip image and set origin to center
-			m.GeoM.Translate(-float64(m.M_width)*0.5, -float64(m.M_height)*0.5)
-			m.GeoM.Scale(1, -1)
-			m.GeoM.Concat(geom)
-			// tint the texture
-			m.ColorM.Scale(slot.Color.NRGBA64())
+				//var draw Texture.Texture
 
-			//x, y := draw.GeoM.Apply(float64(m.M_width), float64(m.M_height))
+				// flip image and set origin to center
+				m.GeoM.Translate(-float64(m.M_width)*0.5, -float64(m.M_height)*0.5)
+				m.GeoM.Scale(1, -1)
+				m.GeoM.Concat(geom)
+				// tint the texture
+				m.ColorM.Scale(slot.Color.NRGBA64())
 
-			// _, _, _, _, x, y := m.GeoM.GetElements()
-			x, y := final.Translation().XY()
+				//x, y := draw.GeoM.Apply(float64(m.M_width), float64(m.M_height))
 
-			// set blending mode
-			// BUG: incorrect, should use blending mode not compositing mode
-			switch slot.Data.Blend {
-			case spine.Normal:
-				// MISSING
-			case spine.Additive:
-			//	draw.CompositeMode = ebiten.CompositeModeLighter
-			case spine.Multiply:
-				// MISSING
-			case spine.Screen:
-				// MISSING
+				// _, _, _, _, x, y := m.GeoM.GetElements()
+				x, y := final.Translation().XY()
+
+				// set blending mode
+				// BUG: incorrect, should use blending mode not compositing mode
+				switch slot.Data.Blend {
+				case spine.Normal:
+					// MISSING
+				case spine.Additive:
 				//	draw.CompositeMode = ebiten.CompositeModeLighter
-			}
-			//_, _, _, _, tx, ty := draw.GeoM.GetElements()
-			// poject := Project(mgl32.Vec2{final.Translation().X, final.Translation().Y}, final)
-			m.Bind(uint32(i))
-			// if attachment.Name == "goggles" {
-			// 	fmt.Println("goggles sizex:", m.M_width)
-			// 	fmt.Println("goggles sizey:", m.M_height)
-			// 	fmt.Println("goggles transform:", final.Translation().Y)
+				case spine.Multiply:
+					// MISSING
+				case spine.Screen:
+					// MISSING
+					//	draw.CompositeMode = ebiten.CompositeModeLighter
+				}
+				//_, _, _, _, tx, ty := draw.GeoM.GetElements()
+				// poject := Project(mgl32.Vec2{final.Translation().X, final.Translation().Y}, final)
+				m.Bind(uint32(i + count))
+				// if attachment.Name == "goggles" {
+				// 	fmt.Println("goggles sizex:", m.M_width)
+				// 	fmt.Println("goggles sizey:", m.M_height)
+				// 	fmt.Println("goggles transform:", final.Translation().Y)
 
-			// }
-			//if attachment.Name == "gun" || attachment.Name == "head" || attachment.Name == "goggles" {
-			q := CreateQuad(float32(x), float32(y)+offset, float32(m.M_height), float32(m.M_width), float32(i), xform, m)
-			pos = append(pos, q...)
-			//}
-			// fmt.Println(i)
-			//offset += 50.0
-			count += 1
-			//target.DrawImage(m, &draw)
+				// }
+				//if attachment.Name == "gun" || attachment.Name == "head" || attachment.Name == "goggles" {
+				q := CreateQuad(float32(x), float32(y)+offset, float32(m.M_height), float32(m.M_width), float32(i+count), xform, m)
+				pos = append(pos, q...)
+				//}
+				// fmt.Println(i)
+				//offset += 50.0
+				count += 1
+				//target.DrawImage(m, &draw)
+			}
 		default:
 			panic(fmt.Sprintf("unknown attachment %v", attachment))
 		}

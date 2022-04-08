@@ -76,6 +76,10 @@ func (tex *Texture) Bind(slot uint32) {
 	gl.ActiveTexture(gl.TEXTURE0 + slot)
 	gl.BindTexture(gl.TEXTURE_2D, tex.M_renderID)
 }
+func (tex *Texture) Bind2(renderID uint32) {
+	//gl.ActiveTexture(gl.TEXTURE0 + slot)
+	gl.BindTexture(gl.TEXTURE_2D, renderID)
+}
 func (tex *Texture) UnBind() {
 	gl.BindTexture(gl.TEXTURE_2D, 0)
 }
