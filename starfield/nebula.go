@@ -1,4 +1,4 @@
-package starmap
+package starfield
 
 import (
 	"image"
@@ -11,27 +11,12 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	sl "github.com/skycoin/cx-game/engine/spriteloader"
-	perlin "github.com/skycoin/cx-game/procgen"
+	"github.com/skycoin/cx-game/procgen/perlin"
 	"github.com/skycoin/cx-game/render"
 	"gopkg.in/yaml.v2"
 )
 
-type noiseSettings struct {
-	Size     int
-	Scale    float32
-	Levels   uint8
-	Contrast float32
-
-	Seed        int64
-	Gradmax     int
-	X           int
-	Xs          int
-	Persistance float32
-	Lacunarity  float32
-	Octaves     int
-
-	GradFile string
-}
+//Nebula generation and rendering
 
 type quadProp struct {
 	xpos    float32
@@ -99,8 +84,8 @@ func Draw() {
 
 	program.SetInt("nebulaTexture", 0)
 	program.SetInt("gradientTexture", 1)
-	program.SetVec2F("texScale",1,1)
-	program.SetVec2F("texOffset",0,0)
+	program.SetVec2F("texScale", 1, 1)
+	program.SetVec2F("texOffset", 0, 0)
 
 	worldTransform := mgl32.Mat4.Mul4(
 		mgl32.Translate3D(float32(quad.xpos), float32(quad.ypos), -10),

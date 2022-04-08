@@ -3,7 +3,7 @@ package particles
 import (
 	"log"
 
-	"github.com/skycoin/cx-game/common"
+	"github.com/skycoin/cx-game/components/datastructs"
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 )
@@ -11,7 +11,7 @@ import (
 //for now keep one global particles list, redo later
 type ParticleList struct {
 	Particles []*Particle
-	idQueue   common.QueueI
+	idQueue   datastructs.QueueI
 }
 
 func (pl *ParticleList) AddParticle(particle Particle) types.ParticleID {

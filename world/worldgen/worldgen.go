@@ -3,7 +3,7 @@ package worldgen
 import (
 	"github.com/skycoin/cx-game/components/agents"
 	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/world/mapgen"
+	"github.com/skycoin/cx-game/procgen/mapgen"
 )
 
 func GenerateWorld() world.World {

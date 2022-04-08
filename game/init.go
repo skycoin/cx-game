@@ -20,9 +20,9 @@ import (
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/stars/starfield"
+	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/world"
-	"github.com/skycoin/cx-game/world/import"
+	worldimport "github.com/skycoin/cx-game/world/import"
 )
 
 func init() {
@@ -100,11 +100,17 @@ func Init() {
 	worldTiles := World.Planet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 
-	spawnPos := cxmath.Vec2{ 80, 109 } // start pos for moon bunker map
+	// spawn higher to test floating enemy
+	spawnPos := cxmath.Vec2{ 80, 129 } // start pos for moon bunker map
 
 	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
 			X: spawnPos.X - 10, Y: spawnPos.Y,
+		},
+	)
+	World.Entities.Agents.Spawn(
+		constants.AGENT_TYPE_ENEMY_FLOATING, agents.AgentCreationOptions{
+			X: spawnPos.X - 10, Y: spawnPos.Y+2,
 		},
 	)
 	World.Entities.Agents.Spawn(

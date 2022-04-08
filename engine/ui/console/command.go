@@ -6,7 +6,7 @@ import (
 	"strings"
 	"strconv"
 
-	"github.com/skycoin/cx-game/world/mapgen"
+	"github.com/skycoin/cx-game/procgen/mapgen"
 )
 
 type Command func(string, CommandContext) string

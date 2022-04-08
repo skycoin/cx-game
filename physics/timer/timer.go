@@ -8,5 +8,5 @@ import (
 var Accumulator float32
 
 func GetTimeBetweenTicks() float32 {
-	return math32.Mod(Accumulator, constants.PHYSICS_TICK)
+	return math32.Mod(Accumulator, constants.MS_PER_TICK)
 }

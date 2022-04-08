@@ -27,7 +27,7 @@ func AnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 		gl.ActiveTexture(gl.TEXTURE0)
 		gl.BindTexture(gl.TEXTURE_2D, tex)
 
-		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+		alpha := timer.GetTimeBetweenTicks() / constants.MS_PER_TICK
 
 		var interpolatedPos cxmath.Vec2
 		if !agent.Transform.PrevPos.Equal(agent.Transform.Pos) {

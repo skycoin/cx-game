@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 
+	bonegen "github.com/skycoin/cx-game/engine/bone"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	animjson "github.com/skycoin/cx-game/engine/spriteloader/anim/json"
 )
@@ -22,11 +23,12 @@ func LoadAnimationBoneFromJSON(fname string) {
 	fmt.Println("Skins: ", sheet.Skins[0].Attachments)
 	m, _ := sheet.Animations.(map[string]interface{})
 	for k, v := range m {
-		fmt.Println(k, "=>", v)
+		fmt.Println("------>", k, "=>", v)
 	}
 
 	imgPath := "./assets/player/Robot.png"
 	gpuTex := spriteloader.LoadTextureFromFileToGPU(imgPath)
 	fmt.Println("gpuTex: ", gpuTex)
+	bonegen.GenerateBones(sheet.Bones)
 
 }

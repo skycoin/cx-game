@@ -13,6 +13,6 @@ func PhysicsHandlerBounceGravity(
 ) {
 	for _, par := range Particles {
 		par.MoveBounce( &World.Planet,
-			constants.PHYSICS_TICK, cxmath.Vec2{0, -constants.Gravity} )
+			constants.MS_PER_TICK, cxmath.Vec2{0, -constants.Gravity} )
 	}
 }
