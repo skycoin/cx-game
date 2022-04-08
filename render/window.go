@@ -27,7 +27,6 @@ type Window struct {
 func (win *Window) sizeCallback(
 	window *glfw.Window, physicalWidth, physicalHeight int,
 ) {
-
 	// "physical" dimensions describe actual window size
 	// "virtual" dimensions describe scaling of both world and UI
 	// physical determines resolution.
@@ -92,15 +91,6 @@ func NewWindow(width, height int, resizable bool) Window {
 func (w *Window) SetCallbacks() {
 	w.Window.SetSizeCallback(w.sizeCallback)
 	w.SetInitialWindowDimensions()
-
-}
-
-func (w *Window) ChangeResolution(height, width int) {
-	w.Height = height
-	w.Width = width
-	w.Window.SetSize(width, height)
-	w.SetCallbacks()
-
 }
 
 // initGlfw initializes glfw and returns a Window to use.
@@ -118,7 +108,7 @@ func initGlfw(width, height int, resizable bool) *glfw.Window {
 
 	glfw.WindowHint(glfw.Resizable, res)
 	glfw.WindowHint(glfw.ContextVersionMajor, 4) // OR 2
-	glfw.WindowHint(glfw.ContextVersionMinor, 0)
+	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
@@ -164,7 +154,3 @@ func (window *Window) SetProjectionMatrix(projection mgl32.Mat4) {
 	window.context.Projection = projection
 	Projection = projection
 }
-
-// func reloadSettings() {
-// 	glfw.SizeCallback.SetWindowSize(Settings.Resolution.Width, Settings.Resolution.Height)
-// }

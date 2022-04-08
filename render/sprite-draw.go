@@ -29,8 +29,8 @@ func SetCameraTransform(mat mgl32.Mat4) {
 }
 
 type SpriteDrawOptions struct {
-	Outline     bool
-	Cutout      bool
+	Outline bool
+	Cutout  bool
 	Translucent bool
 }
 
@@ -141,13 +141,12 @@ func FlushUI() {
 }
 
 type SpriteDrawBins struct {
-	Cutout, Normal, Translucent map[Texture][]SpriteDraw
+	Cutout,Normal,Translucent map[Texture][]SpriteDraw
 }
-
 func NewSpriteDrawBins() SpriteDrawBins {
-	return SpriteDrawBins{
-		Cutout:      map[Texture][]SpriteDraw{},
-		Normal:      map[Texture][]SpriteDraw{},
+	return SpriteDrawBins {
+		Cutout: map[Texture][]SpriteDraw{},
+		Normal: map[Texture][]SpriteDraw{},
 		Translucent: map[Texture][]SpriteDraw{},
 	}
 }

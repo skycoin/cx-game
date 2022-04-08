@@ -78,9 +78,6 @@ func registerKeyMaps() {
 	MapKeyToButton("enemy-tool-scroll-up", glfw.KeyUp, 0)
 	MapKeyToButton("switch-skylight", glfw.KeyF11, 0)
 
-	MapKeyToButton("next-screen-size", glfw.KeyPageUp, 0)
-	MapKeyToButton("previouse-screen-size", glfw.KeyPageDown, 0)
-
 	//freecam
 	SetInputContext(FREECAM)
 	MapKeyToButton("right", glfw.KeyD, 0)

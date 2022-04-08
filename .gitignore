@@ -20,18 +20,10 @@ main
 prof
 
 .vscode/
-<<<<<<< .mine
-
-
-
-
-
-=======
 
 *.tiled-session
 # for logging
 dump
 
->>>>>>> .theirs
 # ctags
 tags
