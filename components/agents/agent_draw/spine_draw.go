@@ -121,8 +121,8 @@ func SpineAnimatedDrawHandler(agents []*agents.Agent, ctx DrawHandlerContext) {
 	// character.Shader.SetUniForm4f("u_Color", 0.8, 0.3, 0.8, 1.0)
 
 	var positions []float32
-	// positions = append(positions, 0, 0, 0, 0, 0)
-	positions = character_l.Draw()
+	positions = append(positions, 0, 0, 0, 0, 0)
+	// positions = character_l.Draw()
 	vb.Bind()
 	vb.BufferSubData(positions)
 
