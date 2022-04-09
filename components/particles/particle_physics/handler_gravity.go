@@ -13,6 +13,6 @@ func PhysicsHandlerGravity(Particles []*particles.Particle, World *world.World) 
 	// for _, par := range Particles {
 	// }
 	for _, par := range Particles {
-		par.MoveNoBounce(&World.Planet, constants.PHYSICS_TICK, cxmath.Vec2{0, -constants.Gravity})
+		par.MoveNoBounce(&World.Planet, constants.MS_PER_TICK, cxmath.Vec2{0, -constants.Gravity})
 	}
 }

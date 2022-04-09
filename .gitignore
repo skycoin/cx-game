@@ -25,4 +25,7 @@ prof
 # for logging
 dump
 
+# ctags
+tags
+
 

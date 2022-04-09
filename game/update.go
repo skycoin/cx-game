@@ -11,7 +11,7 @@ import (
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/physics/timer"
-	"github.com/skycoin/cx-game/stars/starfield"
+	"github.com/skycoin/cx-game/starfield"
 )
 
 func Update(dt float32) {
@@ -26,7 +26,7 @@ func Update(dt float32) {
 	} else {
 		//player.Controlled = true
 		//playerPos := player.InterpolatedTransform.Col(3).Vec2()
-		alpha := timer.GetTimeBetweenTicks() / constants.PHYSICS_TICK
+		alpha := timer.GetTimeBetweenTicks() / constants.MS_PER_TICK
 		body :=
 			World.Entities.Agents.FromID(playerAgentID).Transform
 

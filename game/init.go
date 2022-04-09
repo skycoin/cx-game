@@ -21,7 +21,7 @@ import (
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
 	"github.com/skycoin/cx-game/render"
-	"github.com/skycoin/cx-game/stars/starfield"
+	"github.com/skycoin/cx-game/starfield"
 	"github.com/skycoin/cx-game/world"
 	worldimport "github.com/skycoin/cx-game/world/import"
 )
@@ -102,7 +102,8 @@ func Init() {
 	worldTiles := World.Planet.GetAllTilesUnique()
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 
-	spawnPos := cxmath.Vec2{80, 109} // start pos for moon bunker map
+	// spawn higher to test floating enemy
+	spawnPos := cxmath.Vec2{ 80, 129 } // start pos for moon bunker map
 
 	// World.Entities.Agents.Spawn(
 	// 	constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
@@ -112,6 +113,31 @@ func Init() {
 	playerAgentID = World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SPINE_TEST, agents.AgentCreationOptions{
 			X: spawnPos.X - 10, Y: spawnPos.Y,
+		},
+	)
+	World.Entities.Agents.Spawn(
+		constants.AGENT_TYPE_ENEMY_FLOATING, agents.AgentCreationOptions{
+			X: spawnPos.X - 10, Y: spawnPos.Y+2,
+		},
+	)
+	World.Entities.Agents.Spawn(
+		constants.AGENT_TYPE_SPIDER_DRILL, agents.AgentCreationOptions{
+			X: spawnPos.X + 6, Y: spawnPos.Y,
+		},
+	)
+	World.Entities.Agents.Spawn(
+		constants.AGENT_TYPE_GRASS_HOPPER, agents.AgentCreationOptions{
+			X: spawnPos.X + 10, Y: spawnPos.Y,
+		},
+	)
+	World.Entities.Agents.Spawn(
+		constants.AGENT_TYPE_ENEMY_SOLDIER, agents.AgentCreationOptions{
+			X: spawnPos.X + 15, Y: spawnPos.Y,
+		},
+	)
+	playerAgentID = World.Entities.Agents.Spawn(
+		constants.AGENT_TYPE_PLAYER, agents.AgentCreationOptions{
+			X: spawnPos.X, Y: spawnPos.Y,
 		},
 	)
 	// World.Entities.Agents.Spawn(

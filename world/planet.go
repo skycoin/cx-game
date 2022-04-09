@@ -12,6 +12,7 @@ import (
 	"github.com/skycoin/cx-game/engine/input"
 	"github.com/skycoin/cx-game/render"
 	"github.com/skycoin/cx-game/world/tiling"
+	"github.com/skycoin/cx-game/world/pipesim"
 )
 
 const NUM_INSTANCES = 100
@@ -223,7 +224,7 @@ func (planet *Planet) TryCyclePipeConnection(x, y int) {
 		Neighbours: planet.GetNeighbours(layerTiles, x, y, tileType.ID),
 	})
 
-	neighbours := pipeNeighbours(x, y, tile.Connections, oldConnections)
+	neighbours := pipesim.PipeNeighbours(x, y, tile.Connections, oldConnections)
 	for _, neighbour := range neighbours {
 		neighbourTileIdx :=
 			planet.GetTileIndex(neighbour.X, neighbour.Y)
@@ -247,9 +248,9 @@ func (planet *Planet) TryCyclePipeConnection(x, y int) {
 }
 
 // which pipes can the pipe at (x,y) be connected to?
-func (planet *Planet) PipeConnectionCandidates(x, y int) Connections {
+func (planet *Planet) PipeConnectionCandidates(x, y int) pipesim.Connections {
 	layerTiles := planet.GetLayerTiles(PipeLayer)
-	return Connections{
+	return pipesim.Connections {
 		Up:    planet.TileExists(layerTiles, x, y+1),
 		Down:  planet.TileExists(layerTiles, x, y-1),
 		Left:  planet.TileExists(layerTiles, x-1, y),

@@ -4,11 +4,16 @@ import (
 	"fmt"
 
 	"github.com/go-gl/gl/v2.1/gl"
+	animjson "github.com/skycoin/cx-game/engine/spriteloader/anim/json"
 )
 
-type Bone struct {
-	X1, Y1, X2, Y2 float32
-	Father         *Bone
+type LineBone struct {
+	Name     string
+	Parent   string
+	Rotation float32
+	Length   float32
+	X        float32
+	Y        float32
 }
 
 func DrawBone(x1, y1, x2, y2 float32) {
@@ -18,8 +23,11 @@ func DrawBone(x1, y1, x2, y2 float32) {
 	gl.End()
 }
 
-func GenerateBones(bones []Bone) {
-	for bone := range bones {
-		fmt.Println("bone: ", bone)
+func GenerateBones(bones []animjson.Bone) {
+	for _, lineBone := range bones {
+		fmt.Println("bone: ", lineBone.Name)
+		// DrawBone(float32(lineBone.X), float32(lineBone.Y))
+		// DrawBone(0.0, 0.0, 1.0, 1.0)
 	}
+
 }

@@ -12,6 +12,6 @@ func UpdateAgents(World *world.World) {
 			continue
 		}
 		agent.Transform.
-			Move(&World.Planet, constants.PHYSICS_TICK)
+			Move(&World.Planet, constants.MS_PER_TICK)
 	}
 }

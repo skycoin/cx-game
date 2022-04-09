@@ -13,7 +13,7 @@ func PhysicsHandlerDissappearOnHit(
 		Particles []*particles.Particle, World *world.World,
 ) {
 	for _, par := range Particles {
-		par.MoveNoBounce(&World.Planet, constants.PHYSICS_TICK, cxmath.Vec2{})
+		par.MoveNoBounce(&World.Planet, constants.MS_PER_TICK, cxmath.Vec2{})
 		if par.Collisions.Collided() {
 			par.Die()
 		}

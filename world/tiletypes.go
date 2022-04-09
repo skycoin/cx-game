@@ -3,11 +3,13 @@ package world
 import (
 	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/go-yaml/yaml"
 
 	"github.com/skycoin/cx-game/components/types"
-	"github.com/skycoin/cx-game/config"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/spriteloader/blobsprites"
 	"github.com/skycoin/cx-game/render"
@@ -162,7 +164,7 @@ func RegisterEmptyTileType() {
 }
 
 func RegisterConfigTileTypes() {
-	paths := config.FindPathsWithExt("./assets/tile/", ".yaml")
+	paths := FindPathsWithExt("./assets/tile/", ".yaml")
 
 	for _, path := range paths {
 		buf, err := ioutil.ReadFile(path)
@@ -182,4 +184,19 @@ func RegisterConfigTileTypes() {
 			)
 		}
 	}
+}
+
+// ext should look like ".yaml" or ".png" - dot must be included
+func FindPathsWithExt(root, ext string) []string {
+	paths := []string{}
+	filepath.Walk(
+		root,
+		func(path string, info os.FileInfo, er error) error {
+			if strings.HasSuffix(path, ext) {
+				paths = append(paths, path)
+			}
+			return nil
+		},
+	)
+	return paths
 }
