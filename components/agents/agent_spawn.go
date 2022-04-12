@@ -39,7 +39,7 @@ func init() {
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
 		CreateAgent: createSlime,
 	})
-	RegisterAgentType(constants.AGENT_TYPE_ENEMY_FLOATING, AgentType {
+	RegisterAgentType(constants.AGENT_TYPE_ENEMY_FLOATING, AgentType{
 		Name:        "Floater",
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
 		CreateAgent: createFloatingEnemy,

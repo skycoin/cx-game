@@ -72,14 +72,14 @@ func (a *Agent) LoadCharacter(loc animation.Location) (*Agent, error) {
 
 	//	fmt.Println("________________________________")
 
-	a.Play = true
+	a.Play = false
 	a.DebugBones = true
-	a.DebugCenter = false
+	a.DebugCenter = true
 
-	a.Speed = 1
+	a.Speed = 0.05
 	a.Skeleton = spine.NewSkeleton(data)
 	a.Skeleton.Skin = a.Skeleton.Data.DefaultSkin
-	a.Animation = a.Skeleton.Data.Animations[3]
+	a.Animation = a.Skeleton.Data.Animations[0]
 
 	a.AnimationIndex = 0
 	a.SkinIndex = 0
@@ -97,6 +97,12 @@ func (char *Agent) NextAnimation(offset int) {
 	}
 	char.AnimationIndex = char.AnimationIndex % len(char.Skeleton.Data.Animations)
 	char.Animation = char.Skeleton.Data.Animations[char.AnimationIndex]
+	char.Skeleton.SetToSetupPose()
+	char.Skeleton.Update()
+}
+func (char *Agent) SetAnimation(index int) {
+
+	char.Animation = char.Skeleton.Data.Animations[index]
 	char.Skeleton.SetToSetupPose()
 	char.Skeleton.Update()
 }

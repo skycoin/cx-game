@@ -129,6 +129,8 @@ func (spritesheetConfig *SpriteSheetConfig) autoSprites() []render.Sprite {
 				Name:      fmt.Sprintf("%v:%d", spritesheetConfig.Name, idx),
 				Model:     mgl32.Ident4(),
 				Transform: downScale.Mul3(translate).Mul3(upScale),
+				Height:    float32(spritesheetConfig.CellHeight),
+				Width:     float32(spritesheetConfig.CellWidth),
 			}
 			x += spritesheetConfig.CellWidth
 			if x >= spritesheetConfig.Width {
@@ -158,6 +160,8 @@ func (spritesheetConfig *SpriteSheetConfig) Sprites() []render.Sprite {
 			Name:      spritesheetConfig.Name,
 			Transform: mgl32.Ident3(),
 			Model:     mgl32.Scale3D(w/cw, h/ch, 1),
+			Height:    h,
+			Width:     w,
 		}}
 	}
 

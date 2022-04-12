@@ -53,7 +53,7 @@ func LoadCharacter(loc animation.Location) (*SpineData, error) {
 	char.ImagesPath = loc.Images
 	char.Images = make(map[string]render.SpriteID)
 
-	char.Play = true
+	char.Play = false
 	char.DebugBones = true
 	char.DebugCenter = true
 
@@ -151,6 +151,16 @@ func (char *SpineData) GetImage(attachment string) render.SpriteID {
 	//char.Images[attachment] = pd
 
 	return pd
+}
+
+func (char *SpineData) GetImageSize(id render.SpriteID) [2]float32 {
+	sprite := render.GetSpriteByID(id)
+
+	var width_height [2]float32
+
+	width_height[0] = sprite.Width
+	width_height[1] = sprite.Height
+	return width_height
 }
 
 // func (char *SpineData) Draw() []float32 {
