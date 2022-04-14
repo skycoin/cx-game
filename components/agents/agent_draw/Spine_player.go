@@ -91,7 +91,12 @@ func spineDrawPlayerSprite(
 		switch attachment := slot.Attachment.(type) {
 		case nil:
 		case *spine.RegionAttachment:
-
+			if attachment.Name == "head1" ||
+				attachment.Name == "front_arm1" ||
+				attachment.Name == "front_hand1" ||
+				attachment.Name == "front_foot1" {
+				break
+			}
 			spriteSize := agent.Meta.GetImageSize(spriteID)
 			tex := render.GetSpriteByID(spriteID).Texture.Texture
 			local := attachment.Local.Affine()
