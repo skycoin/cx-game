@@ -1,6 +1,7 @@
 package agents
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/skycoin/cx-game/render"
@@ -23,6 +24,7 @@ type SpineData struct {
 	// TODO: replace this with atlas
 	ImagesPath string
 	Images     map[string]render.SpriteID
+	Images2    map[string]*Texture.Texture
 
 	Skeleton  *spine.Skeleton
 	Animation *spine.Animation
@@ -36,41 +38,53 @@ type SpineData struct {
 	IgnoringPlatformsFor_2 float32
 }
 
-func LoadCharacter(loc animation.Location) (*SpineData, error) {
+func (a *SpineData) LoadCharacter(loc animation.Location) (*SpineData, error) {
+	fmt.Println("test here: ", loc.JSON)
 	rd, err := os.Open(loc.JSON)
 	if err != nil {
+		fmt.Println("hit Error: ")
 		return nil, err
 	}
-
+	fmt.Println("test data: ")
 	data, err := spine.ReadJSON(rd)
 	if err != nil {
 		return nil, err
 	}
+
 	data.Name = loc.Name
 
-	char := &SpineData{}
+	fmt.Println("test location: ", loc.Images)
+	a.ImagesPath = loc.Images
 
-	char.ImagesPath = loc.Images
-	char.Images = make(map[string]render.SpriteID)
+	a.Images2 = make(map[string]*Texture.Texture)
 
-	char.Play = true
-	char.DebugBones = true
-	char.DebugCenter = true
+	a.Images = make(map[string]render.SpriteID)
 
-	char.Speed = 1
-	char.Skeleton = spine.NewSkeleton(data)
-	char.Skeleton.Skin = char.Skeleton.Data.DefaultSkin
-	char.Animation = char.Skeleton.Data.Animations[1]
+	//char.Images = make(map[string]*pixel.PictureData)
 
-	char.AnimationIndex = 0
-	char.SkinIndex = 0
+	//fmt.Println("____________Debug point_________")
 
-	char.Skeleton.FlipY = false
+	//fmt.Printf("%v", char.Images)
 
-	char.Skeleton.UpdateAttachments()
-	char.Skeleton.Update()
+	//	fmt.Println("________________________________")
 
-	return char, nil
+	a.Play = false
+	a.DebugBones = true
+	a.DebugCenter = true
+
+	a.Speed = 0.05
+	a.Skeleton = spine.NewSkeleton(data)
+	a.Skeleton.Skin = a.Skeleton.Data.DefaultSkin
+	a.Animation = a.Skeleton.Data.Animations[0]
+
+	a.AnimationIndex = 0
+	a.SkinIndex = 0
+
+	a.Skeleton.FlipY = false
+	a.Skeleton.UpdateAttachments()
+	a.Skeleton.Update()
+	fmt.Printf("%v", a)
+	return a, nil
 }
 
 func (char *SpineData) Description() string {

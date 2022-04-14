@@ -276,7 +276,8 @@ func (char *Character) Draw() []float32 {
 
 				// }
 				//if attachment.Name == "gun" || attachment.Name == "head" || attachment.Name == "goggles" {
-				q := CreateQuad(float32(x), float32(y)+offset, float32(m.M_height), float32(m.M_width), float32(i+count), xform, m)
+
+				q := CreateQuad(float32(x), float32(y)+offset, float32(m.M_height), float32(m.M_width), float32(i), xform, m)
 				pos = append(pos, q...)
 				//}
 				// fmt.Println(i)
