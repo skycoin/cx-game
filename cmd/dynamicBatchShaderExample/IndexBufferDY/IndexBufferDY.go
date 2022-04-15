@@ -1,8 +1,6 @@
 package indexbufferDY
 
 import (
-	"fmt"
-
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -15,7 +13,7 @@ func RunIndexBuffer(indices []uint32, count int) *IndexBuffer {
 	IB := &IndexBuffer{}
 	IB.M_count = count
 	gl.GenBuffers(1, &IB.M_renderID)
-	fmt.Println("this is the ID Buffer: ", IB.M_count)
+	// fmt.Println("this is the ID Buffer: ", IB.M_count)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, IB.M_renderID)
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, count*4, gl.Ptr(indices), gl.DYNAMIC_DRAW)
 

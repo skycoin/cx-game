@@ -19,7 +19,7 @@ func RunVertexBuffer(size int) *VertexBuffer {
 }
 
 func (VB *VertexBuffer) BufferSubData(data []float32) {
-	//fmt.Println(data)
+	// fmt.Println(data)
 	gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(data)*4, gl.Ptr(data))
 }
 func (VB *VertexBuffer) DeleteBuffer() {
