@@ -101,7 +101,7 @@ func Init() {
 	log.Printf("Found [%v] unique tiles in the world", len(worldTiles))
 
 	// spawn higher to test floating enemy
-	spawnPos := cxmath.Vec2{ 80, 129 } // start pos for moon bunker map
+	spawnPos := cxmath.Vec2{80, 129} // start pos for moon bunker map
 
 	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_SLIME, agents.AgentCreationOptions{
@@ -110,7 +110,7 @@ func Init() {
 	)
 	World.Entities.Agents.Spawn(
 		constants.AGENT_TYPE_ENEMY_FLOATING, agents.AgentCreationOptions{
-			X: spawnPos.X - 10, Y: spawnPos.Y+2,
+			X: spawnPos.X - 10, Y: spawnPos.Y + 2,
 		},
 	)
 	World.Entities.Agents.Spawn(

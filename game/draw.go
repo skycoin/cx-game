@@ -7,7 +7,6 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/components"
-	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
@@ -69,15 +68,15 @@ func Draw() {
 
 	//fix dialogboxdraw
 	// ui.DrawDialogueBoxes(camCtx)
-
 	Console.Draw(win.DefaultRenderContext())
-
+	actualScreenSizeWidth, actualScreenSizeHeight := glfw.GetCurrentContext().GetFramebufferSize()
 	physicalViewport := render.GetCurrentViewport()
+	fmt.Println("physicalViewport: ", physicalViewport)
 	virtualViewport :=
 		render.Viewport{
 			0, 0,
-			constants.VIRTUAL_VIEWPORT_WIDTH,
-			constants.VIRTUAL_VIEWPORT_HEIGHT,
+			int32(actualScreenSizeWidth),  //constants.VIRTUAL_VIEWPORT_WIDTH,
+			int32(actualScreenSizeHeight), //constants.VIRTUAL_VIEWPORT_HEIGHT,
 		}
 	virtualViewport.Use()
 	components.Draw_Queued(&World.Entities, Cam)
