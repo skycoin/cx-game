@@ -3,7 +3,9 @@ package agents
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
+	"github.com/skycoin/cx-game/cxmath"
 	"github.com/skycoin/cx-game/render"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -101,6 +103,12 @@ func (char *SpineData) NextAnimation(offset int) {
 	char.Skeleton.SetToSetupPose()
 	char.Skeleton.Update()
 }
+func (char *SpineData) SetAnimation(index int) {
+
+	char.Animation = char.Skeleton.Data.Animations[index]
+	char.Skeleton.SetToSetupPose()
+	char.Skeleton.Update()
+}
 
 func (char *SpineData) NextSkin(offset int) {
 	char.SkinIndex += offset
@@ -113,13 +121,13 @@ func (char *SpineData) NextSkin(offset int) {
 	char.Skeleton.Update()
 	char.Skeleton.UpdateAttachments()
 }
-func (char *SpineData) Update(dt float64, x, y float64) {
+func (char *SpineData) Update(dt float64, translate, scale cxmath.Vec2) {
 	if char.Play {
 		char.Time += dt * char.Speed
 	}
 
-	char.Skeleton.Local.Translate.Set(float32(x), float32(y))
-	char.Skeleton.Local.Scale.Set(1, 1)
+	char.Skeleton.Local.Translate.Set(float32(translate.X), float32(translate.Y))
+	char.Skeleton.Local.Scale.Set(scale.X, scale.Y)
 	char.Animation.Apply(char.Skeleton, float32(char.Time), true)
 	char.Skeleton.Update()
 }
@@ -165,6 +173,58 @@ func (char *SpineData) GetImage(attachment string) render.SpriteID {
 	//char.Images[attachment] = pd
 
 	return pd
+}
+
+func (char *SpineData) GetImage2(attachment, path string) *Texture.Texture {
+	if path != "" {
+		attachment = path
+	}
+	if pd, ok := char.Images2[attachment]; ok {
+		return pd
+	}
+	//fmt.Println("Loading " + attachment)
+	//fmt.Println("path URL: " + path)
+
+	// fallback := func() *ebiten.Image {
+	// 	fmt.Println("missing: ", attachment)
+
+	// 	m := image.NewRGBA(image.Rect(0, 0, 10, 10))
+	// 	for i := range m.Pix {
+	// 		m.Pix[i] = 0x80
+	// 	}
+
+	// 	pd, _ := ebiten.NewImageFromImage(m, ebiten.FilterDefault)
+	// 	char.Images[attachment] = pd
+	// 	return pd
+	// }
+
+	fullpath := filepath.Join(char.ImagesPath, attachment+".png")
+	// file, err := os.Open(fullpath)
+	// if err != nil {
+	// 	panic("Error opening file")
+	// 	//return fallback()
+	// }
+
+	// m, _, err := image.Decode(file)
+	// if err != nil {
+	// 	panic("Error Decoding file")
+	// 	// return fallback()
+	// }
+	pd := Texture.SetUpTexture(fullpath)
+
+	char.Images2[attachment] = pd
+
+	return pd
+}
+
+func (char *SpineData) GetImageSize(id render.SpriteID) [2]float32 {
+	sprite := render.GetSpriteByID(id)
+
+	var width_height [2]float32
+
+	width_height[0] = sprite.Width
+	width_height[1] = sprite.Height
+	return width_height
 }
 
 // func (char *SpineData) Draw() []float32 {

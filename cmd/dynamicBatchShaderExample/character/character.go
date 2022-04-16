@@ -213,40 +213,41 @@ func (char *Character) GetImage(attachment, path string) *Texture.Texture {
 func (char *Character) Draw() []float32 {
 	var pos []float32
 	var offset float32 = 0
-	var count = 20
+	var count = 0
 	for i, slot := range char.Skeleton.Order {
 		bone := slot.Bone
 		switch attachment := slot.Attachment.(type) {
 		case nil:
 		case *spine.RegionAttachment:
-			if attachment.Name != "body1" {
+			if attachment.Name != "gun1" {
 				//attachment.Local.Rotate = 90
 
 				local := attachment.Local.Affine()
 				final := bone.World.Mul(local)
 
 				// BUG: inconvenient
-				var geom animation.GeoM
-				geom.SetElement(0, 0, float64(final.M00))
-				geom.SetElement(0, 1, float64(final.M01))
-				geom.SetElement(0, 2, float64(final.M02))
-				geom.SetElement(1, 0, float64(final.M10))
-				geom.SetElement(1, 1, float64(final.M11))
-				geom.SetElement(1, 2, float64(final.M12))
+				// var geom animation.GeoM
+				// geom.SetElement(0, 0, float64(final.M00))
+				// geom.SetElement(0, 1, float64(final.M01))
+				// geom.SetElement(0, 2, float64(final.M02))
+				// geom.SetElement(1, 0, float64(final.M10))
+				// geom.SetElement(1, 1, float64(final.M11))
+				// geom.SetElement(1, 2, float64(final.M12))
 
 				m := char.GetImage(attachment.Name, attachment.Path)
 				xform := geometry.Matrix(final.Col64())
+
 				//	m.M_renderID = uint32(render.GetSpriteIDByName(attachment.Name + ":0"))
 				//box := m.Bounds()
 
 				//var draw Texture.Texture
 
 				// flip image and set origin to center
-				m.GeoM.Translate(-float64(m.M_width)*0.5, -float64(m.M_height)*0.5)
-				m.GeoM.Scale(1, -1)
-				m.GeoM.Concat(geom)
+				// m.GeoM.Translate(-float64(m.M_width)*0.5, -float64(m.M_height)*0.5)
+				// m.GeoM.Scale(1, -1)
+				// m.GeoM.Concat(geom)
 				// tint the texture
-				m.ColorM.Scale(slot.Color.NRGBA64())
+				// m.ColorM.Scale(slot.Color.NRGBA64())
 
 				//x, y := draw.GeoM.Apply(float64(m.M_width), float64(m.M_height))
 
@@ -259,16 +260,17 @@ func (char *Character) Draw() []float32 {
 				case spine.Normal:
 					// MISSING
 				case spine.Additive:
-
+				//	draw.CompositeMode = ebiten.CompositeModeLighter
 				case spine.Multiply:
 					// MISSING
 				case spine.Screen:
 					// MISSING
 					//	draw.CompositeMode = ebiten.CompositeModeLighter
 				}
+				fmt.Println(slot.Data.Blend)
 				//_, _, _, _, tx, ty := draw.GeoM.GetElements()
 				// poject := Project(mgl32.Vec2{final.Translation().X, final.Translation().Y}, final)
-				m.Bind(uint32(i + count))
+				m.Bind(uint32(i))
 				// if attachment.Name == "goggles" {
 				// 	fmt.Println("goggles sizex:", m.M_width)
 				// 	fmt.Println("goggles sizey:", m.M_height)
@@ -302,9 +304,9 @@ type Vertex struct {
 
 // var QuadPosition [4]mgl32.Vec4
 
-func Project(u mgl32.Vec2, m spine.Affine) mgl32.Vec2 {
-	return mgl32.Vec2{m.M00*u.X() + m.M01*u.Y() + m.M02, m.M10*u.X() + m.M11*u.Y() + m.M12}
-}
+// func Project(u mgl32.Vec2, m spine.Affine) mgl32.Vec2 {
+// 	return mgl32.Vec2{m.M00*u.X() + m.M01*u.Y() + m.M02, m.M10*u.X() + m.M11*u.Y() + m.M12}
+// }
 
 func CreateQuad(x, y, h, w, textureID float32, matrix geometry.Matrix, m *Texture.Texture) []float32 {
 	// QuadPosition[0] = mgl32.Vec4{-0.5, -0.5,0.0,1.0}
@@ -317,14 +319,18 @@ func CreateQuad(x, y, h, w, textureID float32, matrix geometry.Matrix, m *Textur
 		vertical   = geometry.V(0, float64(h/2))
 	)
 
-	dirty := false
-	if matrix != m.M_metrix {
-		m.M_metrix = matrix
-		dirty = true
-	}
-	if dirty {
+	// fmt.Println("matrix:", matrix)
+	// fmt.Println("m.M_matrix:", m.M_metrix)
 
-	}
+	// dirty := false
+	// if matrix != m.M_metrix {
+	// 	m.M_metrix = matrix
+	// 	dirty = true
+	// }
+	// if dirty {
+
+	// }
+	// fmt.Println(matrix)
 	//	var size float32 = 100.0
 	var pos []float32
 	v0 := Vertex{}
@@ -333,7 +339,7 @@ func CreateQuad(x, y, h, w, textureID float32, matrix geometry.Matrix, m *Textur
 	v0.TexID = textureID
 	t0 := geometry.Vec{}.Sub(horizontal).Sub(vertical)
 
-	xy0 := m.M_metrix.Project(t0)
+	xy0 := matrix.Project(t0)
 	v0.Position = mgl32.Vec2{float32(xy0.X), float32(xy0.Y)}
 	//	v0.Position = Project(v0.Position, final)
 	pos = append(pos, v0.Position.X(), v0.Position.Y(), v0.TexCoords.X(), v0.TexCoords.Y(), v0.TexID)
@@ -343,32 +349,33 @@ func CreateQuad(x, y, h, w, textureID float32, matrix geometry.Matrix, m *Textur
 	v1.TexCoords = mgl32.Vec2{1.0, 0.0}
 	v1.TexID = textureID
 	t1 := geometry.Vec{}.Add(horizontal).Sub(vertical)
-	xy1 := m.M_metrix.Project(t1)
+	xy1 := matrix.Project(t1)
 	v1.Position = mgl32.Vec2{float32(xy1.X), float32(xy1.Y)}
 	//v1.Position = Project(v1.Position, final)
 	pos = append(pos, v1.Position.X(), v1.Position.Y(), v1.TexCoords.X(), v1.TexCoords.Y(), v1.TexID)
 
 	v2 := Vertex{}
-	v2.Position = mgl32.Vec2{x + w, y + h}
+	// v2.Position = mgl32.Vec2{x + w, y + h}
 	v2.TexCoords = mgl32.Vec2{1.0, 1.0}
 	v2.TexID = textureID
 	t2 := geometry.Vec{}.Add(horizontal).Add(vertical)
-	xy2 := m.M_metrix.Project(t2)
+	xy2 := matrix.Project(t2)
 	v2.Position = mgl32.Vec2{float32(xy2.X), float32(xy2.Y)}
 	//	v2.Position = Project(v2.Position, final)
 	pos = append(pos, v2.Position.X(), v2.Position.Y(), v2.TexCoords.X(), v2.TexCoords.Y(), v2.TexID)
 
 	v3 := Vertex{}
-	v3.Position = mgl32.Vec2{x, y + h}
+	// v3.Position = mgl32.Vec2{x, y + h}
 	v3.TexCoords = mgl32.Vec2{0.0, 1.0}
 	v3.TexID = textureID
 	t3 := geometry.Vec{}.Sub(horizontal).Add(vertical)
-	xy3 := m.M_metrix.Project(t3)
+	xy3 := matrix.Project(t3)
 	v3.Position = mgl32.Vec2{float32(xy3.X), float32(xy3.Y)}
 	//v3.Position = Project(v3.Position, final)
 	pos = append(pos, v3.Position.X(), v3.Position.Y(), v3.TexCoords.X(), v3.TexCoords.Y(), v3.TexID)
 
-	//fmt.Printf("numbers=%v\n", pos)
+	// fmt.Println(t0, t1, t2, t3)
+	// fmt.Printf("numbers=%v\n", pos)
 	return pos
 
 }

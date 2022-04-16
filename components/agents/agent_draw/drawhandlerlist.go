@@ -28,7 +28,7 @@ func Init() {
 	RegisterDrawHandler(constants.DRAW_HANDLER_ANIM, AnimatedDrawHandler)
 	RegisterDrawHandler(constants.DRAW_HANDLER_PLAYER, PlayerDrawHandler)
 	RegisterDrawHandler(constants.DRAW_HANDLER_COLOR, ColorDrawHandler)
-	RegisterDrawHandler(constants.DRAW_HANDLER_SPINE, SpineAnimatedDrawHandler)
+	RegisterDrawHandler(constants.DRAW_HANDLER_SPINE, SpinePlayerDrawHandler2)
 
 	AssertAllDrawHandlersRegistered()
 }
