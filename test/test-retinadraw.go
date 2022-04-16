@@ -36,6 +36,7 @@ func main() {
 
 	actualScreenWidth, actualScreenHeight := glfw.GetCurrentContext().GetFramebufferSize()
 	gl.Viewport(0, 0, int32(actualScreenHeight), int32(actualScreenWidth))
+	// gl.Viewport(0, 0, SCREEN_HEIGHT, SCREEN_WIDTH)
 	gl.MatrixMode(gl.PROJECTION)
 	gl.LoadIdentity()
 	gl.Ortho(0, SCREEN_HEIGHT, 0, SCREEN_WIDTH, 0, 1)
