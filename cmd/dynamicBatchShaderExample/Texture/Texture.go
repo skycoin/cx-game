@@ -18,7 +18,7 @@ type Texture struct {
 	M_height         int
 	M_BPP            int
 	M_metrix         geometry.Matrix
-
+	M_name           string
 	//	M_matrix geometry.Matrix
 	GeoM   animation.GeoM
 	ColorM animation.ColorM
@@ -28,16 +28,33 @@ type Texture struct {
 
 // var IM = Matrix{1, 0, 0, 1, 0, 0}
 
+func ReadTextureData(path string) *Texture {
+
+	spriteloader.InitSpriteloaderDev()
+
+	status, img, _ := spriteloader.LoadPng(path)
+
+	if status != spriteloader.LoadOk {
+		log.Fatalf("cannot upload [%v] to GPU", path)
+	}
+
+	texture := &Texture{M_renderID: 0, M_filePath: path, M_localBufferImg: img, M_width: img.Rect.Dx(), M_height: img.Rect.Dy(), M_name: ""}
+
+	return texture
+
+}
 func SetUpTexture(path string) *Texture {
 
 	spriteloader.InitSpriteloaderDev()
 
 	status, img, _ := spriteloader.LoadPng(path)
+
 	if status != spriteloader.LoadOk {
 		log.Fatalf("cannot upload [%v] to GPU", path)
 	}
 
-	texture := &Texture{M_renderID: 0, M_filePath: path, M_localBufferImg: img, M_width: img.Rect.Dx(), M_height: img.Rect.Dy()}
+	texture := &Texture{M_renderID: 0, M_filePath: path, M_localBufferImg: img, M_width: img.Rect.Dx(), M_height: img.Rect.Dy(), M_name: ""}
+
 	gl.GenTextures(1, &texture.M_renderID)
 	gl.BindTexture(gl.TEXTURE_2D, texture.M_renderID)
 
@@ -77,7 +94,7 @@ func (tex *Texture) Bind(slot uint32) {
 	gl.BindTexture(gl.TEXTURE_2D, tex.M_renderID)
 }
 func (tex *Texture) Bind2(renderID uint32) {
-	//gl.ActiveTexture(gl.TEXTURE0 + slot)
+	// gl.ActiveTexture(gl.TEXTURE0 + slot)
 	gl.BindTexture(gl.TEXTURE_2D, renderID)
 }
 func (tex *Texture) UnBind() {

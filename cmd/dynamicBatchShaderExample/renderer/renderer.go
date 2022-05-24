@@ -6,6 +6,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	indexbuffer "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/IndexBuffer"
 	indexbufferDY "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/IndexBufferDY"
+	indexbufferTriDY "github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/IndexBufferTriDY"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/shader"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexArray"
 	"github.com/skycoin/cx-game/cmd/dynamicBatchShaderExample/vertexArrayDY"
@@ -50,6 +51,16 @@ func (R *Render) DrawDY(va *vertexArrayDY.VertexArray, ib *indexbufferDY.IndexBu
 	ib.Bind()
 
 	gl.DrawElements(gl.TRIANGLES, int32(ib.GetCount()), gl.UNSIGNED_INT, nil)
+}
+func (R *Render) DrawPrimitives(PrimitiveType int32, va *vertexArrayDY.VertexArray, ib *indexbufferTriDY.IndexBuffer, shader *shader.Shader) {
+	shader.Bind()
+	if PrimitiveType == 1 {
+		va.Bind()
+		ib.Bind()
+
+		gl.DrawElements(gl.TRIANGLES, int32(ib.GetCount()), gl.UNSIGNED_INT, nil)
+	}
+
 }
 
 func (R *Render) Clear() {

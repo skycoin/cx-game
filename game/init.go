@@ -16,6 +16,7 @@ import (
 	"github.com/skycoin/cx-game/engine/sound"
 	"github.com/skycoin/cx-game/engine/spriteloader"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
+	"github.com/skycoin/cx-game/engine/spriteloader/spineloader"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/engine/ui/console"
 	"github.com/skycoin/cx-game/item"
@@ -76,6 +77,7 @@ func Init() {
 	spriteloader.InitSpriteloader(&win)
 	spriteloader.LoadSpritesFromConfigs()
 	anim.InitAnimatedSpriteLoader()
+	spineloader.InitSpineSpriteLoader()
 	character.InitSpineProgram()
 	world.Init()
 	item.InitWorldItem()

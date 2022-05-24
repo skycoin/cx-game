@@ -45,14 +45,6 @@ func init() {
 		CreateAgent: createFloatingEnemy,
 	})
 
-	//********** SPINE TEST *************/////
-	RegisterAgentType(constants.AGENT_TYPE_SPINE_TEST, AgentType{
-		Name:        "Spine",
-		Category:    constants.AGENT_CATEGORY_SPINE,
-		CreateAgent: createSpine,
-	})
-	//***************************************//
-
 	RegisterAgentType(constants.AGENT_TYPE_SPIDER_DRILL, AgentType{
 		Name:        "Spider Drill",
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
@@ -73,6 +65,14 @@ func init() {
 		Category:    constants.AGENT_CATEGORY_PLAYER,
 		CreateAgent: createPlayer,
 	})
+
+	//********** SPINE TEST *************/////
+	RegisterAgentType(constants.AGENT_TYPE_SPINE_TEST, AgentType{
+		Name:        "Spine",
+		Category:    constants.AGENT_CATEGORY_SPINE,
+		CreateAgent: createSpine,
+	})
+	//***************************************//
 }
 
 func RegisterAgentType(id types.AgentTypeID, agentType AgentType) {
@@ -234,7 +234,7 @@ func createSpine(opts AgentCreationOptions) *Agent {
 		Health: NewHealthComponent(constants.HEALTH_PLAYER),
 	}
 	for _, loc := range animation.LoadList("./test/spine-animation/animation") {
-		agent.LoadCharacter(loc)
+		agent.Meta.LoadCharacter(loc)
 	}
 	//physics.RegisterBody(&agent.PhysicsState)
 	return &agent

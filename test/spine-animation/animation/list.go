@@ -19,7 +19,7 @@ var list = []Location{
 	// {"Powerup Pro", "powerup", "powerup-pro.json", "powerup.atlas", ""},
 	// {"Raptor", "raptor", "raptor-pro.json", "raptor.atlas", ""},
 	// {"Speedy", "speedy", "speedy-ess.json", "speedy.atlas", ""},
-	//	{"Spineboy", "spineboy", "spineboy-ess.json", "spineboy.atlas", ""},
+	// {"Spineboy", "spineboy", "spineboy-ess.json", "spineboy.atlas", ""},
 	//	{"Spineboy Pro", "spineboy", "spineboy-pro.json", "spineboy.atlas", ""},
 	//	{"Spinosaurus", "spinosaurus", "spinosaurus-ess.json", "spinosaurus-ess.atlas", ""},
 	// {"Stretchyman", "stretchyman", "stretchyman-pro.json", "stretchyman.atlas", ""},
