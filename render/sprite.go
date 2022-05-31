@@ -47,12 +47,13 @@ func initSprite() {
 	spriteProgram = &spriteProgram1
 }
 
-
 type Sprite struct {
 	Name      string
 	Transform mgl32.Mat3
 	Model     mgl32.Mat4
 	Texture   Texture
+	Height    float32
+	Width     float32
 }
 
 // deprecate at some point

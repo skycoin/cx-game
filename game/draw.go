@@ -79,9 +79,9 @@ func Draw() {
 			int32(actualScreenSizeHeight), //constants.VIRTUAL_VIEWPORT_HEIGHT,
 		}
 	virtualViewport.Use()
-	components.Draw_Queued(&World.Entities, Cam)
-	render.Flush(Cam.Zoom.Get())
 
+	render.Flush(Cam.Zoom.Get())
+	components.Draw_Queued(&World.Entities, Cam)
 	//draw after flushing
 	components.Draw(&World.Entities, Cam)
 	gl.Disable(gl.BLEND)
