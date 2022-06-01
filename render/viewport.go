@@ -1,8 +1,6 @@
 package render
 
 import (
-	"fmt"
-
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 
@@ -25,7 +23,7 @@ var currentViewport Viewport
 func GetCurrentViewport() Viewport { return currentViewport }
 
 func (v Viewport) Use() {
-	fmt.Println("Viewport: ", v)
+	//fmt.Println("Viewport: ", v)
 	currentViewport = v
 	gl.Viewport(v.X, v.Y, v.Width, v.Height)
 }
