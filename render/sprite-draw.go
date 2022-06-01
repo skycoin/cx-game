@@ -29,8 +29,8 @@ func SetCameraTransform(mat mgl32.Mat4) {
 }
 
 type SpriteDrawOptions struct {
-	Outline bool
-	Cutout  bool
+	Outline     bool
+	Cutout      bool
 	Translucent bool
 }
 
@@ -124,6 +124,23 @@ func DrawWorldSprite(transform mgl32.Mat4, id SpriteID, opts SpriteDrawOptions) 
 	drawSprite(model, view, id, opts)
 }
 
+type SpineSpritesData struct {
+	ID             []SpriteID
+	LocalTransform []mgl32.Mat4
+}
+
+func DrawWorldSpineSprite(transform mgl32.Mat4, spineTexData SpineSpritesData, opts SpriteDrawOptions) {
+	wrappedTransform := wrapTransform(transform)
+	model := wrappedTransform
+	view := cameraTransform.Inv()
+
+	for index, spriteid := range spineTexData.ID {
+		newTrans := view.Add(spineTexData.LocalTransform[index])
+		drawSprite(model, newTrans, spriteid, opts)
+	}
+
+}
+
 //draw without flushing
 
 func Flush(zoom float32) {
@@ -141,12 +158,13 @@ func FlushUI() {
 }
 
 type SpriteDrawBins struct {
-	Cutout,Normal,Translucent map[Texture][]SpriteDraw
+	Cutout, Normal, Translucent map[Texture][]SpriteDraw
 }
+
 func NewSpriteDrawBins() SpriteDrawBins {
-	return SpriteDrawBins {
-		Cutout: map[Texture][]SpriteDraw{},
-		Normal: map[Texture][]SpriteDraw{},
+	return SpriteDrawBins{
+		Cutout:      map[Texture][]SpriteDraw{},
+		Normal:      map[Texture][]SpriteDraw{},
 		Translucent: map[Texture][]SpriteDraw{},
 	}
 }

@@ -3,8 +3,8 @@ package render
 // Helper shader program class from learnopengl.com
 
 import (
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"strings"
 
@@ -15,19 +15,21 @@ import (
 const header string = "#version 410\n"
 
 type Program uint32
+
 func (p Program) gl() uint32 { return uint32(p) } // downcast
 
 type Shader uint32
+
 func (s Shader) gl() uint32 { return uint32(s) } // downcast
 
 type ShaderConfig struct {
-	vertexPath string
+	vertexPath   string
 	fragmentPath string
-	definitions map[string]string
+	definitions  map[string]string
 }
 
 func NewShaderConfig(vertexPath, fragmentPath string) ShaderConfig {
-	return ShaderConfig {
+	return ShaderConfig{
 		vertexPath: vertexPath, fragmentPath: fragmentPath,
 		definitions: make(map[string]string),
 	}
@@ -38,7 +40,7 @@ func CompileProgram(vertexPath, fragmentPath string) Program {
 	return config.Compile()
 }
 
-func (config *ShaderConfig) Define(name,value string) {
+func (config *ShaderConfig) Define(name, value string) {
 	config.definitions[name] = value
 }
 
@@ -47,21 +49,21 @@ func (s Shader) Delete() {
 }
 
 func (config *ShaderConfig) Definitions() string {
-	lines := make([]string,len(config.definitions))
+	lines := make([]string, len(config.definitions))
 	lineIndex := 0
-	for name,value := range config.definitions {
+	for name, value := range config.definitions {
 		lines[lineIndex] =
-			fmt.Sprintf("#define %s %s",name,value)
+			fmt.Sprintf("#define %s %s", name, value)
 	}
-	return strings.Join(lines,"\n")+"\n"
+	return strings.Join(lines, "\n") + "\n"
 }
 
 func (config *ShaderConfig) compileShader(
-		source string, glShaderType uint32,
+	source string, glShaderType uint32,
 ) Shader {
 	glShader := gl.CreateShader(glShaderType)
 	csources, free :=
-		gl.Strs(header+config.Definitions()+source+"\x00")
+		gl.Strs(header + config.Definitions() + source + "\x00")
 	defer free()
 	gl.ShaderSource(glShader, 1, csources, nil)
 	gl.CompileShader(glShader)
@@ -71,10 +73,14 @@ func (config *ShaderConfig) compileShader(
 }
 
 func (config *ShaderConfig) Compile() Program {
-	vertexSource,err := ioutil.ReadFile(config.vertexPath)
-	if err!=nil { log.Fatal(err) }
-	fragmentSource,err := ioutil.ReadFile(config.fragmentPath)
-	if err!=nil { log.Fatal(err) }
+	vertexSource, err := ioutil.ReadFile(config.vertexPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fragmentSource, err := ioutil.ReadFile(config.fragmentPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	vertexShader :=
 		config.compileShader(string(vertexSource), gl.VERTEX_SHADER)
@@ -161,6 +167,10 @@ func (p Program) SetMat4(name string, value *mgl32.Mat4) {
 	gl.UniformMatrix4fv(gl.GetUniformLocation(uint32(p), gl.Str(name+"\x00")), 1, false, &value[0])
 }
 
+func (p Program) SetUniform1iv(name string, count int32, value *int32) {
+	gl.Uniform1iv(gl.GetUniformLocation(uint32(p), gl.Str(name+"\x00")), count, value)
+}
+
 func (p Program) Locate(name string) int32 {
 	return gl.GetUniformLocation(uint32(p), gl.Str(name+"\x00"))
 }
@@ -206,7 +216,6 @@ func (p Program) GetInt(name uint32) int32 {
 	gl.GetProgramiv(p.gl(), name, &x)
 	return x
 }
-
 
 func (s Shader) CompiledSuccessfully() bool {
 	return s.GetInt(gl.COMPILE_STATUS) == gl.TRUE

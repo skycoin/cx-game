@@ -38,8 +38,9 @@ func (p *Playback) Update(dt float32) {
 			p.Action = p.NextAction
 			// if non repeating, queue the current action up again.
 			// usually used for defaulting back to "Idle"
-			if !p.Repeat { p.NextAction = oldAction }
+			if !p.Repeat {
+				p.NextAction = oldAction
+			}
 		}
 	}
 }
-

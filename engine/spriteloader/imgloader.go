@@ -1,15 +1,15 @@
 package spriteloader
 
-import(
+import (
 	"fmt"
 	"image"
 )
 
 type ChanInfo struct {
-	name string
-	img *image.RGBA
+	name     string
+	img      *image.RGBA
 	loadCode int
-	imgStat *ImgStat
+	imgStat  *ImgStat
 }
 
 const (
@@ -24,7 +24,7 @@ type ImgLoader struct {
 	// output channel
 	outChan chan *ChanInfo
 	//the images
-	imgRes map[string] *image.RGBA
+	imgRes map[string]*image.RGBA
 	//load count include load failed
 	loadCount int
 	//loaded flag
@@ -41,24 +41,25 @@ func NewImgLoader(imgList []string, cb func(*ImgLoader)) *ImgLoader {
 		return nil
 	}
 	loader := ImgLoader{
-		imgList: imgList,
-		inChan: make(chan string, count),
-		outChan: make(chan *ChanInfo, count),
-		imgRes: make(map[string] *image.RGBA),
-		loadCount:0,
-		loaded:false,
-		callback:cb,
-		imgStat: make(map[string]*ImgStat),
+		imgList:   imgList,
+		inChan:    make(chan string, count),
+		outChan:   make(chan *ChanInfo, count),
+		imgRes:    make(map[string]*image.RGBA),
+		loadCount: 0,
+		loaded:    false,
+		callback:  cb,
+		imgStat:   make(map[string]*ImgStat),
 	}
 
 	return &loader
 }
 
 func (il *ImgLoader) GetImg(path string) *image.RGBA {
+	fmt.Printf("here2 %s", path)
 	return il.imgRes[path]
 }
 
-func (il *ImgLoader) Run(){
+func (il *ImgLoader) Run() {
 	go inputChannel(il.imgList, il.inChan)
 	for i := 0; i < goroutineCount; i++ {
 		go outChannel(il.inChan, il.outChan)
@@ -69,7 +70,7 @@ func (il *ImgLoader) NeedUpdate() bool {
 	return !il.loaded
 }
 
-func (il *ImgLoader) Update(){
+func (il *ImgLoader) Update() {
 	//load finish
 	if len(il.imgList) == il.loadCount {
 		close(il.outChan)
@@ -80,7 +81,7 @@ func (il *ImgLoader) Update(){
 	}
 
 	select {
-	case ci := <- il.outChan:
+	case ci := <-il.outChan:
 		if ci.loadCode != LoadOk {
 			fmt.Printf("img load failed %v\n", ci)
 			fmt.Printf("img load failed reason %s\n", GetCodeString(ci.loadCode))
@@ -92,22 +93,22 @@ func (il *ImgLoader) Update(){
 	}
 }
 
-func inputChannel(imgList []string, inChan chan <- string){
-	for _, path := range imgList{
+func inputChannel(imgList []string, inChan chan<- string) {
+	for _, path := range imgList {
 		inChan <- path
 	}
 	close(inChan)
 }
 
 //TODO:maybe will load the samepng
-func outChannel(inChan <- chan string, outChan chan <- *ChanInfo){
-	for path := range inChan{
-		loadCode,img, imgStat := LoadPng(path)
+func outChannel(inChan <-chan string, outChan chan<- *ChanInfo) {
+	for path := range inChan {
+		loadCode, img, imgStat := LoadPng(path)
 		ci := ChanInfo{
-			name:path,
-			img:img,
+			name:     path,
+			img:      img,
 			loadCode: loadCode,
-			imgStat: imgStat,
+			imgStat:  imgStat,
 		}
 		outChan <- &ci
 	}

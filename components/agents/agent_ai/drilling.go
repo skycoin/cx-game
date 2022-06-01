@@ -75,6 +75,6 @@ func AiHandlerDrill(agent *agents.Agent, ctx AiContext) {
 	// 		Agent: agent,
 	// 	})
 	// } else {
-	// 	agent.PhysicsState.Vel.Y -= constants.Gravity * constants.PHYSICS_TICK
+	// 	agent.PhysicsState.Vel.Y -= constants.Gravity * constants.MS_PER_TICK
 	// }
 }

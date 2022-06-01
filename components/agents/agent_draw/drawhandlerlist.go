@@ -7,7 +7,6 @@ import (
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/camera"
-	"github.com/skycoin/cx-game/engine/spriteloader"
 )
 
 type DrawHandlerContext struct {
@@ -22,13 +21,14 @@ var drawHandlers [constants.NUM_AGENT_DRAW_HANDLERS]AgentDrawHandler
 
 func Init() {
 	// TODO move this
-	spriteloader.LoadSingleSprite("./assets/enemies/basic-enemy.png", "basic-agent")
+	//spriteloader.LoadSingleSprite("./assets/enemies/basic-enemy.png", "basic-agent")
 
 	RegisterDrawHandler(constants.DRAW_HANDLER_NULL, NullDrawHandler)
 	RegisterDrawHandler(constants.DRAW_HANDLER_QUAD, QuadDrawHandler)
 	RegisterDrawHandler(constants.DRAW_HANDLER_ANIM, AnimatedDrawHandler)
 	RegisterDrawHandler(constants.DRAW_HANDLER_PLAYER, PlayerDrawHandler)
 	RegisterDrawHandler(constants.DRAW_HANDLER_COLOR, ColorDrawHandler)
+	RegisterDrawHandler(constants.DRAW_HANDLER_SPINE, SpinePlayerDrawHandler2)
 
 	AssertAllDrawHandlersRegistered()
 }

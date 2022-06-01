@@ -1,0 +1,35 @@
+package animation
+
+import (
+	"image"
+)
+
+// An ImagePart is deprecated (as of 1.1.0-alpha): Use SourceRect instead.
+type ImagePart struct {
+	Dst image.Rectangle
+	Src image.Rectangle
+}
+
+// An ImageParts is deprecated (as of 1.5.0-alpha): Use SourceRect instead.
+type ImageParts interface {
+	Len() int
+	Dst(i int) (x0, y0, x1, y1 int)
+	Src(i int) (x0, y0, x1, y1 int)
+}
+
+// NOTE: Remove this in the future.
+type ImageParts_ []ImagePart
+
+func (p imageParts) Len() int {
+	return len(p)
+}
+
+func (p imageParts) Dst(i int) (x0, y0, x1, y1 int) {
+	dst := &p[i].Dst
+	return dst.Min.X, dst.Min.Y, dst.Max.X, dst.Max.Y
+}
+
+func (p imageParts) Src(i int) (x0, y0, x1, y1 int) {
+	src := &p[i].Src
+	return src.Min.X, src.Min.Y, src.Max.X, src.Max.Y
+}
