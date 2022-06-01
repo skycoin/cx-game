@@ -7,7 +7,6 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/skycoin/cx-game/components"
-	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/ui"
 	"github.com/skycoin/cx-game/item"
 	"github.com/skycoin/cx-game/particles"
@@ -70,14 +69,14 @@ func Draw() {
 	//fix dialogboxdraw
 	// ui.DrawDialogueBoxes(camCtx)
 	Console.Draw(win.DefaultRenderContext())
-	//	actualScreenSizeWidth, actualScreenSizeHeight := glfw.GetCurrentContext().GetFramebufferSize() //*here is your old display code
+	actualScreenSizeWidth, actualScreenSizeHeight := glfw.GetCurrentContext().GetFramebufferSize() //*here is your old display code
 	physicalViewport := render.GetCurrentViewport()
-	fmt.Println("physicalViewport: ", physicalViewport)
+	//fmt.Println("physicalViewport: ", physicalViewport)
 	virtualViewport :=
 		render.Viewport{
 			0, 0,
-			constants.VIRTUAL_VIEWPORT_WIDTH,  //int32(actualScreenSizeWidth),  //  *here is your old display code
-			constants.VIRTUAL_VIEWPORT_HEIGHT, //int32(actualScreenSizeHeight), // *here is your old display code
+			int32(actualScreenSizeWidth),  //constants.VIRTUAL_VIEWPORT_WIDTH,    //  *here is your old display code
+			int32(actualScreenSizeHeight), //, // *here is your old display code
 		}
 	virtualViewport.Use()
 
