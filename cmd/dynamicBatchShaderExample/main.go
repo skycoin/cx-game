@@ -201,6 +201,7 @@ func main() {
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	shader := shader.SetupShader("./../../assets/shader/spine/basic.shader")
+	fmt.Println("shader: ", shader)
 	shader.Bind()
 	shader.SetUniForm4f("u_Color", 0.8, 0.3, 0.8, 1.0)
 

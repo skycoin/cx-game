@@ -28,8 +28,11 @@ func SetupShader(filepath string) *Shader {
 	newShader.M_renderID = 0
 
 	s := newShader.ParseShader(filepath)
+	fmt.Println("newShader.ParseShader: ", s)
 	program, err := newShader.CreateShader(s.VertexSource, s.FragmentSource)
+	fmt.Println("newShader.program: ", program)
 	if err != nil {
+		fmt.Println("newShader.program error: ", err)
 		panic(err)
 	}
 
@@ -86,16 +89,19 @@ func (s *Shader) ParseShader(filepath string) *ShaderProgramSource {
 
 	var shaderStream [2]string
 
-	fmt.Println("currnet shader type: ", currentShaderType)
+	fmt.Println("currnet shader type: - ", currentShaderType)
 
 	f, err := os.Open(filepath) // Error handling elided for brevity.
+	fmt.Println("open: ", filepath)
 	if err != nil {
+		fmt.Println("error open: ", filepath)
 		log.Fatal(err)
 	}
 
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
+	fmt.Println("scanner: ", scanner)
 
 	for scanner.Scan() {
 
@@ -117,6 +123,7 @@ func (s *Shader) ParseShader(filepath string) *ShaderProgramSource {
 	shaderStream[1] += "\x00"
 
 	ss := ShaderProgramSource{shaderStream[0], shaderStream[1]}
+	fmt.Println("ShaderProgramSource: ", ss)
 	return &ss
 }
 
@@ -130,7 +137,6 @@ func (s *Shader) CreateShader(vertexShaderSource, fragmentShaderSource string) (
 
 	fragmentShader, err := s.compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
 	if err != nil {
-
 		return 0, err
 	}
 
@@ -141,6 +147,8 @@ func (s *Shader) CreateShader(vertexShaderSource, fragmentShaderSource string) (
 	gl.AttachShader(program, vertexShader)
 	gl.AttachShader(program, fragmentShader)
 	gl.LinkProgram(program)
+
+	fmt.Println("done LinkProgram")
 
 	var status int32
 	gl.GetProgramiv(program, gl.LINK_STATUS, &status)
