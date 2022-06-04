@@ -24,7 +24,7 @@ func FixedTick() {
 	components.FixedUpdate()
 	World.Planet.FixedUpdate()
 	World.TimeState.Advance()
-	// physics.Simulate(constants.PHYSICS_TICK, &World.Planet)
+	// physics.Simulate(constants.MS_PER_TICK, &World.Planet)
 	/*
 		pickedUpItems := item.TickWorldItems(
 			&World.Planet, physicsconstants.PHYSICS_TIMESTEP, player.Pos)

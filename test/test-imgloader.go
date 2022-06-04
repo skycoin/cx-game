@@ -22,12 +22,12 @@ func init() {
 }
 
 var il *sl.ImgLoader
-var spriteId int = -1
+var spriteId sl.SpriteID
 
 //test loader callback function
 func loaderCb(il *sl.ImgLoader) {
 	fmt.Printf("loader cb \n")
-	id := sl.AddSpriteSheet("assets/starfield/stars/planets.png", il)
+	id := sl.AddSpriteSheet("../assets/starfield/stars/planets.png", il)
 	fmt.Printf("AddSpriteSheet id %v\n", id)
 	if id < 0 {
 		return
@@ -63,7 +63,7 @@ func getPng(dir string) []string {
 }
 
 func main() {
-	imgList := getPng("./assets")
+	imgList := getPng("./spine-animation/animation/skeleton/images")
 
 	il = sl.NewImgLoader(imgList, loaderCb)
 	il.Run()
@@ -83,7 +83,7 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		// if load finish ,the img will render
 		if spriteId >= 0 {
-			sl.DrawSpriteQuad(0, 0, 2, 2, spriteId)
+			//	sl.DrawSpriteQuad(0, 0, 2, 2, spriteId)
 		}
 
 		glfw.PollEvents()

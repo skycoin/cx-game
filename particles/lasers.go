@@ -134,6 +134,10 @@ func configureGlForLaser() {
 }
 
 func DrawLasers(ctx render.WorldContext) {
+	gl.DepthMask(false)
+	defer gl.DepthMask(true)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	// only need to set up shader once for all lasers
 	laserProgram.Use()
 	// projection := ctx.Projection()

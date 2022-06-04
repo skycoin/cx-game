@@ -3,6 +3,9 @@ package agents
 import (
 	"log"
 
+	//"github.com/skycoin/cx-game/components/agents/agent_draw"
+	//	"github.com/skycoin/cx-game/components/agents/agent_draw"
+
 	"github.com/skycoin/cx-game/components/types"
 	"github.com/skycoin/cx-game/constants"
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
@@ -19,8 +22,108 @@ type Agent struct {
 	Health            HealthComponent
 	AnimationPlayback anim.Playback
 	InventoryID       types.InventoryID
+
+	// Time  float64
+	// Play  bool
+	// Speed float64
+
+	// // TODO: replace this with atlas
+	// ImagesPath string
+	// Images     map[string]*Texture.Texture
+
+	// Skeleton  *spine.Skeleton
+	// Animation *spine.Animation
+
+	// SkinIndex      int
+	// AnimationIndex int
+
+	// DebugCenter bool
+	// DebugBones  bool
 }
 
+// func (a *Agent) LoadCharacter(loc animation.Location) (*Agent, error) {
+// 	fmt.Println("test here: ", loc.JSON)
+// 	rd, err := os.Open(loc.JSON)
+// 	if err != nil {
+// 		fmt.Println("hit Error: ")
+// 		return nil, err
+// 	}
+// 	fmt.Println("test data: ")
+// 	data, err := spine.ReadJSON(rd)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	data.Name = loc.Name
+
+// 	fmt.Println("test location: ", loc.Images)
+// 	a.ImagesPath = loc.Images
+
+// 	//char.Images = make(map[string]*pixel.PictureData)
+
+// 	//fmt.Println("____________Debug point_________")
+
+// 	//fmt.Printf("%v", char.Images)
+
+// 	//	fmt.Println("________________________________")
+
+// 	a.Play = false
+// 	a.DebugBones = true
+// 	a.DebugCenter = true
+
+// 	a.Speed = 0.05
+// 	a.Skeleton = spine.NewSkeleton(data)
+// 	a.Skeleton.Skin = a.Skeleton.Data.DefaultSkin
+// 	a.Animation = a.Skeleton.Data.Animations[0]
+
+// 	a.AnimationIndex = 0
+// 	a.SkinIndex = 0
+
+// 	a.Skeleton.UpdateAttachments()
+// 	a.Skeleton.Update()
+// 	fmt.Printf("%v", a)
+// 	return a, nil
+// }
+
+// func (char *Agent) NextAnimation(offset int) {
+// 	char.AnimationIndex += offset
+// 	for char.AnimationIndex < 0 {
+// 		char.AnimationIndex += len(char.Skeleton.Data.Animations)
+// 	}
+// 	char.AnimationIndex = char.AnimationIndex % len(char.Skeleton.Data.Animations)
+// 	char.Animation = char.Skeleton.Data.Animations[char.AnimationIndex]
+// 	char.Skeleton.SetToSetupPose()
+// 	char.Skeleton.Update()
+// }
+// func (char *Agent) SetAnimation(index int) {
+
+// 	char.Animation = char.Skeleton.Data.Animations[index]
+// 	char.Skeleton.SetToSetupPose()
+// 	char.Skeleton.Update()
+// }
+
+// func (char *Agent) NextSkin(offset int) {
+// 	char.SkinIndex += offset
+// 	for char.SkinIndex < 0 {
+// 		char.SkinIndex += len(char.Skeleton.Data.Skins)
+// 	}
+// 	char.SkinIndex = char.SkinIndex % len(char.Skeleton.Data.Skins)
+// 	char.Skeleton.Skin = char.Skeleton.Data.Skins[char.SkinIndex]
+// 	char.Skeleton.SetToSetupPose()
+// 	char.Skeleton.Update()
+// 	char.Skeleton.UpdateAttachments()
+// }
+
+// func (char *Agent) Update(dt float64, center cxmath.Vec2) {
+// 	if char.Play {
+// 		char.Time += dt * char.Speed
+// 	}
+
+// 	// char.Skeleton.Local.Translate.Set(float32(center.X), float32(center.Y))
+// 	// char.Skeleton.Local.Scale.Set(0.003, 0.003)
+// 	char.Animation.Apply(char.Skeleton, float32(char.Time), true)
+// 	char.Skeleton.Update()
+// }
 
 type AgentHandlers struct {
 	Draw types.AgentDrawHandlerID

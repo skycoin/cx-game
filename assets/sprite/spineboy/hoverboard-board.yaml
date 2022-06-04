@@ -1,0 +1,6 @@
+name: hoverboard-board
+width: 492
+height: 152
+cellwidth: 492
+cellheight: 152
+autoname: index

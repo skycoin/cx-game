@@ -23,6 +23,7 @@ var currentViewport Viewport
 func GetCurrentViewport() Viewport { return currentViewport }
 
 func (v Viewport) Use() {
+	//fmt.Println("Viewport: ", v)
 	currentViewport = v
 	gl.Viewport(v.X, v.Y, v.Width, v.Height)
 }
@@ -33,6 +34,7 @@ func fitCentered(virtualDims, physicalDims mgl32.Vec2) WindowDimensions {
 	// "virtual" dimensions describe scaling of both world and UI
 	// physical determines resolution.
 	// virtual determines how big things are.
+
 	physicalWidth := physicalDims.X()
 	physicalHeight := physicalDims.Y()
 	virtualWidth := virtualDims.X()

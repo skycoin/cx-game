@@ -6,12 +6,20 @@ import (
 
 var QuadVao uint32
 var Quad2Vao uint32
+var SpineQuadVao uint32
 
 const vertsPerQuad int32 = 6
 
 func InitQuadVao() {
 	QuadVao = MakeQuadVao(quadVertexAttributes)
 	Quad2Vao = MakeQuadVao(quad2VertexAttributes)
+}
+func QuadType(typeNum int) []float32 {
+	if typeNum == 1 {
+		return quadVertexAttributes
+	} else {
+		return quad2VertexAttributes
+	}
 }
 
 // x,y,z,u,v

@@ -9,6 +9,7 @@ import (
 	"github.com/skycoin/cx-game/engine/spriteloader/anim"
 	"github.com/skycoin/cx-game/physics"
 	"github.com/skycoin/cx-game/render"
+	"github.com/skycoin/cx-game/test/spine-animation/animation"
 )
 
 type AgentCreationOptions struct {
@@ -38,11 +39,12 @@ func init() {
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
 		CreateAgent: createSlime,
 	})
-	RegisterAgentType(constants.AGENT_TYPE_ENEMY_FLOATING, AgentType {
+	RegisterAgentType(constants.AGENT_TYPE_ENEMY_FLOATING, AgentType{
 		Name:        "Floater",
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
 		CreateAgent: createFloatingEnemy,
 	})
+
 	RegisterAgentType(constants.AGENT_TYPE_SPIDER_DRILL, AgentType{
 		Name:        "Spider Drill",
 		Category:    constants.AGENT_CATEGORY_ENEMY_MOB,
@@ -63,6 +65,19 @@ func init() {
 		Category:    constants.AGENT_CATEGORY_PLAYER,
 		CreateAgent: createPlayer,
 	})
+	// RegisterAgentType(constants.AGENT_TYPE_PLAYER, AgentType{
+	// 	Name:        "Player",
+	// 	Category:    constants.AGENT_CATEGORY_PLAYER,
+	// 	CreateAgent: createSkeletonPlayer,
+	// })
+
+	//********** SPINE TEST *************/////
+	RegisterAgentType(constants.AGENT_TYPE_SPINE_TEST, AgentType{
+		Name:        "Spine",
+		Category:    constants.AGENT_CATEGORY_SPINE,
+		CreateAgent: createSpine,
+	})
+	//***************************************//
 }
 
 func RegisterAgentType(id types.AgentTypeID, agentType AgentType) {
@@ -108,7 +123,6 @@ func createSpiderDrill(opts AgentCreationOptions) *Agent {
 	x := opts.X
 	y := opts.Y
 	// TODO only load these once
-	anim.LoadAnimationBoneFromJSON("./assets/player/skeleton.json") // ignore this, only for testing purpose
 	animation := anim.LoadAnimationFromJSON("./assets/spiderDrill.json")
 	playback := animation.NewPlayback("Walk")
 	agent := Agent{
@@ -204,6 +218,32 @@ func createFloatingEnemy(opts AgentCreationOptions) *Agent {
 	return &agent
 }
 
+func createSpine(opts AgentCreationOptions) *Agent {
+
+	agent := Agent{
+		Handlers: AgentHandlers{
+			AI:   constants.AI_HANDLER_SPINE,
+			Draw: constants.DRAW_HANDLER_SPINE,
+		},
+
+		Meta: AgentMeta{
+			Category: constants.AGENT_CATEGORY_SPINE,
+			Type:     constants.AGENT_TYPE_PLAYER,
+		},
+		Transform: physics.Body{
+			Pos:       cxmath.Vec2{X: opts.X, Y: opts.Y},
+			Size:      cxmath.Vec2{X: 2.0 * constants.PLAYER_RENDER_TO_HITBOX, Y: 3},
+			Direction: 1,
+		},
+		Health: NewHealthComponent(constants.HEALTH_PLAYER),
+	}
+	for _, loc := range animation.LoadList("./test/spine-animation/animation") {
+		agent.Meta.LoadCharacter(loc)
+	}
+	//physics.RegisterBody(&agent.PhysicsState)
+	return &agent
+}
+
 func createPlayer(opts AgentCreationOptions) *Agent {
 	agent := Agent{
 		Handlers: AgentHandlers{
@@ -227,6 +267,30 @@ func createPlayer(opts AgentCreationOptions) *Agent {
 		Health: NewHealthComponent(constants.HEALTH_PLAYER),
 	}
 	//physics.RegisterBody(&agent.PhysicsState)
+	return &agent
+}
+
+func createSkeletonPlayer(opts AgentCreationOptions) *Agent {
+	agent := Agent{
+		Handlers: AgentHandlers{
+			AI:   constants.AI_HANDLER_PLAYER,
+			Draw: constants.DRAW_HANDLER_PLAYER,
+		},
+		Meta: AgentMeta{
+			Category:   constants.AGENT_CATEGORY_PLAYER,
+			Type:       constants.AGENT_TYPE_PLAYER,
+			PlayerData: PlayerData{
+				// HelmetSpriteID: render.GetSpriteIDByName("helmet/1"),
+				// SuitSpriteID:   render.GetSpriteIDByName("suit:0"),
+			},
+		},
+		Transform: physics.Body{
+			Pos:       cxmath.Vec2{X: opts.X, Y: opts.Y},
+			Size:      cxmath.Vec2{X: 2.0 * constants.PLAYER_RENDER_TO_HITBOX, Y: 3},
+			Direction: 1,
+		},
+		Health: NewHealthComponent(constants.HEALTH_PLAYER),
+	}
 	return &agent
 }
 

@@ -1,0 +1,6 @@
+name: hoverboard-thruster
+width: 60
+height: 64
+cellwidth: 60
+cellheight: 64
+autoname: index

@@ -29,6 +29,7 @@ func Init() {
 	RegisterAiHandler(constants.AI_HANDLER_ENEMYSOLDIER, AiHandlerEnemySoldier)
 	RegisterAiHandler(constants.AI_HANDLER_PLAYER, AiHandlerPlayer)
 	RegisterAiHandler(constants.AI_HANDLER_FLOATING, AiHandlerEnemyFloating)
+	RegisterAiHandler(constants.AI_HANDLER_SPINE, AiHandlerSpine)
 
 	assertAllAiHandlersRegistered()
 }
