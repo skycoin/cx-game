@@ -3,7 +3,7 @@ package sound
 import (
 	"os"
 
-	"github.com/ted537/go-openal/openal"
+	"github.com/skycoin/cx-game/lib/openal"
 	"github.com/mjibson/go-dsp/wav"
 )
 

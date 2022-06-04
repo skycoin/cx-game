@@ -14,7 +14,6 @@ require (
 	github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
 	github.com/seehuhn/mt19937 v1.0.0
 	github.com/stretchr/testify v1.7.0
-	github.com/ted537/go-openal v0.0.0-20210618203930-fa36a2aaf89e
 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8
 	gopkg.in/yaml.v2 v2.2.4
 )
